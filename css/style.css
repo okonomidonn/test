@@ -1,0 +1,752 @@
+@charset "UTF-8";
+/*---------------------------------
+全ページ共通
+---------------------------------*/
+html {
+  font-size: 62.5%;
+  height: 100%;
+}
+
+body {
+  font-family: 'Noto Sans JP',"Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, "sans-serif";
+  font-size: 1.6rem;
+  color: #333;
+  line-height: 1.6;
+  letter-spacing: 2px;
+  height: 100%;
+}
+
+/*文字*/
+p {
+  margin: 24px 0;
+}
+
+a {
+  color: #333;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+}
+
+a:hover {
+  opacity: 0.6;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'La Belle Aurore', YuMincho, 'Yu Mincho', 'Hiragino Mincho ProN', 'serif';
+  font-weight: normal;
+}
+
+h2 {
+  font-size: 3.6rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin: 64px 0 32px;
+}
+
+h2::before, h2::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background-color: #c691ad;
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+}
+
+h2::before {
+  margin-right: 2rem;
+}
+
+h2::after {
+  margin-left: 2rem;
+}
+
+h3 {
+  display: inline-block;
+  font-size: 2.4rem;
+  margin: 40px 0 24px;
+}
+
+h3::after {
+  content: '';
+  display: block;
+  margin-top: -1.7rem;
+  width: 100%;
+  border-bottom: 1px solid #c691ad;
+}
+
+@media screen and (max-width: 1023px) {
+  h3 {
+    margin: 16px 0 8px;
+  }
+}
+
+h4 {
+  margin: 40px 0 24px;
+  font-size: 1.8rem;
+}
+
+em {
+  text-decoration: underline;
+  font-style: normal;
+}
+
+/*リスト*/
+ul, ol, dl {
+  margin: 24px 0;
+}
+
+/*テキスト入力系*/
+input {
+  border: none;
+  margin-bottom: 8px;
+  padding: 10px;
+}
+
+input[type="submit"] {
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+textarea {
+  border: none;
+  max-width: 100%;
+  padding: 10px;
+}
+
+/*ボタン*/
+.btn {
+  background-color: #c691ad;
+  color: #fff;
+  border: 1px solid #fff;
+  margin: 16px 0;
+  padding: 4px 8px;
+  text-decoration: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .flexWrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+}
+
+/*ボックス*/
+.titlebox {
+  border: 1px solid #c691ad;
+  margin-top: 40px;
+  padding: 24px;
+  position: relative;
+}
+
+.titlebox h3 {
+  position: absolute;
+  top: -2.4rem;
+  left: 0;
+  margin: 0;
+}
+
+.titlebox h3::after {
+  display: none;
+}
+
+.linebox {
+  border-left: 1px solid #c691ad;
+  padding-left: 24px;
+}
+
+/*グリッドリスト*/
+.gridlist {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: auto 1fr;
+      grid-template-columns: auto 1fr;
+}
+
+.gridlist dt, .gridlist dd {
+  border-bottom: 1px solid #fff;
+  margin-bottom: 8px;
+  padding: 4px;
+}
+
+.gridlist dt {
+  padding-right: 24px;
+}
+
+/*余白*/
+.hr {
+  padding: 20px;
+}
+
+/*---------------------------------
+横幅設定
+---------------------------------*/
+@media screen and (min-width: 1024px) {
+  header, main, footer {
+    width: 1024px;
+    margin: 0 auto;
+  }
+}
+
+/*---------------------------------
+背景写真設定
+---------------------------------*/
+.bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: url("../img/top.jpg") no-repeat center;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  z-index: -99;
+}
+
+.blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -98;
+  /*すりガラス用プロパティ*/
+  backdrop-filter: blur(6px);
+  /*ベンダープレフィックス*/
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/*---------------------------------
+ヘッダー
+---------------------------------*/
+header {
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+}
+
+header .topimg {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #fff;
+}
+
+/*サイト名*/
+header .topimg h1 {
+  display: inline-block;
+  color: #fff;
+  font-size: 8rem;
+  text-shadow: 0px 0px 8px #897277;
+}
+
+/*下向き矢印*/
+header .topimg .arrow-down {
+  position: absolute;
+  left: calc(50% - 24px);
+  bottom: -12px;
+  width: 48px;
+  height: 48px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-right: none;
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+}
+
+
+/*---------------------------------
+メニュー
+---------------------------------*/
+.globalnav {
+  position: fixed;
+  top: 0;
+  z-index: 1;
+}
+
+@media screen and (min-width: 1024px) {
+  .globalnav {
+    bottom: 0;
+    right: 24px;
+    height: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+  }
+  .globalnav ul {
+    list-style: none;
+    padding: 0;
+  }
+  .globalnav ul li {
+    width: 80px;
+    height: 80px;
+    background-color: #fff;
+    border: 1px solid #c691ad;
+    border-radius: 50%;
+    margin-bottom: 24px;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+  .globalnav ul li:hover {
+    -webkit-box-shadow: 0 0 14px 2.6px #c691ad;
+            box-shadow: 0 0 14px 2.6px #c691ad;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+  }
+  .globalnav ul li a {
+    display: block;
+    height: 100%;
+    font-family: 'La Belle Aurore', 'san-serif';
+    font-size: 2.4rem;
+    text-align: center;
+    line-height: 80px;
+    text-decoration: none;
+  }
+  .globalnav ul li a:hover {
+    opacity: 1;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .globalnav {
+    width: 100%;
+  }
+  .globalnav ul {
+    list-style: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: end;
+        -ms-flex-pack: end;
+            justify-content: flex-end;
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+    background-color: #fff;
+  }
+  .globalnav ul li {
+    padding: 0 0 0 16px;
+  }
+  .globalnav ul li a {
+    font-size: 2rem;
+    text-decoration: none;
+    font-family: 'La Belle Aurore', 'san-serif';
+  }
+}
+
+/*---------------------------------
+トップページ　コンテンツ
+---------------------------------*/
+main {
+  padding: 1px 64px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+@media screen and (max-width: 1023px) {
+ main {
+   padding: 16px;
+ }
+}
+
+main section {
+  margin: 64px 0;
+}
+
+/*Infomation*/
+@media screen and (min-width: 1024px) {
+ main .flexWrapper > div {
+   width: 50%;
+ }
+}
+main .flexWrapper .left {
+  margin-right: 24px;
+}
+
+
+/*News*/
+
+main .news {
+  padding: 0;
+}
+
+main .news ul {
+  list-style: none;
+  height: 181px;
+  overflow-y: auto;
+  padding: 0;
+  margin: 0;
+}
+
+main .news ul li {
+  margin: 16px;
+}
+
+main .news ul li time {
+  margin-right: 24px;
+}
+
+@media screen and (max-width: 1023px) {
+ main .news ul li time {
+   display: block;
+ }
+}
+
+/*Profile*/
+@media screen and (min-width: 1024px) {
+ main .profile {
+   display: -webkit-box;
+   display: -ms-flexbox;
+   display: flex;
+ }
+}
+
+main .profile .prof-left {
+  margin: 32px 64px;
+}
+
+main .profile .prof-left img {
+  display: inline;
+  border-radius: 50%;
+}
+
+@media screen and (max-width: 1023px) {
+ main .profile .prof-left {
+   text-align: center;
+ }
+}
+
+/*SNSアイコン*/
+main .profile .sns {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 16px 0;
+}
+
+main .profile .sns a img {
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+}
+
+main .profile .sns a img:hover {
+  opacity: 0.6;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+}
+
+main .profile .sns i {
+  font-size: 30px;
+  margin-left: 8px;
+}
+
+main .profile .sns .twitter i {
+  color: #55acee;
+}
+
+main .profile .sns .facebook i {
+  color: #315096;
+}
+
+main .profile .sns .instagram i {
+  color: #e1306c;
+}
+
+/*Link*/
+main .link ul {
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  padding: 0;
+}
+
+main .link ul li {
+  margin-right: 16px;
+  margin-bottom: 16px;
+}
+/* ボタン全体 */
+.flowbtn12{
+font-family:'Verdana',sans-serif;	
+border-radius: 4px;
+display:inline-block;
+width:90%;
+font-size:20px;
+transition:.4s;	
+text-decoration:none;
+}
+/* ボタン内テキストマウスホバー時 */
+.flowbtn12:hover{
+color:#fff!important;
+text-decoration:none;
+}
+/* Instagram */
+.flowbtn12.insta_btn2{
+border:solid 1px #c6529a;
+color:#c6529a;
+}
+/* Instagramマウスホバー時 */
+.flowbtn12.insta_btn2:hover{
+border:solid 1px #c6529a;
+background:#c6529a;
+}
+/*---------------------------------
+フッター
+---------------------------------*/
+footer {
+  text-align: center;
+  margin: 24px auto;
+}
+
+footer small {
+  color: #fff;
+  padding: 16px 0;
+  text-shadow: 0px 0px 8px #897277;
+}
+
+footer small a {
+  color: #fff;
+}
+
+/*---------------------------------
+　メイン　コンテンツ
+---------------------------------*/
+/*Novel*/
+.novel .list li {
+  margin-bottom: 8px;
+}
+
+.novel .list span {
+  margin-right: 24px;
+}
+
+.novel .list span a {
+  text-decoration: none;
+  color: #c691ad;
+  font-weight: bolder;
+}
+
+@media screen and (max-width: 1023px) {
+  .novel .list span {
+    display: block;
+  }
+}
+
+/*Gallery*/
+.gallery ul {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-line-pack: start;
+      align-content: flex-start;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  width: 100%;
+}
+
+.gallery ul li {
+  position: relative;
+  width: calc(100%/4 - 8px);
+  margin: 0 8px 8px 0;
+}
+
+.gallery ul li:nth-child(4n) {
+  margin-right: 0;
+}
+
+.gallery ul li::before {
+  content: '';
+  display: block;
+  padding-top: 100%;
+}
+
+.gallery ul li img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+/*---------------------------------
+　Novel個別ページ
+---------------------------------*/
+.novelIndivi {
+  margin: 64px auto 80px;
+  padding: 40px 64px 100px;
+}
+@media screen and (max-width: 1023px) {
+ .novelIndivi {
+  padding: 20px 20px 100px;
+ }
+}
+
+.navi {
+  text-align: center;
+}
+
+.navi span {
+  display: inline-block;
+  margin: 20px;
+}
+@media screen and (max-width: 1023px) {
+ .navi span {
+  margin: 10px;
+ }
+}
+
+.navi span a {
+  text-decoration: none;
+}
+
+.navi .prev svg, .navi .next svg {
+  width: 20px;
+  fill: #c691ad;
+  margin-bottom: -4px;
+}
+
+.navi .prev svg {
+  margin-right: 10px;
+}
+
+.navi .next svg {
+  margin-left: 10px;
+}
+
+/*---------------------------------
+　Gallery個別ページ
+---------------------------------*/
+.galleryIndiv {
+  position: relative;
+  height: 100%;
+}
+
+/* 画像 */
+.galleryIndiv img {
+  max-height: 100%;
+  margin: 0 auto;
+}
+
+/* タイトル */
+.galleryIndiv h3::after {
+  border: 0;
+}
+
+/* キャプション */
+.galleryIndiv p {
+  margin-bottom: 64px;
+}
+
+/* 前後への矢印 */
+.galleryIndiv .prev, .galleryIndiv .next {
+  position: absolute;
+  top: 50%;
+  margin-top: -2rem;
+}
+
+@media screen and (max-width: 1023px) {
+ .galleryIndiv .prev, .galleryIndiv .next {
+   top: auto;
+   margin-bottom: 24px;
+ }
+}
+
+.galleryIndiv .prev .arrow-left, .galleryIndiv .prev .arrow-right {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #c691ad;
+}
+
+.galleryIndiv .next .arrow-left, .galleryIndiv .next .arrow-right {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #c691ad;
+}
+
+.galleryIndiv .prev .arrow-left, .galleryIndiv .next .arrow-left {
+  border-right: none;
+  border-bottom: none;
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+}
+
+.galleryIndiv .prev .arrow-right, .galleryIndiv .next .arrow-right {
+  border-left: none;
+  border-top: none;
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+}
+@media screen and (max-width: 1023px) {
+ .galleryIndiv .prev .arrow-left, .galleryIndiv .prev .arrow-right {
+   width: 20px;
+   height: 20px;
+ }
+ .galleryIndiv .next .arrow-left, .galleryIndiv .next .arrow-right {
+   width: 20px;
+   height: 20px;
+ }
+}
+
+.galleryIndiv .prev {
+  left: 0;
+}
+
+.galleryIndiv .next {
+  right: 0;
+}
+
+@media screen and (max-width: 1023px) {
+  .galleryIndiv .prev {
+    left: 3%;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .galleryIndiv .next {
+    right: 3%;
+  }
+}
+
+
+.insta_btn11 .fa-instagram{
+position:relative;
+z-index:1;	
+}
+/* Instagram紫グラデ背景色 */
+.insta_btn11{
+background:-webkit-linear-gradient(135deg, #427eff 0%, #f13f79 70%) no-repeat;
+background:linear-gradient(135deg, #427eff 0%, #f13f79 70%) no-repeat;
+overflow:hidden;
+}
+/* Instagramオレンジグラデ背景色 */
+.insta_btn11:before{
+content: '';
+position:absolute;
+top:17px;
+left:-75px;
+width:100%;
+height:100%;
+background:-webkit-radial-gradient(#ffdb2c 5%, rgba(255, 105, 34, 0.65) 45%, rgba(255, 88, 96, 0) 80%);
+background:radial-gradient(#ffdb2c 5%, rgba(255, 105, 34, 0.65) 55%, rgba(255, 88, 96, 0) 80%);
+}

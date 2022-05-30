@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name = "viewport" content = "width = device-width, initial-scale=1, user-scalable=yes">
+<title>探しものはモナリザですか？</title>
+<link href="css/reset.css" rel="stylesheet" type="text/css">
+<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="https://fonts.googleapis.com/css2?family=La+Belle+Aurore&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.9.0/css/all.css" rel="stylesheet">
+</head>
+
+<body>
+  
+  <!--背景写真用-->
+  <div class="bg"></div>
+  <div class="blur"></div>  
+  
+  <!--ヘッダー-->
+  <header>
+    <div class="topimg">
+      <h1 style="text-align:center">探しものは<br>
+        モナリザですか？&nbsp;</h1>
+      <!--サイト名-->
+      <div class="arrow-down"></div>
+    </div>
+  </header><!--ヘッダーここまで-->
+  
+  
+  <!--メニュー-->
+
+  <!--コンテンツ-->
+  <main>
+    <!--Infomation-->
+    <section class="infomation">
+      <h2>About&nbsp;</h2>
+      
+      <p>この度国立高校77th1800の公式ホームページを公開しました！<br> このサイトでは主に1800国高祭関連のことについて発信していく予定です!<br>これから様々な情報を公開していくので楽しみにしていてください!&nbsp;</p>
+		
+		    <h3>News</h3>
+          <ul>
+            <li>
+              <time>2022.6.14</time>
+              <span>ホームページを公開しました!</span>
+            </li>                 
+          </ul>
+          
+       
+        
+       
+          <ul>
+           
+          
+        </ul>
+       
+    
+    </section><!--Infomationここまで-->
+    
+    <!--About-->
+<section class="Story">
+<h2>Story&nbsp;</h2>
+<p>ひょんなことをきっかけに世界に名を占める伝説の怪盗『』の代わりにモナリザを盗むことになったあなた。 しかし『モナリザ』 を盗むのはそう簡単なことではなかった。美術館には数々のミッションが仕掛けてられておりそれらをクリアしていかなければモナリザを盗むことはできない。ミッションをクリアしモナリザを手にすることができるのか⁉<br>
+	埋めるために適当にストーリ書きました。内容は気にしないで下さい。 あとここにもう少し文化祭のことについて書いたり画像とかのっけてインパクトありの風にしたい&nbsp; &nbsp; &nbsp;&nbsp;</p>
+     
+     
+  
+        
+    <!--LINK-->
+    <section class="SNS">
+<h2>SNS&nbsp;</h2>
+		
+		
+<li><a href="https://www.instagram.com/kntc77th_1800/" class="flowbtn12 insta_btn2"><i class="fab fa-instagram"></i><span>1800公式Instagram</span></a></li>
+		
+		<p>SNS、instaしかないので、ここに動画も載せるか　それともMOVIEセクション作るか　なんならStoryの所にいれるか　検討中<br>
+		&nbsp;</p>
+		
+		
+			
+		
+   <!--LINKここまで-->
+    
+    <!--コンタクト-->
+    <section class="contact">
+      <h2>Contact</h2>
+      <form action="" method="post">
+        <input id="name" type="text" name="Name" placeholder="お名前"><br>
+        <input id="mail" type="email" name="Mail" placeholder="メールアドレス"><br>
+        <input id="url" type="url" name="URL" placeholder="URL"><br>
+        <textarea id="message" name="Message" placeholder="メッセージ"></textarea><br>
+        <input type="submit" name="button" value="送信" class="btn">
+      </form>
+      
+</section><!--コンタクトここまで--> 
+    
+<!--コンテンツここまで-->
+  
+  <!--フッター-->
+ 
+  <!--jQuery 読込-->	
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
+  
+  <script type="text/javascript">
+    //メニューボタンの表示
+    $(function(){
+      $(window).on('load scroll', function(){
+        if ($(window).scrollTop() > 500) {
+          $('.globalnav').fadeIn(400);
+         } else {
+          $('.globalnav').fadeOut(400);
+         }
+       });    
+    });
+    
+    //背景ぼかし
+    $(function(){
+      $(window).on('load scroll', function(){
+        if ($(window).scrollTop() > 100) {
+          $('.blur').fadeIn(400);
+         } else {
+          $('.blur').fadeOut(400);
+         }
+       });    
+    });  
+  </script>
+  
+
+</body>
+</html>
