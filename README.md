@@ -15,14 +15,16 @@
 - [Next.js](https://nextjs.org/) (App Router, Server Actions)
 - TypeScript
 - Tailwind CSS
-- [Prisma](https://www.prisma.io/) + SQLite (`@prisma/adapter-better-sqlite3`)
+- [Prisma](https://www.prisma.io/) + PostgreSQL (`@prisma/adapter-pg`)
 - [Auth.js (NextAuth v5)](https://authjs.dev/) — Credentials(メール/パスワード)認証
 
 ## セットアップ
 
+PostgreSQL データベースが必要です(ローカルの PostgreSQL、または [Neon](https://neon.tech/) などの無料ホスティングサービス)。
+
 ```bash
 npm install
-cp .env.example .env   # AUTH_SECRET は `openssl rand -base64 32` などで生成
+cp .env.example .env   # DATABASE_URL を接続先に、AUTH_SECRET を `openssl rand -base64 32` などで生成した値に設定
 npx prisma migrate dev
 npx prisma db seed
 npm run dev
