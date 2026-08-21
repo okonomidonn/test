@@ -85,15 +85,25 @@ model Job {
 }
 
 model Application {
-  id           String            @id @default(cuid())
-  jobId        String
-  job          Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  seekerId     String
-  seeker       User              @relation(fields: [seekerId], references: [id], onDelete: Cascade)
-  coverLetter  String
-  status       ApplicationStatus @default(SUBMITTED)
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  id             String            @id @default(cuid())
+  jobId          String
+  job            Job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  seekerId       String
+  seeker         User              @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+
+  fullName       String
+  fullNameKana   String?
+  birthDate      DateTime?
+  phone          String?
+
+  education      Json              @default("[]")
+  workExperience Json              @default("[]")
+
+  motivation     String
+  coverLetter    String
+  status         ApplicationStatus @default(SUBMITTED)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   @@unique([jobId, seekerId])
 }
