@@ -149,6 +149,67 @@ function zaito_register_post_types() {
 add_action( 'init', 'zaito_register_post_types' );
 
 /**
+ * zaito の各機能ページ（ログイン・登録・マイページ等）を
+ * 固定ページ（投稿）の作成に依存しない「バーチャルルート」として
+ * 登録する。スラッグの競合やページ未作成による404を避けるため、
+ * URLを直接テーマのテンプレートファイルにマッピングする。
+ */
+function zaito_virtual_route_map() {
+    return array(
+        'login'            => 'page-login.php',
+        'register'         => 'page-register.php',
+        'company-login'    => 'page-company-login.php',
+        'company-register' => 'page-company-register.php',
+        'mypage'           => 'page-mypage.php',
+        'company'          => 'page-company.php',
+        'jobs'             => 'page-jobs.php',
+        'apply'            => 'page-apply.php',
+        'chat'             => 'page-chat.php',
+    );
+}
+
+function zaito_register_virtual_routes() {
+    foreach ( array_keys( zaito_virtual_route_map() ) as $route ) {
+        add_rewrite_rule( '^' . $route . '/?$', 'index.php?zaito_page=' . $route, 'top' );
+    }
+}
+add_action( 'init', 'zaito_register_virtual_routes' );
+
+function zaito_add_query_vars( $vars ) {
+    $vars[] = 'zaito_page';
+    return $vars;
+}
+add_filter( 'query_vars', 'zaito_add_query_vars' );
+
+function zaito_render_virtual_routes() {
+    $page = get_query_var( 'zaito_page' );
+    if ( ! $page ) {
+        return;
+    }
+    $template_map = zaito_virtual_route_map();
+    if ( ! isset( $template_map[ $page ] ) ) {
+        return;
+    }
+    status_header( 200 );
+    include get_stylesheet_directory() . '/' . $template_map[ $page ];
+    exit;
+}
+add_action( 'template_redirect', 'zaito_render_virtual_routes', 1 );
+
+/**
+ * 上記のリライトルールをデータベースに反映させるため、
+ * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
+ */
+function zaito_maybe_flush_rewrite_rules() {
+    $version = '3';
+    if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
+        flush_rewrite_rules();
+        update_option( 'zaito_rewrite_version', $version );
+    }
+}
+add_action( 'init', 'zaito_maybe_flush_rewrite_rules', 20 );
+
+/**
  * WP Job Manager の求人一覧を取得するヘルパー。
  * プラグイン未導入時は空配列を返す。
  */

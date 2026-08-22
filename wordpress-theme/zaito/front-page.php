@@ -32,7 +32,7 @@
 
         <div class="hero-cta">
           <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="btn btn-accent">求人を探す</a>
-          <a href="<?php echo esc_url( wp_registration_url() ); ?>" class="btn btn-outline">無料で登録</a>
+          <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-outline">無料で登録</a>
         </div>
       </div>
 
@@ -138,7 +138,7 @@
       <h2>自分らしく、おうちで働こう。</h2>
       <p>あなたのペースで見つかる、在宅ワーク。</p>
     </div>
-    <a href="<?php echo esc_url( wp_registration_url() ); ?>" class="btn btn-cta">求人を探してみる →</a>
+    <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-cta">求人を探してみる →</a>
   </div>
 </section>
 
