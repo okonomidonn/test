@@ -162,6 +162,8 @@ function zaito_virtual_route_map() {
         'company-register' => 'page-company-register.php',
         'mypage'           => 'page-mypage.php',
         'company'          => 'page-company.php',
+        'company-jobs'     => 'page-company-jobs.php',
+        'company-applicants' => 'page-company-applicants.php',
         'jobs'             => 'page-jobs.php',
         'apply'            => 'page-apply.php',
         'chat'             => 'page-chat.php',
@@ -201,7 +203,7 @@ add_action( 'template_redirect', 'zaito_render_virtual_routes', 1 );
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '3';
+    $version = '4';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -417,6 +419,104 @@ function zaito_handle_apply() {
 add_action( 'admin_post_zaito_apply', 'zaito_handle_apply' );
 
 /**
+ * 企業による求人投稿処理（admin-post.php経由）
+ */
+function zaito_handle_post_job() {
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/company-login/' ) );
+        exit;
+    }
+    $current_user = wp_get_current_user();
+    if ( ! in_array( 'zaito_company', $current_user->roles, true ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $errors = array();
+    $title   = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+    $content = isset( $_POST['content'] ) ? sanitize_textarea_field( $_POST['content'] ) : '';
+    $salary  = isset( $_POST['salary'] ) ? sanitize_text_field( $_POST['salary'] ) : '';
+    $type    = isset( $_POST['job_type'] ) ? sanitize_text_field( $_POST['job_type'] ) : '';
+    $days    = isset( $_POST['job_days'] ) ? sanitize_text_field( $_POST['job_days'] ) : '';
+    $target  = isset( $_POST['job_target'] ) ? sanitize_text_field( $_POST['job_target'] ) : '';
+
+    if ( ! $title ) {
+        $errors[] = '求人タイトルを入力してください';
+    }
+    if ( ! $content ) {
+        $errors[] = '仕事内容を入力してください';
+    }
+
+    if ( ! empty( $errors ) ) {
+        zaito_store_form_errors_and_redirect( $errors, home_url( '/company-jobs/' ) );
+    }
+
+    $job_id = wp_insert_post( array(
+        'post_type'    => 'job_listing',
+        'post_title'   => $title,
+        'post_content' => $content,
+        'post_status'  => 'publish',
+    ) );
+
+    if ( ! $job_id || is_wp_error( $job_id ) ) {
+        zaito_store_form_errors_and_redirect( array( '求人の投稿に失敗しました' ), home_url( '/company-jobs/' ) );
+    }
+
+    update_post_meta( $job_id, '_company_user_id', $current_user->ID );
+    update_post_meta( $job_id, '_company_name', get_user_meta( $current_user->ID, 'company_name', true ) );
+    update_post_meta( $job_id, '_job_salary', $salary );
+    update_post_meta( $job_id, '_job_type', $type );
+    update_post_meta( $job_id, '_job_days', $days );
+    update_post_meta( $job_id, '_job_target', $target );
+
+    wp_safe_redirect( add_query_arg( 'posted', '1', home_url( '/company-jobs/' ) ) );
+    exit;
+}
+add_action( 'admin_post_zaito_post_job', 'zaito_handle_post_job' );
+
+/**
+ * 企業による応募審査（採用・不採用）処理（admin-post.php経由）。
+ * 採用にした場合はapplicationにcompany_idを記録し、チャットを開通させる。
+ */
+function zaito_handle_update_application_status() {
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/company-login/' ) );
+        exit;
+    }
+    $current_user = wp_get_current_user();
+    if ( ! in_array( 'zaito_company', $current_user->roles, true ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $application_id = isset( $_POST['application_id'] ) ? intval( $_POST['application_id'] ) : 0;
+    $new_status     = isset( $_POST['status'] ) ? sanitize_text_field( $_POST['status'] ) : '';
+
+    $application = get_post( $application_id );
+    if ( ! $application || $application->post_type !== 'zaito_application' || ! in_array( $new_status, array( 'accepted', 'rejected' ), true ) ) {
+        wp_safe_redirect( home_url( '/company-applicants/' ) );
+        exit;
+    }
+
+    $job_id = get_post_meta( $application_id, 'job_id', true );
+    $job_owner_id = get_post_meta( $job_id, '_company_user_id', true );
+
+    if ( intval( $job_owner_id ) !== $current_user->ID ) {
+        wp_safe_redirect( home_url( '/company-applicants/' ) );
+        exit;
+    }
+
+    update_post_meta( $application_id, 'status', $new_status );
+    if ( 'accepted' === $new_status ) {
+        update_post_meta( $application_id, 'company_id', $current_user->ID );
+    }
+
+    wp_safe_redirect( home_url( '/company-applicants/' ) );
+    exit;
+}
+add_action( 'admin_post_zaito_update_application_status', 'zaito_handle_update_application_status' );
+
+/**
  * チャットメッセージを読み込むAJAXハンドラー
  */
 function zaito_load_messages() {
@@ -424,6 +524,7 @@ function zaito_load_messages() {
 
     if ( ! is_user_logged_in() ) {
         wp_send_json_error();
+        return;
     }
 
     $conversation_id = intval( $_POST['conversation_id'] );
@@ -431,6 +532,7 @@ function zaito_load_messages() {
 
     if ( ! $application || $application->post_type !== 'zaito_application' ) {
         wp_send_json_error();
+        return;
     }
 
     $current_user = wp_get_current_user();
@@ -439,6 +541,7 @@ function zaito_load_messages() {
 
     if ( $current_user->ID !== $applicant_id && $current_user->ID !== $company_id ) {
         wp_send_json_error();
+        return;
     }
 
     $args = array(
@@ -484,6 +587,7 @@ function zaito_send_message() {
 
     if ( ! is_user_logged_in() ) {
         wp_send_json_error();
+        return;
     }
 
     $current_user = wp_get_current_user();
@@ -492,11 +596,13 @@ function zaito_send_message() {
 
     if ( ! $message_text ) {
         wp_send_json_error( array( 'message' => 'メッセージが空です' ) );
+        return;
     }
 
     $application = get_post( $conversation_id );
     if ( ! $application || $application->post_type !== 'zaito_application' ) {
         wp_send_json_error();
+        return;
     }
 
     $applicant_id = get_post_meta( $conversation_id, 'applicant_id', true );
@@ -504,6 +610,7 @@ function zaito_send_message() {
 
     if ( $current_user->ID !== $applicant_id && $current_user->ID !== $company_id ) {
         wp_send_json_error();
+        return;
     }
 
     $message_id = wp_insert_post( array(
