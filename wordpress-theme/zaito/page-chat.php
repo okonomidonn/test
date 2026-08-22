@@ -15,7 +15,9 @@ $conversation_id = isset( $_GET['conversation_id'] ) ? intval( $_GET['conversati
         <h2>メッセージ</h2>
         <div class="conversations-list" id="conversations">
           <?php
-          if ( in_array( 'zaito_seeker', $current_user->roles ) ) {
+          $is_seeker_view = in_array( 'zaito_seeker', $current_user->roles, true );
+
+          if ( $is_seeker_view ) {
               $args = array(
                   'post_type' => 'zaito_application',
                   'posts_per_page' => -1,
@@ -24,35 +26,32 @@ $conversation_id = isset( $_GET['conversation_id'] ) ? intval( $_GET['conversati
                           'key' => 'applicant_id',
                           'value' => $current_user->ID,
                       ),
-                      array(
-                          'key' => 'status',
-                          'value' => 'accepted',
-                      ),
                   ),
               );
+              $applications = get_posts( $args );
           } else {
-              $args = array(
+              // 企業側は求人の投稿者（_company_user_id）が自分と一致する
+              // 応募のみを表示する。ステータスに関わらず表示する
+              // （応募直後の自動返信メッセージから見えるようにするため）。
+              $all_applications = get_posts( array(
                   'post_type' => 'zaito_application',
                   'posts_per_page' => -1,
-                  'meta_query' => array(
-                      array(
-                          'key' => 'status',
-                          'value' => 'accepted',
-                      ),
-                  ),
-              );
+              ) );
+              $applications = array_values( array_filter( $all_applications, function ( $app ) use ( $current_user ) {
+                  return zaito_get_application_company_id( $app->ID ) === $current_user->ID;
+              } ) );
           }
 
-          $applications = get_posts( $args );
           if ( ! empty( $applications ) ) :
               foreach ( $applications as $app ) :
-                  if ( in_array( 'zaito_seeker', $current_user->roles ) ) {
-                      $other_user_id = get_post_meta( $app->ID, 'company_id', true );
+                  if ( $is_seeker_view ) {
+                      $other_user_id = zaito_get_application_company_id( $app->ID );
                       $job_id = get_post_meta( $app->ID, 'job_id', true );
                       $other_name = get_post_meta( $job_id, '_company_name', true );
                   } else {
-                      $other_user_id = get_post_meta( $app->ID, 'applicant_id', true );
-                      $other_name = get_user_by( 'id', $other_user_id )->first_name;
+                      $other_user_id = (int) get_post_meta( $app->ID, 'applicant_id', true );
+                      $applicant_user = get_user_by( 'id', $other_user_id );
+                      $other_name = $applicant_user ? $applicant_user->first_name : '不明';
                   }
                   $last_message = get_post_meta( $app->ID, 'last_message_text', true );
                   $class = ( $conversation_id == $app->ID ) ? 'active' : '';
@@ -76,15 +75,20 @@ $conversation_id = isset( $_GET['conversation_id'] ) ? intval( $_GET['conversati
         <?php if ( $conversation_id ) : ?>
           <?php
           $application = get_post( $conversation_id );
-          if ( $application && $application->post_type === 'zaito_application' ) :
-              if ( in_array( 'zaito_seeker', $current_user->roles ) ) {
-                  $other_user_id = get_post_meta( $application->ID, 'company_id', true );
+          $applicant_id_of_conv = $application ? (int) get_post_meta( $application->ID, 'applicant_id', true ) : 0;
+          $company_id_of_conv = $application ? zaito_get_application_company_id( $application->ID ) : 0;
+          $can_view_conversation = $application
+              && ( $current_user->ID === $applicant_id_of_conv || $current_user->ID === $company_id_of_conv );
+
+          if ( $application && $application->post_type === 'zaito_application' && $can_view_conversation ) :
+              if ( $current_user->ID === $applicant_id_of_conv ) {
+                  $other_user_id = $company_id_of_conv;
                   $job_id = get_post_meta( $application->ID, 'job_id', true );
                   $other_name = get_post_meta( $job_id, '_company_name', true );
               } else {
-                  $other_user_id = get_post_meta( $application->ID, 'applicant_id', true );
+                  $other_user_id = $applicant_id_of_conv;
                   $applicant_user = get_user_by( 'id', $other_user_id );
-                  $other_name = $applicant_user ? $applicant_user->first_name : '';
+                  $other_name = $applicant_user ? $applicant_user->first_name : '不明';
               }
           ?>
             <div class="chat-header">

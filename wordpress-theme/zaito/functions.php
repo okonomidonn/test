@@ -591,8 +591,39 @@ function zaito_handle_apply() {
     update_post_meta( $application_id, 'message', $message );
     update_post_meta( $application_id, 'status', 'pending' );
 
+    zaito_send_application_auto_reply( $application_id, $job_id );
+
     wp_safe_redirect( add_query_arg( 'applied', '1', $apply_url ) );
     exit;
+}
+
+/**
+ * 応募直後に、求人を投稿した企業アカウントから自動で一次受付メッセージを
+ * 送信する。実企業アカウント（_company_user_idを持つ求人）にのみ送信し、
+ * デモ求人（架空求人）には送信しない。応募者はこれによって応募直後から
+ * チャットで企業とのやり取り状況を確認できる。
+ */
+function zaito_send_application_auto_reply( $application_id, $job_id ) {
+    $company_user_id = (int) get_post_meta( $job_id, '_company_user_id', true );
+    if ( ! $company_user_id ) {
+        return;
+    }
+
+    $auto_message = 'この度はご応募いただき誠にありがとうございます。担当者が応募内容を確認の上、'
+        . '書類選考の結果を追ってご連絡いたします。今しばらくお待ちくださいませ。';
+
+    $message_id = wp_insert_post( array(
+        'post_type'   => 'zaito_message',
+        'post_content' => $auto_message,
+        'post_status' => 'publish',
+        'post_title'  => 'Auto reply ' . current_time( 'timestamp' ),
+    ) );
+
+    if ( $message_id ) {
+        update_post_meta( $message_id, 'conversation_id', $application_id );
+        update_post_meta( $message_id, 'sender_id', $company_user_id );
+        update_post_meta( $application_id, 'last_message_text', $auto_message );
+    }
 }
 add_action( 'admin_post_zaito_apply', 'zaito_handle_apply' );
 
@@ -810,8 +841,23 @@ function zaito_handle_post_job() {
 add_action( 'admin_post_zaito_post_job', 'zaito_handle_post_job' );
 
 /**
+ * 応募（zaito_application）に紐づく求人の投稿企業アカウントIDを返す。
+ * チャットの相手（企業側）はこの値で判定する。承認・不承認に関わらず、
+ * 応募した時点から企業とのやり取りができるようにするため、
+ * 別途「company_id」を採用時に記録する方式はやめ、常に求人の
+ * _company_user_id から動的に解決する。デモ求人（実企業アカウントを
+ * 持たない）の場合は0を返す。
+ */
+function zaito_get_application_company_id( $application_id ) {
+    $job_id = get_post_meta( $application_id, 'job_id', true );
+    if ( ! $job_id ) {
+        return 0;
+    }
+    return (int) get_post_meta( $job_id, '_company_user_id', true );
+}
+
+/**
  * 企業による応募審査（採用・不採用）処理（admin-post.php経由）。
- * 採用にした場合はapplicationにcompany_idを記録し、チャットを開通させる。
  */
 function zaito_handle_update_application_status() {
     check_admin_referer( 'zaito_update_application_status' );
@@ -844,9 +890,6 @@ function zaito_handle_update_application_status() {
     }
 
     update_post_meta( $application_id, 'status', $new_status );
-    if ( 'accepted' === $new_status ) {
-        update_post_meta( $application_id, 'company_id', $current_user->ID );
-    }
 
     zaito_notify_application_status_change( $application_id, $job_id, $new_status );
 
@@ -905,8 +948,8 @@ function zaito_load_messages() {
     }
 
     $current_user = wp_get_current_user();
-    $applicant_id = get_post_meta( $conversation_id, 'applicant_id', true );
-    $company_id = get_post_meta( $conversation_id, 'company_id', true );
+    $applicant_id = (int) get_post_meta( $conversation_id, 'applicant_id', true );
+    $company_id = zaito_get_application_company_id( $conversation_id );
 
     if ( $current_user->ID !== $applicant_id && $current_user->ID !== $company_id ) {
         wp_send_json_error();
@@ -974,8 +1017,8 @@ function zaito_send_message() {
         return;
     }
 
-    $applicant_id = get_post_meta( $conversation_id, 'applicant_id', true );
-    $company_id = get_post_meta( $conversation_id, 'company_id', true );
+    $applicant_id = (int) get_post_meta( $conversation_id, 'applicant_id', true );
+    $company_id = zaito_get_application_company_id( $conversation_id );
 
     if ( $current_user->ID !== $applicant_id && $current_user->ID !== $company_id ) {
         wp_send_json_error();
@@ -994,7 +1037,7 @@ function zaito_send_message() {
         update_post_meta( $message_id, 'sender_id', $current_user->ID );
         update_post_meta( $conversation_id, 'last_message_text', $message_text );
 
-        $recipient_id = ( $current_user->ID === intval( $applicant_id ) ) ? $company_id : $applicant_id;
+        $recipient_id = ( $current_user->ID === $applicant_id ) ? $company_id : $applicant_id;
         zaito_notify_new_message( $recipient_id, $current_user, $conversation_id, $message_text );
 
         wp_send_json_success( array( 'message_id' => $message_id ) );
