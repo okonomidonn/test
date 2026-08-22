@@ -219,6 +219,24 @@ function zaito_maybe_flush_rewrite_rules() {
 add_action( 'init', 'zaito_maybe_flush_rewrite_rules', 20 );
 
 /**
+ * このテーマはWordPressの「固定ページ」機能に依存せず、front-page.php
+ * を直接トップページとして使う設計になっている。「設定 > 表示設定」が
+ * 何らかの理由で「固定ページ」表示に変更されていたり、指定されている
+ * 固定ページが削除されていたりすると、トップページ（/）自体が404に
+ * なってしまう。これを防ぐため、常に「最新の投稿を表示」設定
+ * （show_on_front = posts）を強制する。
+ */
+function zaito_ensure_front_page_setting() {
+    if ( get_option( 'show_on_front' ) !== 'posts' ) {
+        update_option( 'show_on_front', 'posts' );
+    }
+    if ( get_option( 'page_on_front' ) ) {
+        update_option( 'page_on_front', 0 );
+    }
+}
+add_action( 'init', 'zaito_ensure_front_page_setting', 20 );
+
+/**
  * WP Job Manager の求人一覧を取得するヘルパー。
  * プラグイン未導入時は空配列を返す。
  */
