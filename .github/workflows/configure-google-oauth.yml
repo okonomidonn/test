@@ -1,0 +1,77 @@
+name: Configure Google OAuth on Server
+
+# Manual-only: this writes to wp-config.php on the live server, so it must
+# never run automatically on push. Run it once from the Actions tab after
+# ZAITO_GOOGLE_CLIENT_ID / ZAITO_GOOGLE_CLIENT_SECRET secrets are set.
+on:
+  workflow_dispatch:
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Add Google OAuth constants to wp-config.php (with backup + rollback)
+        run: |
+          CLIENT_ID_Q=$(printf '%q' "${{ secrets.ZAITO_GOOGLE_CLIENT_ID }}")
+          CLIENT_SECRET_Q=$(printf '%q' "${{ secrets.ZAITO_GOOGLE_CLIENT_SECRET }}")
+
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            "CLIENT_ID=$CLIENT_ID_Q CLIENT_SECRET=$CLIENT_SECRET_Q bash -s" <<'REMOTE_SCRIPT'
+          set -euo pipefail
+          CONFIG="zaito-work.com/public_html/wp-config.php"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "ERROR: $CONFIG not found." >&2
+            exit 1
+          fi
+
+          if grep -q "ZAITO_GOOGLE_CLIENT_ID" "$CONFIG"; then
+            echo "Already configured (ZAITO_GOOGLE_CLIENT_ID found). Skipping, no changes made."
+            exit 0
+          fi
+
+          BACKUP="${CONFIG}.bak-$(date +%Y%m%d%H%M%S)"
+          cp "$CONFIG" "$BACKUP"
+
+          php -r '
+            $file   = $argv[1];
+            $id     = $argv[2];
+            $secret = $argv[3];
+            $content = file_get_contents( $file );
+            $lines = "define( '"'"'ZAITO_GOOGLE_CLIENT_ID'"'"', " . var_export( $id, true ) . " );\n"
+                   . "define( '"'"'ZAITO_GOOGLE_CLIENT_SECRET'"'"', " . var_export( $secret, true ) . " );\n";
+            $marker = "/* That'"'"'s all, stop editing! Happy publishing. */";
+            if ( strpos( $content, $marker ) !== false ) {
+                $content = str_replace( $marker, $lines . $marker, $content );
+            } else {
+                $content .= "\n" . $lines;
+            }
+            file_put_contents( $file, $content );
+          ' -- "$CONFIG" "$CLIENT_ID" "$CLIENT_SECRET"
+
+          if php -l "$CONFIG" > /tmp/wp_config_lint.out 2>&1; then
+            echo "wp-config.php updated successfully. Syntax check passed."
+            rm -f "$BACKUP"
+          else
+            echo "Syntax check FAILED. Rolling back to backup." >&2
+            cat /tmp/wp_config_lint.out >&2
+            cp "$BACKUP" "$CONFIG"
+            rm -f "$BACKUP"
+            exit 1
+          fi
+          REMOTE_SCRIPT
