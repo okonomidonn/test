@@ -79,8 +79,8 @@ $jobs = get_posts( array(
 
             <div class="job-info-grid" style="margin-bottom:20px;">
               <div class="form-group" style="margin-bottom:0;">
-                <label for="salary">時給</label>
-                <input type="text" id="salary" name="salary" placeholder="例: 1,300円〜" />
+                <label for="salary">時給（数字のみ）</label>
+                <input type="text" id="salary" name="salary" placeholder="例: 1300" />
               </div>
               <div class="form-group" style="margin-bottom:0;">
                 <label for="job_type">勤務形態</label>
