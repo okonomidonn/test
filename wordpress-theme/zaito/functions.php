@@ -286,6 +286,17 @@ function zaito_is_email_verified( $user_id ) {
 }
 
 /**
+ * ワーカー向け機能（応募・マイページ・プロフィール編集）を利用できるかどうか。
+ * zaito_seeker ロールに加え、サイト管理者（manage_options権限を持つユーザー）
+ * も許可する。Googleログインで管理者自身のメールアドレスを使った場合など、
+ * 既存の管理者アカウントでログインしてもワーカー向け機能の動作確認ができるように
+ * するため。
+ */
+function zaito_can_use_seeker_features( $user ) {
+    return in_array( 'zaito_seeker', $user->roles, true ) || user_can( $user, 'manage_options' );
+}
+
+/**
  * ログイン中ユーザーがメール未確認の場合、確認を促すバナーを表示する。
  * マイページ・企業ダッシュボードの冒頭で呼び出す。
  */
@@ -530,7 +541,7 @@ function zaito_handle_apply() {
         exit;
     }
     $current_user = wp_get_current_user();
-    if ( ! in_array( 'zaito_seeker', $current_user->roles, true ) ) {
+    if ( ! zaito_can_use_seeker_features( $current_user ) ) {
         wp_safe_redirect( home_url( '/' ) );
         exit;
     }
@@ -663,7 +674,7 @@ function zaito_handle_update_worker_profile() {
         exit;
     }
     $current_user = wp_get_current_user();
-    if ( ! in_array( 'zaito_seeker', $current_user->roles, true ) ) {
+    if ( ! zaito_can_use_seeker_features( $current_user ) ) {
         wp_safe_redirect( home_url( '/' ) );
         exit;
     }

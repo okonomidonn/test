@@ -4,7 +4,7 @@ if ( ! is_user_logged_in() ) {
     exit;
 }
 $current_user = wp_get_current_user();
-if ( ! in_array( 'zaito_seeker', $current_user->roles ) ) {
+if ( ! zaito_can_use_seeker_features( $current_user ) ) {
     wp_redirect( home_url( '/' ) );
     exit;
 }
