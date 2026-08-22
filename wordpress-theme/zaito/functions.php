@@ -19,13 +19,13 @@ function zaito_scripts() {
         'zaito-style',
         get_stylesheet_uri(),
         array(),
-        wp_get_theme()->get( 'Version' )
+        filemtime( get_stylesheet_directory() . '/style.css' )
     );
     wp_enqueue_script(
         'zaito-main',
         get_template_directory_uri() . '/js/zaito.js',
         array(),
-        wp_get_theme()->get( 'Version' ),
+        filemtime( get_template_directory() . '/js/zaito.js' ),
         true
     );
 }
