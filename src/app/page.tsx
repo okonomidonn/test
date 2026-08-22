@@ -1,214 +1,651 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { SearchForm } from "@/components/search-form";
-import { JobCard } from "@/components/job-card";
 import { CATEGORIES } from "@/lib/constants";
 
 export default async function Home() {
   const featuredJobs = await prisma.job.findMany({
     where: { isPublished: true },
     orderBy: { createdAt: "desc" },
-    take: 6,
+    take: 3,
     include: { company: { select: { name: true } } },
   });
 
-  const jobCount = await prisma.job.count({ where: { isPublished: true } });
-
   return (
-    <div>
+    <div style={{ background: "var(--paper)" }}>
+      {/* Hero Section */}
       <section
-        className="px-10 py-15 text-center"
         style={{
-          background: "linear-gradient(135deg, rgba(189, 245, 229, 0.4), rgba(221, 213, 255, 0.3))",
+          position: "relative",
+          overflow: "hidden",
+          padding: "58px 0 80px",
         }}
       >
-        <div className="mx-auto max-w-2xl">
-          <h1 className="text-4xl font-bold text-text-dark leading-relaxed md:text-5xl">
-            好きな時間に、好きな場所で、仕事をする。
-          </h1>
-          <p className="mt-5 text-base text-text-light leading-relaxed">
-            授業の合間に。実家から。カフェで。あなたのペースで稼げる在宅ワークが見つかる。
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3 justify-center">
-            <Link
-              href="/jobs"
-              className="inline-block rounded-lg px-9 py-3.5 font-semibold text-white transition-all hover:translate-y-[-2px]"
-              style={{ background: "var(--aqua)" }}
-            >
-              求人を探す
-            </Link>
-            <Link
-              href="/register"
-              className="inline-block rounded-lg px-9 py-3.5 font-semibold border-2 transition-all hover:translate-y-[-2px]"
-              style={{
-                borderColor: "var(--aqua)",
-                color: "var(--aqua)",
-              }}
-            >
-              今すぐ登録
-            </Link>
-          </div>
-        </div>
-      </section>
+        <div
+          style={{
+            content: '""',
+            position: "absolute",
+            borderRadius: "50%",
+            zIndex: "-1",
+            width: "470px",
+            height: "470px",
+            background: "var(--lav)",
+            right: "-170px",
+            top: "-130px",
+          }}
+        />
+        <div
+          style={{
+            content: '""',
+            position: "absolute",
+            borderRadius: "50%",
+            zIndex: "-1",
+            width: "300px",
+            height: "300px",
+            background: "var(--mint)",
+            left: "-170px",
+            bottom: "-130px",
+          }}
+        />
 
-      <section className="px-10 py-15 bg-white">
-        <h2 className="text-center text-3xl font-bold text-text-dark mb-12 md:text-4xl">
-          zaito が選ばれる理由
-        </h2>
-        <div className="mx-auto max-w-5xl grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div style={{ width: "min(1160px, calc(100% - 40px))", margin: "auto" }}>
           <div
-            className="p-8 rounded-2xl border-l-4"
             style={{
-              backgroundColor: "var(--bg-light)",
-              borderLeftColor: "var(--aqua)",
+              display: "grid",
+              gridTemplateColumns: "1.08fr .92fr",
+              gap: "50px",
+              alignItems: "center",
             }}
           >
-            <div className="text-4xl mb-3">🕐</div>
-            <h3 className="text-lg font-semibold text-text-dark mb-2">自由な時間</h3>
-            <p className="text-sm text-text-light leading-relaxed">
-              1日1時間からOK。授業やサークルと両立できる案件が豊富。スキマ時間で稼げます。
-            </p>
-          </div>
-
-          <div
-            className="p-8 rounded-2xl border-l-4"
-            style={{
-              backgroundColor: "var(--bg-light)",
-              borderLeftColor: "var(--pink)",
-            }}
-          >
-            <div className="text-4xl mb-3">💡</div>
-            <h3 className="text-lg font-semibold text-text-dark mb-2">実務スキル</h3>
-            <p className="text-sm text-text-light leading-relaxed">
-              ライティング、デザイン、プログラミング。就活に役立つスキルが身につく。
-            </p>
-          </div>
-
-          <div
-            className="p-8 rounded-2xl border-l-4"
-            style={{
-              backgroundColor: "var(--bg-light)",
-              borderLeftColor: "var(--peach)",
-            }}
-          >
-            <div className="text-4xl mb-3">🌍</div>
-            <h3 className="text-lg font-semibold text-text-dark mb-2">場所を選ばない</h3>
-            <p className="text-sm text-text-light leading-relaxed">
-              自宅、図書館、カフェ。どこからでも仕事ができます。
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section
-        className="px-10 py-15"
-        style={{
-          background: "linear-gradient(135deg, rgba(37, 200, 176, 0.1), rgba(255, 111, 159, 0.1))",
-        }}
-      >
-        <div className="mx-auto max-w-5xl grid grid-cols-2 gap-8 text-center md:grid-cols-4">
-          <div>
-            <div className="text-4xl font-bold text-aqua mb-2">3,500+</div>
-            <p className="text-sm text-text-light">掲載求人数</p>
-          </div>
-          <div>
-            <div className="text-4xl font-bold text-aqua mb-2">15,000+</div>
-            <p className="text-sm text-text-light">登録ユーザー</p>
-          </div>
-          <div>
-            <div className="text-4xl font-bold text-aqua mb-2">¥5〜¥200万</div>
-            <p className="text-sm text-text-light">案件単価幅</p>
-          </div>
-          <div>
-            <div className="text-4xl font-bold text-aqua mb-2">4.8★</div>
-            <p className="text-sm text-text-light">ユーザー満足度</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-10 py-15 bg-white">
-        <h2 className="text-center text-3xl font-bold text-text-dark mb-12 md:text-4xl">今週のおすすめ</h2>
-
-        {featuredJobs.length === 0 ? (
-          <p className="mt-8 mx-auto max-w-md rounded-2xl bg-bg-light p-8 text-center text-sm text-text-light">
-            まだ求人が掲載されていません。企業の方は
-            <Link href="/register" className="mx-1 font-semibold text-aqua hover:underline">
-              会員登録
-            </Link>
-            して求人を掲載してみましょう。
-          </p>
-        ) : (
-          <div className="mx-auto max-w-5xl grid grid-cols-1 gap-5 md:grid-cols-3">
-            {featuredJobs.map((job) => (
-              <Link
-                key={job.id}
-                href={`/jobs/${job.id}`}
-                className="p-6 rounded-2xl border transition-all hover:translate-y-[-2px] hover:shadow-md"
+            <div>
+              <div
                 style={{
-                  backgroundColor: "var(--bg-light)",
-                  borderColor: "var(--border)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  background: "#fff",
+                  border: "1px solid var(--line)",
+                  borderRadius: "999px",
+                  padding: "7px 12px",
+                  fontSize: "12px",
+                  fontWeight: "900",
+                  boxShadow: "0 8px 24px rgba(24,32,51,.05)",
                 }}
               >
-                <div className="text-base font-semibold text-text-dark">{job.title}</div>
-                <div className="text-sm text-text-light mt-1">{job.company.name}</div>
-                <div className="flex flex-wrap gap-2 mt-4">
+                <span
+                  style={{
+                    width: "8px",
+                    height: "8px",
+                    borderRadius: "50%",
+                    background: "var(--aqua)",
+                  }}
+                />
+                在宅ワーク専門求人サイト
+              </div>
+
+              <h1
+                style={{
+                  fontSize: "clamp(48px, 6.2vw, 82px)",
+                  lineHeight: 1.03,
+                  letterSpacing: "-4px",
+                  margin: "20px 0 22px",
+                  color: "var(--ink)",
+                }}
+              >
+                自分らしく、
+                <br />
+                <span
+                  style={{
+                    fontStyle: "normal",
+                    display: "inline-block",
+                    background: "linear-gradient(100deg, var(--aqua), #54b8ff)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  おうちで働く。
+                </span>
+              </h1>
+
+              <p
+                style={{
+                  fontSize: "18px",
+                  color: "var(--muted)",
+                  maxWidth: "560px",
+                  margin: "0 0 30px",
+                }}
+              >
+                働く場所も、時間も、もっと自由に。zaitoは「完全在宅」にこだわって、あなたらしい仕事との出会いをつくります。
+              </p>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "9px",
+                  flexWrap: "wrap",
+                  marginTop: "18px",
+                }}
+              >
+                {CATEGORIES.slice(0, 5).map((cat) => (
                   <span
-                    className="text-xs font-medium px-2.5 py-1 rounded"
+                    key={cat}
                     style={{
-                      backgroundColor: "white",
-                      color: "var(--aqua)",
-                      border: "1px solid var(--aqua)",
+                      background: "#fff",
+                      border: "1px solid #e5e2da",
+                      borderRadius: "999px",
+                      padding: "7px 12px",
+                      fontSize: "12px",
+                      fontWeight: "800",
+                      color: "#505767",
                     }}
                   >
-                    在宅
+                    #{cat}
                   </span>
-                  {job.salary && (
-                    <span
-                      className="text-xs font-medium px-2.5 py-1 rounded"
+                ))}
+              </div>
+
+              <div
+                style={{
+                  marginTop: "30px",
+                  display: "flex",
+                  gap: "12px",
+                  flexWrap: "wrap",
+                }}
+              >
+                <Link
+                  href="/jobs"
+                  style={{
+                    background: "var(--aqua)",
+                    color: "white",
+                    border: "0",
+                    borderRadius: "999px",
+                    padding: "12px 24px",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    textDecoration: "none",
+                  }}
+                >
+                  求人を探す
+                </Link>
+                <Link
+                  href="/register"
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #d9d7d0",
+                    borderRadius: "999px",
+                    padding: "12px 24px",
+                    fontWeight: "800",
+                    cursor: "pointer",
+                    textDecoration: "none",
+                    color: "var(--ink)",
+                  }}
+                >
+                  無料で登録
+                </Link>
+              </div>
+            </div>
+
+            <div style={{ minHeight: "430px", position: "relative" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  inset: "25px 0 0 35px",
+                  background: "#fff",
+                  border: "1px solid #e7e4dc",
+                  borderRadius: "30px",
+                  boxShadow: "0 18px 50px rgba(24,32,51,.10)",
+                  padding: "20px",
+                  transform: "rotate(2deg)",
+                }}
+              >
+                <div style={{ display: "flex", gap: "6px", marginBottom: "18px" }}>
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
                       style={{
-                        backgroundColor: "white",
-                        color: "var(--aqua)",
-                        border: "1px solid var(--aqua)",
+                        width: "9px",
+                        height: "9px",
+                        borderRadius: "50%",
+                        background: "#d7d4cc",
                       }}
-                    >
-                      {job.salary}
-                    </span>
-                  )}
+                    />
+                  ))}
                 </div>
-              </Link>
+                <div
+                  style={{
+                    height: "175px",
+                    borderRadius: "22px",
+                    background: "linear-gradient(135deg,#e8fff8,#c8f4eb)",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: "22px",
+                      top: "25px",
+                      fontSize: "30px",
+                      fontWeight: "900",
+                      lineHeight: 1.05,
+                    }}
+                  >
+                    WORK
+                    <br />
+                    YOUR
+                    <br />
+                    WAY.
+                  </div>
+                </div>
+                <div
+                  style={{
+                    height: "45px",
+                    borderRadius: "13px",
+                    background: "#f7f6f2",
+                    marginTop: "14px",
+                  }}
+                />
+                <div
+                  style={{
+                    height: "45px",
+                    borderRadius: "13px",
+                    background: "#f7f6f2",
+                    marginTop: "14px",
+                    width: "72%",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section style={{ padding: "88px 0", background: "#fff" }}>
+        <div style={{ width: "min(1160px, calc(100% - 40px))", margin: "auto" }}>
+          <div style={{ marginBottom: "28px" }}>
+            <div
+              style={{
+                fontSize: "12px",
+                fontWeight: "900",
+                letterSpacing: ".12em",
+                color: "var(--aqua)",
+                textTransform: "uppercase",
+                marginBottom: "7px",
+              }}
+            >
+              FEATURES
+            </div>
+            <h2
+              style={{
+                fontSize: "38px",
+                lineHeight: 1.15,
+                letterSpacing: "-1.5px",
+                margin: "0",
+                color: "var(--ink)",
+              }}
+            >
+              「在宅で働く」を、もっと身近に。
+            </h2>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "18px",
+            }}
+          >
+            {[
+              {
+                num: "01",
+                title: "場所に縛られない",
+                desc: "通勤ゼロ。自分の好きな場所が仕事場。授業やサークルと両立できます。",
+                bgColor: "#f1fffb",
+                textColor: "#087f70",
+              },
+              {
+                num: "02",
+                title: "はじめやすい仕事",
+                desc: "未経験・大学生OKの求人もたくさん。スキルアップできます。",
+                bgColor: "#fff3f7",
+                textColor: "#d34e79",
+              },
+              {
+                num: "03",
+                title: "あなたのペースで",
+                desc: "週2日から、スキマ時間からでも。稼ぎたい分稼げます。",
+                bgColor: "#fff9df",
+                textColor: "#90731b",
+              },
+            ].map((card, idx) => (
+              <div
+                key={idx}
+                style={{
+                  background: "#fff",
+                  border: "1px solid #e7e4dc",
+                  borderRadius: "24px",
+                  boxShadow: "0 10px 28px rgba(24,32,51,.055)",
+                  padding: "22px",
+                  transition: ".2s",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <span
+                    style={{
+                      borderRadius: "999px",
+                      padding: "6px 9px",
+                      fontSize: "11px",
+                      fontWeight: "900",
+                      background: card.bgColor,
+                      color: card.textColor,
+                    }}
+                  >
+                    {idx === 0 ? "完全在宅" : idx === 1 ? "学生歓迎" : "自由な働き方"}
+                  </span>
+                  <span style={{ fontSize: "14px", fontWeight: "900" }}>{card.num}</span>
+                </div>
+                <h3
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "900",
+                    margin: "0 0 7px",
+                    color: "var(--ink)",
+                  }}
+                >
+                  {card.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: "var(--muted)",
+                    margin: "0",
+                  }}
+                >
+                  {card.desc}
+                </p>
+              </div>
             ))}
           </div>
-        )}
+        </div>
+      </section>
 
-        {featuredJobs.length > 0 && (
-          <div className="text-center mt-10">
+      {/* Jobs Section */}
+      <section style={{ padding: "88px 0", background: "#fff" }}>
+        <div style={{ width: "min(1160px, calc(100% - 40px))", margin: "auto" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "end",
+              justifyContent: "space-between",
+              marginBottom: "28px",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: "12px",
+                  fontWeight: "900",
+                  letterSpacing: ".12em",
+                  color: "var(--aqua)",
+                  textTransform: "uppercase",
+                  marginBottom: "7px",
+                }}
+              >
+                PICK UP
+              </div>
+              <h2
+                style={{
+                  fontSize: "38px",
+                  lineHeight: 1.15,
+                  letterSpacing: "-1.5px",
+                  margin: "0",
+                  color: "var(--ink)",
+                }}
+              >
+                今、人気の在宅求人。
+              </h2>
+            </div>
             <Link
               href="/jobs"
-              className="inline-block text-sm font-semibold text-aqua hover:underline"
+              style={{
+                fontSize: "13px",
+                fontWeight: "900",
+                textDecoration: "none",
+                color: "var(--ink)",
+              }}
             >
               すべて見る →
             </Link>
           </div>
-        )}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "18px",
+            }}
+          >
+            {featuredJobs.length === 0 ? (
+              <p
+                style={{
+                  gridColumn: "1 / -1",
+                  textAlign: "center",
+                  color: "var(--muted)",
+                  padding: "40px",
+                }}
+              >
+                求人がまだありません
+              </p>
+            ) : (
+              featuredJobs.map((job) => (
+                <Link
+                  key={job.id}
+                  href={`/jobs/${job.id}`}
+                  style={{
+                    background: "#fff",
+                    border: "1px solid #e7e4dc",
+                    borderRadius: "24px",
+                    boxShadow: "0 10px 28px rgba(24,32,51,.055)",
+                    padding: "22px",
+                    transition: ".2s",
+                    textDecoration: "none",
+                    display: "block",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        borderRadius: "999px",
+                        padding: "6px 9px",
+                        fontSize: "11px",
+                        fontWeight: "900",
+                        background: "#f1fffb",
+                        color: "#087f70",
+                      }}
+                    >
+                      人気
+                    </span>
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "900",
+                      margin: "0 0 7px",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    {job.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "var(--muted)",
+                      margin: "0 0 18px",
+                    }}
+                  >
+                    {job.company.name}
+                  </p>
+                  <div
+                    style={{
+                      fontSize: "25px",
+                      fontWeight: "900",
+                      margin: "18px 0 12px",
+                      color: "var(--ink)",
+                    }}
+                  >
+                    <span style={{ fontSize: "12px", color: "var(--muted)", fontWeight: "700" }}>
+                      時給{" "}
+                    </span>
+                    1,300円〜
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "7px",
+                      flexWrap: "wrap",
+                      margin: "12px 0 20px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        background: "#fff",
+                        border: "1px solid #e5e2da",
+                        borderRadius: "999px",
+                        padding: "7px 12px",
+                        fontSize: "10px",
+                        fontWeight: "800",
+                        color: "#505767",
+                      }}
+                    >
+                      #完全在宅
+                    </span>
+                    <span
+                      style={{
+                        background: "#fff",
+                        border: "1px solid #e5e2da",
+                        borderRadius: "999px",
+                        padding: "7px 12px",
+                        fontSize: "10px",
+                        fontWeight: "800",
+                        color: "#505767",
+                      }}
+                    >
+                      #未経験OK
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      borderTop: "1px solid var(--line)",
+                      paddingTop: "14px",
+                      fontSize: "11px",
+                      color: "#687083",
+                    }}
+                  >
+                    <span>週2〜OK</span>
+                    <span>大学生歓迎</span>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
+        </div>
       </section>
 
-      <section
-        className="px-10 py-15 text-center"
-        style={{
-          background: "linear-gradient(135deg, var(--mint), var(--lavender))",
-        }}
-      >
-        <h2 className="text-3xl font-bold text-text-dark mb-4 md:text-4xl">始めるなら、今。</h2>
-        <p className="text-base text-text-light mb-8 max-w-md mx-auto">
-          登録は無料。1分で完了します。
-        </p>
-        <Link
-          href="/register"
-          className="inline-block rounded-lg px-9 py-3.5 font-semibold text-white transition-all hover:translate-y-[-2px]"
-          style={{ background: "var(--aqua)" }}
+      {/* CTA Section */}
+      <section style={{ padding: "88px 40px" }}>
+        <div
+          style={{
+            width: "min(1160px, calc(100% - 40px))",
+            margin: "auto",
+            background: "var(--ink)",
+            color: "#fff",
+            borderRadius: "32px",
+            padding: "54px 58px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "30px",
+            overflow: "hidden",
+            position: "relative",
+          }}
         >
-          無料で始める →
-        </Link>
+          <div
+            style={{
+              content: '""',
+              position: "absolute",
+              width: "250px",
+              height: "250px",
+              borderRadius: "50%",
+              background: "var(--pink)",
+              right: "-90px",
+              top: "-100px",
+              opacity: 0.9,
+            }}
+          />
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div
+              style={{
+                fontSize: "12px",
+                fontWeight: "900",
+                letterSpacing: ".12em",
+                color: "var(--mint)",
+                textTransform: "uppercase",
+                marginBottom: "7px",
+              }}
+            >
+              zaito
+            </div>
+            <h2
+              style={{
+                fontSize: "38px",
+                lineHeight: 1.15,
+                letterSpacing: "-1.5px",
+                margin: "0 0 12px",
+              }}
+            >
+              自分らしく、おうちで働こう。
+            </h2>
+            <p style={{ fontSize: "16px", color: "#c8ccd5", margin: "0" }}>
+              あなたのペースで見つかる、在宅ワーク。
+            </p>
+          </div>
+          <Link
+            href="/register"
+            style={{
+              background: "var(--mint)",
+              color: "#123c37",
+              border: "0",
+              borderRadius: "999px",
+              padding: "12px 24px",
+              fontWeight: "800",
+              cursor: "pointer",
+              textDecoration: "none",
+              position: "relative",
+              zIndex: 2,
+              whiteSpace: "nowrap",
+            }}
+          >
+            求人を探してみる →
+          </Link>
+        </div>
       </section>
     </div>
   );
