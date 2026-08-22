@@ -54,13 +54,22 @@
             <div class="apply-card">
               <h3>この求人に応募する</h3>
 
-              <?php if ( is_user_logged_in() ) : ?>
+              <?php if ( is_user_logged_in() ) :
+                $zaito_already_applied = zaito_has_applied( wp_get_current_user()->ID, get_the_ID() );
+              ?>
                 <p class="user-email">
                   ログイン中：<strong><?php echo esc_html( wp_get_current_user()->user_email ); ?></strong>
                 </p>
-                <a href="<?php echo esc_url( home_url( '/apply/?job_id=' . get_the_ID() ) ); ?>" class="btn btn-accent btn-block">
-                  応募する
-                </a>
+                <?php if ( $zaito_already_applied ) : ?>
+                  <p class="login-prompt">この求人にはすでに応募済みです</p>
+                  <a href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>" class="btn btn-outline btn-block">
+                    応募状況を見る
+                  </a>
+                <?php else : ?>
+                  <a href="<?php echo esc_url( home_url( '/apply/?job_id=' . get_the_ID() ) ); ?>" class="btn btn-accent btn-block">
+                    応募する
+                  </a>
+                <?php endif; ?>
               <?php else :
                 $zaito_apply_redirect = home_url( '/apply/?job_id=' . get_the_ID() );
               ?>

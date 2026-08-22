@@ -573,6 +573,10 @@ function zaito_handle_apply() {
         exit;
     }
 
+    if ( zaito_has_applied( $current_user->ID, $job_id ) ) {
+        zaito_store_form_errors_and_redirect( array( 'この求人にはすでに応募済みです。応募状況はマイページからご確認いただけます。' ), $apply_url );
+    }
+
     $errors = array();
 
     $furigana   = get_user_meta( $current_user->ID, 'furigana', true );
@@ -866,6 +870,18 @@ add_action( 'admin_post_zaito_post_job', 'zaito_handle_post_job' );
  * _company_user_id から動的に解決する。デモ求人（実企業アカウントを
  * 持たない）の場合は0を返す。
  */
+function zaito_has_applied( $user_id, $job_id ) {
+    $existing = get_posts( array(
+        'post_type'      => 'zaito_application',
+        'posts_per_page' => 1,
+        'meta_query'      => array(
+            array( 'key' => 'applicant_id', 'value' => $user_id ),
+            array( 'key' => 'job_id', 'value' => $job_id ),
+        ),
+    ) );
+    return ! empty( $existing );
+}
+
 function zaito_get_application_company_id( $application_id ) {
     $job_id = get_post_meta( $application_id, 'job_id', true );
     if ( ! $job_id ) {
