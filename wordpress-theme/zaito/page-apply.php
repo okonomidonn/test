@@ -32,7 +32,7 @@ $birthdate = get_user_meta( $current_user->ID, 'birthdate', true );
 $phone = get_user_meta( $current_user->ID, 'phone', true );
 $prefecture = get_user_meta( $current_user->ID, 'prefecture', true );
 $education = get_user_meta( $current_user->ID, 'education', true );
-$profile_incomplete = ! $furigana || ! $birthdate || ! $phone;
+$profile_incomplete = ! $current_user->first_name || ! $furigana || ! $birthdate || ! $phone || ! $prefecture || ! $education;
 
 get_header();
 
@@ -108,9 +108,8 @@ if ( $application_success ) :
               </div>
             </div>
             <?php if ( $profile_incomplete ) : ?>
-              <p style="margin-top:12px;font-size:13px;color:#d34e79;">
-                プロフィールが未入力の項目があります。
-                <a href="<?php echo esc_url( home_url( '/worker-profile/' ) ); ?>">プロフィールを編集する</a>
+              <p style="margin-top:12px;font-size:13px;color:#d34e79;font-weight:700;">
+                プロフィールが未入力の項目があります。応募にはすべての項目の入力が必須です。
               </p>
             <?php else : ?>
               <p style="margin-top:12px;">
@@ -119,30 +118,41 @@ if ( $application_success ) :
             <?php endif; ?>
           </div>
 
-          <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="apply-form">
-            <input type="hidden" name="action" value="zaito_apply" />
-            <input type="hidden" name="job_id" value="<?php echo esc_attr( $job_id ); ?>" />
-            <?php wp_nonce_field( 'zaito_apply' ); ?>
-
-            <div class="form-group">
-              <label for="message">応募メッセージ・志望動機</label>
-              <textarea
-                id="message"
-                name="message"
-                rows="8"
-                placeholder="この求人に応募する理由や、自己紹介・質問などを記入してください"
-                required
-              ></textarea>
-              <small>企業に送られるメッセージです。丁寧にご記入ください。</small>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" class="btn btn-accent">応募する</button>
+          <?php if ( $profile_incomplete ) : ?>
+            <div class="form-actions" style="margin-top:24px;">
+              <a href="<?php echo esc_url( add_query_arg( 'redirect_to', rawurlencode( home_url( '/apply/?job_id=' . $job_id ) ), home_url( '/worker-profile/' ) ) ); ?>" class="btn btn-accent">
+                プロフィールを入力して応募に進む
+              </a>
               <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="btn btn-outline">
                 キャンセル
               </a>
             </div>
-          </form>
+          <?php else : ?>
+            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="apply-form">
+              <input type="hidden" name="action" value="zaito_apply" />
+              <input type="hidden" name="job_id" value="<?php echo esc_attr( $job_id ); ?>" />
+              <?php wp_nonce_field( 'zaito_apply' ); ?>
+
+              <div class="form-group">
+                <label for="message">応募メッセージ・志望動機</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="8"
+                  placeholder="この求人に応募する理由や、自己紹介・質問などを記入してください"
+                  required
+                ></textarea>
+                <small>企業に送られるメッセージです。丁寧にご記入ください。</small>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-accent">応募する</button>
+                <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="btn btn-outline">
+                  キャンセル
+                </a>
+              </div>
+            </form>
+          <?php endif; ?>
         </div>
       </div>
     </div>

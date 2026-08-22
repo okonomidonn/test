@@ -555,9 +555,25 @@ function zaito_handle_apply() {
         exit;
     }
 
+    $errors = array();
+
+    $furigana   = get_user_meta( $current_user->ID, 'furigana', true );
+    $birthdate  = get_user_meta( $current_user->ID, 'birthdate', true );
+    $phone      = get_user_meta( $current_user->ID, 'phone', true );
+    $prefecture = get_user_meta( $current_user->ID, 'prefecture', true );
+    $education  = get_user_meta( $current_user->ID, 'education', true );
+
+    if ( ! $current_user->first_name || ! $furigana || ! $birthdate || ! $phone || ! $prefecture || ! $education ) {
+        $errors[] = 'プロフィール（氏名・フリガナ・生年月日・電話番号・お住まい・最終学歴）をすべて入力してから応募してください。';
+    }
+
     $message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : '';
     if ( ! $message ) {
-        zaito_store_form_errors_and_redirect( array( 'メッセージを入力してください' ), $apply_url );
+        $errors[] = 'メッセージを入力してください';
+    }
+
+    if ( ! empty( $errors ) ) {
+        zaito_store_form_errors_and_redirect( $errors, $apply_url );
     }
 
     $application_id = wp_insert_post( array(
@@ -691,12 +707,30 @@ function zaito_handle_update_worker_profile() {
     if ( ! $name ) {
         $errors[] = '氏名を入力してください';
     }
-    if ( $birthdate && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $birthdate ) ) {
+    if ( ! $furigana ) {
+        $errors[] = 'フリガナを入力してください';
+    }
+    if ( ! $birthdate ) {
+        $errors[] = '生年月日を入力してください';
+    } elseif ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $birthdate ) ) {
         $errors[] = '生年月日の形式が正しくありません';
     }
+    if ( ! $phone ) {
+        $errors[] = '電話番号を入力してください';
+    }
+    if ( ! $prefecture ) {
+        $errors[] = 'お住まいの都道府県を選択してください';
+    }
+    if ( ! $education ) {
+        $errors[] = '最終学歴を選択してください';
+    }
+
+    $redirect_to = isset( $_POST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_POST['redirect_to'] ) ) : '';
+    $is_local_redirect = $redirect_to && strpos( $redirect_to, home_url() ) === 0;
+    $profile_url = $is_local_redirect ? add_query_arg( 'redirect_to', rawurlencode( $redirect_to ), home_url( '/worker-profile/' ) ) : home_url( '/worker-profile/' );
 
     if ( ! empty( $errors ) ) {
-        zaito_store_form_errors_and_redirect( $errors, home_url( '/worker-profile/' ) );
+        zaito_store_form_errors_and_redirect( $errors, $profile_url );
     }
 
     wp_update_user( array( 'ID' => $current_user->ID, 'first_name' => $name ) );
@@ -707,7 +741,7 @@ function zaito_handle_update_worker_profile() {
     update_user_meta( $current_user->ID, 'education', $education );
     update_user_meta( $current_user->ID, 'work_history', $work_history );
 
-    wp_safe_redirect( add_query_arg( 'saved', '1', home_url( '/worker-profile/' ) ) );
+    wp_safe_redirect( $is_local_redirect ? $redirect_to : add_query_arg( 'saved', '1', home_url( '/worker-profile/' ) ) );
     exit;
 }
 add_action( 'admin_post_zaito_update_worker_profile', 'zaito_handle_update_worker_profile' );
