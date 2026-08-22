@@ -224,7 +224,44 @@ a {
   position: relative;
   overflow: hidden;
   padding: 58px 0 80px;
-  background: var(--paper);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(rgba(35, 38, 43, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(35, 38, 43, .06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.hero-triangle {
+  position: absolute;
+  top: -40px;
+  right: 12%;
+  width: 0;
+  height: 0;
+  border-left: 70px solid transparent;
+  border-right: 70px solid transparent;
+  border-top: 190px solid var(--pink);
+  opacity: .9;
+  transform: rotate(8deg);
+  z-index: 0;
+}
+.hero-vertical-label {
+  position: absolute;
+  left: -6px;
+  top: 20px;
+  writing-mode: vertical-rl;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .18em;
+  color: var(--lav);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-vertical-label::before {
+  content: "";
+  width: 1px;
+  height: 46px;
+  background: var(--lav);
+  opacity: .5;
 }
 @keyframes blobFloat {
   0%, 100% { transform: translateY(0) scale(1); }
@@ -239,7 +276,7 @@ a {
 .hero p.lead { animation: fadeInUp .7s var(--ease) .16s both; }
 .hero .tag-list { animation: fadeInUp .7s var(--ease) .24s both; }
 .hero-cta { animation: fadeInUp .7s var(--ease) .32s both; }
-.hero-illustration { animation: fadeInUp .8s var(--ease) .22s both; }
+.hero-photo-card-wrap { animation: fadeInUp .8s var(--ease) .22s both; }
 
 .reveal {
   opacity: 0;
@@ -281,7 +318,7 @@ a {
   line-height: 1.03;
   letter-spacing: -4px;
   margin: 20px 0 22px;
-  color: var(--ink);
+  color: var(--lav);
 }
 .hero h1 .grad {
   font-style: normal;
@@ -324,79 +361,71 @@ a {
   gap: 12px;
   flex-wrap: wrap;
 }
-.hero-illustration {
-  position: relative;
+.hero-photo-card-wrap {
   min-height: 380px;
 }
-.hero-illustration svg {
-  width: 100%;
-  height: auto;
-  display: block;
-  overflow: visible;
+.hero-photo-card {
+  position: relative;
+  height: 100%;
+  min-height: 380px;
+  border-radius: 10px;
+  background: linear-gradient(155deg, var(--lav), #1b2338);
+  color: #fff;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform: rotate(1.2deg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
 }
-.illust-backdrop {
-  fill: var(--lav);
-  opacity: .92;
+.hero-photo-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .06) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
 }
-.illust-leaf {
-  fill: #6b7a5e;
+.hero-photo-card-tag {
+  align-self: flex-start;
+  background: var(--pink);
+  color: #3a2a05;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  position: relative;
+  z-index: 1;
 }
-.illust-pot {
-  fill: var(--aqua);
+.hero-photo-card-body {
+  position: relative;
+  z-index: 1;
 }
-.illust-desk {
-  fill: var(--peach);
+.hero-photo-card-eyebrow {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: #d8dcea;
 }
-.illust-desk-leg {
-  fill: #d3b78d;
+.hero-photo-card-stat {
+  font-size: 88px;
+  font-weight: 900;
+  letter-spacing: -3px;
+  margin: 0;
+  line-height: 1;
 }
-.illust-person {
-  fill: var(--ink);
+.hero-photo-card-stat span {
+  font-size: 36px;
+  color: var(--pink);
 }
-.illust-laptop-base {
-  fill: #ece3d1;
-}
-.illust-laptop-screen {
-  fill: var(--ink);
-}
-.illust-laptop-ui {
-  fill: var(--pink);
-  opacity: .9;
-}
-.illust-laptop-dot {
-  fill: var(--mint);
-}
-.illust-cup {
-  fill: #fff;
-  stroke: var(--ink);
-  stroke-width: 2;
-}
-.illust-cup-handle {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-.illust-dot {
-  fill: var(--pink);
-}
-.illust-dot.dot-2 {
-  fill: var(--mint);
-}
-.illust-dot.dot-3 {
-  fill: var(--aqua);
-}
-.dot-1 {
-  animation: blobFloat 6s ease-in-out infinite;
-  transform-origin: 352px 90px;
-}
-.dot-2 {
-  animation: blobFloat 8s ease-in-out infinite reverse;
-  transform-origin: 34px 120px;
-}
-.dot-3 {
-  animation: blobFloat 7s ease-in-out infinite;
-  transform-origin: 368px 230px;
+.hero-photo-card-caption {
+  font-size: 13px;
+  color: #b9bfd4;
+  margin: 10px 0 0;
 }
 
 /* Sections */
