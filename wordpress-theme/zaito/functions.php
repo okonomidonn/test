@@ -164,6 +164,13 @@ function zaito_virtual_route_map() {
         'company'          => 'page-company.php',
         'company-jobs'     => 'page-company-jobs.php',
         'company-applicants' => 'page-company-applicants.php',
+        'worker-profile'   => 'page-worker-profile.php',
+        'forgot-password'  => 'page-forgot-password.php',
+        'reset-password'   => 'page-reset-password.php',
+        'verify-email'     => 'page-verify-email.php',
+        'google-callback'  => 'page-google-callback.php',
+        'terms'            => 'page-terms.php',
+        'privacy'          => 'page-privacy.php',
         'jobs'             => 'page-jobs.php',
         'apply'            => 'page-apply.php',
         'chat'             => 'page-chat.php',
@@ -203,7 +210,7 @@ add_action( 'template_redirect', 'zaito_render_virtual_routes', 1 );
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '4';
+    $version = '6';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -240,6 +247,105 @@ function zaito_log_user_in_silently( $user_id ) {
 }
 
 /**
+ * 新規登録ユーザーにメールアドレス確認メールを送信する。
+ * トークンは user meta に保存し、48時間有効。
+ */
+function zaito_send_verification_email( $user_id ) {
+    $user = get_userdata( $user_id );
+    if ( ! $user ) {
+        return;
+    }
+    $token = wp_generate_password( 32, false );
+    update_user_meta( $user_id, 'zaito_email_verify_token', $token );
+    update_user_meta( $user_id, 'zaito_email_verify_expires', time() + ( 48 * HOUR_IN_SECONDS ) );
+
+    $verify_url = add_query_arg(
+        array(
+            'uid'   => $user_id,
+            'token' => $token,
+        ),
+        home_url( '/verify-email/' )
+    );
+
+    $subject = '【zaito】メールアドレスの確認をお願いします';
+    $message = $user->first_name . " 様\n\n"
+        . "zaitoにご登録いただきありがとうございます。\n"
+        . "以下のリンクをクリックしてメールアドレスの確認を完了してください。\n\n"
+        . $verify_url . "\n\n"
+        . "このリンクの有効期限は48時間です。\n"
+        . "心当たりがない場合はこのメールを破棄してください。";
+
+    wp_mail( $user->user_email, $subject, $message );
+}
+
+/**
+ * ユーザーのメールアドレス確認が完了しているかどうか。
+ */
+function zaito_is_email_verified( $user_id ) {
+    return get_user_meta( $user_id, 'zaito_email_verified', true ) === '1';
+}
+
+/**
+ * ログイン中ユーザーがメール未確認の場合、確認を促すバナーを表示する。
+ * マイページ・企業ダッシュボードの冒頭で呼び出す。
+ */
+function zaito_render_verification_banner() {
+    $user_id = get_current_user_id();
+    if ( ! $user_id || zaito_is_email_verified( $user_id ) ) {
+        return;
+    }
+    ?>
+    <div class="verification-banner">
+      <span>メールアドレスがまだ確認されていません。届いた確認メールのリンクをクリックしてください。</span>
+      <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="inline-form">
+        <input type="hidden" name="action" value="zaito_resend_verification" />
+        <?php wp_nonce_field( 'zaito_resend_verification' ); ?>
+        <button type="submit" class="btn btn-outline btn-small">確認メールを再送信</button>
+      </form>
+    </div>
+    <?php
+}
+
+/**
+ * Googleログインが利用可能かどうか。
+ * 利用には wp-config.php で下記の定数を定義する必要がある（サイト管理者が
+ * Google Cloud Console で発行したOAuthクライアントIDとシークレットを設定）：
+ *   define( 'ZAITO_GOOGLE_CLIENT_ID', '...' );
+ *   define( 'ZAITO_GOOGLE_CLIENT_SECRET', '...' );
+ * また、Google Cloud ConsoleのOAuth設定で、リダイレクトURIに
+ * home_url('/google-callback/') （例: https://zaito-work.com/google-callback/）
+ * を登録しておく必要がある。
+ */
+function zaito_google_login_is_configured() {
+    return defined( 'ZAITO_GOOGLE_CLIENT_ID' ) && ZAITO_GOOGLE_CLIENT_ID
+        && defined( 'ZAITO_GOOGLE_CLIENT_SECRET' ) && ZAITO_GOOGLE_CLIENT_SECRET;
+}
+
+/**
+ * Google OAuth2 の認可画面へのURLを組み立てる。
+ * $role はコールバック側で新規ユーザー作成時に使うロール。
+ */
+function zaito_google_login_url( $redirect_to, $role = 'zaito_seeker' ) {
+    $state = wp_generate_password( 32, false );
+    set_transient( 'zaito_google_state_' . $state, array(
+        'redirect_to' => $redirect_to,
+        'role'        => $role,
+    ), 10 * MINUTE_IN_SECONDS );
+
+    $params = array(
+        'client_id'     => ZAITO_GOOGLE_CLIENT_ID,
+        'redirect_uri'  => home_url( '/google-callback/' ),
+        'response_type' => 'code',
+        'scope'         => 'openid email profile',
+        'state'         => $state,
+        'access_type'   => 'online',
+        'prompt'        => 'select_account',
+    );
+
+    return 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query( $params );
+}
+
+/**
  * フォームのエラー内容を一時保存し、トークン付きでリダイレクト元に戻す。
  */
 function zaito_store_form_errors_and_redirect( $errors, $redirect_url ) {
@@ -263,15 +369,41 @@ function zaito_get_form_errors_from_token() {
 }
 
 /**
+ * 確認メールの再送信。ログイン中のユーザー本人のみ実行可能。
+ */
+function zaito_handle_resend_verification() {
+    check_admin_referer( 'zaito_resend_verification' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/login/' ) );
+        exit;
+    }
+
+    $user_id = get_current_user_id();
+    if ( ! zaito_is_email_verified( $user_id ) ) {
+        zaito_send_verification_email( $user_id );
+    }
+
+    $current_user = wp_get_current_user();
+    $redirect     = in_array( 'zaito_company', $current_user->roles, true ) ? '/company/' : '/mypage/';
+    wp_safe_redirect( add_query_arg( 'verification_sent', '1', home_url( $redirect ) ) );
+    exit;
+}
+add_action( 'admin_post_zaito_resend_verification', 'zaito_handle_resend_verification' );
+
+/**
  * ワーカー登録処理（admin-post.php経由。ページ自己送信でのルーティング
  * トラブルを避けるため、WordPress標準のフォーム処理エンドポイントを使う）
  */
 function zaito_handle_register_worker() {
+    check_admin_referer( 'zaito_register_worker' );
+
     $errors = array();
     $email             = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
     $name              = isset( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : '';
     $password          = isset( $_POST['password'] ) ? $_POST['password'] : '';
     $password_confirm  = isset( $_POST['password_confirm'] ) ? $_POST['password_confirm'] : '';
+    $agree_terms       = isset( $_POST['agree_terms'] ) && $_POST['agree_terms'] === '1';
 
     if ( ! $email ) {
         $errors[] = 'メールアドレスを入力してください';
@@ -287,6 +419,9 @@ function zaito_handle_register_worker() {
     if ( $password !== $password_confirm ) {
         $errors[] = 'パスワードが一致しません';
     }
+    if ( ! $agree_terms ) {
+        $errors[] = '利用規約とプライバシーポリシーに同意してください';
+    }
 
     if ( empty( $errors ) ) {
         $user_id = wp_insert_user( array(
@@ -300,6 +435,8 @@ function zaito_handle_register_worker() {
         if ( is_wp_error( $user_id ) ) {
             $errors[] = $user_id->get_error_message();
         } else {
+            update_user_meta( $user_id, 'zaito_email_verified', '0' );
+            zaito_send_verification_email( $user_id );
             zaito_log_user_in_silently( $user_id );
             wp_safe_redirect( home_url( '/mypage/' ) );
             exit;
@@ -315,6 +452,8 @@ add_action( 'admin_post_zaito_register_worker', 'zaito_handle_register_worker' )
  * 企業登録処理（admin-post.php経由）
  */
 function zaito_handle_register_company() {
+    check_admin_referer( 'zaito_register_company' );
+
     $errors = array();
     $email            = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
     $company_name     = isset( $_POST['company_name'] ) ? sanitize_text_field( $_POST['company_name'] ) : '';
@@ -322,6 +461,7 @@ function zaito_handle_register_company() {
     $phone            = isset( $_POST['phone'] ) ? sanitize_text_field( $_POST['phone'] ) : '';
     $password         = isset( $_POST['password'] ) ? $_POST['password'] : '';
     $password_confirm = isset( $_POST['password_confirm'] ) ? $_POST['password_confirm'] : '';
+    $agree_terms      = isset( $_POST['agree_terms'] ) && $_POST['agree_terms'] === '1';
 
     if ( ! $email ) {
         $errors[] = 'メールアドレスを入力してください';
@@ -343,6 +483,9 @@ function zaito_handle_register_company() {
     if ( $password !== $password_confirm ) {
         $errors[] = 'パスワードが一致しません';
     }
+    if ( ! $agree_terms ) {
+        $errors[] = '利用規約とプライバシーポリシーに同意してください';
+    }
 
     if ( empty( $errors ) ) {
         $user_id = wp_insert_user( array(
@@ -358,6 +501,8 @@ function zaito_handle_register_company() {
         } else {
             update_user_meta( $user_id, 'company_name', $company_name );
             update_user_meta( $user_id, 'company_phone', $phone );
+            update_user_meta( $user_id, 'zaito_email_verified', '0' );
+            zaito_send_verification_email( $user_id );
 
             zaito_log_user_in_silently( $user_id );
             wp_safe_redirect( home_url( '/company/' ) );
@@ -374,6 +519,8 @@ add_action( 'admin_post_zaito_register_company', 'zaito_handle_register_company'
  * 求人応募処理（admin-post.php経由）
  */
 function zaito_handle_apply() {
+    check_admin_referer( 'zaito_apply' );
+
     if ( ! is_user_logged_in() ) {
         wp_safe_redirect( home_url( '/login/' ) );
         exit;
@@ -419,9 +566,143 @@ function zaito_handle_apply() {
 add_action( 'admin_post_zaito_apply', 'zaito_handle_apply' );
 
 /**
+ * パスワード再設定メールの送信要求。
+ * メールアドレスの存在有無に関わらず同じ結果画面を表示し、
+ * 登録済みメールアドレスの推測（ユーザー列挙）を防ぐ。
+ */
+function zaito_handle_forgot_password() {
+    check_admin_referer( 'zaito_forgot_password' );
+
+    $email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+    $user  = $email ? get_user_by( 'email', $email ) : false;
+
+    if ( $user ) {
+        $key = get_password_reset_key( $user );
+        if ( ! is_wp_error( $key ) ) {
+            $reset_url = add_query_arg(
+                array(
+                    'login' => rawurlencode( $user->user_login ),
+                    'key'   => rawurlencode( $key ),
+                ),
+                home_url( '/reset-password/' )
+            );
+            $subject = '【zaito】パスワード再設定のご案内';
+            $message = $user->first_name . " 様\n\n"
+                . "パスワード再設定のリクエストを受け付けました。\n"
+                . "以下のリンクから新しいパスワードを設定してください。\n\n"
+                . $reset_url . "\n\n"
+                . "このリンクの有効期限は24時間です。\n"
+                . "心当たりがない場合はこのメールを破棄してください。";
+            wp_mail( $user->user_email, $subject, $message );
+        }
+    }
+
+    wp_safe_redirect( add_query_arg( 'sent', '1', home_url( '/forgot-password/' ) ) );
+    exit;
+}
+add_action( 'admin_post_nopriv_zaito_forgot_password', 'zaito_handle_forgot_password' );
+add_action( 'admin_post_zaito_forgot_password', 'zaito_handle_forgot_password' );
+
+/**
+ * パスワード再設定の実行。
+ */
+function zaito_handle_reset_password() {
+    check_admin_referer( 'zaito_reset_password' );
+
+    $login             = isset( $_POST['login'] ) ? sanitize_text_field( wp_unslash( $_POST['login'] ) ) : '';
+    $key               = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
+    $password          = isset( $_POST['password'] ) ? $_POST['password'] : '';
+    $password_confirm  = isset( $_POST['password_confirm'] ) ? $_POST['password_confirm'] : '';
+
+    $reset_url = add_query_arg(
+        array(
+            'login' => rawurlencode( $login ),
+            'key'   => rawurlencode( $key ),
+        ),
+        home_url( '/reset-password/' )
+    );
+
+    $user = check_password_reset_key( $key, $login );
+
+    if ( is_wp_error( $user ) ) {
+        zaito_store_form_errors_and_redirect( array( 'リンクが無効か、有効期限が切れています。もう一度お試しください。' ), home_url( '/forgot-password/' ) );
+    }
+
+    $errors = array();
+    if ( ! $password || strlen( $password ) < 8 ) {
+        $errors[] = 'パスワードは8文字以上で入力してください';
+    }
+    if ( $password !== $password_confirm ) {
+        $errors[] = 'パスワードが一致しません';
+    }
+
+    if ( ! empty( $errors ) ) {
+        zaito_store_form_errors_and_redirect( $errors, $reset_url );
+    }
+
+    reset_password( $user, $password );
+
+    wp_safe_redirect( add_query_arg( 'reset', '1', home_url( '/login/' ) ) );
+    exit;
+}
+add_action( 'admin_post_nopriv_zaito_reset_password', 'zaito_handle_reset_password' );
+add_action( 'admin_post_zaito_reset_password', 'zaito_handle_reset_password' );
+
+/**
+ * ワーカーのプロフィール（フリガナ・生年月日・電話番号・学歴・職務経歴）保存処理
+ */
+function zaito_handle_update_worker_profile() {
+    check_admin_referer( 'zaito_update_worker_profile' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/login/' ) );
+        exit;
+    }
+    $current_user = wp_get_current_user();
+    if ( ! in_array( 'zaito_seeker', $current_user->roles, true ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $errors = array();
+    $name       = isset( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : '';
+    $furigana   = isset( $_POST['furigana'] ) ? sanitize_text_field( $_POST['furigana'] ) : '';
+    $birthdate  = isset( $_POST['birthdate'] ) ? sanitize_text_field( $_POST['birthdate'] ) : '';
+    $phone      = isset( $_POST['phone'] ) ? sanitize_text_field( $_POST['phone'] ) : '';
+    $prefecture = isset( $_POST['prefecture'] ) ? sanitize_text_field( $_POST['prefecture'] ) : '';
+    $education  = isset( $_POST['education'] ) ? sanitize_text_field( $_POST['education'] ) : '';
+    $work_history = isset( $_POST['work_history'] ) ? sanitize_textarea_field( $_POST['work_history'] ) : '';
+
+    if ( ! $name ) {
+        $errors[] = '氏名を入力してください';
+    }
+    if ( $birthdate && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $birthdate ) ) {
+        $errors[] = '生年月日の形式が正しくありません';
+    }
+
+    if ( ! empty( $errors ) ) {
+        zaito_store_form_errors_and_redirect( $errors, home_url( '/worker-profile/' ) );
+    }
+
+    wp_update_user( array( 'ID' => $current_user->ID, 'first_name' => $name ) );
+    update_user_meta( $current_user->ID, 'furigana', $furigana );
+    update_user_meta( $current_user->ID, 'birthdate', $birthdate );
+    update_user_meta( $current_user->ID, 'phone', $phone );
+    update_user_meta( $current_user->ID, 'prefecture', $prefecture );
+    update_user_meta( $current_user->ID, 'education', $education );
+    update_user_meta( $current_user->ID, 'work_history', $work_history );
+
+    wp_safe_redirect( add_query_arg( 'saved', '1', home_url( '/worker-profile/' ) ) );
+    exit;
+}
+add_action( 'admin_post_zaito_update_worker_profile', 'zaito_handle_update_worker_profile' );
+
+/**
  * 企業による求人投稿処理（admin-post.php経由）
  */
 function zaito_handle_post_job() {
+    check_admin_referer( 'zaito_post_job' );
+
     if ( ! is_user_logged_in() ) {
         wp_safe_redirect( home_url( '/company-login/' ) );
         exit;
@@ -433,18 +714,22 @@ function zaito_handle_post_job() {
     }
 
     $errors = array();
-    $title   = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
-    $content = isset( $_POST['content'] ) ? sanitize_textarea_field( $_POST['content'] ) : '';
-    $salary  = isset( $_POST['salary'] ) ? sanitize_text_field( $_POST['salary'] ) : '';
-    $type    = isset( $_POST['job_type'] ) ? sanitize_text_field( $_POST['job_type'] ) : '';
-    $days    = isset( $_POST['job_days'] ) ? sanitize_text_field( $_POST['job_days'] ) : '';
-    $target  = isset( $_POST['job_target'] ) ? sanitize_text_field( $_POST['job_target'] ) : '';
+    $title    = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+    $content  = isset( $_POST['content'] ) ? sanitize_textarea_field( $_POST['content'] ) : '';
+    $category = isset( $_POST['category'] ) ? sanitize_text_field( $_POST['category'] ) : '';
+    $salary   = isset( $_POST['salary'] ) ? sanitize_text_field( $_POST['salary'] ) : '';
+    $type     = isset( $_POST['job_type'] ) ? sanitize_text_field( $_POST['job_type'] ) : '';
+    $days     = isset( $_POST['job_days'] ) ? sanitize_text_field( $_POST['job_days'] ) : '';
+    $target   = isset( $_POST['job_target'] ) ? sanitize_text_field( $_POST['job_target'] ) : '';
 
     if ( ! $title ) {
         $errors[] = '求人タイトルを入力してください';
     }
     if ( ! $content ) {
         $errors[] = '仕事内容を入力してください';
+    }
+    if ( ! $category ) {
+        $errors[] = '求人カテゴリを選択してください';
     }
 
     if ( ! empty( $errors ) ) {
@@ -464,6 +749,7 @@ function zaito_handle_post_job() {
 
     update_post_meta( $job_id, '_company_user_id', $current_user->ID );
     update_post_meta( $job_id, '_company_name', get_user_meta( $current_user->ID, 'company_name', true ) );
+    update_post_meta( $job_id, '_job_category', $category );
     update_post_meta( $job_id, '_job_salary', $salary );
     update_post_meta( $job_id, '_job_type', $type );
     update_post_meta( $job_id, '_job_days', $days );
@@ -479,6 +765,8 @@ add_action( 'admin_post_zaito_post_job', 'zaito_handle_post_job' );
  * 採用にした場合はapplicationにcompany_idを記録し、チャットを開通させる。
  */
 function zaito_handle_update_application_status() {
+    check_admin_referer( 'zaito_update_application_status' );
+
     if ( ! is_user_logged_in() ) {
         wp_safe_redirect( home_url( '/company-login/' ) );
         exit;
@@ -511,10 +799,42 @@ function zaito_handle_update_application_status() {
         update_post_meta( $application_id, 'company_id', $current_user->ID );
     }
 
+    zaito_notify_application_status_change( $application_id, $job_id, $new_status );
+
     wp_safe_redirect( home_url( '/company-applicants/' ) );
     exit;
 }
 add_action( 'admin_post_zaito_update_application_status', 'zaito_handle_update_application_status' );
+
+/**
+ * 応募ステータス変更（承認・非承認）を応募者にメール通知する。
+ */
+function zaito_notify_application_status_change( $application_id, $job_id, $new_status ) {
+    $applicant_id = get_post_meta( $application_id, 'applicant_id', true );
+    $applicant = get_userdata( $applicant_id );
+    if ( ! $applicant ) {
+        return;
+    }
+
+    $job_title    = get_the_title( $job_id );
+    $company_name = get_post_meta( $job_id, '_company_name', true );
+
+    if ( 'accepted' === $new_status ) {
+        $subject = '【zaito】応募が承認されました';
+        $body    = $applicant->first_name . " 様\n\n"
+            . $company_name . '様より、「' . $job_title . "」への応募が承認されました。\n"
+            . "チャットで企業とやり取りができます。\n\n"
+            . home_url( '/chat/?conversation_id=' . $application_id ) . "\n";
+    } else {
+        $subject = '【zaito】応募結果のお知らせ';
+        $body    = $applicant->first_name . " 様\n\n"
+            . '「' . $job_title . "」への応募について、今回は採用を見送らせていただくことになりました。\n"
+            . "またの機会がございましたらよろしくお願いいたします。\n\n"
+            . home_url( '/jobs/' ) . "\n";
+    }
+
+    wp_mail( $applicant->user_email, $subject, $body );
+}
 
 /**
  * チャットメッセージを読み込むAJAXハンドラー
@@ -624,12 +944,35 @@ function zaito_send_message() {
         update_post_meta( $message_id, 'conversation_id', $conversation_id );
         update_post_meta( $message_id, 'sender_id', $current_user->ID );
         update_post_meta( $conversation_id, 'last_message_text', $message_text );
+
+        $recipient_id = ( $current_user->ID === intval( $applicant_id ) ) ? $company_id : $applicant_id;
+        zaito_notify_new_message( $recipient_id, $current_user, $conversation_id, $message_text );
+
         wp_send_json_success( array( 'message_id' => $message_id ) );
     } else {
         wp_send_json_error( array( 'message' => 'メッセージの送信に失敗しました' ) );
     }
 }
 add_action( 'wp_ajax_zaito_send_message', 'zaito_send_message' );
+
+/**
+ * 新着チャットメッセージを相手にメール通知する。
+ */
+function zaito_notify_new_message( $recipient_id, $sender, $conversation_id, $message_text ) {
+    $recipient = get_userdata( $recipient_id );
+    if ( ! $recipient ) {
+        return;
+    }
+
+    $subject = '【zaito】新しいメッセージが届いています';
+    $body    = $recipient->first_name . " 様\n\n"
+        . $sender->first_name . "様からメッセージが届きました。\n\n"
+        . '「' . wp_trim_words( $message_text, 30 ) . "」\n\n"
+        . "チャットを確認する：\n"
+        . home_url( '/chat/?conversation_id=' . $conversation_id ) . "\n";
+
+    wp_mail( $recipient->user_email, $subject, $body );
+}
 
 /**
  * デモ用の架空求人を50件生成する共通ロジック。
@@ -648,10 +991,10 @@ function zaito_generate_demo_jobs( $force = false ) {
         foreach ( $existing as $job ) {
             wp_delete_post( $job->ID, true );
         }
-        delete_option( 'zaito_demo_jobs_seeded' );
+        delete_option( 'zaito_demo_jobs_seeded_v2' );
     }
 
-    if ( get_option( 'zaito_demo_jobs_seeded' ) ) {
+    if ( get_option( 'zaito_demo_jobs_seeded_v2' ) ) {
         return 0;
     }
 
@@ -713,6 +1056,7 @@ function zaito_generate_demo_jobs( $force = false ) {
         }
 
         update_post_meta( $job_id, '_company_name', $company );
+        update_post_meta( $job_id, '_job_category', $cat['label'] );
         update_post_meta( $job_id, '_job_salary', $salaries[ array_rand( $salaries ) ] );
         update_post_meta( $job_id, '_job_type', $types[ array_rand( $types ) ] );
         update_post_meta( $job_id, '_job_days', $days[ array_rand( $days ) ] );
@@ -721,7 +1065,7 @@ function zaito_generate_demo_jobs( $force = false ) {
         $created++;
     }
 
-    update_option( 'zaito_demo_jobs_seeded', $created );
+    update_option( 'zaito_demo_jobs_seeded_v2', $created );
 
     return $created;
 }
@@ -735,7 +1079,7 @@ function zaito_maybe_auto_seed_demo_jobs() {
     if ( is_admin() ) {
         return;
     }
-    if ( get_option( 'zaito_demo_jobs_seeded' ) ) {
+    if ( get_option( 'zaito_demo_jobs_seeded_v2' ) ) {
         return;
     }
     zaito_generate_demo_jobs();

@@ -1,4 +1,13 @@
-<?php get_header(); ?>
+<?php get_header();
+
+$search_keyword = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
+$search_salary  = isset( $_GET['salary'] ) ? sanitize_text_field( $_GET['salary'] ) : '';
+$search_category = isset( $_GET['category'] ) ? sanitize_text_field( $_GET['category'] ) : '';
+$paged = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
+$per_page = 12;
+
+$categories_list = array( 'ライティング', 'デザイン', 'プログラミング', '事務・データ入力', 'カスタマーサポート' );
+?>
 
 <main class="jobs-listing-main">
   <div class="wrap">
@@ -19,7 +28,7 @@
                 id="search"
                 name="s"
                 placeholder="仕事内容で検索"
-                value="<?php echo isset( $_GET['s'] ) ? esc_attr( $_GET['s'] ) : ''; ?>"
+                value="<?php echo esc_attr( $search_keyword ); ?>"
               />
             </div>
 
@@ -27,21 +36,19 @@
               <label for="salary">時給の目安</label>
               <select id="salary" name="salary">
                 <option value="">指定なし</option>
-                <option value="1000" <?php selected( isset( $_GET['salary'] ) && $_GET['salary'] === '1000' ); ?>>1,000円以上</option>
-                <option value="1500" <?php selected( isset( $_GET['salary'] ) && $_GET['salary'] === '1500' ); ?>>1,500円以上</option>
-                <option value="2000" <?php selected( isset( $_GET['salary'] ) && $_GET['salary'] === '2000' ); ?>>2,000円以上</option>
+                <option value="1000" <?php selected( $search_salary, '1000' ); ?>>1,000円以上</option>
+                <option value="1500" <?php selected( $search_salary, '1500' ); ?>>1,500円以上</option>
+                <option value="2000" <?php selected( $search_salary, '2000' ); ?>>2,000円以上</option>
               </select>
             </div>
 
             <div class="filter-group">
-              <label for="type">仕事の種類</label>
-              <select id="type" name="type">
+              <label for="category">仕事の種類</label>
+              <select id="category" name="category">
                 <option value="">全て</option>
-                <option value="writing" <?php selected( isset( $_GET['type'] ) && $_GET['type'] === 'writing' ); ?>>ライティング</option>
-                <option value="design" <?php selected( isset( $_GET['type'] ) && $_GET['type'] === 'design' ); ?>>デザイン</option>
-                <option value="programming" <?php selected( isset( $_GET['type'] ) && $_GET['type'] === 'programming' ); ?>>プログラミング</option>
-                <option value="support" <?php selected( isset( $_GET['type'] ) && $_GET['type'] === 'support' ); ?>>カスタマーサポート</option>
-                <option value="data" <?php selected( isset( $_GET['type'] ) && $_GET['type'] === 'data' ); ?>>データ入力</option>
+                <?php foreach ( $categories_list as $cat ) : ?>
+                  <option value="<?php echo esc_attr( $cat ); ?>" <?php selected( $search_category, $cat ); ?>><?php echo esc_html( $cat ); ?></option>
+                <?php endforeach; ?>
               </select>
             </div>
 
@@ -53,25 +60,52 @@
 
       <div class="jobs-content">
         <?php
-        $args = array(
-            'post_type' => 'job_listing',
-            'posts_per_page' => 12,
-            'orderby' => 'date',
-            'order' => 'DESC',
-        );
-
         if ( ! post_type_exists( 'job_listing' ) ) {
-            echo '<p class="empty-message">求人がまだありません。WP Job Manager プラグインをインストールしてください。</p>';
+            echo '<p class="empty-message">求人がまだありません。</p>';
         } else {
-            $jobs = get_posts( $args );
+            $args = array(
+                'post_type'      => 'job_listing',
+                'posts_per_page' => $per_page,
+                'paged'          => $paged,
+                'orderby'        => 'date',
+                'order'          => 'DESC',
+            );
 
-            if ( ! empty( $jobs ) ) :
+            if ( $search_keyword ) {
+                $args['s'] = $search_keyword;
+            }
+
+            $meta_query = array();
+            if ( $search_salary ) {
+                $meta_query[] = array(
+                    'key'     => '_job_salary',
+                    'value'   => intval( $search_salary ),
+                    'compare' => '>=',
+                    'type'    => 'NUMERIC',
+                );
+            }
+            if ( $search_category ) {
+                $meta_query[] = array(
+                    'key'   => '_job_category',
+                    'value' => $search_category,
+                );
+            }
+            if ( ! empty( $meta_query ) ) {
+                $args['meta_query'] = $meta_query;
+            }
+
+            $jobs_query = new WP_Query( $args );
+
+            if ( $jobs_query->have_posts() ) :
         ?>
+          <p class="jobs-result-count"><?php echo esc_html( $jobs_query->found_posts ); ?>件の求人が見つかりました</p>
           <div class="jobs-list">
-            <?php foreach ( $jobs as $job ) : ?>
+            <?php while ( $jobs_query->have_posts() ) : $jobs_query->the_post();
+                $job = get_post();
+            ?>
               <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="card">
                 <div class="card-top">
-                  <span class="badge badge-mint">人気</span>
+                  <span class="badge badge-mint"><?php echo esc_html( get_post_meta( $job->ID, '_job_category', true ) ?: '人気' ); ?></span>
                 </div>
                 <h3><?php echo esc_html( get_the_title( $job ) ); ?></h3>
                 <p><?php echo esc_html( get_post_meta( $job->ID, '_company_name', true ) ); ?></p>
@@ -85,15 +119,28 @@
                 </div>
                 <div class="card-footer">
                   <span><?php echo esc_html( get_post_meta( $job->ID, '_job_days', true ) ); ?></span>
-                  <span>大学生歓迎</span>
+                  <span><?php echo esc_html( get_post_meta( $job->ID, '_job_target', true ) ); ?></span>
                 </div>
               </a>
-            <?php endforeach; ?>
+            <?php endwhile; wp_reset_postdata(); ?>
           </div>
+
+          <?php if ( $jobs_query->max_num_pages > 1 ) : ?>
+            <nav class="jobs-pagination">
+              <?php if ( $paged > 1 ) : ?>
+                <a href="<?php echo esc_url( add_query_arg( 'paged', $paged - 1 ) ); ?>" class="btn btn-outline btn-small">← 前へ</a>
+              <?php endif; ?>
+              <span class="jobs-pagination-status"><?php echo esc_html( $paged ); ?> / <?php echo esc_html( $jobs_query->max_num_pages ); ?> ページ</span>
+              <?php if ( $paged < $jobs_query->max_num_pages ) : ?>
+                <a href="<?php echo esc_url( add_query_arg( 'paged', $paged + 1 ) ); ?>" class="btn btn-outline btn-small">次へ →</a>
+              <?php endif; ?>
+            </nav>
+          <?php endif; ?>
         <?php
             else :
                 echo '<p class="empty-message">検索条件に合う求人がみつかりません</p>';
             endif;
+            wp_reset_postdata();
         }
         ?>
       </div>

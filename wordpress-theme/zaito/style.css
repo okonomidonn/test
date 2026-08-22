@@ -645,6 +645,67 @@ a {
 .auth-error p {
   margin: 0;
 }
+.auth-success-message {
+  background: #e6f7ee;
+  border: 1px solid #b7ebc9;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  color: #1e6b3c;
+  font-size: 14px;
+}
+.verification-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  color: #856404;
+  font-size: 14px;
+}
+.inline-form {
+  margin: 0;
+}
+.form-check label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.form-check input[type="checkbox"] {
+  margin-top: 3px;
+}
+.form-check a {
+  color: var(--aqua);
+}
+.static-content-main {
+  min-height: 100vh;
+  padding: 60px 0;
+}
+.static-content-main .wrap {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.static-content-main h1 {
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+.static-content-main h2 {
+  font-size: 18px;
+  margin: 30px 0 12px;
+}
+.static-content-main p {
+  color: var(--ink);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
 .auth-form {
   margin: 30px 0;
 }
@@ -702,6 +763,41 @@ a {
   margin: 30px 0;
   color: var(--muted);
   font-size: 13px;
+}
+.auth-link-right {
+  text-align: right;
+  margin: -10px 0 20px;
+}
+.auth-description {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.btn-google {
+  background: #fff;
+  border: 1px solid #d9d7d0;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.btn-google:hover {
+  border-color: #d9d7d0;
+  box-shadow: var(--shadow-sm);
+}
+.google-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4285f4, #34a853, #fbbc05, #ea4335);
+  color: #fff;
+  font-weight: 800;
+  font-size: 12px;
 }
 
 /* MyPage and Company Pages */
@@ -1173,6 +1269,23 @@ a {
 .empty-message {
   text-align: center;
   padding: 60px 40px;
+  color: var(--muted);
+}
+.jobs-result-count {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+.jobs-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+}
+.jobs-pagination-status {
+  font-size: 13px;
+  font-weight: 700;
   color: var(--muted);
 }
 

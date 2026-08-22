@@ -66,6 +66,7 @@ $jobs = get_posts( array(
 
           <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="apply-form">
             <input type="hidden" name="action" value="zaito_post_job" />
+            <?php wp_nonce_field( 'zaito_post_job' ); ?>
 
             <div class="form-group">
               <label for="title">求人タイトル</label>

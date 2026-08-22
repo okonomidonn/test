@@ -13,6 +13,7 @@ get_header();
 
 <main class="mypage-main">
   <div class="wrap">
+    <?php zaito_render_verification_banner(); ?>
     <div class="mypage-header">
       <h1>マイページ</h1>
       <p><?php echo esc_html( $current_user->first_name ); ?> さん</p>
@@ -30,7 +31,7 @@ get_header();
             <span class="label">メールアドレス</span>
             <span class="value"><?php echo esc_html( $current_user->user_email ); ?></span>
           </div>
-          <a href="<?php echo esc_url( admin_url( 'profile.php' ) ); ?>" class="btn btn-outline">
+          <a href="<?php echo esc_url( home_url( '/worker-profile/' ) ); ?>" class="btn btn-outline">
             プロフィール編集
           </a>
         </div>
@@ -39,6 +40,7 @@ get_header();
           <h3>メニュー</h3>
           <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="menu-link">求人を探す</a>
           <a href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>" class="menu-link active">応募履歴</a>
+          <a href="<?php echo esc_url( home_url( '/worker-profile/' ) ); ?>" class="menu-link">プロフィール編集</a>
           <a href="<?php echo esc_url( home_url( '/chat/' ) ); ?>" class="menu-link">メッセージ</a>
           <a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="menu-link logout">ログアウト</a>
         </div>

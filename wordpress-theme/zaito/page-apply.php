@@ -27,6 +27,13 @@ if ( ! empty( $apply_errors ) ) {
 }
 $application_success = isset( $_GET['applied'] ) && $_GET['applied'] === '1';
 
+$furigana = get_user_meta( $current_user->ID, 'furigana', true );
+$birthdate = get_user_meta( $current_user->ID, 'birthdate', true );
+$phone = get_user_meta( $current_user->ID, 'phone', true );
+$prefecture = get_user_meta( $current_user->ID, 'prefecture', true );
+$education = get_user_meta( $current_user->ID, 'education', true );
+$profile_incomplete = ! $furigana || ! $birthdate || ! $phone;
+
 get_header();
 
 if ( $application_success ) :
@@ -72,17 +79,58 @@ if ( $application_success ) :
             </div>
           </div>
 
+          <div class="job-summary" style="margin-top:16px;">
+            <h2 style="font-size:16px;">応募者情報（プロフィールより自動入力）</h2>
+            <div class="job-info-grid">
+              <div class="info-item">
+                <span class="label">氏名</span>
+                <span class="value"><?php echo esc_html( $current_user->first_name ?: '未設定' ); ?></span>
+              </div>
+              <div class="info-item">
+                <span class="label">フリガナ</span>
+                <span class="value"><?php echo esc_html( $furigana ?: '未設定' ); ?></span>
+              </div>
+              <div class="info-item">
+                <span class="label">生年月日</span>
+                <span class="value"><?php echo esc_html( $birthdate ?: '未設定' ); ?></span>
+              </div>
+              <div class="info-item">
+                <span class="label">電話番号</span>
+                <span class="value"><?php echo esc_html( $phone ?: '未設定' ); ?></span>
+              </div>
+              <div class="info-item">
+                <span class="label">お住まい</span>
+                <span class="value"><?php echo esc_html( $prefecture ?: '未設定' ); ?></span>
+              </div>
+              <div class="info-item">
+                <span class="label">最終学歴</span>
+                <span class="value"><?php echo esc_html( $education ?: '未設定' ); ?></span>
+              </div>
+            </div>
+            <?php if ( $profile_incomplete ) : ?>
+              <p style="margin-top:12px;font-size:13px;color:#d34e79;">
+                プロフィールが未入力の項目があります。
+                <a href="<?php echo esc_url( home_url( '/worker-profile/' ) ); ?>">プロフィールを編集する</a>
+              </p>
+            <?php else : ?>
+              <p style="margin-top:12px;">
+                <a href="<?php echo esc_url( home_url( '/worker-profile/' ) ); ?>" class="section-link">プロフィールを編集する →</a>
+              </p>
+            <?php endif; ?>
+          </div>
+
           <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="apply-form">
             <input type="hidden" name="action" value="zaito_apply" />
             <input type="hidden" name="job_id" value="<?php echo esc_attr( $job_id ); ?>" />
+            <?php wp_nonce_field( 'zaito_apply' ); ?>
 
             <div class="form-group">
-              <label for="message">応募メッセージ</label>
+              <label for="message">応募メッセージ・志望動機</label>
               <textarea
                 id="message"
                 name="message"
                 rows="8"
-                placeholder="自己紹介や質問などを記入してください"
+                placeholder="この求人に応募する理由や、自己紹介・質問などを記入してください"
                 required
               ></textarea>
               <small>企業に送られるメッセージです。丁寧にご記入ください。</small>

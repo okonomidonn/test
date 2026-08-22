@@ -18,6 +18,7 @@ get_header();
 
       <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="auth-form">
         <input type="hidden" name="action" value="zaito_register_company" />
+        <?php wp_nonce_field( 'zaito_register_company' ); ?>
 
         <div class="form-group">
           <label for="company_name">企業名</label>
@@ -48,6 +49,13 @@ get_header();
         <div class="form-group">
           <label for="password_confirm">パスワード（確認）</label>
           <input type="password" id="password_confirm" name="password_confirm" required />
+        </div>
+
+        <div class="form-group form-check">
+          <label>
+            <input type="checkbox" name="agree_terms" value="1" required />
+            <a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>" target="_blank" rel="noopener">利用規約</a>と<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>" target="_blank" rel="noopener">プライバシーポリシー</a>に同意する
+          </label>
         </div>
 
         <button type="submit" class="btn btn-accent btn-block">登録</button>

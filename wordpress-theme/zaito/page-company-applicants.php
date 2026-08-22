@@ -76,13 +76,40 @@ if ( ! empty( $own_job_ids ) ) {
                   $applicant = get_user_by( 'id', $applicant_id );
                   $applicant_name = $applicant ? $applicant->first_name : '不明';
                   $applicant_email = $applicant ? $applicant->user_email : '';
+                  $furigana = get_user_meta( $applicant_id, 'furigana', true );
+                  $birthdate = get_user_meta( $applicant_id, 'birthdate', true );
+                  $phone = get_user_meta( $applicant_id, 'phone', true );
+                  $prefecture = get_user_meta( $applicant_id, 'prefecture', true );
+                  $education = get_user_meta( $applicant_id, 'education', true );
+                  $work_history = get_user_meta( $applicant_id, 'work_history', true );
               ?>
                 <div class="application-item" style="grid-template-columns: 1fr auto auto;">
                   <div class="app-info">
-                    <h3><?php echo esc_html( $applicant_name ); ?> さん</h3>
+                    <h3><?php echo esc_html( $applicant_name ); ?> さん<?php echo $furigana ? '（' . esc_html( $furigana ) . '）' : ''; ?></h3>
                     <p class="company"><?php echo esc_html( $applicant_email ); ?></p>
                     <p>応募求人：<?php echo esc_html( $job_title ); ?></p>
-                    <p><?php echo esc_html( wp_trim_words( $message, 40 ) ); ?></p>
+                    <div class="job-info-grid" style="margin:10px 0;">
+                      <div class="info-item">
+                        <span class="label">生年月日</span>
+                        <span class="value"><?php echo esc_html( $birthdate ?: '未設定' ); ?></span>
+                      </div>
+                      <div class="info-item">
+                        <span class="label">電話番号</span>
+                        <span class="value"><?php echo esc_html( $phone ?: '未設定' ); ?></span>
+                      </div>
+                      <div class="info-item">
+                        <span class="label">お住まい</span>
+                        <span class="value"><?php echo esc_html( $prefecture ?: '未設定' ); ?></span>
+                      </div>
+                      <div class="info-item">
+                        <span class="label">最終学歴</span>
+                        <span class="value"><?php echo esc_html( $education ?: '未設定' ); ?></span>
+                      </div>
+                    </div>
+                    <?php if ( $work_history ) : ?>
+                      <p><strong>職務経歴・自己PR：</strong><?php echo esc_html( wp_trim_words( $work_history, 60 ) ); ?></p>
+                    <?php endif; ?>
+                    <p><strong>応募メッセージ：</strong><?php echo esc_html( wp_trim_words( $message, 40 ) ); ?></p>
                   </div>
                   <div class="app-status">
                     <span class="status-badge status-<?php echo esc_attr( $status ); ?>">
@@ -102,12 +129,14 @@ if ( ! empty( $own_job_ids ) ) {
                         <input type="hidden" name="action" value="zaito_update_application_status" />
                         <input type="hidden" name="application_id" value="<?php echo esc_attr( $app->ID ); ?>" />
                         <input type="hidden" name="status" value="accepted" />
+                        <?php wp_nonce_field( 'zaito_update_application_status' ); ?>
                         <button type="submit" class="btn btn-accent btn-small">採用する</button>
                       </form>
                       <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                         <input type="hidden" name="action" value="zaito_update_application_status" />
                         <input type="hidden" name="application_id" value="<?php echo esc_attr( $app->ID ); ?>" />
                         <input type="hidden" name="status" value="rejected" />
+                        <?php wp_nonce_field( 'zaito_update_application_status' ); ?>
                         <button type="submit" class="btn btn-outline btn-small">不採用にする</button>
                       </form>
                     <?php elseif ( $status === 'accepted' ) : ?>

@@ -14,6 +14,15 @@ get_header();
         </div>
       <?php endif; ?>
 
+      <?php if ( function_exists( 'zaito_google_login_is_configured' ) && zaito_google_login_is_configured() ) : ?>
+        <a href="<?php echo esc_url( zaito_google_login_url( $zaito_login_redirect_to, 'zaito_company' ) ); ?>" class="btn btn-google btn-block">
+          <span class="google-icon" aria-hidden="true">G</span> Googleでログイン
+        </a>
+        <div class="auth-divider">
+          <span>または</span>
+        </div>
+      <?php endif; ?>
+
       <form method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" class="auth-form">
         <input type="hidden" name="redirect_to" value="<?php echo esc_url( $zaito_login_redirect_to ); ?>" />
         <div class="form-group">

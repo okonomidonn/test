@@ -14,6 +14,7 @@ $company_name = get_user_meta( $current_user->ID, 'company_name', true );
 
 <main class="company-main">
   <div class="wrap">
+    <?php zaito_render_verification_banner(); ?>
     <div class="company-header">
       <h1>企業ダッシュボード</h1>
       <p><?php echo esc_html( $company_name ); ?></p>
