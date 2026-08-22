@@ -632,16 +632,12 @@ function zaito_send_message() {
 add_action( 'wp_ajax_zaito_send_message', 'zaito_send_message' );
 
 /**
- * デモ用の架空求人を一括生成する（管理者専用・一度きりの実行）。
- * 管理者が /wp-admin/admin-post.php?action=zaito_seed_demo_jobs にアクセスすると実行される。
- * 既に生成済みの場合は再実行しない。?reset=1 を付けると一旦削除してから作り直す。
+ * デモ用の架空求人を50件生成する共通ロジック。
+ * 既に生成済みの場合は何もしない（$force で強制再生成）。
+ * 戻り値は今回作成した件数。
  */
-function zaito_seed_demo_jobs() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-        wp_die( 'この操作には管理者権限が必要です。' );
-    }
-
-    if ( isset( $_GET['reset'] ) && $_GET['reset'] === '1' ) {
+function zaito_generate_demo_jobs( $force = false ) {
+    if ( $force ) {
         $existing = get_posts( array(
             'post_type'      => 'job_listing',
             'posts_per_page' => -1,
@@ -656,7 +652,7 @@ function zaito_seed_demo_jobs() {
     }
 
     if ( get_option( 'zaito_demo_jobs_seeded' ) ) {
-        wp_die( '架空求人は既に生成済みです。作り直す場合は URL の末尾に <code>&reset=1</code> を付けて再度アクセスしてください。<br><a href="' . esc_url( home_url( '/jobs/' ) ) . '">求人一覧を見る</a>' );
+        return 0;
     }
 
     $categories = array(
@@ -726,6 +722,42 @@ function zaito_seed_demo_jobs() {
     }
 
     update_option( 'zaito_demo_jobs_seeded', $created );
+
+    return $created;
+}
+
+/**
+ * サイトへの通常アクセス時に、まだ架空求人が生成されていなければ
+ * 自動的に生成する。管理者のログインやクリックを一切必要とせず、
+ * デプロイ後に誰かがサイトを訪問した時点で一度だけ実行される。
+ */
+function zaito_maybe_auto_seed_demo_jobs() {
+    if ( is_admin() ) {
+        return;
+    }
+    if ( get_option( 'zaito_demo_jobs_seeded' ) ) {
+        return;
+    }
+    zaito_generate_demo_jobs();
+}
+add_action( 'init', 'zaito_maybe_auto_seed_demo_jobs', 30 );
+
+/**
+ * 管理者が手動で作り直したい場合のための入口。
+ * /wp-admin/admin-post.php?action=zaito_seed_demo_jobs&reset=1 のように
+ * アクセスすると、既存の架空求人を削除してから作り直す。
+ */
+function zaito_seed_demo_jobs() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'この操作には管理者権限が必要です。' );
+    }
+
+    $force = isset( $_GET['reset'] ) && $_GET['reset'] === '1';
+    $created = zaito_generate_demo_jobs( $force );
+
+    if ( $created === 0 && ! $force ) {
+        wp_die( '架空求人は既に生成済みです。作り直す場合は URL の末尾に <code>&reset=1</code> を付けて再度アクセスしてください。<br><a href="' . esc_url( home_url( '/jobs/' ) ) . '">求人一覧を見る</a>' );
+    }
 
     wp_die( $created . '件の架空求人を作成しました。<br><a href="' . esc_url( home_url( '/jobs/' ) ) . '">求人一覧を見る</a>' );
 }
