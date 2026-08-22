@@ -54,13 +54,13 @@
 
 <section class="section" id="feature">
   <div class="wrap">
-    <div class="section-head">
+    <div class="section-head reveal">
       <div class="section-eyebrow">FEATURES</div>
       <h2>「在宅で働く」を、もっと身近に。</h2>
     </div>
 
     <div class="card-grid">
-      <div class="card">
+      <div class="card reveal">
         <div class="card-top">
           <span class="badge badge-mint">完全在宅</span>
           <span style="font-size:14px;font-weight:900;">01</span>
@@ -68,7 +68,7 @@
         <h3>場所に縛られない</h3>
         <p>通勤ゼロ。自分の好きな場所が仕事場。授業やサークルと両立できます。</p>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <div class="card-top">
           <span class="badge badge-pink">学生歓迎</span>
           <span style="font-size:14px;font-weight:900;">02</span>
@@ -76,7 +76,7 @@
         <h3>はじめやすい仕事</h3>
         <p>未経験・大学生OKの求人もたくさん。スキルアップできます。</p>
       </div>
-      <div class="card">
+      <div class="card reveal">
         <div class="card-top">
           <span class="badge badge-yellow">自由な働き方</span>
           <span style="font-size:14px;font-weight:900;">03</span>
@@ -90,7 +90,7 @@
 
 <section class="section">
   <div class="wrap">
-    <div class="section-head-row">
+    <div class="section-head-row reveal">
       <div>
         <div class="section-eyebrow">PICK UP</div>
         <h2>今、人気の在宅求人。</h2>
@@ -106,7 +106,7 @@
         <p class="empty">求人がまだありません</p>
       <?php else : ?>
         <?php foreach ( $featured_jobs as $job ) : ?>
-          <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="card">
+          <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="card reveal">
             <div class="card-top">
               <span class="badge badge-mint">人気</span>
             </div>
@@ -131,7 +131,7 @@
 </section>
 
 <section class="cta-section">
-  <div class="cta-box">
+  <div class="cta-box reveal">
     <div class="cta-blob"></div>
     <div class="cta-content">
       <div class="eyebrow">zaito</div>

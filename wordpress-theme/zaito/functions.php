@@ -21,8 +21,41 @@ function zaito_scripts() {
         array(),
         wp_get_theme()->get( 'Version' )
     );
+    wp_enqueue_script(
+        'zaito-main',
+        get_template_directory_uri() . '/js/zaito.js',
+        array(),
+        wp_get_theme()->get( 'Version' ),
+        true
+    );
 }
 add_action( 'wp_enqueue_scripts', 'zaito_scripts' );
+
+/**
+ * ログイン後のリダイレクト先をロールごとに振り分ける。
+ * ワーカーはマイページへ、企業はダッシュボードへ、それ以外（管理者等）は既定の動作。
+ */
+function zaito_login_redirect( $redirect_to, $requested_redirect_to, $user ) {
+    if ( isset( $user->roles ) && is_array( $user->roles ) && ! is_wp_error( $user ) ) {
+        if ( in_array( 'zaito_company', $user->roles, true ) ) {
+            return home_url( '/company/' );
+        }
+        if ( in_array( 'zaito_seeker', $user->roles, true ) ) {
+            return home_url( '/mypage/' );
+        }
+    }
+    return $redirect_to;
+}
+add_filter( 'login_redirect', 'zaito_login_redirect', 10, 3 );
+
+/**
+ * ログアウト後はトップページへ。
+ */
+function zaito_logout_redirect() {
+    wp_safe_redirect( home_url( '/' ) );
+    exit;
+}
+add_action( 'wp_logout', 'zaito_logout_redirect' );
 
 /**
  * カスタムロールの登録
