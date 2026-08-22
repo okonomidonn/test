@@ -61,14 +61,16 @@
                 <a href="<?php echo esc_url( home_url( '/apply/?job_id=' . get_the_ID() ) ); ?>" class="btn btn-accent btn-block">
                   応募する
                 </a>
-              <?php else : ?>
+              <?php else :
+                $zaito_apply_redirect = home_url( '/apply/?job_id=' . get_the_ID() );
+              ?>
                 <p class="login-prompt">応募にはログインが必要です</p>
-                <a href="<?php echo esc_url( home_url( '/login/?redirect=' . urlencode( get_permalink() ) ) ); ?>" class="btn btn-accent btn-block">
+                <a href="<?php echo esc_url( add_query_arg( 'redirect_to', rawurlencode( $zaito_apply_redirect ), home_url( '/login/' ) ) ); ?>" class="btn btn-accent btn-block">
                   ログイン
                 </a>
                 <p class="register-prompt">アカウントをお持ちでない方</p>
-                <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-outline btn-block">
-                  無料で登録
+                <a href="<?php echo esc_url( add_query_arg( 'redirect_to', rawurlencode( $zaito_apply_redirect ), home_url( '/register/' ) ) ); ?>" class="btn btn-outline btn-block">
+                  無料で登録（1分で完了）
                 </a>
               <?php endif; ?>
             </div>

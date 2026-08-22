@@ -560,15 +560,31 @@ a {
   color: #c8ccd5;
   margin: 0;
 }
+.cta-actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
 .btn-cta {
   background: var(--mint);
   color: #123c37;
-  position: relative;
-  z-index: 2;
   white-space: nowrap;
 }
 .btn-cta:hover {
   box-shadow: 0 16px 34px rgba(189, 245, 229, .45);
+}
+.cta-secondary-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: #c8ccd5;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cta-secondary-link:hover {
+  color: #fff;
 }
 .cta-box {
   transition: transform .35s var(--ease), box-shadow .35s var(--ease);
@@ -1415,6 +1431,9 @@ a {
   .cta-box {
     flex-direction: column;
     text-align: center;
+  }
+  .cta-actions {
+    align-items: center;
   }
   .mypage-grid,
   .company-grid {

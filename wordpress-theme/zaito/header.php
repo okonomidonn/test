@@ -16,7 +16,7 @@
 
     <nav class="site-nav">
       <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>">求人を探す</a>
-      <a href="#feature">zaitoとは</a>
+      <a href="<?php echo esc_url( is_front_page() ? '#feature' : home_url( '/#feature' ) ); ?>">zaitoとは</a>
     </nav>
 
     <button type="button" class="nav-toggle" aria-label="メニューを開く" aria-expanded="false">
@@ -26,7 +26,7 @@
     <div class="header-actions">
       <?php if ( ! is_user_logged_in() ) : ?>
         <a href="<?php echo esc_url( home_url( '/login/' ) ); ?>" class="btn btn-outline">ログイン</a>
-        <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-solid">無料で登録</a>
+        <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-solid">無料で登録（1分）</a>
       <?php else :
         $zaito_current_user = wp_get_current_user();
         $zaito_mypage_url = in_array( 'zaito_company', $zaito_current_user->roles, true )

@@ -438,7 +438,11 @@ function zaito_handle_register_worker() {
             update_user_meta( $user_id, 'zaito_email_verified', '0' );
             zaito_send_verification_email( $user_id );
             zaito_log_user_in_silently( $user_id );
-            wp_safe_redirect( home_url( '/mypage/' ) );
+
+            $redirect_to = isset( $_POST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_POST['redirect_to'] ) ) : '';
+            $is_local_redirect = $redirect_to && strpos( $redirect_to, home_url() ) === 0;
+
+            wp_safe_redirect( $is_local_redirect ? $redirect_to : home_url( '/mypage/' ) );
             exit;
         }
     }

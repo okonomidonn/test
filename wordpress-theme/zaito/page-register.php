@@ -1,5 +1,6 @@
 <?php
 $registration_errors = zaito_get_form_errors_from_token();
+$zaito_register_redirect_to = ! empty( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : '';
 get_header();
 ?>
 
@@ -18,6 +19,9 @@ get_header();
 
       <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="auth-form">
         <input type="hidden" name="action" value="zaito_register_worker" />
+        <?php if ( $zaito_register_redirect_to ) : ?>
+          <input type="hidden" name="redirect_to" value="<?php echo esc_attr( $zaito_register_redirect_to ); ?>" />
+        <?php endif; ?>
         <?php wp_nonce_field( 'zaito_register_worker' ); ?>
 
         <div class="form-group">
@@ -52,7 +56,8 @@ get_header();
       </form>
 
       <p class="auth-link">
-        既にアカウントをお持ちの方は <a href="<?php echo esc_url( home_url( '/login/' ) ); ?>">こちらからログイン</a>
+        既にアカウントをお持ちの方は
+        <a href="<?php echo esc_url( $zaito_register_redirect_to ? add_query_arg( 'redirect_to', rawurlencode( $zaito_register_redirect_to ), home_url( '/login/' ) ) : home_url( '/login/' ) ); ?>">こちらからログイン</a>
       </p>
     </div>
   </div>

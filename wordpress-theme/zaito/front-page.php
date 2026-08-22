@@ -105,23 +105,28 @@
       ?>
         <p class="empty">求人がまだありません</p>
       <?php else : ?>
-        <?php foreach ( $featured_jobs as $job ) : ?>
+        <?php foreach ( $featured_jobs as $job ) :
+          $job_category = get_post_meta( $job->ID, '_job_category', true );
+          $job_salary   = get_post_meta( $job->ID, '_job_salary', true );
+          $job_days     = get_post_meta( $job->ID, '_job_days', true );
+          $job_target   = get_post_meta( $job->ID, '_job_target', true );
+        ?>
           <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="card reveal">
             <div class="card-top">
-              <span class="badge badge-mint">人気</span>
+              <span class="badge badge-mint"><?php echo esc_html( $job_category ?: '人気' ); ?></span>
             </div>
             <h3><?php echo esc_html( get_the_title( $job ) ); ?></h3>
             <p><?php echo esc_html( get_post_meta( $job->ID, '_company_name', true ) ); ?></p>
             <div class="price">
-              <span class="unit">時給 </span>1,300円〜
+              <span class="unit">時給 </span><?php echo $job_salary ? esc_html( $job_salary ) . '円〜' : '応相談'; ?>
             </div>
             <div class="tag-list">
               <span class="tag">#完全在宅</span>
               <span class="tag">#未経験OK</span>
             </div>
             <div class="card-footer">
-              <span>週2〜OK</span>
-              <span>大学生歓迎</span>
+              <span><?php echo esc_html( $job_days ?: '週2〜OK' ); ?></span>
+              <span><?php echo esc_html( $job_target ?: '大学生歓迎' ); ?></span>
             </div>
           </a>
         <?php endforeach; ?>
@@ -136,9 +141,12 @@
     <div class="cta-content">
       <div class="eyebrow">zaito</div>
       <h2>自分らしく、おうちで働こう。</h2>
-      <p>あなたのペースで見つかる、在宅ワーク。</p>
+      <p>登録は無料・1分で完了。今日からあなたに合った在宅ワークを探せます。</p>
     </div>
-    <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-cta">求人を探してみる →</a>
+    <div class="cta-actions">
+      <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-cta">無料で会員登録 →</a>
+      <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="cta-secondary-link">まずは求人を見てみる</a>
+    </div>
   </div>
 </section>
 
