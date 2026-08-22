@@ -630,3 +630,103 @@ function zaito_send_message() {
     }
 }
 add_action( 'wp_ajax_zaito_send_message', 'zaito_send_message' );
+
+/**
+ * デモ用の架空求人を一括生成する（管理者専用・一度きりの実行）。
+ * 管理者が /wp-admin/admin-post.php?action=zaito_seed_demo_jobs にアクセスすると実行される。
+ * 既に生成済みの場合は再実行しない。?reset=1 を付けると一旦削除してから作り直す。
+ */
+function zaito_seed_demo_jobs() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'この操作には管理者権限が必要です。' );
+    }
+
+    if ( isset( $_GET['reset'] ) && $_GET['reset'] === '1' ) {
+        $existing = get_posts( array(
+            'post_type'      => 'job_listing',
+            'posts_per_page' => -1,
+            'meta_query'     => array(
+                array( 'key' => '_zaito_demo', 'value' => '1' ),
+            ),
+        ) );
+        foreach ( $existing as $job ) {
+            wp_delete_post( $job->ID, true );
+        }
+        delete_option( 'zaito_demo_jobs_seeded' );
+    }
+
+    if ( get_option( 'zaito_demo_jobs_seeded' ) ) {
+        wp_die( '架空求人は既に生成済みです。作り直す場合は URL の末尾に <code>&reset=1</code> を付けて再度アクセスしてください。<br><a href="' . esc_url( home_url( '/jobs/' ) ) . '">求人一覧を見る</a>' );
+    }
+
+    $categories = array(
+        array(
+            'label' => 'ライティング',
+            'titles' => array( 'Webライター', 'SEO記事作成スタッフ', 'コラムライター', '商品レビューライティング', '取材・インタビューライター', 'コピーライティングアシスタント' ),
+            'content' => 'Webメディア向けの記事作成をお願いします。テーマに沿ったリサーチと執筆、簡単な校正までを一貫してご担当いただきます。文章を書くことが好きな方、正確な情報収集ができる方を歓迎します。',
+        ),
+        array(
+            'label' => 'デザイン',
+            'titles' => array( 'バナーデザイナー', 'ロゴ・ブランディングデザイン', 'ECサイトデザイナー', 'SNS投稿画像デザイン', 'LP（ランディングページ）デザイン', 'イラスト制作スタッフ' ),
+            'content' => 'Webバナーや販促画像のデザイン制作をお願いします。Photoshop・Illustratorを使った基本的な操作ができればOK。ポートフォリオがある方は優遇しますが、未経験からのスタートも歓迎です。',
+        ),
+        array(
+            'label' => 'プログラミング',
+            'titles' => array( 'WordPressサイト制作', 'フロントエンドエンジニア（在宅）', '簡単な不具合修正・保守', 'Webサイトコーディング', 'スプレッドシート自動化', 'ノーコードツール構築サポート' ),
+            'content' => '既存Webサイトの軽微な修正・機能追加を中心にお願いします。HTML/CSS/JavaScriptの基礎知識がある方、学習中の方も歓迎です。分からない点はチームでフォローします。',
+        ),
+        array(
+            'label' => '事務・データ入力',
+            'titles' => array( 'データ入力スタッフ', '経理サポート（在宅）', '請求書作成アシスタント', 'リスト作成・整理業務', 'アンケート集計スタッフ', '資料作成アシスタント' ),
+            'content' => 'Excel・スプレッドシートを使ったデータ入力や資料整理をお願いします。パソコンの基本操作ができれば未経験でも問題ありません。マニュアルを用意しているので安心してご応募ください。',
+        ),
+        array(
+            'label' => 'カスタマーサポート',
+            'titles' => array( 'チャットサポートスタッフ', 'メール対応オペレーター', '予約受付サポート', 'ECサイトお問い合わせ対応', 'SNSアカウント運用サポート', 'ヘルプデスクスタッフ' ),
+            'content' => 'お客様からのお問い合わせ対応（チャット・メール中心）をお願いします。丁寧なコミュニケーションができる方を歓迎します。研修制度がありますので未経験でも安心です。',
+        ),
+    );
+
+    $companies = array(
+        '株式会社リモートワークス', '合同会社おうちワーク', '株式会社クラウドスタイル', '株式会社フリーホーム',
+        '合同会社ネクストリモート', '株式会社ワークシェア', '株式会社テレワークラボ', '合同会社ホームベース',
+        '株式会社リンクワーク', '株式会社おうちジョブ', '合同会社ゆるコネクト', '株式会社スマイルリモート',
+        '株式会社フレックスタイムズ', '合同会社セルフワーク', '株式会社ノビノビワーク',
+    );
+
+    $salaries = array( '1000', '1100', '1200', '1300', '1400', '1500', '1600', '1800', '2000', '2200' );
+    $types = array( '完全在宅・シフト制', '完全在宅・時間自由', '完全在宅・週数日出社なし', '完全在宅・フレックス', '完全在宅・固定時間' );
+    $days = array( '週1日〜', '週2日〜', '週3日〜', '月10時間〜', '応相談' );
+    $targets = array( '未経験OK・大学生歓迎', '主婦(夫)歓迎・扶養内OK', '副業OK・経験者優遇', '未経験OK・研修あり', 'シニア世代歓迎', 'Wワーク歓迎' );
+
+    $created = 0;
+    for ( $i = 0; $i < 50; $i++ ) {
+        $cat = $categories[ array_rand( $categories ) ];
+        $title = $cat['titles'][ array_rand( $cat['titles'] ) ];
+        $company = $companies[ array_rand( $companies ) ];
+
+        $job_id = wp_insert_post( array(
+            'post_type'    => 'job_listing',
+            'post_title'   => $title,
+            'post_content' => $cat['content'],
+            'post_status'  => 'publish',
+        ) );
+
+        if ( ! $job_id || is_wp_error( $job_id ) ) {
+            continue;
+        }
+
+        update_post_meta( $job_id, '_company_name', $company );
+        update_post_meta( $job_id, '_job_salary', $salaries[ array_rand( $salaries ) ] );
+        update_post_meta( $job_id, '_job_type', $types[ array_rand( $types ) ] );
+        update_post_meta( $job_id, '_job_days', $days[ array_rand( $days ) ] );
+        update_post_meta( $job_id, '_job_target', $targets[ array_rand( $targets ) ] );
+        update_post_meta( $job_id, '_zaito_demo', '1' );
+        $created++;
+    }
+
+    update_option( 'zaito_demo_jobs_seeded', $created );
+
+    wp_die( $created . '件の架空求人を作成しました。<br><a href="' . esc_url( home_url( '/jobs/' ) ) . '">求人一覧を見る</a>' );
+}
+add_action( 'admin_post_zaito_seed_demo_jobs', 'zaito_seed_demo_jobs' );
