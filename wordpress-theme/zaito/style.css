@@ -6,26 +6,29 @@ Version: 0.2
 */
 
 :root {
+  /* 「在宅ワーク」らしい、紙とインクを思わせる温かみのある配色。
+     藍色（インディゴ）× 柿色（テラコッタ）× からし色（オーカー）で、
+     よくあるミント×ラベンダーのSaaS配色から意図的に離している。 */
   --background: #ffffff;
   --foreground: #14261f;
-  --brand: #0f7a5c;
-  --brand-dark: #0b5c45;
-  --accent: #f59e0b;
-  --ink: #182033;
-  --muted: #687083;
-  --paper: #fffdf9;
+  --brand: #b2492b;
+  --brand-dark: #8a3620;
+  --accent: #c98a2e;
+  --ink: #23262b;
+  --muted: #6f6a5c;
+  --paper: #f7f1e4;
   --white: #fff;
-  --mint: #bdf5e5;
-  --aqua: #25c8b0;
-  --pink: #ff6f9f;
-  --peach: #ffd8c8;
-  --lav: #ddd5ff;
-  --yellow: #ffe58a;
-  --line: #e9e7e1;
+  --mint: #f0d9a8;
+  --aqua: #b2492b;
+  --pink: #c98a2e;
+  --peach: #e8b98a;
+  --lav: #333f5c;
+  --yellow: #ddb85c;
+  --line: #e2d9c5;
   --ease: cubic-bezier(.16, .84, .44, 1);
-  --shadow-sm: 0 4px 14px rgba(24, 32, 51, .06);
-  --shadow-md: 0 12px 32px rgba(24, 32, 51, .10);
-  --shadow-lg: 0 24px 55px rgba(24, 32, 51, .16);
+  --shadow-sm: 0 4px 14px rgba(35, 38, 43, .07);
+  --shadow-md: 0 12px 32px rgba(35, 38, 43, .12);
+  --shadow-lg: 0 24px 55px rgba(35, 38, 43, .18);
 }
 
 * {
@@ -198,7 +201,7 @@ a {
   color: #fff;
 }
 .btn-accent:hover {
-  box-shadow: 0 14px 30px rgba(37, 200, 176, .35);
+  box-shadow: 0 14px 30px rgba(178, 73, 43, .35);
 }
 
 /* Footer */
@@ -223,28 +226,6 @@ a {
   padding: 58px 0 80px;
   background: var(--paper);
 }
-.hero-blob-1 {
-  position: absolute;
-  border-radius: 50%;
-  z-index: -1;
-  width: 470px;
-  height: 470px;
-  background: var(--lav);
-  right: -170px;
-  top: -130px;
-  animation: blobFloat 10s ease-in-out infinite;
-}
-.hero-blob-2 {
-  position: absolute;
-  border-radius: 50%;
-  z-index: -1;
-  width: 300px;
-  height: 300px;
-  background: var(--mint);
-  left: -170px;
-  bottom: -130px;
-  animation: blobFloat 12s ease-in-out infinite reverse;
-}
 @keyframes blobFloat {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-20px) scale(1.04); }
@@ -258,7 +239,7 @@ a {
 .hero p.lead { animation: fadeInUp .7s var(--ease) .16s both; }
 .hero .tag-list { animation: fadeInUp .7s var(--ease) .24s both; }
 .hero-cta { animation: fadeInUp .7s var(--ease) .32s both; }
-.hero-card { animation: fadeInUp .8s var(--ease) .22s both; }
+.hero-illustration { animation: fadeInUp .8s var(--ease) .22s both; }
 
 .reveal {
   opacity: 0;
@@ -305,7 +286,7 @@ a {
 .hero h1 .grad {
   font-style: normal;
   display: inline-block;
-  background: linear-gradient(100deg, var(--aqua), #54b8ff);
+  background: linear-gradient(100deg, var(--aqua), #c98a2e);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -343,55 +324,79 @@ a {
   gap: 12px;
   flex-wrap: wrap;
 }
-.hero-card {
-  min-height: 430px;
+.hero-illustration {
   position: relative;
+  min-height: 380px;
 }
-.hero-card-panel {
-  position: absolute;
-  inset: 25px 0 0 35px;
-  background: #fff;
-  border: 1px solid #e7e4dc;
-  border-radius: 30px;
-  box-shadow: 0 18px 50px rgba(24, 32, 51, .10);
-  padding: 20px;
-  transform: rotate(2deg);
+.hero-illustration svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
 }
-.hero-card-dots {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 18px;
+.illust-backdrop {
+  fill: var(--lav);
+  opacity: .92;
 }
-.hero-card-dots span {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #d7d4cc;
-  display: inline-block;
+.illust-leaf {
+  fill: #6b7a5e;
 }
-.hero-card-hero {
-  height: 175px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #e8fff8, #c8f4eb);
-  position: relative;
-  overflow: hidden;
+.illust-pot {
+  fill: var(--aqua);
 }
-.hero-card-hero-text {
-  position: absolute;
-  left: 22px;
-  top: 25px;
-  font-size: 30px;
-  font-weight: 900;
-  line-height: 1.05;
+.illust-desk {
+  fill: var(--peach);
 }
-.hero-card-bar {
-  height: 45px;
-  border-radius: 13px;
-  background: #f7f6f2;
-  margin-top: 14px;
+.illust-desk-leg {
+  fill: #d3b78d;
 }
-.hero-card-bar.short {
-  width: 72%;
+.illust-person {
+  fill: var(--ink);
+}
+.illust-laptop-base {
+  fill: #ece3d1;
+}
+.illust-laptop-screen {
+  fill: var(--ink);
+}
+.illust-laptop-ui {
+  fill: var(--pink);
+  opacity: .9;
+}
+.illust-laptop-dot {
+  fill: var(--mint);
+}
+.illust-cup {
+  fill: #fff;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.illust-cup-handle {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.illust-dot {
+  fill: var(--pink);
+}
+.illust-dot.dot-2 {
+  fill: var(--mint);
+}
+.illust-dot.dot-3 {
+  fill: var(--aqua);
+}
+.dot-1 {
+  animation: blobFloat 6s ease-in-out infinite;
+  transform-origin: 352px 90px;
+}
+.dot-2 {
+  animation: blobFloat 8s ease-in-out infinite reverse;
+  transform-origin: 34px 120px;
+}
+.dot-3 {
+  animation: blobFloat 7s ease-in-out infinite;
+  transform-origin: 368px 230px;
 }
 
 /* Sections */
@@ -436,6 +441,22 @@ a {
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
+/* あえて均一な3分割にしない、非対称なビエントグリッド */
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  grid-template-rows: repeat(2, 1fr);
+  gap: 18px;
+}
+.feature-card-lg {
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.feature-card-lg h3 {
+  font-size: 26px;
+}
 .card {
   background: #fff;
   border: 1px solid #e7e4dc;
@@ -450,7 +471,7 @@ a {
 .card:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
-  border-color: rgba(37, 200, 176, .35);
+  border-color: rgba(178, 73, 43, .35);
 }
 .card-top {
   display: flex;
@@ -465,16 +486,16 @@ a {
   font-weight: 900;
 }
 .badge-mint {
-  background: #f1fffb;
-  color: #087f70;
+  background: #eef1e5;
+  color: #55633e;
 }
 .badge-pink {
-  background: #fff3f7;
-  color: #d34e79;
+  background: #fbeae4;
+  color: #a8432a;
 }
 .badge-yellow {
-  background: #fff9df;
-  color: #90731b;
+  background: #faf1da;
+  color: #8a6a1f;
 }
 .card h3 {
   font-size: 20px;
@@ -533,13 +554,13 @@ a {
 }
 .cta-blob {
   position: absolute;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
+  width: 260px;
+  height: 220px;
   background: var(--pink);
-  right: -90px;
-  top: -100px;
-  opacity: .9;
+  right: -70px;
+  top: -80px;
+  opacity: .92;
+  clip-path: polygon(20% 0%, 100% 8%, 88% 78%, 42% 100%, 0% 62%);
   animation: blobFloat 8s ease-in-out infinite;
 }
 .cta-content {
@@ -575,11 +596,11 @@ a {
 }
 .btn-cta {
   background: var(--mint);
-  color: #123c37;
+  color: #4a3418;
   white-space: nowrap;
 }
 .btn-cta:hover {
-  box-shadow: 0 16px 34px rgba(189, 245, 229, .45);
+  box-shadow: 0 16px 34px rgba(240, 217, 168, .5);
 }
 .cta-secondary-link {
   font-size: 13px;
@@ -754,7 +775,7 @@ a {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--aqua);
-  box-shadow: 0 0 0 4px rgba(37, 200, 176, .14);
+  box-shadow: 0 0 0 4px rgba(178, 73, 43, .14);
 }
 .form-group textarea {
   resize: vertical;
@@ -948,7 +969,7 @@ a {
 .job-item:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-sm);
-  border-color: rgba(37, 200, 176, .3);
+  border-color: rgba(178, 73, 43, .3);
 }
 .app-info h3,
 .job-info h3 {
@@ -1059,7 +1080,7 @@ a {
 .apply-form textarea:focus {
   outline: none;
   border-color: var(--aqua);
-  box-shadow: 0 0 0 4px rgba(37, 200, 176, .14);
+  box-shadow: 0 0 0 4px rgba(178, 73, 43, .14);
 }
 .form-actions {
   display: flex;
@@ -1432,6 +1453,13 @@ a {
   }
   .card-grid {
     grid-template-columns: 1fr;
+  }
+  .feature-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .feature-card-lg {
+    grid-row: auto;
   }
   .cta-box {
     flex-direction: column;

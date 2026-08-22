@@ -10,9 +10,6 @@ get_header();
 ?>
 
 <section class="hero">
-  <div class="hero-blob-1"></div>
-  <div class="hero-blob-2"></div>
-
   <div class="wrap">
     <div class="hero-grid">
       <div>
@@ -49,17 +46,43 @@ get_header();
         </div>
       </div>
 
-      <div class="hero-card">
-        <div class="hero-card-panel">
-          <div class="hero-card-dots">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="hero-card-hero">
-            <div class="hero-card-hero-text">WORK<br>YOUR<br>WAY.</div>
-          </div>
-          <div class="hero-card-bar"></div>
-          <div class="hero-card-bar short"></div>
-        </div>
+      <div class="hero-illustration" aria-hidden="true">
+        <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg" role="img">
+          <path class="illust-backdrop" d="M120 8C220 -10 380 30 392 150C404 268 320 330 240 372C158 414 46 404 18 320C-10 236 30 150 62 96C86 54 88 22 120 8Z" />
+
+          <!-- 植物 -->
+          <ellipse class="illust-leaf" cx="52" cy="238" rx="20" ry="30" transform="rotate(-18 52 238)" />
+          <ellipse class="illust-leaf" cx="70" cy="222" rx="16" ry="26" transform="rotate(14 70 222)" />
+          <ellipse class="illust-leaf" cx="60" cy="205" rx="14" ry="22" transform="rotate(-4 60 205)" />
+          <rect class="illust-pot" x="40" y="258" width="42" height="34" rx="8" />
+
+          <!-- 机 -->
+          <rect class="illust-desk" x="70" y="300" width="290" height="20" rx="6" />
+          <rect class="illust-desk-leg" x="90" y="320" width="10" height="60" rx="3" />
+          <rect class="illust-desk-leg" x="330" y="320" width="10" height="60" rx="3" />
+
+          <!-- 人物（フラットなシルエット） -->
+          <circle class="illust-person" cx="230" cy="222" r="26" />
+          <path class="illust-person" d="M182 300C182 262 204 246 230 246C256 246 278 262 278 300V310H182V300Z" />
+
+          <!-- ノートPC -->
+          <rect class="illust-laptop-base" x="150" y="296" width="120" height="10" rx="3" />
+          <path class="illust-laptop-screen" d="M162 216H258C261 216 263 218 263 221V292H157V221C157 218 159 216 162 216Z" />
+          <rect class="illust-laptop-ui" x="170" y="228" width="80" height="8" rx="4" />
+          <circle class="illust-laptop-dot" cx="176" cy="252" r="4" />
+          <circle class="illust-laptop-dot" cx="192" cy="252" r="4" />
+          <circle class="illust-laptop-dot" cx="208" cy="252" r="4" />
+          <rect class="illust-laptop-ui" x="170" y="266" width="60" height="6" rx="3" />
+
+          <!-- コーヒーカップ -->
+          <path class="illust-cup" d="M296 268H328L324 300H300L296 268Z" />
+          <path class="illust-cup-handle" d="M328 274C338 274 338 292 328 292" />
+
+          <!-- 浮遊するアクセント -->
+          <circle class="illust-dot dot-1" cx="352" cy="90" r="7" />
+          <circle class="illust-dot dot-2" cx="34" cy="120" r="5" />
+          <circle class="illust-dot dot-3" cx="368" cy="230" r="5" />
+        </svg>
       </div>
     </div>
   </div>
@@ -72,8 +95,8 @@ get_header();
       <h2>「在宅で働く」を、もっと身近に。</h2>
     </div>
 
-    <div class="card-grid">
-      <div class="card reveal">
+    <div class="feature-grid">
+      <div class="card feature-card feature-card-lg reveal">
         <div class="card-top">
           <span class="badge badge-mint">完全在宅</span>
           <span style="font-size:14px;font-weight:900;">01</span>
@@ -81,7 +104,7 @@ get_header();
         <h3>場所に縛られない</h3>
         <p>通勤ゼロ。自分の好きな場所が仕事場。授業やサークルと両立できます。</p>
       </div>
-      <div class="card reveal">
+      <div class="card feature-card reveal">
         <div class="card-top">
           <span class="badge badge-pink">学生歓迎</span>
           <span style="font-size:14px;font-weight:900;">02</span>
@@ -89,7 +112,7 @@ get_header();
         <h3>はじめやすい仕事</h3>
         <p>未経験・大学生OKの求人もたくさん。スキルアップできます。</p>
       </div>
-      <div class="card reveal">
+      <div class="card feature-card reveal">
         <div class="card-top">
           <span class="badge badge-yellow">自由な働き方</span>
           <span style="font-size:14px;font-weight:900;">03</span>
