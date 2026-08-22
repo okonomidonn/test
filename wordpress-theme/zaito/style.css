@@ -2,5 +2,448 @@
 Theme Name: zaito
 Description: 在宅ワーク求人サイト zaito のオリジナルテーマ
 Author: zaito
-Version: 0.1
+Version: 0.2
 */
+
+:root {
+  --background: #ffffff;
+  --foreground: #14261f;
+  --brand: #0f7a5c;
+  --brand-dark: #0b5c45;
+  --accent: #f59e0b;
+  --ink: #182033;
+  --muted: #687083;
+  --paper: #fffdf9;
+  --white: #fff;
+  --mint: #bdf5e5;
+  --aqua: #25c8b0;
+  --pink: #ff6f9f;
+  --peach: #ffd8c8;
+  --lav: #ddd5ff;
+  --yellow: #ffe58a;
+  --line: #e9e7e1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+.wrap {
+  width: min(1160px, calc(100% - 40px));
+  margin: auto;
+}
+
+/* Header */
+.site-header {
+  height: 78px;
+  display: flex;
+  align-items: center;
+}
+.site-header .wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.site-logo {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.site-logo span {
+  color: var(--aqua);
+}
+.site-nav {
+  display: flex;
+  gap: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4c5362;
+}
+.site-nav a {
+  text-decoration: none;
+  color: inherit;
+}
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.btn {
+  border-radius: 999px;
+  padding: 12px 19px;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  border: 1px solid transparent;
+}
+.btn-outline {
+  background: #fff;
+  border: 1px solid #d9d7d0;
+  color: var(--ink);
+}
+.btn-solid {
+  background: var(--ink);
+  color: #fff;
+}
+.btn-accent {
+  background: var(--aqua);
+  color: #fff;
+}
+
+/* Footer */
+.site-footer {
+  padding: 42px 0;
+  color: #7a808c;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  margin: 80px auto 0;
+  width: min(1160px, calc(100% - 40px));
+}
+.site-footer strong {
+  color: var(--ink);
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 58px 0 80px;
+  background: var(--paper);
+}
+.hero-blob-1 {
+  position: absolute;
+  border-radius: 50%;
+  z-index: -1;
+  width: 470px;
+  height: 470px;
+  background: var(--lav);
+  right: -170px;
+  top: -130px;
+}
+.hero-blob-2 {
+  position: absolute;
+  border-radius: 50%;
+  z-index: -1;
+  width: 300px;
+  height: 300px;
+  background: var(--mint);
+  left: -170px;
+  bottom: -130px;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 50px;
+  align-items: center;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 8px 24px rgba(24, 32, 51, .05);
+}
+.hero-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--aqua);
+}
+.hero h1 {
+  font-size: clamp(48px, 6.2vw, 82px);
+  line-height: 1.03;
+  letter-spacing: -4px;
+  margin: 20px 0 22px;
+  color: var(--ink);
+}
+.hero h1 .grad {
+  font-style: normal;
+  display: inline-block;
+  background: linear-gradient(100deg, var(--aqua), #54b8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p.lead {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 0 30px;
+}
+.tag-list {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.tag {
+  background: #fff;
+  border: 1px solid #e5e2da;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #505767;
+}
+.hero-cta {
+  margin-top: 30px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.hero-card {
+  min-height: 430px;
+  position: relative;
+}
+.hero-card-panel {
+  position: absolute;
+  inset: 25px 0 0 35px;
+  background: #fff;
+  border: 1px solid #e7e4dc;
+  border-radius: 30px;
+  box-shadow: 0 18px 50px rgba(24, 32, 51, .10);
+  padding: 20px;
+  transform: rotate(2deg);
+}
+.hero-card-dots {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.hero-card-dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #d7d4cc;
+  display: inline-block;
+}
+.hero-card-hero {
+  height: 175px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #e8fff8, #c8f4eb);
+  position: relative;
+  overflow: hidden;
+}
+.hero-card-hero-text {
+  position: absolute;
+  left: 22px;
+  top: 25px;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.05;
+}
+.hero-card-bar {
+  height: 45px;
+  border-radius: 13px;
+  background: #f7f6f2;
+  margin-top: 14px;
+}
+.hero-card-bar.short {
+  width: 72%;
+}
+
+/* Sections */
+.section {
+  padding: 88px 0;
+  background: #fff;
+}
+.section-eyebrow {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  color: var(--aqua);
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.section-head {
+  margin-bottom: 28px;
+}
+.section-head-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.section h2 {
+  font-size: 38px;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  margin: 0;
+  color: var(--ink);
+}
+.section-link {
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+/* Card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.card {
+  background: #fff;
+  border: 1px solid #e7e4dc;
+  border-radius: 24px;
+  box-shadow: 0 10px 28px rgba(24, 32, 51, .055);
+  padding: 22px;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.badge {
+  border-radius: 999px;
+  padding: 6px 9px;
+  font-size: 11px;
+  font-weight: 900;
+}
+.badge-mint {
+  background: #f1fffb;
+  color: #087f70;
+}
+.badge-pink {
+  background: #fff3f7;
+  color: #d34e79;
+}
+.badge-yellow {
+  background: #fff9df;
+  color: #90731b;
+}
+.card h3 {
+  font-size: 20px;
+  font-weight: 900;
+  margin: 0 0 7px;
+  color: var(--ink);
+}
+.card p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+.card .price {
+  font-size: 25px;
+  font-weight: 900;
+  margin: 18px 0 12px;
+  color: var(--ink);
+}
+.card .price .unit {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.card .card-footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  font-size: 11px;
+  color: #687083;
+}
+.card .empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--muted);
+  padding: 40px;
+}
+
+/* CTA */
+.cta-section {
+  padding: 88px 40px;
+}
+.cta-box {
+  width: min(1160px, calc(100% - 40px));
+  margin: auto;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 32px;
+  padding: 54px 58px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  overflow: hidden;
+  position: relative;
+}
+.cta-blob {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: var(--pink);
+  right: -90px;
+  top: -100px;
+  opacity: .9;
+}
+.cta-content {
+  position: relative;
+  z-index: 1;
+}
+.cta-content .eyebrow {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  color: var(--mint);
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.cta-content h2 {
+  font-size: 38px;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  margin: 0 0 12px;
+}
+.cta-content p {
+  font-size: 16px;
+  color: #c8ccd5;
+  margin: 0;
+}
+.btn-cta {
+  background: var(--mint);
+  color: #123c37;
+  position: relative;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+  .cta-box {
+    flex-direction: column;
+    text-align: center;
+  }
+}
