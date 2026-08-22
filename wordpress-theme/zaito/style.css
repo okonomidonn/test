@@ -165,7 +165,7 @@ a {
   align-items: center;
 }
 .btn {
-  border-radius: 999px;
+  border-radius: 6px;
   padding: 12px 19px;
   font-weight: 800;
   cursor: pointer;
