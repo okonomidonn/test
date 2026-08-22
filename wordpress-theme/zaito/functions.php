@@ -166,6 +166,205 @@ function zaito_get_featured_jobs( $limit = 3 ) {
 }
 
 /**
+ * フォームのエラー内容を一時保存し、トークン付きでリダイレクト元に戻す。
+ */
+function zaito_store_form_errors_and_redirect( $errors, $redirect_url ) {
+    $token = wp_generate_password( 20, false );
+    set_transient( 'zaito_form_errors_' . $token, $errors, 60 );
+    wp_safe_redirect( add_query_arg( 'zaito_error', $token, $redirect_url ) );
+    exit;
+}
+
+/**
+ * トークンからフォームエラーを取得して破棄する。
+ */
+function zaito_get_form_errors_from_token() {
+    if ( empty( $_GET['zaito_error'] ) ) {
+        return array();
+    }
+    $token = sanitize_text_field( wp_unslash( $_GET['zaito_error'] ) );
+    $errors = get_transient( 'zaito_form_errors_' . $token );
+    delete_transient( 'zaito_form_errors_' . $token );
+    return $errors ? $errors : array();
+}
+
+/**
+ * ワーカー登録処理（admin-post.php経由。ページ自己送信でのルーティング
+ * トラブルを避けるため、WordPress標準のフォーム処理エンドポイントを使う）
+ */
+function zaito_handle_register_worker() {
+    $errors = array();
+    $email             = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+    $name              = isset( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : '';
+    $password          = isset( $_POST['password'] ) ? $_POST['password'] : '';
+    $password_confirm  = isset( $_POST['password_confirm'] ) ? $_POST['password_confirm'] : '';
+
+    if ( ! $email ) {
+        $errors[] = 'メールアドレスを入力してください';
+    } elseif ( email_exists( $email ) ) {
+        $errors[] = 'このメールアドレスは既に登録されています';
+    }
+    if ( ! $name ) {
+        $errors[] = '氏名を入力してください';
+    }
+    if ( ! $password || strlen( $password ) < 8 ) {
+        $errors[] = 'パスワードは8文字以上で入力してください';
+    }
+    if ( $password !== $password_confirm ) {
+        $errors[] = 'パスワードが一致しません';
+    }
+
+    if ( empty( $errors ) ) {
+        $user_id = wp_insert_user( array(
+            'user_email' => $email,
+            'user_login' => sanitize_user( $email ),
+            'user_pass'  => $password,
+            'first_name' => $name,
+            'role'       => 'zaito_seeker',
+        ) );
+
+        if ( is_wp_error( $user_id ) ) {
+            $errors[] = $user_id->get_error_message();
+        } else {
+            $signon = wp_signon( array(
+                'user_login'    => sanitize_user( $email ),
+                'user_password' => $password,
+                'remember'      => false,
+            ) );
+
+            if ( is_wp_error( $signon ) ) {
+                $errors[] = 'ログインに失敗しました。お手数ですがログインページからお試しください。';
+            } else {
+                wp_set_current_user( $signon->ID );
+                wp_safe_redirect( home_url( '/mypage/' ) );
+                exit;
+            }
+        }
+    }
+
+    zaito_store_form_errors_and_redirect( $errors, home_url( '/register/' ) );
+}
+add_action( 'admin_post_nopriv_zaito_register_worker', 'zaito_handle_register_worker' );
+add_action( 'admin_post_zaito_register_worker', 'zaito_handle_register_worker' );
+
+/**
+ * 企業登録処理（admin-post.php経由）
+ */
+function zaito_handle_register_company() {
+    $errors = array();
+    $email            = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+    $company_name     = isset( $_POST['company_name'] ) ? sanitize_text_field( $_POST['company_name'] ) : '';
+    $contact_person   = isset( $_POST['contact_person'] ) ? sanitize_text_field( $_POST['contact_person'] ) : '';
+    $phone            = isset( $_POST['phone'] ) ? sanitize_text_field( $_POST['phone'] ) : '';
+    $password         = isset( $_POST['password'] ) ? $_POST['password'] : '';
+    $password_confirm = isset( $_POST['password_confirm'] ) ? $_POST['password_confirm'] : '';
+
+    if ( ! $email ) {
+        $errors[] = 'メールアドレスを入力してください';
+    } elseif ( email_exists( $email ) ) {
+        $errors[] = 'このメールアドレスは既に登録されています';
+    }
+    if ( ! $company_name ) {
+        $errors[] = '企業名を入力してください';
+    }
+    if ( ! $contact_person ) {
+        $errors[] = 'ご担当者名を入力してください';
+    }
+    if ( ! $phone ) {
+        $errors[] = '電話番号を入力してください';
+    }
+    if ( ! $password || strlen( $password ) < 8 ) {
+        $errors[] = 'パスワードは8文字以上で入力してください';
+    }
+    if ( $password !== $password_confirm ) {
+        $errors[] = 'パスワードが一致しません';
+    }
+
+    if ( empty( $errors ) ) {
+        $user_id = wp_insert_user( array(
+            'user_email' => $email,
+            'user_login' => sanitize_user( $email ),
+            'user_pass'  => $password,
+            'first_name' => $contact_person,
+            'role'       => 'zaito_company',
+        ) );
+
+        if ( is_wp_error( $user_id ) ) {
+            $errors[] = $user_id->get_error_message();
+        } else {
+            update_user_meta( $user_id, 'company_name', $company_name );
+            update_user_meta( $user_id, 'company_phone', $phone );
+
+            $signon = wp_signon( array(
+                'user_login'    => sanitize_user( $email ),
+                'user_password' => $password,
+                'remember'      => false,
+            ) );
+
+            if ( is_wp_error( $signon ) ) {
+                $errors[] = 'ログインに失敗しました。お手数ですがログインページからお試しください。';
+            } else {
+                wp_set_current_user( $signon->ID );
+                wp_safe_redirect( home_url( '/company/' ) );
+                exit;
+            }
+        }
+    }
+
+    zaito_store_form_errors_and_redirect( $errors, home_url( '/company-register/' ) );
+}
+add_action( 'admin_post_nopriv_zaito_register_company', 'zaito_handle_register_company' );
+add_action( 'admin_post_zaito_register_company', 'zaito_handle_register_company' );
+
+/**
+ * 求人応募処理（admin-post.php経由）
+ */
+function zaito_handle_apply() {
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/login/' ) );
+        exit;
+    }
+    $current_user = wp_get_current_user();
+    if ( ! in_array( 'zaito_seeker', $current_user->roles, true ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $job_id = isset( $_POST['job_id'] ) ? intval( $_POST['job_id'] ) : 0;
+    $apply_url = add_query_arg( 'job_id', $job_id, home_url( '/apply/' ) );
+
+    $job = get_post( $job_id );
+    if ( ! $job || $job->post_type !== 'job_listing' ) {
+        wp_safe_redirect( home_url( '/jobs/' ) );
+        exit;
+    }
+
+    $message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : '';
+    if ( ! $message ) {
+        zaito_store_form_errors_and_redirect( array( 'メッセージを入力してください' ), $apply_url );
+    }
+
+    $application_id = wp_insert_post( array(
+        'post_type'   => 'zaito_application',
+        'post_title'  => 'Application from ' . $current_user->user_email,
+        'post_status' => 'publish',
+    ) );
+
+    if ( ! $application_id ) {
+        zaito_store_form_errors_and_redirect( array( '応募の送信に失敗しました' ), $apply_url );
+    }
+
+    update_post_meta( $application_id, 'applicant_id', $current_user->ID );
+    update_post_meta( $application_id, 'job_id', $job_id );
+    update_post_meta( $application_id, 'message', $message );
+    update_post_meta( $application_id, 'status', 'pending' );
+
+    wp_safe_redirect( add_query_arg( 'applied', '1', $apply_url ) );
+    exit;
+}
+add_action( 'admin_post_zaito_apply', 'zaito_handle_apply' );
+
+/**
  * チャットメッセージを読み込むAJAXハンドラー
  */
 function zaito_load_messages() {

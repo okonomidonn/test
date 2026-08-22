@@ -20,29 +20,12 @@ if ( ! $job || $job->post_type !== 'job_listing' ) {
     exit;
 }
 
-$application_success = false;
 $apply_error = '';
-if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['action'] ) && $_POST['action'] === 'apply' ) {
-    $message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : '';
-
-    if ( ! $message ) {
-        $apply_error = 'メッセージを入力してください';
-    } else {
-        $application_id = wp_insert_post( array(
-            'post_type' => 'zaito_application',
-            'post_title' => 'Application from ' . $current_user->user_email,
-            'post_status' => 'publish',
-        ) );
-
-        if ( $application_id ) {
-            update_post_meta( $application_id, 'applicant_id', $current_user->ID );
-            update_post_meta( $application_id, 'job_id', $job_id );
-            update_post_meta( $application_id, 'message', $message );
-            update_post_meta( $application_id, 'status', 'pending' );
-            $application_success = true;
-        }
-    }
+$apply_errors = zaito_get_form_errors_from_token();
+if ( ! empty( $apply_errors ) ) {
+    $apply_error = $apply_errors[0];
 }
+$application_success = isset( $_GET['applied'] ) && $_GET['applied'] === '1';
 
 get_header();
 
@@ -89,8 +72,8 @@ if ( $application_success ) :
             </div>
           </div>
 
-          <form method="post" class="apply-form">
-            <input type="hidden" name="action" value="apply" />
+          <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="apply-form">
+            <input type="hidden" name="action" value="zaito_apply" />
             <input type="hidden" name="job_id" value="<?php echo esc_attr( $job_id ); ?>" />
 
             <div class="form-group">
