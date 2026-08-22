@@ -52,13 +52,12 @@ export async function Header() {
               <Link
                 href="/login"
                 style={{
-                  border: "0",
+                  border: "1px solid #d9d7d0",
                   borderRadius: "999px",
                   padding: "12px 19px",
                   fontWeight: "800",
                   cursor: "pointer",
                   background: "#fff",
-                  border: "1px solid #d9d7d0",
                   textDecoration: "none",
                   color: "var(--ink)",
                 }}
@@ -105,13 +104,12 @@ export async function Header() {
                 <button
                   type="submit"
                   style={{
-                    border: "0",
+                    border: "1px solid #d9d7d0",
                     borderRadius: "999px",
                     padding: "12px 19px",
                     fontWeight: "800",
                     cursor: "pointer",
                     background: "#fff",
-                    border: "1px solid #d9d7d0",
                   }}
                 >
                   ログアウト
@@ -142,13 +140,12 @@ export async function Header() {
                 <button
                   type="submit"
                   style={{
-                    border: "0",
+                    border: "1px solid #d9d7d0",
                     borderRadius: "999px",
                     padding: "12px 19px",
                     fontWeight: "800",
                     cursor: "pointer",
                     background: "#fff",
-                    border: "1px solid #d9d7d0",
                   }}
                 >
                   ログアウト
