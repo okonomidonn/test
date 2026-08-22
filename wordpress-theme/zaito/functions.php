@@ -166,6 +166,17 @@ function zaito_get_featured_jobs( $limit = 3 ) {
 }
 
 /**
+ * wp_login アクションを発火させずにユーザーをログイン状態にする。
+ * wp_signon() 経由だと do_action('wp_login') が発火し、
+ * Ultimate Member 等が自前のプロフィールURLへ強制リダイレクトして
+ * しまうため、新規登録直後のサイレントログインではこちらを使う。
+ */
+function zaito_log_user_in_silently( $user_id ) {
+    wp_set_current_user( $user_id );
+    wp_set_auth_cookie( $user_id, false );
+}
+
+/**
  * フォームのエラー内容を一時保存し、トークン付きでリダイレクト元に戻す。
  */
 function zaito_store_form_errors_and_redirect( $errors, $redirect_url ) {
@@ -226,19 +237,9 @@ function zaito_handle_register_worker() {
         if ( is_wp_error( $user_id ) ) {
             $errors[] = $user_id->get_error_message();
         } else {
-            $signon = wp_signon( array(
-                'user_login'    => sanitize_user( $email ),
-                'user_password' => $password,
-                'remember'      => false,
-            ) );
-
-            if ( is_wp_error( $signon ) ) {
-                $errors[] = 'ログインに失敗しました。お手数ですがログインページからお試しください。';
-            } else {
-                wp_set_current_user( $signon->ID );
-                wp_safe_redirect( home_url( '/mypage/' ) );
-                exit;
-            }
+            zaito_log_user_in_silently( $user_id );
+            wp_safe_redirect( home_url( '/mypage/' ) );
+            exit;
         }
     }
 
@@ -295,19 +296,9 @@ function zaito_handle_register_company() {
             update_user_meta( $user_id, 'company_name', $company_name );
             update_user_meta( $user_id, 'company_phone', $phone );
 
-            $signon = wp_signon( array(
-                'user_login'    => sanitize_user( $email ),
-                'user_password' => $password,
-                'remember'      => false,
-            ) );
-
-            if ( is_wp_error( $signon ) ) {
-                $errors[] = 'ログインに失敗しました。お手数ですがログインページからお試しください。';
-            } else {
-                wp_set_current_user( $signon->ID );
-                wp_safe_redirect( home_url( '/company/' ) );
-                exit;
-            }
+            zaito_log_user_in_silently( $user_id );
+            wp_safe_redirect( home_url( '/company/' ) );
+            exit;
         }
     }
 
