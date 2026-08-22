@@ -1,62 +1,66 @@
-<?php get_header(); ?>
+<?php
+$registration_errors = array();
+
+if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['action'] ) && $_POST['action'] === 'register_worker' ) {
+    $email             = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+    $name              = isset( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : '';
+    $password          = isset( $_POST['password'] ) ? $_POST['password'] : '';
+    $password_confirm  = isset( $_POST['password_confirm'] ) ? $_POST['password_confirm'] : '';
+
+    if ( ! $email ) {
+        $registration_errors[] = 'メールアドレスを入力してください';
+    } elseif ( email_exists( $email ) ) {
+        $registration_errors[] = 'このメールアドレスは既に登録されています';
+    }
+
+    if ( ! $name ) {
+        $registration_errors[] = '氏名を入力してください';
+    }
+
+    if ( ! $password || strlen( $password ) < 8 ) {
+        $registration_errors[] = 'パスワードは8文字以上で入力してください';
+    }
+
+    if ( $password !== $password_confirm ) {
+        $registration_errors[] = 'パスワードが一致しません';
+    }
+
+    if ( empty( $registration_errors ) ) {
+        $user_id = wp_insert_user( array(
+            'user_email' => $email,
+            'user_login' => sanitize_user( $email ),
+            'user_pass'  => $password,
+            'first_name' => $name,
+            'role'       => 'zaito_seeker',
+        ) );
+
+        if ( is_wp_error( $user_id ) ) {
+            $registration_errors[] = $user_id->get_error_message();
+        } else {
+            $signon = wp_signon( array(
+                'user_login'    => sanitize_user( $email ),
+                'user_password' => $password,
+                'remember'      => false,
+            ) );
+
+            if ( is_wp_error( $signon ) ) {
+                $registration_errors[] = 'ログインに失敗しました。お手数ですがログインページからお試しください。';
+            } else {
+                wp_set_current_user( $signon->ID );
+                wp_safe_redirect( home_url( '/mypage/' ) );
+                exit;
+            }
+        }
+    }
+}
+
+get_header();
+?>
 
 <main class="auth-main">
   <div class="auth-container">
     <div class="auth-card">
       <h1>ワーカー登録</h1>
-
-      <?php
-      $registration_errors = array();
-      if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['action'] ) && $_POST['action'] === 'register_worker' ) {
-          $email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
-          $name = isset( $_POST['name'] ) ? sanitize_text_field( $_POST['name'] ) : '';
-          $password = isset( $_POST['password'] ) ? $_POST['password'] : '';
-          $password_confirm = isset( $_POST['password_confirm'] ) ? $_POST['password_confirm'] : '';
-
-          if ( ! $email ) {
-              $registration_errors[] = 'メールアドレスを入力してください';
-          } elseif ( email_exists( $email ) ) {
-              $registration_errors[] = 'このメールアドレスは既に登録されています';
-          }
-
-          if ( ! $name ) {
-              $registration_errors[] = '氏名を入力してください';
-          }
-
-          if ( ! $password || strlen( $password ) < 8 ) {
-              $registration_errors[] = 'パスワードは8文字以上で入力してください';
-          }
-
-          if ( $password !== $password_confirm ) {
-              $registration_errors[] = 'パスワードが一致しません';
-          }
-
-          if ( empty( $registration_errors ) ) {
-              $user_id = wp_insert_user( array(
-                  'user_email' => $email,
-                  'user_login' => sanitize_user( $email ),
-                  'user_pass' => $password,
-                  'first_name' => $name,
-                  'role' => 'zaito_seeker',
-              ) );
-
-              if ( is_wp_error( $user_id ) ) {
-                  $registration_errors[] = $user_id->get_error_message();
-              } else {
-                  wp_signon( array(
-                      'user_login' => sanitize_user( $email ),
-                      'user_password' => $password,
-                      'remember' => false,
-                  ) );
-                  wp_safe_remote_post( wp_login_url(), array(
-                      'redirection' => 0,
-                  ) );
-                  wp_redirect( home_url( '/mypage/' ) );
-                  exit;
-              }
-          }
-      }
-      ?>
 
       <?php if ( ! empty( $registration_errors ) ) : ?>
         <div class="auth-error">

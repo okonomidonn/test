@@ -8,7 +8,6 @@ if ( ! in_array( 'zaito_seeker', $current_user->roles ) ) {
     wp_redirect( home_url( '/' ) );
     exit;
 }
-get_header();
 
 $job_id = isset( $_GET['job_id'] ) ? intval( $_GET['job_id'] ) : 0;
 if ( ! $job_id ) {
@@ -22,11 +21,12 @@ if ( ! $job || $job->post_type !== 'job_listing' ) {
 }
 
 $application_success = false;
+$apply_error = '';
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['action'] ) && $_POST['action'] === 'apply' ) {
     $message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : '';
 
     if ( ! $message ) {
-        echo '<div class="error-message">メッセージを入力してください</div>';
+        $apply_error = 'メッセージを入力してください';
     } else {
         $application_id = wp_insert_post( array(
             'post_type' => 'zaito_application',
@@ -43,6 +43,8 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset( $_POST['action'] ) && $_POS
         }
     }
 }
+
+get_header();
 
 if ( $application_success ) :
 ?>
@@ -64,6 +66,10 @@ if ( $application_success ) :
       <div class="apply-container">
         <div class="apply-card">
           <h1>求人に応募する</h1>
+
+          <?php if ( $apply_error ) : ?>
+            <div class="auth-error"><p><?php echo esc_html( $apply_error ); ?></p></div>
+          <?php endif; ?>
 
           <div class="job-summary">
             <h2><?php echo esc_html( get_the_title( $job ) ); ?></h2>
