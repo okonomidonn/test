@@ -435,6 +435,662 @@ a {
   white-space: nowrap;
 }
 
+/* Auth Pages */
+.auth-main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 40px 20px;
+  background: var(--paper);
+}
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.auth-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 10px 28px rgba(24, 32, 51, .055);
+}
+.auth-card h1 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: var(--ink);
+}
+.auth-error {
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  color: #856404;
+  font-size: 14px;
+}
+.auth-error p {
+  margin: 0;
+}
+.auth-form {
+  margin: 30px 0;
+}
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14px;
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+}
+.form-group textarea {
+  resize: vertical;
+}
+.form-group small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.btn-block {
+  width: 100%;
+  margin-top: 10px;
+}
+.auth-link {
+  text-align: center;
+  font-size: 14px;
+  margin: 20px 0;
+}
+.auth-link a {
+  color: var(--aqua);
+  text-decoration: none;
+  font-weight: 700;
+}
+.auth-divider {
+  text-align: center;
+  margin: 30px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* MyPage and Company Pages */
+.mypage-main,
+.company-main {
+  min-height: 100vh;
+  padding: 40px 0;
+}
+.mypage-header,
+.company-header {
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 30px;
+}
+.mypage-header h1,
+.company-header h1 {
+  font-size: 32px;
+  margin: 0 0 8px;
+}
+.mypage-header p,
+.company-header p {
+  color: var(--muted);
+  margin: 0;
+}
+.mypage-grid,
+.company-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+}
+.mypage-sidebar,
+.company-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.profile-card,
+.company-info-card,
+.menu-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+}
+.profile-card h3,
+.company-info-card h3,
+.menu-card h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+.profile-item,
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.profile-item .label,
+.info-item .label {
+  color: var(--muted);
+}
+.profile-item .value,
+.info-item .value {
+  font-weight: 700;
+}
+.menu-link {
+  display: block;
+  padding: 10px 0;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.menu-link:last-child {
+  border-bottom: none;
+}
+.menu-link.active {
+  color: var(--aqua);
+  font-weight: 700;
+}
+.menu-link.logout {
+  color: #d34e79;
+}
+.mypage-content,
+.company-content {
+  min-height: 400px;
+}
+.content-section {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 30px;
+}
+.content-section h2 {
+  margin-top: 0;
+  font-size: 22px;
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.applications-list,
+.jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.application-item,
+.job-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 20px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  align-items: center;
+}
+.app-info h3,
+.job-info h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+.app-info p,
+.job-info p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.app-status,
+.job-stats {
+  display: flex;
+  gap: 12px;
+}
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+.status-accepted {
+  background: #d4edda;
+  color: #155724;
+}
+.status-rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+.app-actions,
+.job-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-small {
+  padding: 8px 16px;
+  font-size: 12px;
+}
+.empty-message {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 20px;
+}
+
+/* Apply Page */
+.apply-main {
+  min-height: 100vh;
+  padding: 40px 0;
+}
+.apply-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.apply-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 40px;
+}
+.apply-card h1 {
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+.job-summary {
+  background: var(--paper);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+.job-summary h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+.job-summary .company {
+  margin: 0 0 15px;
+  color: var(--muted);
+}
+.job-details p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+.apply-form {
+  margin-top: 30px;
+}
+.apply-form .form-group {
+  margin-bottom: 20px;
+}
+.apply-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.apply-form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+.form-actions .btn {
+  flex: 1;
+}
+.apply-success {
+  text-align: center;
+  padding: 60px 40px;
+}
+.apply-success h1 {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+.apply-success p {
+  color: var(--muted);
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* Chat Page */
+.chat-main {
+  min-height: 100vh;
+  padding: 40px 0;
+}
+.chat-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  height: 70vh;
+}
+.chat-sidebar {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.chat-sidebar h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+.conversations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.conversation-item {
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.conversation-item:hover {
+  background: var(--paper);
+}
+.conversation-item.active {
+  background: var(--aqua);
+  color: #fff;
+}
+.conversation-info .name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 14px;
+}
+.conversation-info .preview {
+  margin: 4px 0 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
+.chat-content {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.chat-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+.chat-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.message {
+  display: flex;
+  margin-bottom: 12px;
+}
+.message-own {
+  justify-content: flex-end;
+}
+.message-other {
+  justify-content: flex-start;
+}
+.message-bubble {
+  max-width: 60%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  word-wrap: break-word;
+}
+.message-own .message-bubble {
+  background: var(--aqua);
+  color: #fff;
+}
+.message-other .message-bubble {
+  background: #f0f0f0;
+  color: var(--ink);
+}
+.message-text {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+.message-time {
+  font-size: 11px;
+  opacity: 0.7;
+}
+.chat-form {
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.chat-form textarea {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+  resize: none;
+}
+.chat-form button {
+  padding: 12px 24px;
+  white-space: nowrap;
+}
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--muted);
+}
+
+/* Jobs Listing */
+.jobs-listing-main {
+  min-height: 100vh;
+  padding: 40px 0;
+}
+.jobs-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.jobs-header h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.jobs-header p {
+  color: var(--muted);
+}
+.jobs-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 30px;
+}
+.filter-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  height: fit-content;
+}
+.filter-card h3 {
+  margin-top: 0;
+  font-size: 16px;
+}
+.filter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.filter-group label {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+}
+.filter-group input,
+.filter-group select {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+}
+.jobs-content {
+  min-height: 400px;
+}
+.jobs-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.empty-message {
+  text-align: center;
+  padding: 60px 40px;
+  color: var(--muted);
+}
+
+/* Job Detail */
+.job-detail-main {
+  min-height: 100vh;
+  padding: 40px 0;
+}
+.job-detail {
+  display: flex;
+  flex-direction: column;
+}
+.job-detail-header {
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 30px;
+}
+.job-detail-header h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.job-detail-header .company {
+  color: var(--muted);
+  margin: 0;
+}
+.job-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 30px;
+  margin-bottom: 60px;
+}
+.job-detail-content {
+  min-height: 400px;
+}
+.detail-section {
+  margin-bottom: 40px;
+}
+.detail-section h2 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+.job-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.info-item {
+  background: var(--paper);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.info-item .label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.info-item .value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.job-detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: fit-content;
+}
+.apply-card,
+.share-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+}
+.apply-card h3,
+.share-card h3 {
+  margin-top: 0;
+  font-size: 16px;
+}
+.user-email,
+.login-prompt,
+.register-prompt {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.share-buttons {
+  display: flex;
+  gap: 10px;
+}
+.share-btn {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--ink);
+  transition: all 0.2s;
+}
+.share-btn:hover {
+  background: var(--aqua);
+  color: #fff;
+  border-color: var(--aqua);
+}
+.related-jobs {
+  margin-top: 60px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+.related-jobs h2 {
+  font-size: 22px;
+  margin-bottom: 24px;
+}
+
 @media (max-width: 860px) {
   .hero-grid {
     grid-template-columns: 1fr;
@@ -445,5 +1101,55 @@ a {
   .cta-box {
     flex-direction: column;
     text-align: center;
+  }
+  .mypage-grid,
+  .company-grid {
+    grid-template-columns: 1fr;
+  }
+  .chat-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .chat-sidebar {
+    min-height: 200px;
+  }
+  .chat-content {
+    min-height: 400px;
+  }
+  .messages-container {
+    max-height: 300px;
+  }
+  .application-item,
+  .job-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .message-bubble {
+    max-width: 85%;
+  }
+  .jobs-grid {
+    grid-template-columns: 1fr;
+  }
+  .jobs-list {
+    grid-template-columns: 1fr;
+  }
+  .job-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .job-info-grid {
+    grid-template-columns: 1fr;
+  }
+  .apply-card,
+  .share-card {
+    position: sticky;
+    top: 20px;
+  }
+  .auth-card {
+    padding: 24px;
+  }
+  .profile-card,
+  .company-info-card,
+  .menu-card {
+    padding: 16px;
   }
 }
