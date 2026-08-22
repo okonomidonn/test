@@ -30,9 +30,14 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Ensure remote theme directory exists
+        run: |
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            "mkdir -p zaito-work.com/public_html/wp-content/themes/zaito"
+
       - name: Deploy theme via rsync
         run: |
           rsync -avz --delete \
             -e "ssh -p ${{ secrets.XSERVER_PORT }}" \
             wordpress-theme/zaito/ \
-            ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:public_html/wp-content/themes/zaito/
+            ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:zaito-work.com/public_html/wp-content/themes/zaito/
