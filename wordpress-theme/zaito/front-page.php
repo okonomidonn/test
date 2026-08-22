@@ -1,4 +1,13 @@
-<?php get_header(); ?>
+<?php
+$zaito_is_logged_in = is_user_logged_in();
+if ( $zaito_is_logged_in ) {
+    $zaito_current_user = wp_get_current_user();
+    $zaito_account_url = in_array( 'zaito_company', $zaito_current_user->roles, true )
+        ? home_url( '/company/' )
+        : home_url( '/mypage/' );
+}
+get_header();
+?>
 
 <section class="hero">
   <div class="hero-blob-1"></div>
@@ -32,7 +41,11 @@
 
         <div class="hero-cta">
           <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="btn btn-accent">求人を探す</a>
-          <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-outline">無料で登録</a>
+          <?php if ( $zaito_is_logged_in ) : ?>
+            <a href="<?php echo esc_url( $zaito_account_url ); ?>" class="btn btn-outline">マイページへ</a>
+          <?php else : ?>
+            <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-outline">無料で登録</a>
+          <?php endif; ?>
         </div>
       </div>
 
@@ -141,11 +154,20 @@
     <div class="cta-content">
       <div class="eyebrow">zaito</div>
       <h2>自分らしく、おうちで働こう。</h2>
-      <p>登録は無料・1分で完了。今日からあなたに合った在宅ワークを探せます。</p>
+      <?php if ( $zaito_is_logged_in ) : ?>
+        <p>あなたに合った在宅ワークがきっと見つかります。</p>
+      <?php else : ?>
+        <p>登録は無料・1分で完了。今日からあなたに合った在宅ワークを探せます。</p>
+      <?php endif; ?>
     </div>
     <div class="cta-actions">
-      <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-cta">無料で会員登録 →</a>
-      <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="cta-secondary-link">まずは求人を見てみる</a>
+      <?php if ( $zaito_is_logged_in ) : ?>
+        <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="btn btn-cta">求人を探す →</a>
+        <a href="<?php echo esc_url( $zaito_account_url ); ?>" class="cta-secondary-link">マイページへ</a>
+      <?php else : ?>
+        <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-cta">無料で会員登録 →</a>
+        <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="cta-secondary-link">まずは求人を見てみる</a>
+      <?php endif; ?>
     </div>
   </div>
 </section>
