@@ -58,6 +58,48 @@ function zaito_logout_redirect() {
 add_action( 'wp_logout', 'zaito_logout_redirect' );
 
 /**
+ * ログイン失敗時、標準のwp-login.php画面ではなく
+ * デザイン済みの自作ログインページへエラー付きで戻す。
+ */
+function zaito_login_failed( $username ) {
+    $referrer_url = isset( $_POST['redirect_to'] ) ? $_POST['redirect_to'] : '';
+    $login_page   = home_url( '/login/' );
+
+    if ( strpos( $referrer_url, '/company/' ) !== false ) {
+        $login_page = home_url( '/company-login/' );
+    }
+
+    wp_safe_redirect( add_query_arg( 'login', 'failed', $login_page ) );
+    exit;
+}
+add_action( 'wp_login_failed', 'zaito_login_failed' );
+
+/**
+ * 未ログイン状態で wp-login.php に直接来た場合も
+ * 自作ログインページへ誘導する（管理者のログインだけは wp-admin 側で処理させる）。
+ */
+function zaito_redirect_wp_login_to_custom_page() {
+    $script = isset( $_SERVER['SCRIPT_NAME'] ) ? $_SERVER['SCRIPT_NAME'] : '';
+
+    if ( strpos( $script, 'wp-login.php' ) === false ) {
+        return;
+    }
+    if ( isset( $_GET['action'] ) && in_array( $_GET['action'], array( 'logout', 'register', 'lostpassword', 'rp', 'resetpass', 'postpass' ), true ) ) {
+        return;
+    }
+    if ( 'POST' === $_SERVER['REQUEST_METHOD'] ) {
+        return;
+    }
+    if ( is_user_logged_in() ) {
+        return;
+    }
+
+    wp_safe_redirect( home_url( '/login/' ) );
+    exit;
+}
+add_action( 'login_init', 'zaito_redirect_wp_login_to_custom_page' );
+
+/**
  * カスタムロールの登録
  */
 function zaito_register_roles() {
