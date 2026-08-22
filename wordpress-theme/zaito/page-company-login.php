@@ -1,4 +1,7 @@
-<?php get_header(); ?>
+<?php
+$zaito_login_redirect_to = ! empty( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : home_url( '/company/' );
+get_header();
+?>
 
 <main class="auth-main">
   <div class="auth-container">
@@ -12,7 +15,7 @@
       <?php endif; ?>
 
       <form method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" class="auth-form">
-        <input type="hidden" name="redirect_to" value="<?php echo esc_url( home_url( '/company/' ) ); ?>" />
+        <input type="hidden" name="redirect_to" value="<?php echo esc_url( $zaito_login_redirect_to ); ?>" />
         <div class="form-group">
           <label for="user_login">メールアドレス</label>
           <input

@@ -69,7 +69,12 @@ function zaito_login_failed( $username ) {
         $login_page = home_url( '/company-login/' );
     }
 
-    wp_safe_redirect( add_query_arg( 'login', 'failed', $login_page ) );
+    $login_page = add_query_arg( 'login', 'failed', $login_page );
+    if ( $referrer_url ) {
+        $login_page = add_query_arg( 'redirect_to', rawurlencode( $referrer_url ), $login_page );
+    }
+
+    wp_safe_redirect( $login_page );
     exit;
 }
 add_action( 'wp_login_failed', 'zaito_login_failed' );
@@ -94,7 +99,12 @@ function zaito_redirect_wp_login_to_custom_page() {
         return;
     }
 
-    wp_safe_redirect( home_url( '/login/' ) );
+    $login_page = home_url( '/login/' );
+    if ( ! empty( $_GET['redirect_to'] ) ) {
+        $login_page = add_query_arg( 'redirect_to', rawurlencode( $_GET['redirect_to'] ), $login_page );
+    }
+
+    wp_safe_redirect( $login_page );
     exit;
 }
 add_action( 'login_init', 'zaito_redirect_wp_login_to_custom_page' );
