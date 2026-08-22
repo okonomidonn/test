@@ -65,6 +65,11 @@ a {
   margin: auto;
 }
 
+/* アンカーリンクの飛び先がスティッキーヘッダーの下に隠れないようにする */
+#feature {
+  scroll-margin-top: 96px;
+}
+
 /* Header */
 .site-header {
   height: 78px;

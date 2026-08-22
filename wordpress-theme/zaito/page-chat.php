@@ -3,9 +3,42 @@ if ( ! is_user_logged_in() ) {
     wp_redirect( home_url( '/login/' ) );
     exit;
 }
-get_header();
 $current_user = wp_get_current_user();
 $conversation_id = isset( $_GET['conversation_id'] ) ? intval( $_GET['conversation_id'] ) : 0;
+
+$is_seeker_view = in_array( 'zaito_seeker', $current_user->roles, true );
+
+if ( $is_seeker_view ) {
+    $applications = get_posts( array(
+        'post_type' => 'zaito_application',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => 'applicant_id',
+                'value' => $current_user->ID,
+            ),
+        ),
+    ) );
+} else {
+    // 企業側は求人の投稿者（_company_user_id）が自分と一致する
+    // 応募のみを表示する。ステータスに関わらず表示する
+    // （応募直後の自動返信メッセージから見えるようにするため）。
+    $all_applications = get_posts( array(
+        'post_type' => 'zaito_application',
+        'posts_per_page' => -1,
+    ) );
+    $applications = array_values( array_filter( $all_applications, function ( $app ) use ( $current_user ) {
+        return zaito_get_application_company_id( $app->ID ) === $current_user->ID;
+    } ) );
+}
+
+// 会話IDが指定されていない場合（マイページの「メッセージ」リンクなど）は、
+// 「会話を選択してください」という空の画面を挟まず、最新の会話を自動で開く。
+if ( ! $conversation_id && ! empty( $applications ) ) {
+    $conversation_id = $applications[0]->ID;
+}
+
+get_header();
 ?>
 
 <main class="chat-main">
@@ -15,33 +48,6 @@ $conversation_id = isset( $_GET['conversation_id'] ) ? intval( $_GET['conversati
         <h2>メッセージ</h2>
         <div class="conversations-list" id="conversations">
           <?php
-          $is_seeker_view = in_array( 'zaito_seeker', $current_user->roles, true );
-
-          if ( $is_seeker_view ) {
-              $args = array(
-                  'post_type' => 'zaito_application',
-                  'posts_per_page' => -1,
-                  'meta_query' => array(
-                      array(
-                          'key' => 'applicant_id',
-                          'value' => $current_user->ID,
-                      ),
-                  ),
-              );
-              $applications = get_posts( $args );
-          } else {
-              // 企業側は求人の投稿者（_company_user_id）が自分と一致する
-              // 応募のみを表示する。ステータスに関わらず表示する
-              // （応募直後の自動返信メッセージから見えるようにするため）。
-              $all_applications = get_posts( array(
-                  'post_type' => 'zaito_application',
-                  'posts_per_page' => -1,
-              ) );
-              $applications = array_values( array_filter( $all_applications, function ( $app ) use ( $current_user ) {
-                  return zaito_get_application_company_id( $app->ID ) === $current_user->ID;
-              } ) );
-          }
-
           if ( ! empty( $applications ) ) :
               foreach ( $applications as $app ) :
                   if ( $is_seeker_view ) {
