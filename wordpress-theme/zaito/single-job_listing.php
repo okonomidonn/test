@@ -127,6 +127,8 @@
               'posts_per_page' => 3,
               'orderby' => 'rand',
               'post__not_in' => array( get_the_ID() ),
+              // get_posts() はデフォルトでposts_whereフィルタが効かないため明示的に有効化
+              'suppress_filters' => false,
           );
           $related = get_posts( $related_args );
           foreach ( $related as $post ) :

@@ -268,22 +268,27 @@ function zaito_get_featured_jobs( $limit = 3 ) {
         return array();
     }
     // 実企業の求人のみに絞り込む処理は zaito_hide_fake_jobs_from_public() が
-    // 公開画面向けの全求人クエリに対して一括で適用するため、ここでは通常のクエリでよい。
+    // 公開画面向けの全求人クエリに対して一括で適用する。get_posts() はデフォルトで
+    // suppress_filters=true のため posts_where フィルタが効かない点に注意し、
+    // 明示的に false を指定する。
     return get_posts( array(
-        'post_type'      => 'job_listing',
-        'posts_per_page' => $limit,
-        'post_status'    => 'publish',
-        'orderby'        => 'date',
-        'order'          => 'DESC',
+        'post_type'       => 'job_listing',
+        'posts_per_page'  => $limit,
+        'post_status'     => 'publish',
+        'orderby'         => 'date',
+        'order'           => 'DESC',
+        'suppress_filters' => false,
     ) );
 }
 
 /**
  * 公開画面(管理画面以外)の求人クエリから、実企業アカウントに紐づかない求人
- * (自動生成した架空求人101件、動作確認・デモ用に作成した求人)を除外する。
- * 対象は「_company_user_idを持つ」かつ「タイトル・会社名に動作確認/テスト/デモを
- * 含まない」求人のみ。投稿データ自体は削除せず、管理画面(投稿一覧等)では
- * 引き続き全件確認できる。実企業が求人を投稿し始めたら自動的に表示対象になる。
+ * (zaito_generate_demo_jobs()が自動生成した_zaito_demo=1の架空求人、
+ * 動作確認・デモ用に作成した求人)を除外する。表示対象になるのは
+ * 「_company_user_idを持つ」かつ「_zaito_demoではない」かつ
+ * 「タイトル・会社名に動作確認/テスト/デモを含まない」求人のみ。
+ * 投稿データ自体は削除せず、管理画面(投稿一覧等)では引き続き全件確認できる。
+ * 実企業が求人を投稿し始めたら自動的に表示対象になる。
  */
 add_filter( 'posts_where', 'zaito_hide_fake_jobs_from_public', 10, 2 );
 function zaito_hide_fake_jobs_from_public( $where, $query ) {
@@ -299,6 +304,7 @@ function zaito_hide_fake_jobs_from_public( $where, $query ) {
     global $wpdb;
     $where .= $wpdb->prepare(
         " AND {$wpdb->posts}.ID IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_user_id' )
+          AND {$wpdb->posts}.ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_zaito_demo' AND meta_value = '1' )
           AND {$wpdb->posts}.post_title NOT LIKE %s
           AND {$wpdb->posts}.ID NOT IN (
               SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_name' AND ( meta_value LIKE %s OR meta_value LIKE %s )
