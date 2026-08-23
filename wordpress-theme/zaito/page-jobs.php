@@ -12,6 +12,7 @@ $categories_list = array( 'ライティング', 'デザイン', 'プログラミ
 <main class="jobs-listing-main">
   <div class="wrap">
     <div class="jobs-header">
+      <div class="section-eyebrow">JOB SEARCH</div>
       <h1>求人を探す</h1>
       <p>あなたに合った在宅ワークが見つかる</p>
     </div>
@@ -105,7 +106,7 @@ $categories_list = array( 'ライティング', 'デザイン', 'プログラミ
             ?>
               <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="card">
                 <div class="card-top">
-                  <span class="badge badge-mint"><?php echo esc_html( get_post_meta( $job->ID, '_job_category', true ) ?: '人気' ); ?></span>
+                  <span class="badge <?php echo esc_attr( zaito_category_badge_class( get_post_meta( $job->ID, '_job_category', true ) ) ); ?>"><?php echo esc_html( get_post_meta( $job->ID, '_job_category', true ) ?: '人気' ); ?></span>
                 </div>
                 <h3><?php echo esc_html( get_the_title( $job ) ); ?></h3>
                 <p><?php echo esc_html( get_post_meta( $job->ID, '_company_name', true ) ); ?></p>
@@ -114,8 +115,9 @@ $categories_list = array( 'ライティング', 'デザイン', 'プログラミ
                   <?php echo esc_html( get_post_meta( $job->ID, '_job_salary', true ) ); ?>円
                 </div>
                 <div class="tag-list">
-                  <span class="tag">#完全在宅</span>
-                  <span class="tag">#未経験OK</span>
+                  <?php foreach ( zaito_job_tags( $job->ID ) as $tag ) : ?>
+                    <span class="tag"><?php echo esc_html( $tag ); ?></span>
+                  <?php endforeach; ?>
                 </div>
                 <div class="card-footer">
                   <span><?php echo esc_html( get_post_meta( $job->ID, '_job_days', true ) ); ?></span>

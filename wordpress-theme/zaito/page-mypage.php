@@ -15,8 +15,12 @@ get_header();
   <div class="wrap">
     <?php zaito_render_verification_banner(); ?>
     <div class="mypage-header">
-      <h1>マイページ</h1>
-      <p><?php echo esc_html( $current_user->first_name ); ?> さん</p>
+      <div class="header-avatar" aria-hidden="true"><?php echo esc_html( mb_substr( $current_user->first_name ?: $current_user->display_name, 0, 1 ) ); ?></div>
+      <div>
+        <div class="header-eyebrow">MY PAGE</div>
+        <h1><?php echo esc_html( $current_user->first_name ); ?> さん</h1>
+        <p>応募履歴とプロフィールの管理</p>
+      </div>
     </div>
 
     <div class="mypage-grid">
@@ -74,7 +78,7 @@ get_header();
                   $job_title = get_the_title( $job_id );
                   $company_name = get_post_meta( $job_id, '_company_name', true );
               ?>
-                <div class="application-item">
+                <div class="application-item app-<?php echo esc_attr( $status ?: 'pending' ); ?>">
                   <div class="app-info">
                     <h3><?php echo esc_html( $job_title ); ?></h3>
                     <p class="company"><?php echo esc_html( $company_name ); ?></p>

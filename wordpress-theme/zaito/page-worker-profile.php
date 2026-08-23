@@ -29,8 +29,12 @@ $education_options = array( '中学校卒業', '高等学校卒業', '高等学�
 <main class="mypage-main">
   <div class="wrap">
     <div class="mypage-header">
-      <h1>プロフィール編集</h1>
-      <p>応募時に企業へ共有される情報です。正確にご入力ください。</p>
+      <div class="header-avatar" aria-hidden="true"><?php echo esc_html( mb_substr( $current_user->first_name ?: $current_user->display_name, 0, 1 ) ); ?></div>
+      <div>
+        <div class="header-eyebrow">PROFILE</div>
+        <h1>プロフィール編集</h1>
+        <p>応募時に企業へ共有される情報です。正確にご入力ください。</p>
+      </div>
     </div>
 
     <div class="apply-container">

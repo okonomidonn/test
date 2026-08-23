@@ -124,7 +124,7 @@ get_header();
         ?>
           <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="card reveal">
             <div class="card-top">
-              <span class="badge badge-mint"><?php echo esc_html( $job_category ?: '人気' ); ?></span>
+              <span class="badge <?php echo esc_attr( zaito_category_badge_class( $job_category ) ); ?>"><?php echo esc_html( $job_category ?: '人気' ); ?></span>
             </div>
             <h3><?php echo esc_html( get_the_title( $job ) ); ?></h3>
             <p><?php echo esc_html( get_post_meta( $job->ID, '_company_name', true ) ); ?></p>
@@ -132,8 +132,9 @@ get_header();
               <span class="unit">時給 </span><?php echo $job_salary ? esc_html( $job_salary ) . '円〜' : '応相談'; ?>
             </div>
             <div class="tag-list">
-              <span class="tag">#完全在宅</span>
-              <span class="tag">#未経験OK</span>
+              <?php foreach ( zaito_job_tags( $job->ID ) as $tag ) : ?>
+                <span class="tag"><?php echo esc_html( $tag ); ?></span>
+              <?php endforeach; ?>
             </div>
             <div class="card-footer">
               <span><?php echo esc_html( $job_days ?: '週2〜OK' ); ?></span>

@@ -254,6 +254,41 @@ function zaito_get_featured_jobs( $limit = 3 ) {
 }
 
 /**
+ * 求人カテゴリごとにバッジの配色を変える。全カードが同じ色だと単調になるため、
+ * カテゴリ名のハッシュ値で badge-mint / badge-pink / badge-yellow を機械的に割り当てる。
+ */
+function zaito_category_badge_class( $category ) {
+    $classes = array( 'badge-mint', 'badge-pink', 'badge-yellow' );
+    if ( ! $category ) {
+        return $classes[0];
+    }
+    $index = abs( crc32( $category ) ) % count( $classes );
+    return $classes[ $index ];
+}
+
+/**
+ * 求人メタから実データに基づくタグを組み立てる。固定文言の「#完全在宅 #未経験OK」を
+ * 全カードに貼り付けると金太郎飴になるため、案件ごとの勤務日数・対象者を優先的に使う。
+ */
+function zaito_job_tags( $post_id ) {
+    $days   = get_post_meta( $post_id, '_job_days', true );
+    $target = get_post_meta( $post_id, '_job_target', true );
+    $type   = get_post_meta( $post_id, '_job_type', true );
+
+    $tags = array( '#完全在宅' );
+    if ( $days ) {
+        $tags[] = '#' . $days;
+    }
+    if ( $target ) {
+        $tags[] = '#' . $target;
+    }
+    if ( $type && count( $tags ) < 3 ) {
+        $tags[] = '#' . $type;
+    }
+    return array_slice( $tags, 0, 3 );
+}
+
+/**
  * wp_login アクションを発火させずにユーザーをログイン状態にする。
  * wp_signon() 経由だと do_action('wp_login') が発火し、
  * Ultimate Member 等が自前のプロフィールURLへ強制リダイレクトして

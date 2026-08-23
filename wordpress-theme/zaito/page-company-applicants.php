@@ -45,8 +45,12 @@ if ( ! empty( $own_job_ids ) ) {
 <main class="company-main">
   <div class="wrap">
     <div class="company-header">
-      <h1>応募者一覧</h1>
-      <p><?php echo esc_html( $company_name ); ?></p>
+      <div class="header-avatar" aria-hidden="true"><?php echo esc_html( mb_substr( $company_name ?: $current_user->display_name, 0, 1 ) ); ?></div>
+      <div>
+        <div class="header-eyebrow">APPLICANTS</div>
+        <h1>応募者一覧</h1>
+        <p><?php echo esc_html( $company_name ); ?></p>
+      </div>
     </div>
 
     <div class="company-grid">

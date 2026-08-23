@@ -5,6 +5,10 @@
     <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
       <article class="job-detail">
         <div class="job-detail-header">
+          <?php $zaito_job_category = get_post_meta( get_the_ID(), '_job_category', true ); ?>
+          <?php if ( $zaito_job_category ) : ?>
+            <span class="badge <?php echo esc_attr( zaito_category_badge_class( $zaito_job_category ) ); ?>"><?php echo esc_html( $zaito_job_category ); ?></span>
+          <?php endif; ?>
           <h1><?php the_title(); ?></h1>
           <p class="company"><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></p>
         </div>
@@ -19,7 +23,7 @@
             <div class="detail-section">
               <h2>求人情報</h2>
               <div class="job-info-grid">
-                <div class="info-item">
+                <div class="job-info-item">
                   <span class="label">時給</span>
                   <span class="value">
                     <?php
@@ -28,19 +32,19 @@
                     ?>
                   </span>
                 </div>
-                <div class="info-item">
+                <div class="job-info-item">
                   <span class="label">勤務形態</span>
                   <span class="value">
                     <?php echo esc_html( get_post_meta( get_the_ID(), '_job_type', true ) ); ?>
                   </span>
                 </div>
-                <div class="info-item">
+                <div class="job-info-item">
                   <span class="label">最低勤務日数</span>
                   <span class="value">
                     <?php echo esc_html( get_post_meta( get_the_ID(), '_job_days', true ) ); ?>
                   </span>
                 </div>
-                <div class="info-item">
+                <div class="job-info-item">
                   <span class="label">対象者</span>
                   <span class="value">
                     <?php echo esc_html( get_post_meta( get_the_ID(), '_job_target', true ) ); ?>
@@ -51,7 +55,7 @@
           </div>
 
           <aside class="job-detail-sidebar">
-            <div class="apply-card">
+            <div class="sidebar-card">
               <h3>この求人に応募する</h3>
 
               <?php if ( is_user_logged_in() ) :
@@ -84,7 +88,7 @@
               <?php endif; ?>
             </div>
 
-            <div class="share-card">
+            <div class="sidebar-card">
               <h3>この求人をシェア</h3>
               <div class="share-buttons">
                 <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode( get_permalink() ); ?>" target="_blank" class="share-btn">
@@ -115,7 +119,8 @@
           ?>
             <a href="<?php the_permalink(); ?>" class="card">
               <div class="card-top">
-                <span class="badge badge-mint">人気</span>
+                <?php $zaito_related_category = get_post_meta( get_the_ID(), '_job_category', true ); ?>
+                <span class="badge <?php echo esc_attr( zaito_category_badge_class( $zaito_related_category ) ); ?>"><?php echo esc_html( $zaito_related_category ?: '人気' ); ?></span>
               </div>
               <h3><?php the_title(); ?></h3>
               <p><?php echo esc_html( get_post_meta( get_the_ID(), '_company_name', true ) ); ?></p>
@@ -124,8 +129,8 @@
                 <?php echo esc_html( get_post_meta( get_the_ID(), '_job_salary', true ) ); ?>円
               </div>
               <div class="card-footer">
-                <span>週2〜OK</span>
-                <span>大学生歓迎</span>
+                <span><?php echo esc_html( get_post_meta( get_the_ID(), '_job_days', true ) ?: '週2〜OK' ); ?></span>
+                <span><?php echo esc_html( get_post_meta( get_the_ID(), '_job_target', true ) ?: '大学生歓迎' ); ?></span>
               </div>
             </a>
           <?php endforeach; wp_reset_postdata(); ?>
