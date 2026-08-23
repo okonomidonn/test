@@ -306,7 +306,10 @@ function zaito_hide_fake_jobs_from_public( $where, $query ) {
     // 仮ページ(_zaito_preview=1)は、その求人自身の詳細ページ(直接リンク)に限り
     // _company_user_idを持たなくても表示を許可する。一覧・PICK UP・関連求人などの
     // 公開リスト系クエリには含めない(is_singular()でない場合は通常の除外条件を適用)。
-    if ( $query->is_singular( 'job_listing' ) ) {
+    // is_singular('job_listing') のように引数付きで呼ぶと内部で get_queried_object() が
+    // 実行され、posts_where の時点(クエリ実行前)ではまだ解決できず常にfalseになってしまう。
+    // post_typeは上のチェックで既にjob_listingと確定しているため、引数なしのis_singular()でよい。
+    if ( $query->is_singular() ) {
         $where .= " AND ( {$wpdb->posts}.ID IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_zaito_preview' AND meta_value = '1' )
           OR {$wpdb->posts}.ID IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_user_id' ) )";
         return $where;
