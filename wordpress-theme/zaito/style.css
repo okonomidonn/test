@@ -6,23 +6,27 @@ Version: 0.2
 */
 
 :root {
-  /* 「在宅ワーク」らしい、紙とインクを思わせる温かみのある配色。
-     藍色（インディゴ）× 柿色（テラコッタ）× からし色（オーカー）で、
-     よくあるミント×ラベンダーのSaaS配色から意図的に離している。 */
+  /* 2026-08-23改訂: コーラル×ディープティール×ゴールドの配色。
+     以前の藍×テラコッタ×オーカーは彩度を絞ったペールトーンで使われがちで
+     「地味」との指摘があり、また白地に暖色クリーム＋テラコッタという組み合わせ自体、
+     昨今よく見るAI生成デザインの定番パターンに寄りすぎていた。
+     参考サイト（favtown）の「白地をベースに、差し色は要所だけに絞って使う」設計を踏まえ、
+     色相をコーラル系に更新しつつ、面で塗らず要所（ボタン・チップ）に絞って使う運用にしている。
+     背景は基本的に白（--background）を維持し、--paper はセクション区切り用の控えめな帯として使う。 */
   --background: #ffffff;
   --foreground: #14261f;
-  --brand: #b2492b;
-  --brand-dark: #8a3620;
-  --accent: #c98a2e;
+  --brand: #d9552f;
+  --brand-dark: #b8431f;
+  --accent: #e8a93a;
   --ink: #23262b;
   --muted: #6f6a5c;
   --paper: #f7f1e4;
   --white: #fff;
   --mint: #f0d9a8;
-  --aqua: #b2492b;
-  --pink: #c98a2e;
+  --aqua: #d9552f;
+  --pink: #e8a93a;
   --peach: #e8b98a;
-  --lav: #333f5c;
+  --lav: #2f6e63;
   --yellow: #ddb85c;
   --line: #e2d9c5;
   --ease: cubic-bezier(.16, .84, .44, 1);
@@ -323,7 +327,7 @@ a {
 .hero h1 .grad {
   font-style: normal;
   display: inline-block;
-  background: linear-gradient(100deg, var(--aqua), #c98a2e);
+  background: linear-gradient(100deg, var(--aqua), var(--pink));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -568,15 +572,15 @@ a {
   font-weight: 900;
 }
 .badge-mint {
-  background: #eef1e5;
-  color: #55633e;
+  background: #dcecea;
+  color: #215048;
 }
 .badge-pink {
-  background: #fbeae4;
+  background: #fbe7de;
   color: #a8432a;
 }
 .badge-yellow {
-  background: #faf1da;
+  background: #fbf0da;
   color: #8a6a1f;
 }
 .card h3 {
