@@ -114,7 +114,15 @@ get_header();
       $featured_jobs = zaito_get_featured_jobs( 3 );
       if ( empty( $featured_jobs ) ) :
       ?>
-        <p class="empty">求人がまだありません</p>
+        <div class="pickup-empty">
+          <p class="pickup-empty-eyebrow">NOW PREPARING</p>
+          <p class="pickup-empty-title">求人企業を募集中です</p>
+          <p class="pickup-empty-text">ZAITOは立ち上げたばかりのサービスです。今なら掲載無料キャンペーン中。<br class="pickup-empty-br">先にワーカー登録しておくと、新着求人をいち早くチェックできます。</p>
+          <div class="pickup-empty-actions">
+            <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-accent">ワーカー登録する(1分で完了)</a>
+            <a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>" class="btn btn-outline">企業の方はこちら</a>
+          </div>
+        </div>
       <?php else : ?>
         <?php foreach ( $featured_jobs as $job ) :
           $job_category = get_post_meta( $job->ID, '_job_category', true );

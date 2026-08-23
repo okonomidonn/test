@@ -678,6 +678,52 @@ img, video, table, iframe {
   color: var(--muted);
   padding: 40px;
 }
+.pickup-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 48px 32px;
+}
+.pickup-empty-eyebrow {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  color: var(--aqua);
+  margin: 0 0 10px;
+}
+.pickup-empty-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.pickup-empty-text {
+  color: var(--muted);
+  margin: 0 0 24px;
+  line-height: 1.8;
+}
+.pickup-empty-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .pickup-empty {
+    padding: 32px 20px;
+  }
+  .pickup-empty-br {
+    display: none;
+  }
+  .pickup-empty-actions {
+    flex-direction: column;
+  }
+  .pickup-empty-actions .btn {
+    width: 100%;
+  }
+}
 
 /* CTA */
 .cta-section {

@@ -9,6 +9,7 @@ $search_target_input = isset( $_GET['target'] ) && is_array( $_GET['target'] ) ?
 $search_targets = array_intersect( $search_target_input, zaito_target_tag_options() );
 $paged = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
 $per_page = 12;
+$zaito_has_search_filters = $search_keyword || $search_salary || $search_salary_type || $search_category || $search_employment_type || ! empty( $search_targets );
 
 $categories_list = zaito_job_categories();
 ?>
@@ -218,8 +219,20 @@ $categories_list = zaito_job_categories();
             </nav>
           <?php endif; ?>
         <?php
+            elseif ( $zaito_has_search_filters ) :
+                echo '<p class="empty-message">検索条件に合う求人がみつかりません。条件を変えて再度お試しください。</p>';
             else :
-                echo '<p class="empty-message">検索条件に合う求人がみつかりません</p>';
+                ?>
+                <div class="pickup-empty">
+                  <p class="pickup-empty-eyebrow">NOW PREPARING</p>
+                  <p class="pickup-empty-title">求人企業を募集中です</p>
+                  <p class="pickup-empty-text">ZAITOは立ち上げたばかりのサービスです。今なら掲載無料キャンペーン中。<br class="pickup-empty-br">先にワーカー登録しておくと、新着求人をいち早くチェックできます。</p>
+                  <div class="pickup-empty-actions">
+                    <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-accent">ワーカー登録する(1分で完了)</a>
+                    <a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>" class="btn btn-outline">企業の方はこちら</a>
+                  </div>
+                </div>
+                <?php
             endif;
             wp_reset_postdata();
         }
