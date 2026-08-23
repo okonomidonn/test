@@ -104,7 +104,7 @@
 
     <div class="pricing-card reveal">
       <div class="pricing-card-head">
-        <span class="badge badge-mint">掲載無料キャンペーン中</span>
+        <span class="badge badge-teal">掲載無料キャンペーン中</span>
         <p class="pricing-card-note">サービス立ち上げ期につき、現在は求人掲載を無料でご利用いただけます。</p>
       </div>
       <ul class="pricing-list">

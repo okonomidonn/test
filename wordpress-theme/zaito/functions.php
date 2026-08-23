@@ -354,16 +354,26 @@ function zaito_target_tag_options() {
 }
 
 /**
- * 求人カテゴリごとにバッジの配色を変える。全カードが同じ色だと単調になるため、
- * カテゴリ名のハッシュ値で badge-mint / badge-pink / badge-yellow を機械的に割り当てる。
+ * 求人カテゴリごとにバッジの配色を変える。カテゴリが5→11種類に増えた際も
+ * ハッシュ3色割り当てのままだったため、無関係なカテゴリ同士が同じ色になる問題が
+ * あった。ブランドパレット系統の6色をカテゴリごとに固定で割り当てる方式に変更し、
+ * どのカテゴリがどの色かユーザーが覚えられるようにする。
  */
 function zaito_category_badge_class( $category ) {
-    $classes = array( 'badge-mint', 'badge-pink', 'badge-yellow' );
-    if ( ! $category ) {
-        return $classes[0];
-    }
-    $index = abs( crc32( $category ) ) % count( $classes );
-    return $classes[ $index ];
+    $map = array(
+        'ライティング'         => 'badge-coral',
+        'デザイン'             => 'badge-rose',
+        'プログラミング'       => 'badge-slate',
+        '事務・データ入力'     => 'badge-gold',
+        'カスタマーサポート'   => 'badge-teal',
+        'SNS運用・マーケティング' => 'badge-rose',
+        '翻訳・通訳'           => 'badge-moss',
+        '動画編集'             => 'badge-slate',
+        '経理・事務代行'       => 'badge-gold',
+        'テレアポ・営業事務'   => 'badge-coral',
+        'その他'               => 'badge-teal',
+    );
+    return isset( $map[ $category ] ) ? $map[ $category ] : 'badge-teal';
 }
 
 /**

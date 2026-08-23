@@ -609,17 +609,29 @@ a {
   font-size: 11px;
   font-weight: 900;
 }
-.badge-mint {
-  background: #dcecea;
-  color: #215048;
-}
-.badge-pink {
+.badge-coral {
   background: #fbe7de;
   color: #a8432a;
 }
-.badge-yellow {
+.badge-teal {
+  background: #dcecea;
+  color: #215048;
+}
+.badge-gold {
   background: #fbf0da;
   color: #8a6a1f;
+}
+.badge-rose {
+  background: #f7dfe3;
+  color: #9c3049;
+}
+.badge-moss {
+  background: #e3ebd7;
+  color: #4b6b2f;
+}
+.badge-slate {
+  background: #e1e6ec;
+  color: #3f5266;
 }
 .card h3 {
   font-size: 20px;
