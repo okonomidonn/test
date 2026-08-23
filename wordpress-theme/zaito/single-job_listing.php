@@ -4,6 +4,15 @@
   <div class="wrap">
     <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
       <article class="job-detail">
+        <?php $zaito_is_preview = get_post_meta( get_the_ID(), '_zaito_preview', true ) === '1'; ?>
+        <?php if ( $zaito_is_preview ) : ?>
+          <div class="preview-banner">
+            <strong>この求人ページは仮ページです(非公開プレビュー)</strong>
+            貴社の求人内容をもとにZAITO側で作成した掲載イメージです。まだ一般には公開されておらず、
+            このリンクを知っている方だけが閲覧できます。内容にご確認・修正いただいた上でご了承いただければ、
+            そのまま正式に掲載いたします(掲載無料)。
+          </div>
+        <?php endif; ?>
         <div class="job-detail-header">
           <?php $zaito_job_category = get_post_meta( get_the_ID(), '_job_category', true ); ?>
           <?php if ( $zaito_job_category ) : ?>
@@ -26,7 +35,8 @@
               $zaito_salary_type = get_post_meta( get_the_ID(), '_job_salary_type', true ) ?: '時給';
               $zaito_salary_min  = get_post_meta( get_the_ID(), '_job_salary', true );
               $zaito_salary_max  = get_post_meta( get_the_ID(), '_job_salary_max', true );
-              $zaito_salary_text = '応相談';
+              $zaito_salary_note = get_post_meta( get_the_ID(), '_job_salary_note', true );
+              $zaito_salary_text = $zaito_salary_note ? esc_html( $zaito_salary_note ) : '応相談';
               if ( $zaito_salary_min && $zaito_salary_max ) {
                   $zaito_salary_text = esc_html( $zaito_salary_min ) . '円〜' . esc_html( $zaito_salary_max ) . '円';
               } elseif ( $zaito_salary_min ) {
@@ -65,6 +75,18 @@
           </div>
 
           <aside class="job-detail-sidebar">
+            <?php if ( $zaito_is_preview ) : ?>
+            <div class="sidebar-card">
+              <h3>ご確認のお願い</h3>
+              <p class="user-email">
+                内容をご確認いただき、修正点があればお知らせください。問題なければそのまま正式掲載し、
+                興味を持っているワーカーからご紹介を始めます。対応が必要なのは「応募があった際の返信」のみです。
+              </p>
+              <a href="mailto:info@zaito-work.com?subject=%E3%82%B6%E3%82%A4%E3%83%88%E4%BB%AE%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" class="btn btn-accent btn-block">
+                info@zaito-work.com へ返信する
+              </a>
+            </div>
+            <?php else : ?>
             <div class="sidebar-card">
               <h3>この求人に応募する</h3>
 
@@ -102,6 +124,7 @@
                 </a>
               <?php endif; ?>
             </div>
+            <?php endif; ?>
 
             <div class="sidebar-card">
               <h3>この求人をシェア</h3>

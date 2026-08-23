@@ -1440,3 +1440,136 @@ function zaito_seed_demo_jobs() {
     wp_die( $created . '件の架空求人を作成しました。<br><a href="' . esc_url( home_url( '/jobs/' ) ) . '">求人一覧を見る</a>' );
 }
 add_action( 'admin_post_zaito_seed_demo_jobs', 'zaito_seed_demo_jobs' );
+
+/**
+ * 営業ヒアリング用の「仮ページ」を作成する。企業の許可を得る前に、
+ * 実際の求人サイトと同じ single-job_listing.php テンプレートで見せるための
+ * 非公開プレビュー。_zaito_preview=1 を持つ求人は zaito_hide_fake_jobs_from_public()
+ * により通常の一覧・PICK UP・関連求人からは自動的に除外され、直接リンクを
+ * 知っている人だけが閲覧できる。データは実際の求人ページ(Indeed等)を確認の上で
+ * 作成し、確認が取れなかった項目は「ご相談」として明記している。
+ * /wp-admin/admin-post.php?action=zaito_seed_preview_jobs にアクセスすると
+ * 作成(既存があれば重複作成しない)し、パーマリンク一覧を表示する。
+ */
+function zaito_seed_preview_jobs() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'この操作には管理者権限が必要です。' );
+    }
+
+    $previews = array(
+        array(
+            'company'   => '一般社団法人ミライデザイン機構',
+            'title'     => 'データ入力・PC作業スタッフ(障がい者採用枠)',
+            'category'  => '事務・データ入力',
+            'content'   => 'パソコンを使ったデータ入力・資料整理などの事務作業をお願いする案件です。障がいのある方の柔軟な働き方に理解のある採用枠として募集されており、在宅・多様な働き方を支援するZAITOの方針とも合致すると考えご紹介しています。具体的な業務内容・条件は貴社にご確認の上、正式版に反映します。',
+            'salary_type' => '',
+            'salary'    => '',
+            'salary_max' => '',
+            'salary_note' => 'ご相談(公開されている求人ページから確認できませんでした)',
+            'employment_type' => '業務委託',
+            'job_type'  => '完全在宅・シフト制',
+            'job_days'  => '応相談',
+            'job_target' => '未経験者歓迎',
+        ),
+        array(
+            'company'   => '株式会社ZOS',
+            'title'     => 'データ入力・動画編集スタッフ(就労継続支援B型)',
+            'category'  => '動画編集',
+            'content'   => 'データ入力および簡単な動画編集をお願いする案件です。就労継続支援B型という枠組みで在宅ワーカーを受け入れている点が、ZAITOが掲げる「多様な働き方の支援」という方針と特に相性が良いと考えご紹介しています。具体的な業務内容・条件は貴社にご確認の上、正式版に反映します。',
+            'salary_type' => '',
+            'salary'    => '',
+            'salary_max' => '',
+            'salary_note' => 'ご相談(公開されている求人ページから確認できませんでした)',
+            'employment_type' => '業務委託',
+            'job_type'  => '完全在宅・シフト制',
+            'job_days'  => '応相談',
+            'job_target' => '未経験者歓迎',
+        ),
+        array(
+            'company'   => '株式会社PRIDE',
+            'title'     => '動画編集・SNS運用スタッフ',
+            'category'  => '動画編集',
+            'content'   => '動画編集およびSNSアカウントの運用サポートをお願いする案件です。学歴・経験不問、未経験・学生・フリーター歓迎の間口の広さが、ZAITOのワーカー層(在宅で働きたい主婦・学生)と相性が良いと考えご紹介しています。具体的な業務内容・条件は貴社にご確認の上、正式版に反映します。',
+            'salary_type' => '時給',
+            'salary'    => '1800',
+            'salary_max' => '2500',
+            'salary_note' => '',
+            'employment_type' => 'アルバイト・パート',
+            'job_type'  => '完全在宅・シフト制',
+            'job_days'  => '週3日〜',
+            'job_target' => '未経験者歓迎、学生歓迎、ブランクOK',
+        ),
+        array(
+            'company'   => '合同会社ワンワールド',
+            'title'     => 'データ入力スタッフ',
+            'category'  => '事務・データ入力',
+            'content'   => 'パソコンやスマートフォンを使ったデータ入力業務をお願いする案件です。週1日から・シフト自由という働きやすい条件で、未経験・ブランクのある方も歓迎されています。具体的な業務内容・条件は貴社にご確認の上、正式版に反映します。',
+            'salary_type' => '日給',
+            'salary'    => '1500',
+            'salary_max' => '',
+            'salary_note' => '',
+            'employment_type' => '業務委託',
+            'job_type'  => '完全在宅・曜日応相談',
+            'job_days'  => '週1日〜',
+            'job_target' => '未経験者歓迎、Wワーク・副業OK',
+        ),
+        array(
+            'company'   => '株式会社コモリク',
+            'title'     => 'データ入力・データ収集スタッフ',
+            'category'  => '事務・データ入力',
+            'content'   => 'パソコンを使ったデータ入力・データ収集業務をお願いする案件です。未経験・PC初心者歓迎、学歴不問という間口の広さが、ZAITOのワーカー層(在宅で働き始めたい主婦・学生)に適していると考えご紹介しています。具体的な業務内容・条件は貴社にご確認の上、正式版に反映します。',
+            'salary_type' => '月給',
+            'salary'    => '20000',
+            'salary_max' => '60000',
+            'salary_note' => '',
+            'employment_type' => '業務委託',
+            'job_type'  => '完全在宅・固定時間制',
+            'job_days'  => '週1日〜',
+            'job_target' => '未経験者歓迎',
+        ),
+    );
+
+    $links = array();
+    foreach ( $previews as $p ) {
+        $existing = get_posts( array(
+            'post_type'      => 'job_listing',
+            'posts_per_page' => 1,
+            'post_status'    => 'publish',
+            'meta_query'     => array(
+                array( 'key' => '_zaito_preview', 'value' => '1' ),
+                array( 'key' => '_company_name', 'value' => $p['company'] ),
+            ),
+        ) );
+        if ( ! empty( $existing ) ) {
+            $links[] = $p['company'] . ': ' . get_permalink( $existing[0] );
+            continue;
+        }
+
+        $job_id = wp_insert_post( array(
+            'post_type'    => 'job_listing',
+            'post_title'   => $p['title'],
+            'post_content' => $p['content'],
+            'post_status'  => 'publish',
+        ) );
+        if ( ! $job_id || is_wp_error( $job_id ) ) {
+            continue;
+        }
+
+        update_post_meta( $job_id, '_company_name', $p['company'] );
+        update_post_meta( $job_id, '_job_category', $p['category'] );
+        update_post_meta( $job_id, '_job_salary_type', $p['salary_type'] );
+        update_post_meta( $job_id, '_job_salary', $p['salary'] );
+        update_post_meta( $job_id, '_job_salary_max', $p['salary_max'] );
+        update_post_meta( $job_id, '_job_salary_note', $p['salary_note'] );
+        update_post_meta( $job_id, '_job_employment_type', $p['employment_type'] );
+        update_post_meta( $job_id, '_job_type', $p['job_type'] );
+        update_post_meta( $job_id, '_job_days', $p['job_days'] );
+        update_post_meta( $job_id, '_job_target', $p['job_target'] );
+        update_post_meta( $job_id, '_zaito_preview', '1' );
+
+        $links[] = $p['company'] . ': ' . get_permalink( $job_id );
+    }
+
+    wp_die( implode( '<br>', array_map( 'esc_html', $links ) ) );
+}
+add_action( 'admin_post_zaito_seed_preview_jobs', 'zaito_seed_preview_jobs' );

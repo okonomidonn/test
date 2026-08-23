@@ -1560,6 +1560,21 @@ img, video, table, iframe {
   display: flex;
   flex-direction: column;
 }
+.preview-banner {
+  background: #fff7e6;
+  border: 1px solid #f0d9a8;
+  color: #8a6a1f;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.preview-banner strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
 .job-detail-header {
   margin-bottom: 40px;
   border-bottom: 2px solid var(--ink);
