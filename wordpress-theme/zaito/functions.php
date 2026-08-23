@@ -145,6 +145,28 @@ function zaito_register_post_types() {
         'supports' => array( 'title', 'editor' ),
         'capability_type' => 'post',
     ) );
+
+    /**
+     * job_listing は本来 WP Job Manager プラグインが登録している投稿タイプだが、
+     * このテーマは求人の検索・表示・投稿を独自実装しており(front-page.php,
+     * page-jobs.php, single-job_listing.php, zaito_handle_post_job() 等)、
+     * WP Job Managerの機能は一切使っていない。それにもかかわらず投稿タイプの
+     * 登録だけプラグインに依存していたため、プラグインを無効化すると求人一覧・
+     * 詳細ページが丸ごと動かなくなる状態だった。ここでテーマ側が独立して
+     * 登録することで、プラグインへの依存をなくす。
+     * パーマリンク構造(/job/post-name/)は既存のURLと互換性を保つため
+     * WP Job Managerのデフォルト('job')に合わせている。
+     */
+    register_post_type( 'job_listing', array(
+        'label'        => '求人',
+        'public'       => true,
+        'show_ui'      => true,
+        'show_in_menu' => true,
+        'supports'     => array( 'title', 'editor', 'custom-fields' ),
+        'has_archive'  => false,
+        'rewrite'      => array( 'slug' => 'job', 'with_front' => false ),
+        'capability_type' => 'post',
+    ) );
 }
 add_action( 'init', 'zaito_register_post_types' );
 
@@ -210,7 +232,7 @@ add_action( 'template_redirect', 'zaito_render_virtual_routes', 1 );
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '6';
+    $version = '7';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
