@@ -5,6 +5,8 @@ $search_salary  = isset( $_GET['salary'] ) ? sanitize_text_field( $_GET['salary'
 $search_salary_type = isset( $_GET['salary_type'] ) ? sanitize_text_field( $_GET['salary_type'] ) : '';
 $search_category = isset( $_GET['category'] ) ? sanitize_text_field( $_GET['category'] ) : '';
 $search_employment_type = isset( $_GET['employment_type'] ) ? sanitize_text_field( $_GET['employment_type'] ) : '';
+$search_target_input = isset( $_GET['target'] ) && is_array( $_GET['target'] ) ? array_map( 'sanitize_text_field', $_GET['target'] ) : array();
+$search_targets = array_intersect( $search_target_input, zaito_target_tag_options() );
 $paged = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
 $per_page = 12;
 
@@ -79,6 +81,18 @@ $categories_list = zaito_job_categories();
               </select>
             </div>
 
+            <div class="filter-group">
+              <label>対象者</label>
+              <div class="checkbox-group">
+                <?php foreach ( zaito_target_tag_options() as $zaito_target_opt ) : ?>
+                  <label class="checkbox-group-item">
+                    <input type="checkbox" name="target[]" value="<?php echo esc_attr( $zaito_target_opt ); ?>" <?php checked( in_array( $zaito_target_opt, $search_targets, true ) ); ?> />
+                    <?php echo esc_html( $zaito_target_opt ); ?>
+                  </label>
+                <?php endforeach; ?>
+              </div>
+            </div>
+
             <button type="submit" class="btn btn-accent btn-block">検索</button>
             <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="btn btn-outline btn-block">リセット</a>
           </form>
@@ -142,6 +156,19 @@ $categories_list = zaito_job_categories();
                     'key'   => '_job_employment_type',
                     'value' => $search_employment_type,
                 );
+            }
+            if ( ! empty( $search_targets ) ) {
+                // _job_target は「主婦(夫)歓迎、学生歓迎」のように「、」区切りの文字列で
+                // 保存されているため、選択したタグのいずれかを含む求人をLIKEで拾う(OR条件)。
+                $target_clauses = array( 'relation' => 'OR' );
+                foreach ( $search_targets as $zaito_target_value ) {
+                    $target_clauses[] = array(
+                        'key'     => '_job_target',
+                        'value'   => $zaito_target_value,
+                        'compare' => 'LIKE',
+                    );
+                }
+                $meta_query[] = $target_clauses;
             }
             if ( ! empty( $meta_query ) ) {
                 $args['meta_query'] = $meta_query;
