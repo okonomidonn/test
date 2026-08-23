@@ -14,9 +14,18 @@
       za<span>it</span>o
     </a>
 
+    <?php
+    // is_front_page() だけで判定すると、仮想ルート(/jobs/ 等を zaito_page クエリ変数経由で
+    // page-*.php に直接includeする仕組み)配下のページでもWordPressのメインクエリが
+    // トップページ相当に解決され、is_front_page()がtrueを返すことがある。
+    // その結果「zaitoとは」のリンク先が本来のURLではなく素の「#feature」になり、
+    // トップページ以外(例: 求人一覧ページ)でクリックしても何も起きなくなっていた。
+    // zaito_page が設定されている(=仮想ルート配下にいる)場合は、必ず本来のトップページURLを使う。
+    $zaito_is_true_home = is_front_page() && ! get_query_var( 'zaito_page' );
+    ?>
     <nav class="site-nav">
       <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>">求人を探す</a>
-      <a href="<?php echo esc_url( is_front_page() ? '#feature' : home_url( '/#feature' ) ); ?>">zaitoとは</a>
+      <a href="<?php echo esc_url( $zaito_is_true_home ? '#feature' : home_url( '/#feature' ) ); ?>">zaitoとは</a>
     </nav>
 
     <button type="button" class="nav-toggle" aria-label="メニューを開く" aria-expanded="false">

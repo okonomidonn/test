@@ -1668,4 +1668,28 @@ a {
   .site-nav a::after {
     display: none;
   }
+  .header-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    border-radius: 6px;
+  }
+  .mypage-header,
+  .company-header {
+    gap: 14px;
+  }
+  .mypage-header h1,
+  .company-header h1 {
+    font-size: 22px;
+  }
+  .jobs-header h1,
+  .job-detail-header h1 {
+    font-size: 26px;
+  }
+  .auth-main::before {
+    border-left-width: 30px;
+    border-right-width: 30px;
+    border-top-width: 82px;
+    right: 6%;
+  }
 }
