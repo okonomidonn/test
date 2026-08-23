@@ -267,21 +267,29 @@ function zaito_get_featured_jobs( $limit = 3 ) {
     if ( ! post_type_exists( 'job_listing' ) ) {
         return array();
     }
-    return get_posts( array(
+    // 動作確認・デモ用に作成した求人（タイトルに「動作確認」を含む、または
+    // 会社名に「テスト」「デモ」を含むもの）をピックアップ対象から除外するため、
+    // 少し多めに取得してからPHP側でフィルタする。
+    $candidates = get_posts( array(
         'post_type'      => 'job_listing',
-        'posts_per_page' => $limit,
+        'posts_per_page' => $limit * 5,
         'post_status'    => 'publish',
         'orderby'        => 'date',
         'order'          => 'DESC',
-        // 実企業が投稿した求人（_company_user_idを持つ）のみをピックアップに出す。
-        // 動作確認・デモ求人は _company_user_id を持たないため自動的に除外される。
-        'meta_query'     => array(
-            array(
-                'key'     => '_company_user_id',
-                'compare' => 'EXISTS',
-            ),
-        ),
     ) );
+
+    $featured = array_filter( $candidates, function( $job ) {
+        if ( false !== mb_strpos( $job->post_title, '動作確認' ) ) {
+            return false;
+        }
+        $company_name = get_post_meta( $job->ID, '_company_name', true );
+        if ( false !== mb_strpos( $company_name, 'テスト' ) || false !== mb_strpos( $company_name, 'デモ' ) ) {
+            return false;
+        }
+        return true;
+    } );
+
+    return array_slice( array_values( $featured ), 0, $limit );
 }
 
 /**
