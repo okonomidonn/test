@@ -267,29 +267,47 @@ function zaito_get_featured_jobs( $limit = 3 ) {
     if ( ! post_type_exists( 'job_listing' ) ) {
         return array();
     }
-    // 動作確認・デモ用に作成した求人（タイトルに「動作確認」を含む、または
-    // 会社名に「テスト」「デモ」を含むもの）をピックアップ対象から除外するため、
-    // 少し多めに取得してからPHP側でフィルタする。
-    $candidates = get_posts( array(
+    // 実企業の求人のみに絞り込む処理は zaito_hide_fake_jobs_from_public() が
+    // 公開画面向けの全求人クエリに対して一括で適用するため、ここでは通常のクエリでよい。
+    return get_posts( array(
         'post_type'      => 'job_listing',
-        'posts_per_page' => $limit * 5,
+        'posts_per_page' => $limit,
         'post_status'    => 'publish',
         'orderby'        => 'date',
         'order'          => 'DESC',
     ) );
+}
 
-    $featured = array_filter( $candidates, function( $job ) {
-        if ( false !== mb_strpos( $job->post_title, '動作確認' ) ) {
-            return false;
-        }
-        $company_name = get_post_meta( $job->ID, '_company_name', true );
-        if ( false !== mb_strpos( $company_name, 'テスト' ) || false !== mb_strpos( $company_name, 'デモ' ) ) {
-            return false;
-        }
-        return true;
-    } );
+/**
+ * 公開画面(管理画面以外)の求人クエリから、実企業アカウントに紐づかない求人
+ * (自動生成した架空求人101件、動作確認・デモ用に作成した求人)を除外する。
+ * 対象は「_company_user_idを持つ」かつ「タイトル・会社名に動作確認/テスト/デモを
+ * 含まない」求人のみ。投稿データ自体は削除せず、管理画面(投稿一覧等)では
+ * 引き続き全件確認できる。実企業が求人を投稿し始めたら自動的に表示対象になる。
+ */
+add_filter( 'posts_where', 'zaito_hide_fake_jobs_from_public', 10, 2 );
+function zaito_hide_fake_jobs_from_public( $where, $query ) {
+    if ( is_admin() ) {
+        return $where;
+    }
+    $post_type = $query->get( 'post_type' );
+    $is_job_query = ( 'job_listing' === $post_type ) || ( is_array( $post_type ) && in_array( 'job_listing', $post_type, true ) );
+    if ( ! $is_job_query ) {
+        return $where;
+    }
 
-    return array_slice( array_values( $featured ), 0, $limit );
+    global $wpdb;
+    $where .= $wpdb->prepare(
+        " AND {$wpdb->posts}.ID IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_user_id' )
+          AND {$wpdb->posts}.post_title NOT LIKE %s
+          AND {$wpdb->posts}.ID NOT IN (
+              SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_name' AND ( meta_value LIKE %s OR meta_value LIKE %s )
+          )",
+        '%動作確認%',
+        '%テスト%',
+        '%デモ%'
+    );
+    return $where;
 }
 
 /**
