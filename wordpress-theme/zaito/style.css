@@ -983,7 +983,12 @@ img, video, table, iframe {
 }
 .auth-link-right {
   text-align: right;
-  margin: -10px 0 20px;
+  margin: -6px 0 20px;
+}
+.auth-link-right a {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 13px;
 }
 .auth-description {
   color: var(--muted);
@@ -1972,5 +1977,15 @@ img, video, table, iframe {
   .jobs-header h1,
   .job-detail-header h1 {
     font-size: 22px;
+  }
+  .auth-main {
+    padding: 24px 16px;
+  }
+  .auth-card {
+    padding: 20px;
+  }
+  .auth-card h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
   }
 }

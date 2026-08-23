@@ -32,7 +32,7 @@ get_header();
       <form method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" class="auth-form">
         <input type="hidden" name="redirect_to" value="<?php echo esc_url( $zaito_login_redirect_to ); ?>" />
         <div class="form-group">
-          <label for="user_login">メールアドレス（またはユーザー名）</label>
+          <label for="user_login">メールアドレス</label>
           <input
             type="text"
             id="user_login"
@@ -41,6 +41,7 @@ get_header();
             value="<?php echo isset( $_POST['log'] ) ? esc_attr( $_POST['log'] ) : ''; ?>"
             required
           />
+          <small>ユーザー名でもログインできます</small>
         </div>
 
         <div class="form-group">
