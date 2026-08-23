@@ -684,8 +684,8 @@ function zaito_handle_apply() {
     $prefecture = get_user_meta( $current_user->ID, 'prefecture', true );
     $education  = get_user_meta( $current_user->ID, 'education', true );
 
-    if ( ! $current_user->first_name || ! $furigana || ! $birthdate || ! $phone || ! $prefecture || ! $education ) {
-        $errors[] = 'プロフィール（氏名・フリガナ・生年月日・電話番号・お住まい・最終学歴）をすべて入力してから応募してください。';
+    if ( ! $current_user->first_name || ! $furigana || ! $birthdate || ! $prefecture || ! $education ) {
+        $errors[] = 'プロフィール（氏名・フリガナ・生年月日・お住まい・最終学歴）をすべて入力してから応募してください。';
     }
 
     $message = isset( $_POST['message'] ) ? sanitize_textarea_field( $_POST['message'] ) : '';
@@ -879,9 +879,6 @@ function zaito_handle_update_worker_profile() {
         $errors[] = '生年月日を入力してください';
     } elseif ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $birthdate ) ) {
         $errors[] = '生年月日の形式が正しくありません';
-    }
-    if ( ! $phone ) {
-        $errors[] = '電話番号を入力してください';
     }
     if ( ! $prefecture ) {
         $errors[] = 'お住まいの都道府県を選択してください';

@@ -78,8 +78,8 @@ $education_options = array( '中学校卒業', '高等学校卒業', '高等学�
               <input type="date" id="birthdate" name="birthdate" value="<?php echo esc_attr( $birthdate ); ?>" required />
             </div>
             <div class="form-group" style="margin-bottom:0;">
-              <label for="phone">電話番号 <span style="color:#d34e79;">*</span></label>
-              <input type="tel" id="phone" name="phone" value="<?php echo esc_attr( $phone ); ?>" placeholder="090-1234-5678" required />
+              <label for="phone">電話番号（任意）</label>
+              <input type="tel" id="phone" name="phone" value="<?php echo esc_attr( $phone ); ?>" placeholder="090-1234-5678" />
             </div>
             <div class="form-group" style="margin-bottom:0;">
               <label for="prefecture">お住まいの都道府県 <span style="color:#d34e79;">*</span></label>

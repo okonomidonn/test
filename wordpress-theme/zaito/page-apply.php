@@ -32,7 +32,7 @@ $birthdate = get_user_meta( $current_user->ID, 'birthdate', true );
 $phone = get_user_meta( $current_user->ID, 'phone', true );
 $prefecture = get_user_meta( $current_user->ID, 'prefecture', true );
 $education = get_user_meta( $current_user->ID, 'education', true );
-$profile_incomplete = ! $current_user->first_name || ! $furigana || ! $birthdate || ! $phone || ! $prefecture || ! $education;
+$profile_incomplete = ! $current_user->first_name || ! $furigana || ! $birthdate || ! $prefecture || ! $education;
 
 get_header();
 
