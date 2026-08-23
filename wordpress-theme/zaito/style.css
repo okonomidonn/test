@@ -1616,9 +1616,153 @@ a {
   margin-bottom: 24px;
 }
 
+/* For Companies page */
+.forco-lead {
+  max-width: 56ch;
+}
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 720px;
+}
+.step-item {
+  display: flex;
+  gap: 24px;
+  padding: 28px 0;
+  border-top: 1px solid var(--line);
+}
+.step-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.step-num {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+}
+.step-item h3 {
+  font-size: 18px;
+  font-weight: 900;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.step-item p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 0;
+  max-width: 60ch;
+}
+.pricing-card {
+  max-width: 560px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--brand);
+  border-radius: 8px;
+  padding: 32px;
+}
+.pricing-card-head {
+  margin-bottom: 24px;
+}
+.pricing-card-note {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.pricing-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.pricing-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+.pricing-list li:first-child {
+  border-top: none;
+}
+.pricing-list li span {
+  color: var(--muted);
+}
+.pricing-list li strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+.pricing-card-footnote {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.faq-list {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+}
+.faq-item {
+  padding: 24px 0;
+  border-top: 1px solid var(--line);
+}
+.faq-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.faq-q {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.faq-q::before {
+  content: "Q. ";
+  color: var(--brand);
+}
+.faq-a {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 0;
+}
+.faq-a a {
+  color: var(--brand);
+}
+
 @media (max-width: 860px) {
   .hero-grid {
     grid-template-columns: 1fr;
+  }
+  .step-item {
+    gap: 16px;
+    padding: 20px 0;
+  }
+  .step-num {
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+  .pricing-card {
+    padding: 22px;
+  }
+  .pricing-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
   .card-grid {
     grid-template-columns: 1fr;
