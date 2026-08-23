@@ -68,7 +68,12 @@
             <div class="sidebar-card">
               <h3>この求人に応募する</h3>
 
-              <?php if ( is_user_logged_in() ) :
+              <?php if ( is_user_logged_in() && in_array( 'zaito_company', wp_get_current_user()->roles, true ) ) : ?>
+                <p class="login-prompt">企業アカウントでログイン中のため応募できません。求職者としてご利用の場合は、一度ログアウトしてワーカーアカウントでログインしてください。</p>
+                <a href="<?php echo esc_url( home_url( '/company/' ) ); ?>" class="btn btn-outline btn-block">
+                  企業ダッシュボードへ
+                </a>
+              <?php elseif ( is_user_logged_in() && zaito_can_use_seeker_features( wp_get_current_user() ) ) :
                 $zaito_already_applied = zaito_has_applied( wp_get_current_user()->ID, get_the_ID() );
               ?>
                 <p class="user-email">

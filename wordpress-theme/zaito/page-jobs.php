@@ -2,6 +2,7 @@
 
 $search_keyword = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 $search_salary  = isset( $_GET['salary'] ) ? sanitize_text_field( $_GET['salary'] ) : '';
+$search_salary_type = isset( $_GET['salary_type'] ) ? sanitize_text_field( $_GET['salary_type'] ) : '';
 $search_category = isset( $_GET['category'] ) ? sanitize_text_field( $_GET['category'] ) : '';
 $search_employment_type = isset( $_GET['employment_type'] ) ? sanitize_text_field( $_GET['employment_type'] ) : '';
 $paged = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
@@ -35,13 +36,27 @@ $categories_list = zaito_job_categories();
             </div>
 
             <div class="filter-group">
-              <label for="salary">時給の目安</label>
-              <select id="salary" name="salary">
-                <option value="">指定なし</option>
-                <option value="1000" <?php selected( $search_salary, '1000' ); ?>>1,000円以上</option>
-                <option value="1500" <?php selected( $search_salary, '1500' ); ?>>1,500円以上</option>
-                <option value="2000" <?php selected( $search_salary, '2000' ); ?>>2,000円以上</option>
+              <label for="salary_type">給与形態</label>
+              <select id="salary_type" name="salary_type">
+                <option value="">全て</option>
+                <?php foreach ( zaito_salary_type_options() as $zaito_opt ) : ?>
+                  <option value="<?php echo esc_attr( $zaito_opt ); ?>" <?php selected( $search_salary_type, $zaito_opt ); ?>><?php echo esc_html( $zaito_opt ); ?></option>
+                <?php endforeach; ?>
               </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="salary">金額（以上）</label>
+              <input
+                type="number"
+                id="salary"
+                name="salary"
+                min="0"
+                step="100"
+                placeholder="例: 1300"
+                value="<?php echo esc_attr( $search_salary ); ?>"
+              />
+              <small>時給は100円刻み、日給・固定報酬制はまとまった金額でどうぞ</small>
             </div>
 
             <div class="filter-group">
@@ -96,6 +111,12 @@ $categories_list = zaito_job_categories();
                     'type'    => 'NUMERIC',
                 );
             }
+            if ( $search_salary_type ) {
+                $meta_query[] = array(
+                    'key'   => '_job_salary_type',
+                    'value' => $search_salary_type,
+                );
+            }
             if ( $search_category ) {
                 $meta_query[] = array(
                     'key'   => '_job_category',
@@ -128,7 +149,7 @@ $categories_list = zaito_job_categories();
                 <h3><?php echo esc_html( get_the_title( $job ) ); ?></h3>
                 <p><?php echo esc_html( get_post_meta( $job->ID, '_company_name', true ) ); ?></p>
                 <div class="price">
-                  <span class="unit">時給 </span>
+                  <span class="unit"><?php echo esc_html( get_post_meta( $job->ID, '_job_salary_type', true ) ?: '時給' ); ?> </span>
                   <?php echo esc_html( get_post_meta( $job->ID, '_job_salary', true ) ); ?>円
                 </div>
                 <div class="tag-list">
