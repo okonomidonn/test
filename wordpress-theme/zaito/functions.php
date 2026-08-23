@@ -1452,8 +1452,8 @@ add_action( 'admin_post_zaito_seed_demo_jobs', 'zaito_seed_demo_jobs' );
  * 作成(既存があれば重複作成しない)し、パーマリンク一覧を表示する。
  */
 function zaito_seed_preview_jobs() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-        wp_die( 'この操作には管理者権限が必要です。' );
+    if ( ! current_user_can( 'publish_posts' ) ) {
+        wp_die( 'この操作には投稿権限が必要です。' );
     }
 
     $previews = array(
