@@ -17,6 +17,15 @@ get_header();
         </div>
       <?php endif; ?>
 
+      <?php if ( function_exists( 'zaito_google_login_is_configured' ) && zaito_google_login_is_configured() ) : ?>
+        <a href="<?php echo esc_url( zaito_google_login_url( $zaito_register_redirect_to ?: home_url( '/mypage/' ) ) ); ?>" class="btn btn-google btn-block">
+          <span class="google-icon" aria-hidden="true">G</span> Googleで登録
+        </a>
+        <div class="auth-divider">
+          <span>または</span>
+        </div>
+      <?php endif; ?>
+
       <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="auth-form">
         <input type="hidden" name="action" value="zaito_register_worker" />
         <?php if ( $zaito_register_redirect_to ) : ?>

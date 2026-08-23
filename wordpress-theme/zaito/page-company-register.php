@@ -1,5 +1,6 @@
 <?php
 $registration_errors = zaito_get_form_errors_from_token();
+$zaito_company_register_redirect_to = ! empty( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : home_url( '/company/' );
 get_header();
 ?>
 
@@ -13,6 +14,15 @@ get_header();
           <?php foreach ( $registration_errors as $error ) : ?>
             <p><?php echo esc_html( $error ); ?></p>
           <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if ( function_exists( 'zaito_google_login_is_configured' ) && zaito_google_login_is_configured() ) : ?>
+        <a href="<?php echo esc_url( zaito_google_login_url( $zaito_company_register_redirect_to, 'zaito_company' ) ); ?>" class="btn btn-google btn-block">
+          <span class="google-icon" aria-hidden="true">G</span> Googleで登録
+        </a>
+        <div class="auth-divider">
+          <span>または</span>
         </div>
       <?php endif; ?>
 
