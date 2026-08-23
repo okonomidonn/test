@@ -3,10 +3,11 @@
 $search_keyword = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 $search_salary  = isset( $_GET['salary'] ) ? sanitize_text_field( $_GET['salary'] ) : '';
 $search_category = isset( $_GET['category'] ) ? sanitize_text_field( $_GET['category'] ) : '';
+$search_employment_type = isset( $_GET['employment_type'] ) ? sanitize_text_field( $_GET['employment_type'] ) : '';
 $paged = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
 $per_page = 12;
 
-$categories_list = array( 'ライティング', 'デザイン', 'プログラミング', '事務・データ入力', 'カスタマーサポート' );
+$categories_list = zaito_job_categories();
 ?>
 
 <main class="jobs-listing-main">
@@ -53,6 +54,16 @@ $categories_list = array( 'ライティング', 'デザイン', 'プログラミ
               </select>
             </div>
 
+            <div class="filter-group">
+              <label for="employment_type">雇用形態</label>
+              <select id="employment_type" name="employment_type">
+                <option value="">全て</option>
+                <?php foreach ( zaito_employment_type_options() as $zaito_opt ) : ?>
+                  <option value="<?php echo esc_attr( $zaito_opt ); ?>" <?php selected( $search_employment_type, $zaito_opt ); ?>><?php echo esc_html( $zaito_opt ); ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
             <button type="submit" class="btn btn-accent btn-block">検索</button>
             <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="btn btn-outline btn-block">リセット</a>
           </form>
@@ -89,6 +100,12 @@ $categories_list = array( 'ライティング', 'デザイン', 'プログラミ
                 $meta_query[] = array(
                     'key'   => '_job_category',
                     'value' => $search_category,
+                );
+            }
+            if ( $search_employment_type ) {
+                $meta_query[] = array(
+                    'key'   => '_job_employment_type',
+                    'value' => $search_employment_type,
                 );
             }
             if ( ! empty( $meta_query ) ) {

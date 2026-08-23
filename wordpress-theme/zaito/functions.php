@@ -277,6 +277,43 @@ function zaito_get_featured_jobs( $limit = 3 ) {
 }
 
 /**
+ * 求人投稿フォームで使う選択肢。企業が自由記述すると表記がバラバラになる
+ * (「完全在宅・シフト制」「リモート」等)ため、選択式に統一するための一覧。
+ * フォーム側(page-company-jobs.php)と表示側(single-job_listing.php等)の
+ * 両方から参照する。
+ */
+function zaito_job_categories() {
+    return array(
+        'ライティング',
+        'デザイン',
+        'プログラミング',
+        '事務・データ入力',
+        'カスタマーサポート',
+        'SNS運用・マーケティング',
+        '翻訳・通訳',
+        '動画編集',
+        '経理・事務代行',
+        'テレアポ・営業事務',
+        'その他',
+    );
+}
+function zaito_employment_type_options() {
+    return array( '業務委託', 'アルバイト・パート', '契約社員', '正社員' );
+}
+function zaito_salary_type_options() {
+    return array( '時給', '日給', '月給', '固定報酬制' );
+}
+function zaito_work_style_options() {
+    return array( '完全在宅・シフト制', '完全在宅・固定時間制', '完全在宅・フレックス制', '完全在宅・曜日応相談' );
+}
+function zaito_min_days_options() {
+    return array( '週1日〜', '週2日〜', '週3日〜', '週4日〜', '週5日(フルタイム)', '応相談' );
+}
+function zaito_target_tag_options() {
+    return array( '未経験者歓迎', '主婦・主夫歓迎', '学生歓迎', 'シニア世代歓迎', 'Wワーク・副業OK', 'ブランクOK', '経験者優遇' );
+}
+
+/**
  * 求人カテゴリごとにバッジの配色を変える。全カードが同じ色だと単調になるため、
  * カテゴリ名のハッシュ値で badge-mint / badge-pink / badge-yellow を機械的に割り当てる。
  */
@@ -695,7 +732,9 @@ function zaito_default_auto_reply_message() {
  * 送信する。実企業アカウント（_company_user_idを持つ求人）にのみ送信し、
  * デモ求人（架空求人）には送信しない。応募者はこれによって応募直後から
  * チャットで企業とのやり取り状況を確認できる。
- * メッセージ文面は企業がダッシュボードから編集可能（未設定ならデフォルト文面）。
+ * メッセージ文面の優先順位: ①求人ごとの設定 → ②企業アカウント共通の既定文面
+ * → ③システムの既定文面。1社が複数求人を掲載する場合、求人ごとに文面を
+ * 変えられるようにするため、求人単位の設定を優先する。
  */
 function zaito_send_application_auto_reply( $application_id, $job_id ) {
     $company_user_id = (int) get_post_meta( $job_id, '_company_user_id', true );
@@ -703,8 +742,9 @@ function zaito_send_application_auto_reply( $application_id, $job_id ) {
         return;
     }
 
-    $custom_message = trim( (string) get_user_meta( $company_user_id, 'auto_reply_message', true ) );
-    $auto_message   = $custom_message ? $custom_message : zaito_default_auto_reply_message();
+    $job_message     = trim( (string) get_post_meta( $job_id, '_job_auto_reply_message', true ) );
+    $company_message = trim( (string) get_user_meta( $company_user_id, 'auto_reply_message', true ) );
+    $auto_message    = $job_message ? $job_message : ( $company_message ? $company_message : zaito_default_auto_reply_message() );
 
     $message_id = wp_insert_post( array(
         'post_type'   => 'zaito_message',
@@ -891,13 +931,19 @@ function zaito_handle_post_job() {
     }
 
     $errors = array();
-    $title    = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
-    $content  = isset( $_POST['content'] ) ? sanitize_textarea_field( $_POST['content'] ) : '';
-    $category = isset( $_POST['category'] ) ? sanitize_text_field( $_POST['category'] ) : '';
-    $salary   = isset( $_POST['salary'] ) ? sanitize_text_field( $_POST['salary'] ) : '';
-    $type     = isset( $_POST['job_type'] ) ? sanitize_text_field( $_POST['job_type'] ) : '';
-    $days     = isset( $_POST['job_days'] ) ? sanitize_text_field( $_POST['job_days'] ) : '';
-    $target   = isset( $_POST['job_target'] ) ? sanitize_text_field( $_POST['job_target'] ) : '';
+    $title           = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+    $content         = isset( $_POST['content'] ) ? sanitize_textarea_field( $_POST['content'] ) : '';
+    $category        = isset( $_POST['category'] ) ? sanitize_text_field( $_POST['category'] ) : '';
+    $employment_type = isset( $_POST['employment_type'] ) ? sanitize_text_field( $_POST['employment_type'] ) : '';
+    $salary_type     = isset( $_POST['salary_type'] ) ? sanitize_text_field( $_POST['salary_type'] ) : '';
+    $salary          = isset( $_POST['salary'] ) ? sanitize_text_field( $_POST['salary'] ) : '';
+    $salary_max      = isset( $_POST['salary_max'] ) ? sanitize_text_field( $_POST['salary_max'] ) : '';
+    $type            = isset( $_POST['job_type'] ) ? sanitize_text_field( $_POST['job_type'] ) : '';
+    $days            = isset( $_POST['job_days'] ) ? sanitize_text_field( $_POST['job_days'] ) : '';
+    $target_input    = isset( $_POST['job_target'] ) && is_array( $_POST['job_target'] ) ? (array) $_POST['job_target'] : array();
+    $target_options  = zaito_target_tag_options();
+    $target          = implode( '、', array_intersect( array_map( 'sanitize_text_field', $target_input ), $target_options ) );
+    $job_auto_reply  = isset( $_POST['job_auto_reply_message'] ) ? sanitize_textarea_field( $_POST['job_auto_reply_message'] ) : '';
 
     if ( ! $title ) {
         $errors[] = '求人タイトルを入力してください';
@@ -907,6 +953,18 @@ function zaito_handle_post_job() {
     }
     if ( ! $category ) {
         $errors[] = '求人カテゴリを選択してください';
+    }
+    if ( ! in_array( $employment_type, zaito_employment_type_options(), true ) ) {
+        $errors[] = '雇用形態を選択してください';
+    }
+    if ( $salary_type && ! in_array( $salary_type, zaito_salary_type_options(), true ) ) {
+        $salary_type = '';
+    }
+    if ( $type && ! in_array( $type, zaito_work_style_options(), true ) ) {
+        $type = '';
+    }
+    if ( $days && ! in_array( $days, zaito_min_days_options(), true ) ) {
+        $days = '';
     }
 
     if ( ! empty( $errors ) ) {
@@ -927,10 +985,14 @@ function zaito_handle_post_job() {
     update_post_meta( $job_id, '_company_user_id', $current_user->ID );
     update_post_meta( $job_id, '_company_name', get_user_meta( $current_user->ID, 'company_name', true ) );
     update_post_meta( $job_id, '_job_category', $category );
+    update_post_meta( $job_id, '_job_employment_type', $employment_type );
+    update_post_meta( $job_id, '_job_salary_type', $salary_type );
     update_post_meta( $job_id, '_job_salary', $salary );
+    update_post_meta( $job_id, '_job_salary_max', $salary_max );
     update_post_meta( $job_id, '_job_type', $type );
     update_post_meta( $job_id, '_job_days', $days );
     update_post_meta( $job_id, '_job_target', $target );
+    update_post_meta( $job_id, '_job_auto_reply_message', $job_auto_reply );
 
     wp_safe_redirect( add_query_arg( 'posted', '1', home_url( '/company-jobs/' ) ) );
     exit;

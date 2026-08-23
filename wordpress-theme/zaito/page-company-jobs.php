@@ -83,36 +83,89 @@ $jobs = get_posts( array(
               <textarea id="content" name="content" rows="6" required></textarea>
             </div>
 
-            <div class="form-group">
-              <label for="category">求人カテゴリ</label>
-              <select id="category" name="category" required>
-                <option value="">選択してください</option>
-                <?php
-                $zaito_job_categories = array( 'ライティング', 'デザイン', 'プログラミング', '事務・データ入力', 'カスタマーサポート' );
-                foreach ( $zaito_job_categories as $zaito_cat ) :
-                ?>
-                  <option value="<?php echo esc_attr( $zaito_cat ); ?>"><?php echo esc_html( $zaito_cat ); ?></option>
-                <?php endforeach; ?>
-              </select>
+            <div class="job-info-grid" style="margin-bottom:20px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="category">求人カテゴリ</label>
+                <select id="category" name="category" required>
+                  <option value="">選択してください</option>
+                  <?php foreach ( zaito_job_categories() as $zaito_cat ) : ?>
+                    <option value="<?php echo esc_attr( $zaito_cat ); ?>"><?php echo esc_html( $zaito_cat ); ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="employment_type">雇用形態</label>
+                <select id="employment_type" name="employment_type" required>
+                  <option value="">選択してください</option>
+                  <?php foreach ( zaito_employment_type_options() as $zaito_opt ) : ?>
+                    <option value="<?php echo esc_attr( $zaito_opt ); ?>"><?php echo esc_html( $zaito_opt ); ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
             </div>
 
             <div class="job-info-grid" style="margin-bottom:20px;">
               <div class="form-group" style="margin-bottom:0;">
-                <label for="salary">時給（数字のみ）</label>
+                <label for="salary_type">給与形態</label>
+                <select id="salary_type" name="salary_type">
+                  <option value="">選択してください</option>
+                  <?php foreach ( zaito_salary_type_options() as $zaito_opt ) : ?>
+                    <option value="<?php echo esc_attr( $zaito_opt ); ?>"><?php echo esc_html( $zaito_opt ); ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="salary">給与額（下限・数字のみ）</label>
                 <input type="text" id="salary" name="salary" placeholder="例: 1300" />
               </div>
               <div class="form-group" style="margin-bottom:0;">
-                <label for="job_type">勤務形態</label>
-                <input type="text" id="job_type" name="job_type" placeholder="例: 完全在宅・シフト制" />
+                <label for="salary_max">給与額（上限・任意）</label>
+                <input type="text" id="salary_max" name="salary_max" placeholder="例: 1800" />
+              </div>
+            </div>
+
+            <div class="job-info-grid" style="margin-bottom:20px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="job_type">勤務体系</label>
+                <select id="job_type" name="job_type">
+                  <option value="">選択してください</option>
+                  <?php foreach ( zaito_work_style_options() as $zaito_opt ) : ?>
+                    <option value="<?php echo esc_attr( $zaito_opt ); ?>"><?php echo esc_html( $zaito_opt ); ?></option>
+                  <?php endforeach; ?>
+                </select>
               </div>
               <div class="form-group" style="margin-bottom:0;">
                 <label for="job_days">最低勤務日数</label>
-                <input type="text" id="job_days" name="job_days" placeholder="例: 週2日〜" />
+                <select id="job_days" name="job_days">
+                  <option value="">選択してください</option>
+                  <?php foreach ( zaito_min_days_options() as $zaito_opt ) : ?>
+                    <option value="<?php echo esc_attr( $zaito_opt ); ?>"><?php echo esc_html( $zaito_opt ); ?></option>
+                  <?php endforeach; ?>
+                </select>
               </div>
-              <div class="form-group" style="margin-bottom:0;">
-                <label for="job_target">対象者</label>
-                <input type="text" id="job_target" name="job_target" placeholder="例: 未経験OK・大学生歓迎" />
+            </div>
+
+            <div class="form-group">
+              <label>対象者（複数選択可）</label>
+              <div class="checkbox-group">
+                <?php foreach ( zaito_target_tag_options() as $zaito_opt ) : ?>
+                  <label class="checkbox-group-item">
+                    <input type="checkbox" name="job_target[]" value="<?php echo esc_attr( $zaito_opt ); ?>" />
+                    <?php echo esc_html( $zaito_opt ); ?>
+                  </label>
+                <?php endforeach; ?>
               </div>
+            </div>
+
+            <div class="form-group">
+              <label for="job_auto_reply_message">この求人専用のファーストメッセージ（任意）</label>
+              <textarea
+                id="job_auto_reply_message"
+                name="job_auto_reply_message"
+                rows="4"
+                placeholder="<?php echo esc_attr( zaito_default_auto_reply_message() ); ?>"
+              ></textarea>
+              <small>空欄の場合はダッシュボードの既定メッセージ、それも未設定ならシステムの既定文面が使われます。複数の求人を掲載する場合、求人ごとに文面を変えられます。</small>
             </div>
 
             <button type="submit" class="btn btn-accent">求人を投稿する</button>

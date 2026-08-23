@@ -22,32 +22,42 @@
 
             <div class="detail-section">
               <h2>求人情報</h2>
+              <?php
+              $zaito_salary_type = get_post_meta( get_the_ID(), '_job_salary_type', true ) ?: '時給';
+              $zaito_salary_min  = get_post_meta( get_the_ID(), '_job_salary', true );
+              $zaito_salary_max  = get_post_meta( get_the_ID(), '_job_salary_max', true );
+              $zaito_salary_text = '応相談';
+              if ( $zaito_salary_min && $zaito_salary_max ) {
+                  $zaito_salary_text = esc_html( $zaito_salary_min ) . '円〜' . esc_html( $zaito_salary_max ) . '円';
+              } elseif ( $zaito_salary_min ) {
+                  $zaito_salary_text = esc_html( $zaito_salary_min ) . '円〜';
+              }
+              ?>
               <div class="job-info-grid">
                 <div class="job-info-item">
-                  <span class="label">時給</span>
-                  <span class="value">
-                    <?php
-                    $salary = get_post_meta( get_the_ID(), '_job_salary', true );
-                    echo $salary ? esc_html( $salary ) . '円' : '応相談';
-                    ?>
-                  </span>
+                  <span class="label">雇用形態</span>
+                  <span class="value"><?php echo esc_html( get_post_meta( get_the_ID(), '_job_employment_type', true ) ?: '―' ); ?></span>
                 </div>
                 <div class="job-info-item">
-                  <span class="label">勤務形態</span>
+                  <span class="label"><?php echo esc_html( $zaito_salary_type ); ?></span>
+                  <span class="value"><?php echo $zaito_salary_text; ?></span>
+                </div>
+                <div class="job-info-item">
+                  <span class="label">勤務体系</span>
                   <span class="value">
-                    <?php echo esc_html( get_post_meta( get_the_ID(), '_job_type', true ) ); ?>
+                    <?php echo esc_html( get_post_meta( get_the_ID(), '_job_type', true ) ?: '―' ); ?>
                   </span>
                 </div>
                 <div class="job-info-item">
                   <span class="label">最低勤務日数</span>
                   <span class="value">
-                    <?php echo esc_html( get_post_meta( get_the_ID(), '_job_days', true ) ); ?>
+                    <?php echo esc_html( get_post_meta( get_the_ID(), '_job_days', true ) ?: '応相談' ); ?>
                   </span>
                 </div>
                 <div class="job-info-item">
                   <span class="label">対象者</span>
                   <span class="value">
-                    <?php echo esc_html( get_post_meta( get_the_ID(), '_job_target', true ) ); ?>
+                    <?php echo esc_html( get_post_meta( get_the_ID(), '_job_target', true ) ?: '―' ); ?>
                   </span>
                 </div>
               </div>
