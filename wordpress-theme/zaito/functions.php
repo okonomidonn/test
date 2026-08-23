@@ -273,6 +273,14 @@ function zaito_get_featured_jobs( $limit = 3 ) {
         'post_status'    => 'publish',
         'orderby'        => 'date',
         'order'          => 'DESC',
+        // 実企業が投稿した求人（_company_user_idを持つ）のみをピックアップに出す。
+        // 動作確認・デモ求人は _company_user_id を持たないため自動的に除外される。
+        'meta_query'     => array(
+            array(
+                'key'     => '_company_user_id',
+                'compare' => 'EXISTS',
+            ),
+        ),
     ) );
 }
 
