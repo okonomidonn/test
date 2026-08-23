@@ -65,35 +65,35 @@ get_header();
 
 <section class="section" id="feature">
   <div class="wrap">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">FEATURES</div>
-      <h2>「在宅で働く」を、もっと身近に。</h2>
-    </div>
+    <div class="feature-split reveal">
+      <div>
+        <div class="section-eyebrow">FEATURES</div>
+        <h2 class="feature-statement">通勤も、決まった時間も、<mark>なくしていい。</mark></h2>
+        <p class="feature-statement-sub">在宅ワークだからこそ、授業やサークル、家事や育児と無理なく両立できる。zaitoは「完全在宅」の求人だけを掲載しています。</p>
+      </div>
 
-    <div class="feature-grid">
-      <div class="card feature-card feature-card-lg reveal">
-        <div class="card-top">
-          <span class="badge badge-mint">完全在宅</span>
-          <span style="font-size:14px;font-weight:900;">01</span>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-chip">在</div>
+          <div>
+            <h3>場所に縛られない</h3>
+            <p>通勤ゼロ。自分の好きな場所が仕事場になります。授業やサークルとも両立できます。</p>
+          </div>
         </div>
-        <h3>場所に縛られない</h3>
-        <p>通勤ゼロ。自分の好きな場所が仕事場。授業やサークルと両立できます。</p>
-      </div>
-      <div class="card feature-card reveal">
-        <div class="card-top">
-          <span class="badge badge-pink">学生歓迎</span>
-          <span style="font-size:14px;font-weight:900;">02</span>
+        <div class="feature-item">
+          <div class="feature-chip">学</div>
+          <div>
+            <h3>はじめやすい仕事</h3>
+            <p>未経験・大学生OKの求人もたくさん。スキルアップにもつながります。</p>
+          </div>
         </div>
-        <h3>はじめやすい仕事</h3>
-        <p>未経験・大学生OKの求人もたくさん。スキルアップできます。</p>
-      </div>
-      <div class="card feature-card reveal">
-        <div class="card-top">
-          <span class="badge badge-yellow">自由な働き方</span>
-          <span style="font-size:14px;font-weight:900;">03</span>
+        <div class="feature-item">
+          <div class="feature-chip">自</div>
+          <div>
+            <h3>あなたのペースで</h3>
+            <p>週2日から、スキマ時間からでも。稼ぎたい分だけ稼げます。</p>
+          </div>
         </div>
-        <h3>あなたのペースで</h3>
-        <p>週2日から、スキマ時間からでも。稼ぎたい分稼げます。</p>
       </div>
     </div>
   </div>

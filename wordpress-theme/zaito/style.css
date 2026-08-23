@@ -470,21 +470,74 @@ a {
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
-/* あえて均一な3分割にしない、非対称なビエントグリッド */
-.feature-grid {
+/* Feature section: 「3枚カードの棚」ではなく「1つの主張+補足リスト」の非対称レイアウト */
+.feature-split {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  grid-template-rows: repeat(2, 1fr);
-  gap: 18px;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 56px;
+  align-items: center;
 }
-.feature-card-lg {
-  grid-row: span 2;
+.feature-statement {
+  font-size: clamp(26px, 3.2vw, 36px);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -1px;
+  margin: 10px 0 16px;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.feature-statement mark {
+  background: none;
+  color: var(--brand);
+  box-shadow: inset 0 -0.32em 0 rgba(178, 73, 43, .16);
+}
+.feature-statement-sub {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 46ch;
+  margin: 0;
+}
+.feature-list {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
 }
-.feature-card-lg h3 {
-  font-size: 26px;
+.feature-item {
+  display: flex;
+  gap: 18px;
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+}
+.feature-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.feature-chip {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 900;
+  color: #fff;
+}
+.feature-item:nth-child(1) .feature-chip { background: var(--brand); }
+.feature-item:nth-child(2) .feature-chip { background: var(--lav); }
+.feature-item:nth-child(3) .feature-chip { background: var(--accent); color: #3a2a05; }
+.feature-item h3 {
+  font-size: 17px;
+  font-weight: 900;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.feature-item p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.7;
 }
 .card {
   background: #fff;
@@ -1528,12 +1581,9 @@ a {
   .card-grid {
     grid-template-columns: 1fr;
   }
-  .feature-grid {
+  .feature-split {
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
-  }
-  .feature-card-lg {
-    grid-row: auto;
+    gap: 32px;
   }
   .cta-box {
     flex-direction: column;
