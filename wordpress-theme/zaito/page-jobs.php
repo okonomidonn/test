@@ -111,7 +111,21 @@ $categories_list = zaito_job_categories();
                     'type'    => 'NUMERIC',
                 );
             }
-            if ( $search_salary_type ) {
+            if ( $search_salary_type === '時給' ) {
+                // 既存のデモ求人には _job_salary_type が未設定のものが多く、表示上は「時給」扱いになっているため
+                // 未設定のものも時給としてヒットさせる（完全一致だけだと該当ゼロ件になってしまう）
+                $meta_query[] = array(
+                    'relation' => 'OR',
+                    array(
+                        'key'   => '_job_salary_type',
+                        'value' => '時給',
+                    ),
+                    array(
+                        'key'     => '_job_salary_type',
+                        'compare' => 'NOT EXISTS',
+                    ),
+                );
+            } elseif ( $search_salary_type ) {
                 $meta_query[] = array(
                     'key'   => '_job_salary_type',
                     'value' => $search_salary_type,
