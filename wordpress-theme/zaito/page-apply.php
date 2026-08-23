@@ -57,6 +57,8 @@ if ( $application_success ) :
         <div class="apply-card">
           <h1>求人に応募する</h1>
 
+          <?php zaito_render_verification_banner(); ?>
+
           <?php if ( $apply_error ) : ?>
             <div class="auth-error"><p><?php echo esc_html( $apply_error ); ?></p></div>
           <?php endif; ?>

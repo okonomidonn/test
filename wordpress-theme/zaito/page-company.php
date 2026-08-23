@@ -119,6 +119,33 @@ $company_name = get_user_meta( $current_user->ID, 'company_name', true );
             </a>
           <?php endif; ?>
         </div>
+
+        <div class="content-section" style="margin-top:24px;">
+          <h2>ファーストメッセージ設定</h2>
+          <p class="auth-description">求職者が応募した直後に、自動で送信されるメッセージの文面です。空欄の場合は既定の文面が使われます。</p>
+
+          <?php if ( isset( $_GET['message_saved'] ) && $_GET['message_saved'] === '1' ) : ?>
+            <div class="auth-error" style="background:#f1fffb;color:#087f70;"><p>ファーストメッセージを保存しました</p></div>
+          <?php endif; ?>
+
+          <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="auth-form">
+            <input type="hidden" name="action" value="zaito_update_auto_reply_message" />
+            <?php wp_nonce_field( 'zaito_update_auto_reply_message' ); ?>
+
+            <div class="form-group">
+              <label for="auto_reply_message">応募直後の自動メッセージ</label>
+              <textarea
+                id="auto_reply_message"
+                name="auto_reply_message"
+                rows="5"
+                placeholder="<?php echo esc_attr( zaito_default_auto_reply_message() ); ?>"
+              ><?php echo esc_textarea( get_user_meta( $current_user->ID, 'auto_reply_message', true ) ); ?></textarea>
+              <small>求職者が応募すると、この文面がチャットに自動送信されます。</small>
+            </div>
+
+            <button type="submit" class="btn btn-accent">保存する</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>

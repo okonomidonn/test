@@ -631,6 +631,10 @@ function zaito_handle_apply() {
         exit;
     }
 
+    if ( ! zaito_is_email_verified( $current_user->ID ) ) {
+        zaito_store_form_errors_and_redirect( array( '応募にはメールアドレスの確認が必要です。マイページから確認メールを再送信してください。' ), $apply_url );
+    }
+
     if ( zaito_has_applied( $current_user->ID, $job_id ) ) {
         zaito_store_form_errors_and_redirect( array( 'この求人にはすでに応募済みです。応募状況はマイページからご確認いただけます。' ), $apply_url );
     }
@@ -678,10 +682,20 @@ function zaito_handle_apply() {
 }
 
 /**
+ * 企業がファーストメッセージ（自動一次受付メッセージ）をカスタマイズしていない
+ * 場合のデフォルト文面。
+ */
+function zaito_default_auto_reply_message() {
+    return 'この度はご応募いただき誠にありがとうございます。担当者が応募内容を確認の上、'
+        . '書類選考の結果を追ってご連絡いたします。今しばらくお待ちくださいませ。';
+}
+
+/**
  * 応募直後に、求人を投稿した企業アカウントから自動で一次受付メッセージを
  * 送信する。実企業アカウント（_company_user_idを持つ求人）にのみ送信し、
  * デモ求人（架空求人）には送信しない。応募者はこれによって応募直後から
  * チャットで企業とのやり取り状況を確認できる。
+ * メッセージ文面は企業がダッシュボードから編集可能（未設定ならデフォルト文面）。
  */
 function zaito_send_application_auto_reply( $application_id, $job_id ) {
     $company_user_id = (int) get_post_meta( $job_id, '_company_user_id', true );
@@ -689,8 +703,8 @@ function zaito_send_application_auto_reply( $application_id, $job_id ) {
         return;
     }
 
-    $auto_message = 'この度はご応募いただき誠にありがとうございます。担当者が応募内容を確認の上、'
-        . '書類選考の結果を追ってご連絡いたします。今しばらくお待ちくださいませ。';
+    $custom_message = trim( (string) get_user_meta( $company_user_id, 'auto_reply_message', true ) );
+    $auto_message   = $custom_message ? $custom_message : zaito_default_auto_reply_message();
 
     $message_id = wp_insert_post( array(
         'post_type'   => 'zaito_message',
@@ -872,6 +886,9 @@ function zaito_handle_post_job() {
         wp_safe_redirect( home_url( '/' ) );
         exit;
     }
+    if ( ! zaito_is_email_verified( $current_user->ID ) ) {
+        zaito_store_form_errors_and_redirect( array( '求人の投稿にはメールアドレスの確認が必要です。ダッシュボードから確認メールを再送信してください。' ), home_url( '/company-jobs/' ) );
+    }
 
     $errors = array();
     $title    = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
@@ -919,6 +936,30 @@ function zaito_handle_post_job() {
     exit;
 }
 add_action( 'admin_post_zaito_post_job', 'zaito_handle_post_job' );
+
+/**
+ * 企業のファーストメッセージ（自動一次受付メッセージ）の文面保存処理（admin-post.php経由）。
+ */
+function zaito_handle_update_auto_reply_message() {
+    check_admin_referer( 'zaito_update_auto_reply_message' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/company-login/' ) );
+        exit;
+    }
+    $current_user = wp_get_current_user();
+    if ( ! in_array( 'zaito_company', $current_user->roles, true ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $message = isset( $_POST['auto_reply_message'] ) ? sanitize_textarea_field( $_POST['auto_reply_message'] ) : '';
+    update_user_meta( $current_user->ID, 'auto_reply_message', $message );
+
+    wp_safe_redirect( add_query_arg( 'message_saved', '1', home_url( '/company/' ) ) );
+    exit;
+}
+add_action( 'admin_post_zaito_update_auto_reply_message', 'zaito_handle_update_auto_reply_message' );
 
 /**
  * 応募（zaito_application）に紐づく求人の投稿企業アカウントIDを返す。

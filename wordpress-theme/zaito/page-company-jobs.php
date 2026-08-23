@@ -31,6 +31,7 @@ $jobs = get_posts( array(
 
 <main class="company-main">
   <div class="wrap">
+    <?php zaito_render_verification_banner(); ?>
     <div class="company-header">
       <div class="header-avatar" aria-hidden="true"><?php echo esc_html( mb_substr( $company_name ?: $current_user->display_name, 0, 1 ) ); ?></div>
       <div>
