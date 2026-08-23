@@ -1,6 +1,6 @@
 <?php
 if ( ! is_user_logged_in() ) {
-    wp_redirect( home_url( '/login/?redirect=' . urlencode( $_SERVER['REQUEST_URI'] ) ) );
+    wp_redirect( add_query_arg( 'redirect_to', rawurlencode( home_url( $_SERVER['REQUEST_URI'] ) ), home_url( '/login/' ) ) );
     exit;
 }
 $current_user = wp_get_current_user();
@@ -82,27 +82,27 @@ if ( $application_success ) :
           <div class="job-summary" style="margin-top:16px;">
             <h2 style="font-size:16px;">応募者情報（プロフィールより自動入力）</h2>
             <div class="job-info-grid">
-              <div class="info-item">
+              <div class="job-info-item">
                 <span class="label">氏名</span>
                 <span class="value"><?php echo esc_html( $current_user->first_name ?: '未設定' ); ?></span>
               </div>
-              <div class="info-item">
+              <div class="job-info-item">
                 <span class="label">フリガナ</span>
                 <span class="value"><?php echo esc_html( $furigana ?: '未設定' ); ?></span>
               </div>
-              <div class="info-item">
+              <div class="job-info-item">
                 <span class="label">生年月日</span>
                 <span class="value"><?php echo esc_html( $birthdate ?: '未設定' ); ?></span>
               </div>
-              <div class="info-item">
+              <div class="job-info-item">
                 <span class="label">電話番号</span>
                 <span class="value"><?php echo esc_html( $phone ?: '未設定' ); ?></span>
               </div>
-              <div class="info-item">
+              <div class="job-info-item">
                 <span class="label">お住まい</span>
                 <span class="value"><?php echo esc_html( $prefecture ?: '未設定' ); ?></span>
               </div>
-              <div class="info-item">
+              <div class="job-info-item">
                 <span class="label">最終学歴</span>
                 <span class="value"><?php echo esc_html( $education ?: '未設定' ); ?></span>
               </div>

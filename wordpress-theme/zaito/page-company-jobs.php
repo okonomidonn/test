@@ -82,6 +82,19 @@ $jobs = get_posts( array(
               <textarea id="content" name="content" rows="6" required></textarea>
             </div>
 
+            <div class="form-group">
+              <label for="category">求人カテゴリ</label>
+              <select id="category" name="category" required>
+                <option value="">選択してください</option>
+                <?php
+                $zaito_job_categories = array( 'ライティング', 'デザイン', 'プログラミング', '事務・データ入力', 'カスタマーサポート' );
+                foreach ( $zaito_job_categories as $zaito_cat ) :
+                ?>
+                  <option value="<?php echo esc_attr( $zaito_cat ); ?>"><?php echo esc_html( $zaito_cat ); ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
             <div class="job-info-grid" style="margin-bottom:20px;">
               <div class="form-group" style="margin-bottom:0;">
                 <label for="salary">時給（数字のみ）</label>

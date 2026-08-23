@@ -93,19 +93,19 @@ if ( ! empty( $own_job_ids ) ) {
                     <p class="company"><?php echo esc_html( $applicant_email ); ?></p>
                     <p>応募求人：<?php echo esc_html( $job_title ); ?></p>
                     <div class="job-info-grid" style="margin:10px 0;">
-                      <div class="info-item">
+                      <div class="job-info-item">
                         <span class="label">生年月日</span>
                         <span class="value"><?php echo esc_html( $birthdate ?: '未設定' ); ?></span>
                       </div>
-                      <div class="info-item">
+                      <div class="job-info-item">
                         <span class="label">電話番号</span>
                         <span class="value"><?php echo esc_html( $phone ?: '未設定' ); ?></span>
                       </div>
-                      <div class="info-item">
+                      <div class="job-info-item">
                         <span class="label">お住まい</span>
                         <span class="value"><?php echo esc_html( $prefecture ?: '未設定' ); ?></span>
                       </div>
-                      <div class="info-item">
+                      <div class="job-info-item">
                         <span class="label">最終学歴</span>
                         <span class="value"><?php echo esc_html( $education ?: '未設定' ); ?></span>
                       </div>
