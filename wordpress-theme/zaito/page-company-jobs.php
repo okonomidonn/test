@@ -17,6 +17,7 @@ get_header();
 $company_name = get_user_meta( $current_user->ID, 'company_name', true );
 $jobs = get_posts( array(
     'post_type'      => 'job_listing',
+    'post_status'    => array( 'publish', 'draft' ),
     'posts_per_page' => -1,
     'orderby'        => 'date',
     'order'          => 'DESC',
@@ -189,14 +190,29 @@ $jobs = get_posts( array(
 
           <?php if ( ! empty( $jobs ) ) : ?>
             <div class="jobs-list">
-              <?php foreach ( $jobs as $job ) : ?>
+              <?php foreach ( $jobs as $job ) :
+                  $zaito_job_is_open = $job->post_status === 'publish';
+              ?>
                 <div class="job-item">
                   <div class="job-info">
-                    <h3><?php echo esc_html( get_the_title( $job ) ); ?></h3>
+                    <h3>
+                      <?php echo esc_html( get_the_title( $job ) ); ?>
+                      <span class="status-badge status-<?php echo $zaito_job_is_open ? 'accepted' : 'rejected'; ?>">
+                        <?php echo $zaito_job_is_open ? '掲載中' : '募集終了'; ?>
+                      </span>
+                    </h3>
                     <p class="job-date">掲載日：<?php echo esc_html( get_the_date( 'Y/m/d', $job ) ); ?></p>
                   </div>
                   <div class="job-actions">
                     <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="btn btn-outline btn-small">詳細</a>
+                    <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
+                      <input type="hidden" name="action" value="zaito_toggle_job_status" />
+                      <input type="hidden" name="job_id" value="<?php echo esc_attr( $job->ID ); ?>" />
+                      <?php wp_nonce_field( 'zaito_toggle_job_status' ); ?>
+                      <button type="submit" class="btn btn-outline btn-small">
+                        <?php echo $zaito_job_is_open ? '掲載を終了する' : '掲載を再開する'; ?>
+                      </button>
+                    </form>
                   </div>
                 </div>
               <?php endforeach; ?>

@@ -1145,6 +1145,44 @@ function zaito_handle_update_auto_reply_message() {
 add_action( 'admin_post_zaito_update_auto_reply_message', 'zaito_handle_update_auto_reply_message' );
 
 /**
+ * 企業が自社の求人の掲載を終了/再開する。投稿者(_company_user_id)が
+ * 自分自身であることを確認した上で、post_status を publish⇔draft でトグルする。
+ * draft にすると通常のWPクエリの仕様上、公開画面(一覧・検索・詳細)から
+ * 自動的に非表示になる。データは削除しない。
+ */
+function zaito_handle_toggle_job_status() {
+    check_admin_referer( 'zaito_toggle_job_status' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/company-login/' ) );
+        exit;
+    }
+    $current_user = wp_get_current_user();
+    if ( ! in_array( 'zaito_company', $current_user->roles, true ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $job_id = isset( $_POST['job_id'] ) ? intval( $_POST['job_id'] ) : 0;
+    $job = $job_id ? get_post( $job_id ) : null;
+
+    if ( $job && $job->post_type === 'job_listing' ) {
+        $owner_id = (int) get_post_meta( $job_id, '_company_user_id', true );
+        if ( $owner_id === $current_user->ID ) {
+            $new_status = $job->post_status === 'publish' ? 'draft' : 'publish';
+            wp_update_post( array(
+                'ID'          => $job_id,
+                'post_status' => $new_status,
+            ) );
+        }
+    }
+
+    wp_safe_redirect( home_url( '/company-jobs/' ) );
+    exit;
+}
+add_action( 'admin_post_zaito_toggle_job_status', 'zaito_handle_toggle_job_status' );
+
+/**
  * 応募（zaito_application）に紐づく求人の投稿企業アカウントIDを返す。
  * チャットの相手（企業側）はこの値で判定する。承認・不承認に関わらず、
  * 応募した時点から企業とのやり取りができるようにするため、
