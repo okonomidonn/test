@@ -168,6 +168,18 @@ $jobs = get_posts( array(
               <small>空欄の場合はダッシュボードの既定メッセージ、それも未設定ならシステムの既定文面が使われます。複数の求人を掲載する場合、求人ごとに文面を変えられます。</small>
             </div>
 
+            <div class="form-group">
+              <label for="screening_question">応募者への質問（任意）</label>
+              <input
+                type="text"
+                id="screening_question"
+                name="screening_question"
+                placeholder="例: 社会人として働いた経験は何年ありますか？"
+                maxlength="200"
+              />
+              <small>設定すると、応募フォームでこの質問への回答が必須になります。応募者一覧で回答を確認できます。</small>
+            </div>
+
             <button type="submit" class="btn btn-accent">求人を投稿する</button>
           </form>
         </div>

@@ -86,6 +86,8 @@ if ( ! empty( $own_job_ids ) ) {
                   $prefecture = get_user_meta( $applicant_id, 'prefecture', true );
                   $education = get_user_meta( $applicant_id, 'education', true );
                   $work_history = get_user_meta( $applicant_id, 'work_history', true );
+                  $screening_question = get_post_meta( $app->ID, 'screening_question', true );
+                  $screening_answer = get_post_meta( $app->ID, 'screening_answer', true );
               ?>
                 <div class="application-item" style="grid-template-columns: 1fr auto auto;">
                   <div class="app-info">
@@ -112,6 +114,9 @@ if ( ! empty( $own_job_ids ) ) {
                     </div>
                     <?php if ( $work_history ) : ?>
                       <p><strong>職務経歴・自己PR：</strong><?php echo esc_html( wp_trim_words( $work_history, 60 ) ); ?></p>
+                    <?php endif; ?>
+                    <?php if ( $screening_question ) : ?>
+                      <p><strong><?php echo esc_html( $screening_question ); ?></strong>：<?php echo esc_html( $screening_answer ); ?></p>
                     <?php endif; ?>
                     <p><strong>応募メッセージ：</strong><?php echo esc_html( wp_trim_words( $message, 40 ) ); ?></p>
                   </div>

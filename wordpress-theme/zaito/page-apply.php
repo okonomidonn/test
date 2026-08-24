@@ -33,6 +33,7 @@ $phone = get_user_meta( $current_user->ID, 'phone', true );
 $prefecture = get_user_meta( $current_user->ID, 'prefecture', true );
 $education = get_user_meta( $current_user->ID, 'education', true );
 $profile_incomplete = ! $current_user->first_name || ! $furigana || ! $birthdate || ! $prefecture || ! $education;
+$screening_question = trim( (string) get_post_meta( $job_id, '_job_screening_question', true ) );
 
 get_header();
 
@@ -134,6 +135,18 @@ if ( $application_success ) :
               <input type="hidden" name="action" value="zaito_apply" />
               <input type="hidden" name="job_id" value="<?php echo esc_attr( $job_id ); ?>" />
               <?php wp_nonce_field( 'zaito_apply' ); ?>
+
+              <?php if ( $screening_question ) : ?>
+                <div class="form-group">
+                  <label for="screening_answer">採用企業からの質問：<?php echo esc_html( $screening_question ); ?></label>
+                  <input
+                    type="text"
+                    id="screening_answer"
+                    name="screening_answer"
+                    required
+                  />
+                </div>
+              <?php endif; ?>
 
               <div class="form-group">
                 <label for="message">応募メッセージ・志望動機</label>

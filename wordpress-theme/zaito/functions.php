@@ -756,6 +756,12 @@ function zaito_handle_apply() {
         $errors[] = 'メッセージを入力してください';
     }
 
+    $screening_question = trim( (string) get_post_meta( $job_id, '_job_screening_question', true ) );
+    $screening_answer = isset( $_POST['screening_answer'] ) ? sanitize_text_field( $_POST['screening_answer'] ) : '';
+    if ( $screening_question && ! $screening_answer ) {
+        $errors[] = '採用企業からの質問に回答してください';
+    }
+
     if ( ! empty( $errors ) ) {
         zaito_store_form_errors_and_redirect( $errors, $apply_url );
     }
@@ -774,6 +780,10 @@ function zaito_handle_apply() {
     update_post_meta( $application_id, 'job_id', $job_id );
     update_post_meta( $application_id, 'message', $message );
     update_post_meta( $application_id, 'status', 'pending' );
+    if ( $screening_question ) {
+        update_post_meta( $application_id, 'screening_question', $screening_question );
+        update_post_meta( $application_id, 'screening_answer', $screening_answer );
+    }
 
     zaito_send_application_auto_reply( $application_id, $job_id );
 
@@ -1053,6 +1063,7 @@ function zaito_handle_post_job() {
     $target_options  = zaito_target_tag_options();
     $target          = implode( '、', array_intersect( array_map( 'sanitize_text_field', $target_input ), $target_options ) );
     $job_auto_reply  = isset( $_POST['job_auto_reply_message'] ) ? sanitize_textarea_field( $_POST['job_auto_reply_message'] ) : '';
+    $screening_question = isset( $_POST['screening_question'] ) ? sanitize_text_field( $_POST['screening_question'] ) : '';
 
     if ( ! $title ) {
         $errors[] = '求人タイトルを入力してください';
@@ -1102,6 +1113,7 @@ function zaito_handle_post_job() {
     update_post_meta( $job_id, '_job_days', $days );
     update_post_meta( $job_id, '_job_target', $target );
     update_post_meta( $job_id, '_job_auto_reply_message', $job_auto_reply );
+    update_post_meta( $job_id, '_job_screening_question', $screening_question );
 
     wp_safe_redirect( add_query_arg( 'posted', '1', home_url( '/company-jobs/' ) ) );
     exit;
