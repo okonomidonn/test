@@ -825,6 +825,55 @@ function zaito_send_application_auto_reply( $application_id, $job_id ) {
 add_action( 'admin_post_zaito_apply', 'zaito_handle_apply' );
 
 /**
+ * 気に入った求人の保存(お気に入り)機能。
+ * user_meta 'saved_jobs' に投稿IDの配列を保持する。
+ */
+function zaito_get_saved_jobs( $user_id ) {
+    $saved = get_user_meta( $user_id, 'saved_jobs', true );
+    return is_array( $saved ) ? array_map( 'intval', $saved ) : array();
+}
+
+function zaito_is_job_saved( $user_id, $job_id ) {
+    return in_array( (int) $job_id, zaito_get_saved_jobs( $user_id ), true );
+}
+
+/**
+ * 求人詳細ページの「保存する/保存を解除」ボタンから呼ばれる。
+ * 元のページに戻る(redirect_toが渡ってこない場合はwp_get_referer()を使う)。
+ */
+function zaito_handle_toggle_saved_job() {
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/login/' ) );
+        exit;
+    }
+    check_admin_referer( 'zaito_toggle_saved_job' );
+
+    $current_user = wp_get_current_user();
+    if ( ! zaito_can_use_seeker_features( $current_user ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $job_id = isset( $_POST['job_id'] ) ? intval( $_POST['job_id'] ) : 0;
+    $redirect_to = isset( $_POST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_POST['redirect_to'] ) ) : wp_get_referer();
+    $is_local_redirect = $redirect_to && strpos( $redirect_to, home_url() ) === 0;
+
+    if ( $job_id ) {
+        $saved = zaito_get_saved_jobs( $current_user->ID );
+        if ( in_array( $job_id, $saved, true ) ) {
+            $saved = array_values( array_diff( $saved, array( $job_id ) ) );
+        } else {
+            $saved[] = $job_id;
+        }
+        update_user_meta( $current_user->ID, 'saved_jobs', $saved );
+    }
+
+    wp_safe_redirect( $is_local_redirect ? $redirect_to : home_url( '/jobs/' ) );
+    exit;
+}
+add_action( 'admin_post_zaito_toggle_saved_job', 'zaito_handle_toggle_saved_job' );
+
+/**
  * パスワード再設定メールの送信要求。
  * メールアドレスの存在有無に関わらず同じ結果画面を表示し、
  * 登録済みメールアドレスの推測（ユーザー列挙）を防ぐ。

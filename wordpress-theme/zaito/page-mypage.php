@@ -44,6 +44,7 @@ get_header();
           <h3>メニュー</h3>
           <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="menu-link">求人を探す</a>
           <a href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>" class="menu-link active">応募履歴</a>
+          <a href="#saved-jobs" class="menu-link">保存した求人</a>
           <a href="<?php echo esc_url( home_url( '/worker-profile/' ) ); ?>" class="menu-link">プロフィール編集</a>
           <a href="<?php echo esc_url( home_url( '/chat/' ) ); ?>" class="menu-link">メッセージ</a>
           <a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="menu-link logout">ログアウト</a>
@@ -51,6 +52,46 @@ get_header();
       </aside>
 
       <div class="mypage-content">
+        <div class="content-section" id="saved-jobs">
+          <h2>保存した求人</h2>
+          <?php
+          $saved_job_ids = zaito_get_saved_jobs( $current_user->ID );
+          if ( ! empty( $saved_job_ids ) ) :
+              $saved_jobs = get_posts( array(
+                  'post_type'      => 'job_listing',
+                  'posts_per_page' => -1,
+                  'post__in'       => $saved_job_ids,
+                  'orderby'        => 'post__in',
+                  'suppress_filters' => false,
+              ) );
+          ?>
+            <?php if ( ! empty( $saved_jobs ) ) : ?>
+              <div class="jobs-list">
+                <?php foreach ( $saved_jobs as $saved_job ) : ?>
+                  <a href="<?php echo esc_url( get_permalink( $saved_job ) ); ?>" class="card">
+                    <div class="card-top">
+                      <span class="badge <?php echo esc_attr( zaito_category_badge_class( get_post_meta( $saved_job->ID, '_job_category', true ) ) ); ?>"><?php echo esc_html( get_post_meta( $saved_job->ID, '_job_category', true ) ?: '人気' ); ?></span>
+                    </div>
+                    <h3><?php echo esc_html( get_the_title( $saved_job ) ); ?></h3>
+                    <p><?php echo esc_html( get_post_meta( $saved_job->ID, '_company_name', true ) ); ?></p>
+                    <div class="price">
+                      <span class="unit"><?php echo esc_html( get_post_meta( $saved_job->ID, '_job_salary_type', true ) ?: '時給' ); ?> </span>
+                      <?php echo esc_html( get_post_meta( $saved_job->ID, '_job_salary', true ) ); ?>円
+                    </div>
+                  </a>
+                <?php endforeach; ?>
+              </div>
+            <?php else : ?>
+              <p class="empty-message">保存した求人は現在公開されていません(掲載終了の可能性があります)</p>
+            <?php endif; ?>
+          <?php else : ?>
+            <p class="empty-message">保存した求人はまだありません</p>
+            <a href="<?php echo esc_url( home_url( '/jobs/' ) ); ?>" class="btn btn-accent">
+              求人を探す
+            </a>
+          <?php endif; ?>
+        </div>
+
         <div class="content-section">
           <h2>応募履歴</h2>
 

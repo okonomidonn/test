@@ -111,6 +111,16 @@
                     応募する
                   </a>
                 <?php endif; ?>
+                <?php $zaito_is_saved = zaito_is_job_saved( wp_get_current_user()->ID, get_the_ID() ); ?>
+                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="save-job-form">
+                  <input type="hidden" name="action" value="zaito_toggle_saved_job" />
+                  <input type="hidden" name="job_id" value="<?php echo esc_attr( get_the_ID() ); ?>" />
+                  <input type="hidden" name="redirect_to" value="<?php echo esc_url( get_permalink() ); ?>" />
+                  <?php wp_nonce_field( 'zaito_toggle_saved_job' ); ?>
+                  <button type="submit" class="btn btn-outline btn-block save-job-btn<?php echo $zaito_is_saved ? ' is-saved' : ''; ?>">
+                    <?php echo $zaito_is_saved ? '★ 保存済み(解除する)' : '☆ この求人を保存する'; ?>
+                  </button>
+                </form>
               <?php else :
                 $zaito_apply_redirect = home_url( '/apply/?job_id=' . get_the_ID() );
               ?>

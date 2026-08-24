@@ -202,6 +202,14 @@ img, video, table, iframe {
   border-color: var(--aqua);
   box-shadow: var(--shadow-sm);
 }
+.save-job-form {
+  margin-top: 10px;
+}
+.save-job-btn.is-saved {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: #fffaf0;
+}
 .btn-solid {
   background: var(--ink);
   color: #fff;
