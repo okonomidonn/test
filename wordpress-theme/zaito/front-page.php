@@ -119,8 +119,14 @@ get_header();
           <p class="pickup-empty-title">求人企業を募集中です</p>
           <p class="pickup-empty-text">ZAITOは立ち上げたばかりのサービスです。今なら掲載無料キャンペーン中。<br class="pickup-empty-br">先にワーカー登録しておくと、新着求人をいち早くチェックできます。</p>
           <div class="pickup-empty-actions">
-            <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-accent">ワーカー登録する(1分で完了)</a>
-            <a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>" class="btn btn-outline">企業の方はこちら</a>
+            <?php if ( is_user_logged_in() && in_array( 'zaito_company', wp_get_current_user()->roles, true ) ) : ?>
+              <a href="<?php echo esc_url( home_url( '/company/' ) ); ?>" class="btn btn-accent">企業ダッシュボードへ</a>
+            <?php elseif ( is_user_logged_in() && zaito_can_use_seeker_features( wp_get_current_user() ) ) : ?>
+              <a href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>" class="btn btn-accent">マイページへ</a>
+            <?php else : ?>
+              <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>" class="btn btn-accent">ワーカー登録する(1分で完了)</a>
+              <a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>" class="btn btn-outline">企業の方はこちら</a>
+            <?php endif; ?>
           </div>
         </div>
       <?php else : ?>
