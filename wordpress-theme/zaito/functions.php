@@ -167,6 +167,16 @@ function zaito_register_post_types() {
         'rewrite'      => array( 'slug' => 'job', 'with_front' => false ),
         'capability_type' => 'post',
     ) );
+
+    register_post_type( 'zaito_interest', array(
+        'label'        => '興味あり登録',
+        'public'       => false,
+        'show_ui'      => true,
+        'show_in_menu' => true,
+        'menu_icon'    => 'dashicons-heart',
+        'supports'     => array( 'title', 'custom-fields' ),
+        'capability_type' => 'post',
+    ) );
 }
 add_action( 'init', 'zaito_register_post_types' );
 
@@ -197,6 +207,7 @@ function zaito_virtual_route_map() {
         'jobs'             => 'page-jobs.php',
         'apply'            => 'page-apply.php',
         'chat'             => 'page-chat.php',
+        'interest'         => 'page-interest.php',
     );
 }
 
@@ -233,7 +244,7 @@ add_action( 'template_redirect', 'zaito_render_virtual_routes', 1 );
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '8';
+    $version = '9';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -882,6 +893,56 @@ function zaito_handle_toggle_saved_job() {
     exit;
 }
 add_action( 'admin_post_zaito_toggle_saved_job', 'zaito_handle_toggle_saved_job' );
+
+/**
+ * 「興味あり登録」フォーム(/interest/)の送信処理。
+ * 本会員登録(/register/)よりハードルの低い、パスワード不要のリード獲得用フォーム。
+ * コミュニティ投稿等、まだアカウント登録までは踏み込みたくない相手からの反応を拾うために使う。
+ */
+function zaito_handle_submit_interest() {
+    check_admin_referer( 'zaito_submit_interest' );
+
+    $name = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+    $email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+    $interests = isset( $_POST['interests'] ) && is_array( $_POST['interests'] )
+        ? array_map( 'sanitize_text_field', wp_unslash( $_POST['interests'] ) )
+        : array();
+    $hours = sanitize_text_field( wp_unslash( $_POST['hours'] ?? '' ) );
+    $status = sanitize_text_field( wp_unslash( $_POST['status'] ?? '' ) );
+    $memo = sanitize_textarea_field( wp_unslash( $_POST['memo'] ?? '' ) );
+
+    $errors = array();
+    if ( ! $name ) {
+        $errors[] = 'お名前(ニックネーム可)を入力してください';
+    }
+    if ( ! $email || ! is_email( $email ) ) {
+        $errors[] = '正しいメールアドレスを入力してください';
+    }
+
+    if ( ! empty( $errors ) ) {
+        zaito_store_form_errors_and_redirect( $errors, home_url( '/interest/' ) );
+    }
+
+    $interest_id = wp_insert_post( array(
+        'post_type'   => 'zaito_interest',
+        'post_title'  => $name . ' (' . $email . ')',
+        'post_status' => 'private',
+    ) );
+
+    if ( $interest_id && ! is_wp_error( $interest_id ) ) {
+        update_post_meta( $interest_id, 'name', $name );
+        update_post_meta( $interest_id, 'email', $email );
+        update_post_meta( $interest_id, 'interests', $interests );
+        update_post_meta( $interest_id, 'hours', $hours );
+        update_post_meta( $interest_id, 'status', $status );
+        update_post_meta( $interest_id, 'memo', $memo );
+    }
+
+    wp_safe_redirect( add_query_arg( 'submitted', '1', home_url( '/interest/' ) ) );
+    exit;
+}
+add_action( 'admin_post_zaito_submit_interest', 'zaito_handle_submit_interest' );
+add_action( 'admin_post_nopriv_zaito_submit_interest', 'zaito_handle_submit_interest' );
 
 /**
  * パスワード再設定メールの送信要求。
