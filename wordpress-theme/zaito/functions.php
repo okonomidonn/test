@@ -240,6 +240,27 @@ function zaito_render_virtual_routes() {
 add_action( 'template_redirect', 'zaito_render_virtual_routes', 1 );
 
 /**
+ * 著者アーカイブ(/author/xxx/)を無効化しトップページへリダイレクトする。
+ * このサイトはブログ機能を使わず、ユーザーのdisplay_name(氏名の場合がある)が
+ * 意図せず公開URLとして露出してしまう経路を塞ぐための恒久対応(2026-08-25追加)。
+ */
+function zaito_disable_author_archives() {
+    if ( is_author() ) {
+        wp_safe_redirect( home_url( '/' ), 301 );
+        exit;
+    }
+}
+add_action( 'template_redirect', 'zaito_disable_author_archives', 0 );
+
+/**
+ * WP標準サイトマップからユーザー(著者)一覧を除外する。
+ * 上記のリダイレクトと合わせて、検索エンジンに著者URLをそもそも案内しないようにする。
+ */
+add_filter( 'wp_sitemaps_add_provider', function ( $provider, $name ) {
+    return 'users' === $name ? false : $provider;
+}, 10, 2 );
+
+/**
  * 上記のリライトルールをデータベースに反映させるため、
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
