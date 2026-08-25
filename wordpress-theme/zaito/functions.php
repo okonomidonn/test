@@ -261,6 +261,20 @@ add_filter( 'wp_sitemaps_add_provider', function ( $provider, $name ) {
 }, 10, 2 );
 
 /**
+ * WP REST APIのユーザー一覧エンドポイント(/wp-json/wp/v2/users)を未認証アクセスから塞ぐ。
+ * デフォルトでは投稿を持つユーザーの氏名・プロフィールURL等がJSONで公開されてしまうため、
+ * テーマ側でこのエンドポイントを使用していないことを確認のうえ無効化する(2026-08-25追加)。
+ */
+add_filter( 'rest_endpoints', function ( $endpoints ) {
+    if ( is_user_logged_in() ) {
+        return $endpoints;
+    }
+    unset( $endpoints['/wp/v2/users'] );
+    unset( $endpoints['/wp/v2/users/(?P<id>[\d]+)'] );
+    return $endpoints;
+} );
+
+/**
  * 上記のリライトルールをデータベースに反映させるため、
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
