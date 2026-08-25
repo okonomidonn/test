@@ -1780,3 +1780,32 @@ function zaito_seed_preview_jobs() {
     wp_die( implode( '<br>', array_map( 'esc_html', $links ) ) );
 }
 add_action( 'admin_post_zaito_seed_preview_jobs', 'zaito_seed_preview_jobs' );
+
+/**
+ * /wp-admin/admin-post.php?action=zaito_fix_author_display_name にアクセスすると、
+ * ユーザーnicename「torii-jun1020gmail-com」の表示名(display_name)を安全な値に変更する。
+ *
+ * このアカウントは著者アーカイブページ(/author/torii-jun1020gmail-com/)や
+ * ページタイトルに本名「鳥居潤」がそのまま公開表示されてしまっていた
+ * (WP標準サイトマップ wp-sitemap-users-1.xml にも同URLが掲載され、検索エンジンに
+ * インデックスされうる状態だった)。運営者の実名を公開しない方針のため修正する。
+ * 一度実行すれば十分な一回限りの修正アクション。
+ */
+function zaito_fix_author_display_name() {
+    if ( ! current_user_can( 'edit_posts' ) ) {
+        wp_die( 'この操作には投稿権限が必要です。' );
+    }
+
+    $target_user = get_user_by( 'slug', 'torii-jun1020gmail-com' );
+    if ( ! $target_user ) {
+        wp_die( '対象ユーザーが見つかりませんでした(すでに修正済みか、slugが異なります)。' );
+    }
+
+    wp_update_user( array(
+        'ID'           => $target_user->ID,
+        'display_name' => 'ZAITO運営事務局',
+    ) );
+
+    wp_die( '修正しました。ユーザーID: ' . esc_html( $target_user->ID ) . ' の表示名を「ZAITO運営事務局」に変更しました。' );
+}
+add_action( 'admin_post_zaito_fix_author_display_name', 'zaito_fix_author_display_name' );
