@@ -1785,6 +1785,20 @@ function zaito_seed_preview_jobs() {
             'job_days'  => '応相談',
             'job_target' => '未経験者歓迎',
         ),
+        array(
+            'company'   => 'Quasar株式会社',
+            'title'     => 'データ入力・編集アシスタント',
+            'category'  => '事務・データ入力',
+            'content'   => '出版業務を支援するアシスタント職です。実際の掲載求人によると、Excel・Googleスプレッドシートを使ったリスト作成、インターネットを活用した企業・著者・書店等の情報収集、データ入力・整理・更新などが主な業務とのことです。週3日以上・1日3時間以上から勤務可能で、フルリモート対応、土日祝休みとのことです。Excel・Wordの基本操作ができれば未経験でも対応でき、SNSが好きな方も歓迎されているとのことで、出版業界に興味がある方にも向いている案件だと考えています。' . $zaito_preview_disclaimer,
+            'salary_type' => '時給',
+            'salary'    => '1200',
+            'salary_max' => '',
+            'salary_note' => '',
+            'employment_type' => 'アルバイト・パート',
+            'job_type'  => '完全在宅・シフト制',
+            'job_days'  => '週3日〜',
+            'job_target' => '未経験者歓迎',
+        ),
     );
 
     $links = array();
