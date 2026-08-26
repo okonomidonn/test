@@ -342,15 +342,22 @@ function zaito_hide_fake_jobs_from_public( $where, $query ) {
         return $where;
     }
     $post_type = $query->get( 'post_type' );
-    $is_job_query = ( 'job_listing' === $post_type ) || ( is_array( $post_type ) && in_array( 'job_listing', $post_type, true ) );
-    if ( ! $is_job_query ) {
+    $is_job_only_query = ( 'job_listing' === $post_type ) || ( is_array( $post_type ) && in_array( 'job_listing', $post_type, true ) );
+
+    // WordPress標準検索(?s=)はpost_typeを明示指定しないことが多く、その場合job_listingも
+    // 検索対象に含まれる(exclude_from_searchを設定していないため)。post_type未指定の検索クエリも
+    // 対象に含めないと、非公開の仮ページ(_zaito_preview=1)の本文が検索結果に漏れてしまう
+    // (2026-08-26に実際に発見: 「プラコレ」で検索すると仮ページの内容がヒットしていた)。
+    $is_mixed_search = $query->is_search() && empty( $post_type );
+
+    if ( ! $is_job_only_query && ! $is_mixed_search ) {
         return $where;
     }
 
     global $wpdb;
 
     // 仮ページ(_zaito_preview=1)は、その求人自身の詳細ページ(直接リンク)に限り
-    // _company_user_idを持たなくても表示を許可する。一覧・PICK UP・関連求人などの
+    // _company_user_idを持たなくても表示を許可する。一覧・PICK UP・関連求人・検索結果などの
     // 公開リスト系クエリには含めない(is_singular()でない場合は通常の除外条件を適用)。
     // is_singular('job_listing') のように引数付きで呼ぶと内部で get_queried_object() が
     // 実行され、posts_where の時点(クエリ実行前)ではまだ解決できず常にfalseになってしまう。
@@ -361,13 +368,19 @@ function zaito_hide_fake_jobs_from_public( $where, $query ) {
         return $where;
     }
 
+    // post_type未指定の混在検索クエリ(job_listing以外の投稿・固定ページ等も含む)では、
+    // job_listing以外の投稿を巻き込んで除外しないよう、「job_listingでなければ無条件で許可」を
+    // OR条件の先頭に置く。$is_job_only_queryの場合はpost_typeがjob_listingのみに確定しているため
+    // 実質的に効果はないが、同じ文で両方のケースを安全に扱える。
     $where .= $wpdb->prepare(
-        " AND {$wpdb->posts}.ID IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_user_id' )
-          AND {$wpdb->posts}.ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_zaito_demo' AND meta_value = '1' )
-          AND {$wpdb->posts}.post_title NOT LIKE %s
-          AND {$wpdb->posts}.ID NOT IN (
-              SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_name' AND ( meta_value LIKE %s OR meta_value LIKE %s )
-          )",
+        " AND ( {$wpdb->posts}.post_type != 'job_listing' OR (
+              {$wpdb->posts}.ID IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_user_id' )
+              AND {$wpdb->posts}.ID NOT IN ( SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_zaito_demo' AND meta_value = '1' )
+              AND {$wpdb->posts}.post_title NOT LIKE %s
+              AND {$wpdb->posts}.ID NOT IN (
+                  SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_company_name' AND ( meta_value LIKE %s OR meta_value LIKE %s )
+              )
+          ) )",
         '%動作確認%',
         '%テスト%',
         '%デモ%'
