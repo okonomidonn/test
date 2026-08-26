@@ -27,6 +27,10 @@ get_header();
         <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="auth-form">
           <input type="hidden" name="action" value="zaito_submit_interest" />
           <?php wp_nonce_field( 'zaito_submit_interest' ); ?>
+          <div style="position:absolute;left:-9999px;" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
 
           <div class="form-group">
             <label for="name">お名前(ニックネーム可)</label>

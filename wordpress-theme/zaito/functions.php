@@ -950,6 +950,13 @@ add_action( 'admin_post_zaito_toggle_saved_job', 'zaito_handle_toggle_saved_job'
 function zaito_handle_submit_interest() {
     check_admin_referer( 'zaito_submit_interest' );
 
+    // ハニーポット: 通常のユーザーには見えない(CSSで隠した)フィールド。
+    // ここに値が入っている場合は自動送信ボットとみなし、静かに成功画面へ流す(ボットに気づかせない)。
+    if ( ! empty( $_POST['website'] ) ) {
+        wp_safe_redirect( add_query_arg( 'submitted', '1', home_url( '/interest/' ) ) );
+        exit;
+    }
+
     $name = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
     $email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
     $interests = isset( $_POST['interests'] ) && is_array( $_POST['interests'] )
