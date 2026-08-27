@@ -105,7 +105,7 @@ $company_name = get_user_meta( $current_user->ID, 'company_name', true );
                     <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="btn btn-outline btn-small">
                       詳細
                     </a>
-                    <a href="<?php echo esc_url( admin_url( 'post.php?post=' . $job->ID . '&action=edit' ) ); ?>" class="btn btn-outline btn-small">
+                    <a href="<?php echo esc_url( add_query_arg( 'edit', $job->ID, home_url( '/company-jobs/' ) ) ); ?>" class="btn btn-outline btn-small">
                       編集
                     </a>
                   </div>

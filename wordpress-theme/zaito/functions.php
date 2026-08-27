@@ -1237,6 +1237,96 @@ function zaito_handle_post_job() {
 add_action( 'admin_post_zaito_post_job', 'zaito_handle_post_job' );
 
 /**
+ * 既存求人の編集保存処理。以前は編集用のフロント画面が無く、企業ダッシュボードの
+ * 「編集」ボタンが素のwp-admin投稿編集画面に直接飛ばしていた(表示がバラバラで、
+ * 企業アカウントの権限では触ってはいけないメタ情報まで理論上編集できてしまう構成だった)。
+ * page-company-jobs.php の投稿フォームと同じ項目を編集できる、フロント側の更新処理を用意する。
+ */
+function zaito_handle_update_job() {
+    check_admin_referer( 'zaito_update_job' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/company-login/' ) );
+        exit;
+    }
+    $current_user = wp_get_current_user();
+    if ( ! in_array( 'zaito_company', $current_user->roles, true ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $job_id = isset( $_POST['job_id'] ) ? intval( $_POST['job_id'] ) : 0;
+    $job = $job_id ? get_post( $job_id ) : null;
+    if ( ! $job || 'job_listing' !== $job->post_type || (int) get_post_meta( $job_id, '_company_user_id', true ) !== $current_user->ID ) {
+        wp_safe_redirect( home_url( '/company-jobs/' ) );
+        exit;
+    }
+
+    $errors = array();
+    $title           = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+    $content         = isset( $_POST['content'] ) ? sanitize_textarea_field( $_POST['content'] ) : '';
+    $category        = isset( $_POST['category'] ) ? sanitize_text_field( $_POST['category'] ) : '';
+    $employment_type = isset( $_POST['employment_type'] ) ? sanitize_text_field( $_POST['employment_type'] ) : '';
+    $salary_type     = isset( $_POST['salary_type'] ) ? sanitize_text_field( $_POST['salary_type'] ) : '';
+    $salary          = isset( $_POST['salary'] ) ? sanitize_text_field( $_POST['salary'] ) : '';
+    $salary_max      = isset( $_POST['salary_max'] ) ? sanitize_text_field( $_POST['salary_max'] ) : '';
+    $type            = isset( $_POST['job_type'] ) ? sanitize_text_field( $_POST['job_type'] ) : '';
+    $days            = isset( $_POST['job_days'] ) ? sanitize_text_field( $_POST['job_days'] ) : '';
+    $target_input    = isset( $_POST['job_target'] ) && is_array( $_POST['job_target'] ) ? (array) $_POST['job_target'] : array();
+    $target_options  = zaito_target_tag_options();
+    $target          = implode( '、', array_intersect( array_map( 'sanitize_text_field', $target_input ), $target_options ) );
+    $job_auto_reply  = isset( $_POST['job_auto_reply_message'] ) ? sanitize_textarea_field( $_POST['job_auto_reply_message'] ) : '';
+    $screening_question = isset( $_POST['screening_question'] ) ? sanitize_text_field( $_POST['screening_question'] ) : '';
+
+    if ( ! $title ) {
+        $errors[] = '求人タイトルを入力してください';
+    }
+    if ( ! $content ) {
+        $errors[] = '仕事内容を入力してください';
+    }
+    if ( ! $category ) {
+        $errors[] = '求人カテゴリを選択してください';
+    }
+    if ( ! in_array( $employment_type, zaito_employment_type_options(), true ) ) {
+        $errors[] = '雇用形態を選択してください';
+    }
+    if ( $salary_type && ! in_array( $salary_type, zaito_salary_type_options(), true ) ) {
+        $salary_type = '';
+    }
+    if ( $type && ! in_array( $type, zaito_work_style_options(), true ) ) {
+        $type = '';
+    }
+    if ( $days && ! in_array( $days, zaito_min_days_options(), true ) ) {
+        $days = '';
+    }
+
+    if ( ! empty( $errors ) ) {
+        zaito_store_form_errors_and_redirect( $errors, add_query_arg( 'edit', $job_id, home_url( '/company-jobs/' ) ) );
+    }
+
+    wp_update_post( array(
+        'ID'           => $job_id,
+        'post_title'   => $title,
+        'post_content' => $content,
+    ) );
+
+    update_post_meta( $job_id, '_job_category', $category );
+    update_post_meta( $job_id, '_job_employment_type', $employment_type );
+    update_post_meta( $job_id, '_job_salary_type', $salary_type );
+    update_post_meta( $job_id, '_job_salary', $salary );
+    update_post_meta( $job_id, '_job_salary_max', $salary_max );
+    update_post_meta( $job_id, '_job_type', $type );
+    update_post_meta( $job_id, '_job_days', $days );
+    update_post_meta( $job_id, '_job_target', $target );
+    update_post_meta( $job_id, '_job_auto_reply_message', $job_auto_reply );
+    update_post_meta( $job_id, '_job_screening_question', $screening_question );
+
+    wp_safe_redirect( add_query_arg( 'updated', '1', home_url( '/company-jobs/' ) ) );
+    exit;
+}
+add_action( 'admin_post_zaito_update_job', 'zaito_handle_update_job' );
+
+/**
  * 企業のファーストメッセージ（自動一次受付メッセージ）の文面保存処理（admin-post.php経由）。
  */
 function zaito_handle_update_auto_reply_message() {
