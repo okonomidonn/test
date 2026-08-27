@@ -329,6 +329,30 @@ function zaito_get_featured_jobs( $limit = 3 ) {
 }
 
 /**
+ * 掲載終了(post_status=draft)にした自社の求人を、企業が「詳細」プレビューリンク
+ * (get_preview_post_link()、?p=ID&preview=true形式)経由で見られるようにする。
+ * WordPressの標準プレビュー機構は投稿者本人でもデフォルトのpost_status絞り込み
+ * (publishのみ)を素通りできないケースがあり、実際にdraft状態の自社求人が404に
+ * なることを確認したため、該当求人の所有企業のみ明示的にpost_statusを広げる。
+ */
+add_action( 'pre_get_posts', function ( $query ) {
+    if ( is_admin() || ! $query->is_main_query() ) {
+        return;
+    }
+    $post_id = $query->get( 'p' );
+    if ( ! $post_id || 'job_listing' !== $query->get( 'post_type' ) ) {
+        return;
+    }
+    if ( ! is_user_logged_in() ) {
+        return;
+    }
+    $owner_id = (int) get_post_meta( $post_id, '_company_user_id', true );
+    if ( $owner_id && $owner_id === get_current_user_id() ) {
+        $query->set( 'post_status', array( 'publish', 'draft' ) );
+    }
+} );
+
+/**
  * 公開画面(管理画面以外)の求人クエリから、実企業アカウントに紐づかない求人
  * (zaito_generate_demo_jobs()が自動生成した_zaito_demo=1の架空求人、
  * 動作確認・デモ用に作成した求人)を除外する。表示対象になるのは
