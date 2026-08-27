@@ -245,8 +245,14 @@ $jobs = get_posts( array(
                     </h3>
                     <p class="job-date">掲載日：<?php echo esc_html( get_the_date( 'Y/m/d', $job ) ); ?></p>
                   </div>
+                  <?php
+                  // 掲載終了(post_status=draft)の求人はget_permalink()だと404になる
+                  // (WordPressは下書き投稿を通常の固定URLでは表示しない仕様のため)。
+                  // 自社の求人を確認したい場合はプレビュー用URL(nonce付き)を使う。
+                  $zaito_detail_url = $zaito_job_is_open ? get_permalink( $job ) : get_preview_post_link( $job );
+                  ?>
                   <div class="job-actions">
-                    <a href="<?php echo esc_url( get_permalink( $job ) ); ?>" class="btn btn-outline btn-small">詳細</a>
+                    <a href="<?php echo esc_url( $zaito_detail_url ); ?>" class="btn btn-outline btn-small">詳細</a>
                     <a href="<?php echo esc_url( add_query_arg( 'edit', $job->ID, home_url( '/company-jobs/' ) ) ); ?>" class="btn btn-outline btn-small">編集</a>
                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
                       <input type="hidden" name="action" value="zaito_toggle_job_status" />
