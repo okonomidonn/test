@@ -40,7 +40,7 @@ $company_name = get_user_meta( $current_user->ID, 'company_name', true );
             <span class="label">メールアドレス</span>
             <span class="value"><?php echo esc_html( $current_user->user_email ); ?></span>
           </div>
-          <a href="<?php echo esc_url( admin_url( 'profile.php' ) ); ?>" class="btn btn-outline">
+          <a href="<?php echo esc_url( home_url( '/company-profile/' ) ); ?>" class="btn btn-outline">
             情報編集
           </a>
         </div>

@@ -208,6 +208,7 @@ function zaito_virtual_route_map() {
         'apply'            => 'page-apply.php',
         'chat'             => 'page-chat.php',
         'interest'         => 'page-interest.php',
+        'company-profile'  => 'page-company-profile.php',
     );
 }
 
@@ -279,7 +280,7 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '9';
+    $version = '10';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -1145,6 +1146,53 @@ function zaito_handle_update_worker_profile() {
     exit;
 }
 add_action( 'admin_post_zaito_update_worker_profile', 'zaito_handle_update_worker_profile' );
+
+/**
+ * 企業プロフィール編集(/company-profile/)の保存処理。ワーカー側のworker-profileと対になる、
+ * 企業アカウント向けの企業情報編集フォーム。以前は編集手段がwp-adminのprofile.php頼みだった
+ * (企業アカウントには使わせるべきでない管理画面UIへ直接遷移させる作りだった)ため新設した。
+ * メールアドレス変更は確認フローが別途必要になるため、このフォームでは扱わない。
+ */
+function zaito_handle_update_company_profile() {
+    check_admin_referer( 'zaito_update_company_profile' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_safe_redirect( home_url( '/company-login/' ) );
+        exit;
+    }
+    $current_user = wp_get_current_user();
+    if ( ! in_array( 'zaito_company', $current_user->roles, true ) ) {
+        wp_safe_redirect( home_url( '/' ) );
+        exit;
+    }
+
+    $errors = array();
+    $company_name   = isset( $_POST['company_name'] ) ? sanitize_text_field( $_POST['company_name'] ) : '';
+    $contact_person = isset( $_POST['contact_person'] ) ? sanitize_text_field( $_POST['contact_person'] ) : '';
+    $phone          = isset( $_POST['phone'] ) ? sanitize_text_field( $_POST['phone'] ) : '';
+
+    if ( ! $company_name ) {
+        $errors[] = '企業名を入力してください';
+    }
+    if ( ! $contact_person ) {
+        $errors[] = 'ご担当者名を入力してください';
+    }
+    if ( ! $phone ) {
+        $errors[] = '電話番号を入力してください';
+    }
+
+    if ( ! empty( $errors ) ) {
+        zaito_store_form_errors_and_redirect( $errors, home_url( '/company-profile/' ) );
+    }
+
+    wp_update_user( array( 'ID' => $current_user->ID, 'first_name' => $contact_person ) );
+    update_user_meta( $current_user->ID, 'company_name', $company_name );
+    update_user_meta( $current_user->ID, 'company_phone', $phone );
+
+    wp_safe_redirect( add_query_arg( 'saved', '1', home_url( '/company-profile/' ) ) );
+    exit;
+}
+add_action( 'admin_post_zaito_update_company_profile', 'zaito_handle_update_company_profile' );
 
 /**
  * 企業による求人投稿処理（admin-post.php経由）
