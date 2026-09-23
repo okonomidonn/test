@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { PLATFORMS } from "@/lib/constants";
-import { importMedia, syncAccount, syncMetrics } from "@/lib/publisher";
+import { errorMessage, importMedia, syncAccount, syncMetrics } from "@/lib/publisher";
 
 export type FormState = { error?: string; ok?: boolean };
 
@@ -158,11 +158,22 @@ export async function disconnectInstagram(accountId: string) {
 export async function importInstagramNow(accountId: string) {
   await requireUser();
   const account = await prisma.socialAccount.findUnique({ where: { id: accountId } });
-  if (!account?.accessToken) return;
-  await syncAccount(accountId).catch(() => {});
-  await importMedia(accountId);
-  await syncMetrics(accountId);
+  if (!account) return;
+
+  let query: string;
+  try {
+    await syncAccount(accountId);
+    const result = await importMedia(accountId);
+    await syncMetrics(accountId);
+    query =
+      result.status === "done"
+        ? `ig=imported&n=${result.imported}&f=${result.fetched}&w=${result.waiting}`
+        : `ig=import_${result.reason}`;
+  } catch (e) {
+    query = `ig=import_error&msg=${encodeURIComponent(errorMessage(e).slice(0, 200))}`;
+  }
   revalidatePath(`/clients/${account.clientId}`);
   revalidatePath("/posts");
   revalidatePath("/dashboard");
+  redirect(`/clients/${account.clientId}?${query}`);
 }
