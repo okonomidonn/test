@@ -16,7 +16,8 @@ Instagram API（Instagram ログイン）を使い、リールの予約投稿と
 
 - クライアント詳細で Instagram アカウントの「Instagramと連携」を押すと OAuth で接続します（ビジネス / クリエイターアカウントのみ）。アクセストークンは暗号化して保存し、期限前に自動更新します。
 - 連携済みアカウント宛ての投稿は動画をアップロード（Vercel Blob）し、「予約済み」にすると予約時刻に自動投稿されます。投稿一覧・投稿詳細の「今すぐ投稿」で即時投稿、失敗時は「再試行」できます。
-- 予約の実行・実績の取得・トークン更新は `GET /api/cron/tick`（`Authorization: Bearer $CRON_SECRET`）で行います。
+- Instagram アプリから直接投稿したフィード投稿・リール（直近90日）も自動で取り込み、実績を同様に取得します。クライアント詳細の「今すぐ取り込む」で即時に取り込めます（ストーリーズは対象外）。
+- 予約の実行・実績の取得・トークン更新・取り込みは `GET /api/cron/tick`（`Authorization: Bearer $CRON_SECRET`）で行います。
   - `vercel.json` で1日1回（JST 6:00）実行されます（Vercel Hobby の上限）。
   - 分単位で予約を実行するには、Vercel Pro の Cron か、cron-job.org などの外部サービスから5分ごとに上記 URL を呼び出してください。
 

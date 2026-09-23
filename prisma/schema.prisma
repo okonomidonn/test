@@ -101,7 +101,8 @@ model Post {
   saves       Int @default(0)
 
   containerId     String?
-  externalId      String?
+  externalId      String?   @unique
+  imported        Boolean   @default(false)
   permalink       String?
   publishError    String?
   publishAttempts Int       @default(0)

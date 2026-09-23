@@ -137,6 +137,7 @@ export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={p.status} overdue={overdue} />
+                      {p.imported && <p className="mt-1 text-[11px] text-slate-500">Instagramから取り込み</p>}
                       {autoPublish && p.status !== "PUBLISHED" && (
                         <p className="mt-1 text-[11px] text-sky-700">自動投稿</p>
                       )}

@@ -122,12 +122,49 @@ export async function getMedia(mediaId: string, accessToken: string) {
   );
 }
 
-const REEL_METRICS = ["views", "likes", "comments", "shares", "saved"] as const;
+export type IgMedia = {
+  id: string;
+  caption?: string;
+  media_type: string;
+  media_product_type?: string;
+  permalink?: string;
+  timestamp: string;
+};
 
-export async function getReelInsights(mediaId: string, accessToken: string) {
+export async function listRecentMedia(igUserId: string, accessToken: string, since: Date, maxPages = 5) {
+  const out: IgMedia[] = [];
+  let url: string | null = `${GRAPH}/${igUserId}/media?${new URLSearchParams({
+    fields: "id,caption,media_type,media_product_type,permalink,timestamp",
+    since: String(Math.floor(since.getTime() / 1000)),
+    limit: "50",
+    access_token: accessToken,
+  })}`;
+  for (let page = 0; url && page < maxPages; page++) {
+    const r: { data: IgMedia[]; paging?: { next?: string } } = await parse(await fetch(url));
+    out.push(...r.data.filter((m) => new Date(m.timestamp) >= since));
+    url = r.paging?.next ?? null;
+  }
+  return out;
+}
+
+const MEDIA_METRICS = ["views", "likes", "comments", "shares", "saved"] as const;
+
+export async function getMediaMetrics(mediaId: string, accessToken: string) {
+  try {
+    return await getReelInsights(mediaId, accessToken);
+  } catch {
+    // Some media (e.g. old or unsupported types) reject insights; fall back to public counts.
+    const r = await parse<{ like_count?: number; comments_count?: number }>(
+      await fetch(`${GRAPH}/${mediaId}?${new URLSearchParams({ fields: "like_count,comments_count", access_token: accessToken })}`),
+    );
+    return { likes: r.like_count ?? 0, comments: r.comments_count ?? 0 };
+  }
+}
+
+async function getReelInsights(mediaId: string, accessToken: string) {
   const r = await parse<{ data: { name: string; values?: { value: number }[]; total_value?: { value: number } }[] }>(
     await fetch(
-      `${GRAPH}/${mediaId}/insights?${new URLSearchParams({ metric: REEL_METRICS.join(","), access_token: accessToken })}`,
+      `${GRAPH}/${mediaId}/insights?${new URLSearchParams({ metric: MEDIA_METRICS.join(","), access_token: accessToken })}`,
     ),
   );
   const get = (name: string) => {
