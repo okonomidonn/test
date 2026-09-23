@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
-import { markPublished } from "@/app/actions/posts";
+import { markPublished, publishNow } from "@/app/actions/posts";
+import { isAutoPublish } from "@/lib/publisher";
 import { PlatformBadge, StatusBadge } from "@/components/badges";
 import { primaryButtonClass } from "@/components/ui";
+import { PendingButton } from "@/components/pending-button";
 import {
-  POST_STATUSES,
+  ALL_POST_STATUSES,
   POST_STATUS_LABELS,
   engagementRate,
   formatDateTime,
@@ -16,7 +18,7 @@ import {
 
 export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
   const sp = await searchParams;
-  const status = POST_STATUSES.includes(sp.status as PostStatusKey) ? (sp.status as PostStatusKey) : undefined;
+  const status = ALL_POST_STATUSES.includes(sp.status as PostStatusKey) ? (sp.status as PostStatusKey) : undefined;
   const clientId = typeof sp.client === "string" && sp.client ? sp.client : undefined;
 
   const where: Prisma.PostWhereInput = {
@@ -66,8 +68,8 @@ export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <nav className="flex gap-1 rounded-lg bg-slate-100 p-1 text-sm">
-          {[undefined, ...POST_STATUSES].map((s) => (
+        <nav className="flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1 text-sm">
+          {[undefined, ...ALL_POST_STATUSES].map((s) => (
             <Link
               key={s ?? "all"}
               href={tabHref(s)}
@@ -118,7 +120,8 @@ export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {posts.map((p) => {
-                const overdue = p.status === "SCHEDULED" && p.scheduledAt != null && p.scheduledAt < now;
+                const autoPublish = isAutoPublish(p);
+                const overdue = !autoPublish && p.status === "SCHEDULED" && p.scheduledAt != null && p.scheduledAt < now;
                 return (
                   <tr key={p.id} className="align-top hover:bg-slate-50">
                     <td className="px-4 py-3">
@@ -134,6 +137,12 @@ export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={p.status} overdue={overdue} />
+                      {autoPublish && p.status !== "PUBLISHED" && (
+                        <p className="mt-1 text-[11px] text-sky-700">自動投稿</p>
+                      )}
+                      {p.status === "FAILED" && p.publishError && (
+                        <p className="mt-1 max-w-[12rem] text-[11px] text-rose-600">{p.publishError}</p>
+                      )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-slate-600">
                       {p.status === "PUBLISHED"
@@ -146,19 +155,31 @@ export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
                       {p.status === "PUBLISHED" ? (
                         <>
                           {formatPercent(engagementRate(p))}
-                          <p className="text-slate-400">imp {formatNumber(p.impressions)}</p>
+                          <p className="text-slate-400">表示 {formatNumber(p.impressions)}</p>
                         </>
                       ) : (
                         "—"
                       )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-right">
-                      {p.status === "SCHEDULED" && (
+                      {autoPublish && (p.status === "SCHEDULED" || p.status === "FAILED") && (
+                        <form action={publishNow.bind(null, p.id)}>
+                          <PendingButton pendingLabel="投稿中...">
+                            {p.status === "FAILED" ? "再試行" : "今すぐ投稿"}
+                          </PendingButton>
+                        </form>
+                      )}
+                      {!autoPublish && p.status === "SCHEDULED" && (
                         <form action={markPublished.bind(null, p.id)}>
                           <button type="submit" className="rounded-md px-2 py-1 text-xs font-semibold text-brand hover:bg-indigo-50">
                             公開済みにする
                           </button>
                         </form>
+                      )}
+                      {p.permalink && (
+                        <a href={p.permalink} target="_blank" rel="noreferrer" className="text-xs text-brand hover:underline">
+                          Instagramで見る
+                        </a>
                       )}
                     </td>
                   </tr>

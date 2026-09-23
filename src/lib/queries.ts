@@ -11,5 +11,6 @@ export async function getAccountOptions(): Promise<AccountOption[]> {
     platform: a.platform,
     handle: a.handle,
     clientName: a.client.name,
+    instagramConnected: a.platform === "INSTAGRAM" && !!a.igUserId && !!a.accessToken,
   }));
 }

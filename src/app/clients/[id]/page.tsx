@@ -5,6 +5,7 @@ import {
   createAccount,
   deleteAccount,
   deleteClient,
+  disconnectInstagram,
   updateClient,
   updateFollowers,
 } from "@/app/actions/clients";
@@ -15,8 +16,18 @@ import { ConfirmButton } from "@/components/confirm-button";
 import { cardClass, dangerButtonClass, secondaryButtonClass } from "@/components/ui";
 import { formatNumber } from "@/lib/constants";
 
-export default async function ClientDetailPage({ params }: PageProps<"/clients/[id]">) {
+const IG_MESSAGES: Record<string, { text: string; ok: boolean }> = {
+  connected: { text: "Instagramと連携しました", ok: true },
+  denied: { text: "Instagram連携がキャンセルされました", ok: false },
+  invalid_state: { text: "連携の有効期限が切れました。もう一度お試しください", ok: false },
+  error: { text: "Instagram連携に失敗しました。プロアカウントか確認してもう一度お試しください", ok: false },
+  not_configured: { text: "Instagram連携の設定（INSTAGRAM_APP_ID / INSTAGRAM_APP_SECRET）がまだありません", ok: false },
+};
+
+export default async function ClientDetailPage({ params, searchParams }: PageProps<"/clients/[id]">) {
   const { id } = await params;
+  const { ig } = await searchParams;
+  const igMessage = typeof ig === "string" ? IG_MESSAGES[ig] : undefined;
   const client = await prisma.client.findUnique({
     where: { id },
     include: {
@@ -47,6 +58,14 @@ export default async function ClientDetailPage({ params }: PageProps<"/clients/[
         </div>
       </div>
 
+      {igMessage && (
+        <p
+          className={`rounded-lg px-4 py-2.5 text-sm ${igMessage.ok ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}
+        >
+          {igMessage.text}
+        </p>
+      )}
+
       <section className={cardClass}>
         <h2 className="mb-4 font-bold">SNSアカウント</h2>
         {client.accounts.length === 0 ? (
@@ -58,6 +77,29 @@ export default async function ClientDetailPage({ params }: PageProps<"/clients/[
                 <PlatformBadge platform={a.platform} />
                 <span className="font-medium">@{a.handle}</span>
                 <span className="text-xs text-slate-500">投稿 {formatNumber(a._count.posts)}件</span>
+                {a.platform === "INSTAGRAM" &&
+                  (a.accessToken ? (
+                    <span className="flex items-center gap-2 text-xs">
+                      <span className="rounded bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
+                        ✓ 連携済み
+                      </span>
+                      <form action={disconnectInstagram.bind(null, a.id)}>
+                        <ConfirmButton
+                          message="Instagram連携を解除します。予約中のリールは自動投稿されなくなります。よろしいですか？"
+                          className="text-slate-400 hover:text-rose-600 hover:underline"
+                        >
+                          連携解除
+                        </ConfirmButton>
+                      </form>
+                    </span>
+                  ) : (
+                    <a
+                      href={`/api/instagram/connect?accountId=${a.id}`}
+                      className="rounded-md bg-gradient-to-r from-pink-500 to-orange-400 px-2.5 py-1 text-xs font-semibold text-white hover:opacity-90"
+                    >
+                      Instagramと連携
+                    </a>
+                  ))}
                 <div className="ml-auto flex items-center gap-2">
                   <form action={updateFollowers.bind(null, a.id)} className="flex items-center gap-1">
                     <input

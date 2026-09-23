@@ -7,9 +7,10 @@ import {
   PLATFORM_LABELS,
   POST_STATUSES,
   POST_STATUS_LABELS,
+  type EditablePostStatus,
   type PlatformKey,
-  type PostStatusKey,
 } from "@/lib/constants";
+import { VideoUpload } from "@/components/video-upload";
 import { inputClass, labelClass, primaryButtonClass } from "@/components/ui";
 
 export type AccountOption = {
@@ -17,13 +18,14 @@ export type AccountOption = {
   platform: PlatformKey;
   handle: string;
   clientName: string;
+  instagramConnected: boolean;
 };
 
 export type PostValues = {
   accountId: string;
   content: string;
   mediaUrl: string;
-  status: PostStatusKey;
+  status: EditablePostStatus;
   scheduledAt: string;
   publishedAt: string;
   impressions: number;
@@ -34,7 +36,7 @@ export type PostValues = {
 };
 
 const METRIC_FIELDS = [
-  ["impressions", "インプレッション"],
+  ["impressions", "表示・再生数"],
   ["likes", "いいね"],
   ["comments", "コメント"],
   ["shares", "シェア/リポスト"],
@@ -55,9 +57,11 @@ export function PostForm({
   const [state, formAction, isPending] = useActionState<PostFormState, FormData>(action, {});
   const [accountId, setAccountId] = useState(initial.accountId);
   const [content, setContent] = useState(initial.content);
-  const [status, setStatus] = useState<PostStatusKey>(initial.status);
+  const [status, setStatus] = useState<EditablePostStatus>(initial.status);
 
-  const platform = accounts.find((a) => a.id === accountId)?.platform;
+  const selected = accounts.find((a) => a.id === accountId);
+  const platform = selected?.platform;
+  const autoPublish = !!selected?.instagramConnected;
   const limit = platform ? PLATFORM_CHAR_LIMITS[platform] : undefined;
   const length = [...content].length;
 
@@ -102,10 +106,20 @@ export function PostForm({
         </p>
       </div>
 
-      <div>
-        <label className={labelClass}>画像・動画URL</label>
-        <input type="url" name="mediaUrl" defaultValue={initial.mediaUrl} placeholder="https://" className={inputClass} />
-      </div>
+      {autoPublish ? (
+        <div>
+          <label className={labelClass}>リール動画 *</label>
+          <VideoUpload name="mediaUrl" defaultValue={initial.mediaUrl} />
+          <p className="mt-1 text-xs text-slate-500">
+            このアカウントはInstagramと連携済みです。「予約済み」にすると予約日時に自動でリール投稿されます。
+          </p>
+        </div>
+      ) : (
+        <div>
+          <label className={labelClass}>画像・動画URL</label>
+          <input type="url" name="mediaUrl" defaultValue={initial.mediaUrl} placeholder="https://" className={inputClass} />
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
@@ -113,7 +127,7 @@ export function PostForm({
           <select
             name="status"
             value={status}
-            onChange={(e) => setStatus(e.target.value as PostStatusKey)}
+            onChange={(e) => setStatus(e.target.value as EditablePostStatus)}
             className={inputClass}
           >
             {POST_STATUSES.map((s) => (

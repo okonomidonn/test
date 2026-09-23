@@ -29,18 +29,25 @@ export const PLATFORM_CHAR_LIMITS: Partial<Record<PlatformKey, number>> = {
 };
 
 export const POST_STATUSES = ["DRAFT", "SCHEDULED", "PUBLISHED"] as const;
-export type PostStatusKey = (typeof POST_STATUSES)[number];
+export type EditablePostStatus = (typeof POST_STATUSES)[number];
+
+export const ALL_POST_STATUSES = ["DRAFT", "SCHEDULED", "PUBLISHING", "PUBLISHED", "FAILED"] as const;
+export type PostStatusKey = (typeof ALL_POST_STATUSES)[number];
 
 export const POST_STATUS_LABELS: Record<PostStatusKey, string> = {
   DRAFT: "下書き",
   SCHEDULED: "予約済み",
+  PUBLISHING: "投稿処理中",
   PUBLISHED: "公開済み",
+  FAILED: "投稿失敗",
 };
 
 export const POST_STATUS_STYLES: Record<PostStatusKey, string> = {
   DRAFT: "bg-slate-100 text-slate-700",
   SCHEDULED: "bg-amber-100 text-amber-800",
+  PUBLISHING: "bg-sky-100 text-sky-800",
   PUBLISHED: "bg-emerald-100 text-emerald-800",
+  FAILED: "bg-rose-100 text-rose-700",
 };
 
 export type Metrics = {

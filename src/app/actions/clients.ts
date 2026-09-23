@@ -141,3 +141,15 @@ export async function deleteAccount(accountId: string) {
   revalidatePath("/posts");
   revalidatePath("/dashboard");
 }
+
+export async function disconnectInstagram(accountId: string) {
+  await requireUser();
+  const account = await prisma.socialAccount.findUnique({ where: { id: accountId } });
+  if (!account) return;
+  await prisma.socialAccount.update({
+    where: { id: accountId },
+    data: { igUserId: null, accessToken: null, tokenExpiresAt: null, connectedAt: null },
+  });
+  revalidatePath(`/clients/${account.clientId}`);
+  revalidatePath("/posts");
+}

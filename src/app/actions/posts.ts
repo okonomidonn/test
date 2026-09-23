@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
+import { advancePost, isAutoPublish } from "@/lib/publisher";
 import { PLATFORM_CHAR_LIMITS, PLATFORM_LABELS, POST_STATUSES, fromJstInputValue } from "@/lib/constants";
 
 export type PostFormState = { error?: string };
@@ -52,6 +53,9 @@ async function parsePost(formData: FormData) {
   if (d.status === "SCHEDULED" && !scheduledAt) {
     return { error: "予約投稿には予約日時を指定してください" } as const;
   }
+  if (d.status === "SCHEDULED" && account.platform === "INSTAGRAM" && account.igUserId && !d.mediaUrl) {
+    return { error: "Instagramリールの自動投稿には動画が必要です" } as const;
+  }
   if (d.status === "PUBLISHED" && !publishedAt) {
     publishedAt = scheduledAt ?? new Date();
   }
@@ -96,11 +100,26 @@ export async function updatePost(
   formData: FormData,
 ): Promise<PostFormState> {
   await requireUser();
+  const existing = await prisma.post.findUnique({ where: { id: postId } });
+  if (!existing) return { error: "投稿が見つかりません" };
+  if (existing.status === "PUBLISHING") return { error: "Instagramへ投稿処理中のため編集できません" };
+
   const result = await parsePost(formData);
   if ("error" in result) return { error: result.error };
 
-  const { count } = await prisma.post.updateMany({ where: { id: postId }, data: result.data });
-  if (count === 0) return { error: "投稿が見つかりません" };
+  const contentChanged =
+    existing.content !== result.data.content ||
+    existing.mediaUrl !== result.data.mediaUrl ||
+    existing.accountId !== result.data.accountId;
+
+  await prisma.post.update({
+    where: { id: postId },
+    data: {
+      ...result.data,
+      ...(result.data.status !== "PUBLISHED" && { publishError: null }),
+      ...(contentChanged && { containerId: null }),
+    },
+  });
 
   revalidatePosts(postId);
   redirect("/posts");
@@ -109,12 +128,35 @@ export async function updatePost(
 export async function markPublished(postId: string) {
   await requireUser();
   const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post || post.status === "PUBLISHED") return;
+  if (!post || post.status === "PUBLISHED" || post.status === "PUBLISHING") return;
 
   await prisma.post.update({
     where: { id: postId },
     data: { status: "PUBLISHED", publishedAt: new Date() },
   });
+  revalidatePosts(postId);
+}
+
+const POLL_INTERVAL_MS = 5000;
+const POLL_ATTEMPTS = 8;
+
+export async function publishNow(postId: string) {
+  await requireUser();
+  const post = await prisma.post.findUnique({ where: { id: postId }, include: { account: true } });
+  if (!post || !isAutoPublish(post)) return;
+
+  if (post.status === "DRAFT" || post.status === "FAILED") {
+    await prisma.post.update({ where: { id: postId }, data: { status: "SCHEDULED", publishError: null } });
+  }
+  await advancePost(postId, { force: true });
+
+  // Short reels usually finish processing within seconds; anything slower is picked up by the scheduler.
+  for (let i = 0; i < POLL_ATTEMPTS; i++) {
+    const current = await prisma.post.findUnique({ where: { id: postId }, select: { status: true } });
+    if (current?.status !== "PUBLISHING") break;
+    await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+    await advancePost(postId);
+  }
   revalidatePosts(postId);
 }
 
