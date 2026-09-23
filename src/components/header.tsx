@@ -5,6 +5,7 @@ const NAV = [
   { href: "/dashboard", label: "分析" },
   { href: "/posts", label: "投稿" },
   { href: "/clients", label: "クライアント" },
+  { href: "/team", label: "チーム" },
 ];
 
 export async function Header() {

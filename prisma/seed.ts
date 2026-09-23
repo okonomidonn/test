@@ -46,6 +46,9 @@ const CLIENTS: {
 ];
 
 async function main() {
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
+    throw new Error("Refusing to seed demo data in production.");
+  }
   const passwordHash = await hash("password123", 10);
   const user = await prisma.user.upsert({
     where: { email: "demo@example.com" },

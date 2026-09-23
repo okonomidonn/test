@@ -26,16 +26,22 @@ npx prisma db seed
 npm run dev
 ```
 
-[http://localhost:3000](http://localhost:3000) を開き、デモアカウント `demo@example.com` / `password123` でログインできます。
+[http://localhost:3000](http://localhost:3000) を開き、デモアカウント `demo@example.com` / `password123` でログインできます（`prisma db seed` はローカル専用で、本番ビルドでは実行されません）。
+
+## メンバー登録（招待制）
+
+- アカウントが1つも無い状態では、最初の1人だけ `/register` から招待なしで登録できます。
+- 以降のメンバーは「チーム」ページで発行した招待リンク（1回限り・7日間有効）からのみ登録できます。
 
 ## ディレクトリ構成（抜粋）
 
 ```
-prisma/schema.prisma      データモデル（User / Client / SocialAccount / Post）
+prisma/schema.prisma      データモデル（User / Invite / Client / SocialAccount / Post）
 prisma/seed.ts            デモデータ投入
 src/app/dashboard/        エンゲージメント分析
 src/app/posts/            投稿一覧・作成・編集
 src/app/clients/          クライアント・SNSアカウント管理
+src/app/team/             メンバー一覧・招待リンク発行
 src/app/actions/          Server Actions
 src/proxy.ts              未ログイン時のリダイレクト
 ```

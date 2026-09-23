@@ -27,15 +27,28 @@ export async function registerUser(
   }
 
   const { name, email, password } = parsed.data;
+  const token = formData.get("invite");
+  const passwordHash = await hash(password, 10);
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    return { error: "このメールアドレスは既に登録されています" };
-  }
-
-  await prisma.user.create({
-    data: { name, email, passwordHash: await hash(password, 10) },
+  const error = await prisma.$transaction(async (tx) => {
+    // The very first account bootstraps the workspace; everyone after needs an invite.
+    if ((await tx.user.count()) > 0) {
+      if (typeof token !== "string" || !token) {
+        return "新規登録には招待リンクが必要です";
+      }
+      const { count } = await tx.invite.updateMany({
+        where: { token, usedAt: null, expiresAt: { gt: new Date() } },
+        data: { usedAt: new Date() },
+      });
+      if (count === 0) return "招待リンクが無効か、期限切れです";
+    }
+    if (await tx.user.findUnique({ where: { email } })) {
+      return "このメールアドレスは既に登録されています";
+    }
+    await tx.user.create({ data: { name, email, passwordHash } });
+    return null;
   });
+  if (error) return { error };
 
   await signIn("credentials", { email, password, redirectTo: "/dashboard" });
   return {};

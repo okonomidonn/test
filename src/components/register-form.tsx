@@ -4,11 +4,12 @@ import { useActionState } from "react";
 import { registerUser, type AuthFormState } from "@/app/actions/auth";
 import { inputClass, labelClass, primaryButtonClass } from "@/components/ui";
 
-export function RegisterForm() {
+export function RegisterForm({ invite }: { invite?: string }) {
   const [state, formAction, isPending] = useActionState<AuthFormState, FormData>(registerUser, {});
 
   return (
     <form action={formAction} className="space-y-4">
+      {invite && <input type="hidden" name="invite" value={invite} />}
       {state.error && (
         <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700">{state.error}</p>
       )}
