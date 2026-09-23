@@ -9,60 +9,35 @@ const registerSchema = z.object({
   name: z.string().trim().min(1, "お名前を入力してください").max(50),
   email: z.string().trim().email("メールアドレスの形式が正しくありません"),
   password: z.string().min(8, "パスワードは8文字以上で入力してください").max(100),
-  role: z.enum(["SEEKER", "COMPANY"]),
-  companyName: z.string().trim().max(100).optional(),
 });
 
-export type RegisterState = { error?: string };
+export type AuthFormState = { error?: string };
 
 export async function registerUser(
-  _prevState: RegisterState,
+  _prevState: AuthFormState,
   formData: FormData,
-): Promise<RegisterState> {
+): Promise<AuthFormState> {
   const parsed = registerSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
-    role: formData.get("role"),
-    companyName: formData.get("companyName") || undefined,
   });
-
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "入力内容を確認してください" };
   }
 
-  const { name, email, password, role, companyName } = parsed.data;
-
-  if (role === "COMPANY" && !companyName) {
-    return { error: "会社名・屋号を入力してください" };
-  }
+  const { name, email, password } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     return { error: "このメールアドレスは既に登録されています" };
   }
 
-  const passwordHash = await hash(password, 10);
-
   await prisma.user.create({
-    data: {
-      name,
-      email,
-      passwordHash,
-      role,
-      company:
-        role === "COMPANY"
-          ? { create: { name: companyName as string } }
-          : undefined,
-    },
+    data: { name, email, passwordHash: await hash(password, 10) },
   });
 
-  await signIn("credentials", {
-    email,
-    password,
-    redirectTo: role === "COMPANY" ? "/company" : "/mypage",
-  });
-
+  await signIn("credentials", { email, password, redirectTo: "/dashboard" });
   return {};
 }
 
@@ -71,28 +46,28 @@ const loginSchema = z.object({
   password: z.string().min(1, "パスワードを入力してください"),
 });
 
-export type LoginState = { error?: string };
+function safeCallbackUrl(v: FormDataEntryValue | null): string {
+  if (typeof v === "string" && v.startsWith("/") && !v.startsWith("//")) return v;
+  return "/dashboard";
+}
 
 export async function loginUser(
-  _prevState: LoginState,
+  _prevState: AuthFormState,
   formData: FormData,
-): Promise<LoginState> {
+): Promise<AuthFormState> {
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
   });
-
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "入力内容を確認してください" };
   }
-
-  const callbackUrl = formData.get("callbackUrl");
 
   try {
     await signIn("credentials", {
       email: parsed.data.email,
       password: parsed.data.password,
-      redirectTo: typeof callbackUrl === "string" && callbackUrl ? callbackUrl : "/",
+      redirectTo: safeCallbackUrl(formData.get("callbackUrl")),
     });
   } catch (error) {
     if (error && typeof error === "object" && "type" in error) {
@@ -100,6 +75,5 @@ export async function loginUser(
     }
     throw error;
   }
-
   return {};
 }

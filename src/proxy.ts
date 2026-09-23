@@ -4,33 +4,24 @@ import { authConfig } from "@/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
+const PUBLIC_PATHS = ["/login", "/register"];
+
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  const role = req.auth?.user?.role;
+  const isPublic = PUBLIC_PATHS.includes(nextUrl.pathname);
 
-  const isMypage = nextUrl.pathname.startsWith("/mypage");
-  const isCompanyArea = nextUrl.pathname.startsWith("/company");
-
-  if (isMypage) {
-    if (!isLoggedIn) {
-      return NextResponse.redirect(new URL("/login", nextUrl));
-    }
-    if (role !== "SEEKER") {
-      return NextResponse.redirect(new URL("/", nextUrl));
-    }
+  if (!isLoggedIn && !isPublic) {
+    const url = new URL("/login", nextUrl);
+    url.searchParams.set("callbackUrl", nextUrl.pathname + nextUrl.search);
+    return NextResponse.redirect(url);
   }
 
-  if (isCompanyArea) {
-    if (!isLoggedIn) {
-      return NextResponse.redirect(new URL("/login", nextUrl));
-    }
-    if (role !== "COMPANY") {
-      return NextResponse.redirect(new URL("/", nextUrl));
-    }
+  if (isLoggedIn && isPublic) {
+    return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 });
 
 export const config = {
-  matcher: ["/mypage/:path*", "/company/:path*"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

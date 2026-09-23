@@ -1,10 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
-import { loginUser, type LoginState } from "@/app/actions/auth";
+import { loginUser, type AuthFormState } from "@/app/actions/auth";
+import { inputClass, labelClass, primaryButtonClass } from "@/components/ui";
 
 export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
-  const [state, formAction, isPending] = useActionState<LoginState, FormData>(loginUser, {});
+  const [state, formAction, isPending] = useActionState<AuthFormState, FormData>(loginUser, {});
 
   return (
     <form action={formAction} className="space-y-4">
@@ -12,34 +13,21 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
       {state.error && (
         <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700">{state.error}</p>
       )}
-
       <div>
-        <label className="block text-sm font-medium text-slate-700">メールアドレス</label>
-        <input
-          type="email"
-          name="email"
-          required
-          autoComplete="email"
-          className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-emerald-100"
-        />
+        <label className={labelClass}>メールアドレス</label>
+        <input type="email" name="email" required autoComplete="email" className={inputClass} />
       </div>
-
       <div>
-        <label className="block text-sm font-medium text-slate-700">パスワード</label>
+        <label className={labelClass}>パスワード</label>
         <input
           type="password"
           name="password"
           required
           autoComplete="current-password"
-          className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-emerald-100"
+          className={inputClass}
         />
       </div>
-
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-dark disabled:opacity-60"
-      >
+      <button type="submit" disabled={isPending} className={`${primaryButtonClass} w-full`}>
         {isPending ? "ログイン中..." : "ログイン"}
       </button>
     </form>

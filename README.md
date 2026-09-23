@@ -1,55 +1,41 @@
-# zaito
+# SocialDesk
 
-在宅ワークに特化した求人サイトです。Next.js (App Router) + TypeScript によるフルスタックアプリケーションで、求職者の会員登録・応募機能と、企業の求人投稿・応募者管理機能を備えています。
+SNS運用代行チーム向けの投稿管理・予約・エンゲージメント分析ツールです。Next.js (App Router) + TypeScript で構築しています。
 
 ## 主な機能
 
-- 求人一覧・検索・絞り込み(キーワード / 職種 / 働き方 / 雇用形態)
-- 求人詳細ページ
-- 求職者アカウント登録・ログイン、求人への応募、応募履歴の確認(マイページ)
-- 企業アカウント登録・ログイン、求人の投稿・編集・公開/非公開切り替え・削除
-- 企業ダッシュボードでの応募者一覧確認・選考ステータス更新
+- **クライアント / アカウント管理**: クライアントを登録し、それぞれの SNS アカウント（X, Instagram, Facebook, TikTok, YouTube, Threads, LINE公式）とフォロワー数を管理
+- **投稿の作成・予約管理**: 下書き / 予約済み / 公開済みのステータス管理、予約日時（JST）指定、SNS ごとの文字数チェック（X: 280 など）、予約時刻を過ぎた未公開投稿の警告
+- **エンゲージメント分析**: 各 SNS のインサイトから入力した実績（インプレッション・いいね・コメント・シェア・保存）を集計し、KPI、日別推移、SNS 別パフォーマンス、上位投稿を表示。クライアント・期間（7/30/90日）で絞り込み可能
+
+> 現時点では各 SNS の API とは連携していません。予約投稿は実際には自動投稿されないため、投稿後に「公開済みにする」で反映し、実績を手入力する運用です。
 
 ## 技術スタック
 
-- [Next.js](https://nextjs.org/) (App Router, Server Actions)
-- TypeScript
-- Tailwind CSS
-- [Prisma](https://www.prisma.io/) + PostgreSQL (`@prisma/adapter-pg`)
-- [Auth.js (NextAuth v5)](https://authjs.dev/) — Credentials(メール/パスワード)認証
+- Next.js (App Router, Server Actions) / TypeScript / Tailwind CSS
+- Prisma + PostgreSQL (`@prisma/adapter-pg`)
+- Auth.js (NextAuth v5) — メール/パスワード認証
 
 ## セットアップ
 
-PostgreSQL データベースが必要です(ローカルの PostgreSQL、または [Neon](https://neon.tech/) などの無料ホスティングサービス)。
-
 ```bash
 npm install
-cp .env.example .env   # DATABASE_URL を接続先に、AUTH_SECRET を `openssl rand -base64 32` などで生成した値に設定
+cp .env.example .env   # DATABASE_URL と AUTH_SECRET（`openssl rand -base64 32`）を設定
 npx prisma migrate dev
 npx prisma db seed
 npm run dev
 ```
 
-[http://localhost:3000](http://localhost:3000) を開いてください。
+[http://localhost:3000](http://localhost:3000) を開き、デモアカウント `demo@example.com` / `password123` でログインできます。
 
-## デモアカウント(`npx prisma db seed` 実行後)
-
-パスワードはすべて `password123` です。
-
-| 種別 | メールアドレス |
-| --- | --- |
-| 求職者 | `seeker@example.com` |
-| 企業 | `hr@cloudworks.example.com` |
-| 企業 | `recruit@homeletter.example.com` |
-| 企業 | `jobs@pixeldesign.example.com` |
-
-## ディレクトリ構成(抜粋)
+## ディレクトリ構成（抜粋）
 
 ```
-prisma/schema.prisma       データモデル(User / Company / Job / Application)
-prisma/seed.ts             サンプルデータ投入スクリプト
-src/auth.ts / auth.config.ts  認証設定(Node用 / Edge対応の分割構成)
-src/app/                   ルーティング(App Router)
-src/app/actions/           Server Actions(登録・ログイン・求人CRUD・応募)
-src/components/            UIコンポーネント
+prisma/schema.prisma      データモデル（User / Client / SocialAccount / Post）
+prisma/seed.ts            デモデータ投入
+src/app/dashboard/        エンゲージメント分析
+src/app/posts/            投稿一覧・作成・編集
+src/app/clients/          クライアント・SNSアカウント管理
+src/app/actions/          Server Actions
+src/proxy.ts              未ログイン時のリダイレクト
 ```

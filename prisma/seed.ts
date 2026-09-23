@@ -1,160 +1,109 @@
 import { hash } from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaClient, type Platform } from "../src/generated/prisma/client";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
-});
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
+
+const DAY = 24 * 60 * 60 * 1000;
+
+// Deterministic pseudo-random so re-seeding yields stable demo numbers.
+let seed = 42;
+function rand() {
+  seed = (seed * 1103515245 + 12345) % 2 ** 31;
+  return seed / 2 ** 31;
+}
+const between = (min: number, max: number) => Math.floor(min + rand() * (max - min));
+
+const CLIENTS: {
+  name: string;
+  industry: string;
+  contactName: string;
+  accounts: { platform: Platform; handle: string; followers: number }[];
+  topics: string[];
+}[] = [
+  {
+    name: "カフェ・ド・モカ",
+    industry: "飲食",
+    contactName: "山田",
+    accounts: [
+      { platform: "INSTAGRAM", handle: "cafe_de_moka", followers: 12800 },
+      { platform: "X", handle: "cafedemoka", followers: 4300 },
+    ],
+    topics: ["秋限定のマロンラテが登場🌰", "本日のおすすめスイーツ", "週末は10時オープンです", "新しいブレンド豆入荷しました"],
+  },
+  {
+    name: "株式会社グリーンフィット",
+    industry: "フィットネス",
+    contactName: "佐藤",
+    accounts: [
+      { platform: "TIKTOK", handle: "greenfit_gym", followers: 25600 },
+      { platform: "INSTAGRAM", handle: "greenfit.official", followers: 9100 },
+      { platform: "YOUTUBE", handle: "GreenFitChannel", followers: 3200 },
+    ],
+    topics: ["30秒でできる肩こり解消ストレッチ", "トレーナー紹介シリーズ", "入会キャンペーン実施中", "正しいスクワットのフォーム"],
+  },
+];
 
 async function main() {
   const passwordHash = await hash("password123", 10);
+  const user = await prisma.user.upsert({
+    where: { email: "demo@example.com" },
+    update: {},
+    create: { email: "demo@example.com", name: "デモ 運用担当", passwordHash },
+  });
 
-  const companiesData = [
-    {
-      email: "hr@cloudworks.example.com",
-      name: "採用担当 田中",
-      companyName: "株式会社クラウドワークス風",
-      description:
-        "フルリモートで働くエンジニア・デザイナーが集まるIT企業です。全国どこからでも働けます。",
-      website: "https://example.com/cloudworks",
-      jobs: [
-        {
-          title: "【フルリモート】フロントエンドエンジニア募集",
-          description:
-            "React/Next.jsを用いた自社SaaSプロダクトの開発をお任せします。\n出社は不要で、コアタイムなしのフルフレックスです。\n\n【必須スキル】\n・React/TypeScriptでの開発経験2年以上\n\n【歓迎スキル】\n・Next.jsでの開発経験\n・デザインシステムの構築経験",
-          category: "エンジニア・IT",
-          employmentType: "FULL_TIME",
-          workStyle: "FULL_REMOTE",
-          location: "全国どこでも可",
-          salaryMin: 5000000,
-          salaryMax: 8000000,
-          tags: "React,TypeScript,Next.js,フルフレックス",
-        },
-        {
-          title: "【業務委託】バックエンドエンジニア(Node.js)",
-          description:
-            "APIサーバーの設計・開発・運用をお任せします。週2〜3日から相談可能です。\n\n【必須スキル】\n・Node.jsでの開発経験\n・RDBの設計経験",
-          category: "エンジニア・IT",
-          employmentType: "CONTRACT",
-          workStyle: "FULL_REMOTE",
-          location: null,
-          salaryMin: 600000,
-          salaryMax: 900000,
-          tags: "Node.js,週2日〜,業務委託",
-        },
-      ],
-    },
-    {
-      email: "recruit@homeletter.example.com",
-      name: "採用担当 佐藤",
-      companyName: "ホームレター編集部",
-      description: "在宅ライター・編集者向けのメディア運営会社です。未経験者の育成にも力を入れています。",
-      website: "https://example.com/homeletter",
-      jobs: [
-        {
-          title: "【未経験歓迎】在宅Webライター",
-          description:
-            "ライフスタイル系メディアの記事執筆をお任せします。\n1文字1.5円〜、月20本前後からスタートできます。\n\n未経験の方には研修動画をご用意しています。",
-          category: "ライティング・編集",
-          employmentType: "FREELANCE",
-          workStyle: "FULL_REMOTE",
-          location: null,
-          salaryMin: null,
-          salaryMax: null,
-          tags: "未経験可,ライター,主婦・主夫歓迎",
-        },
-        {
-          title: "在宅アルバイト カスタマーサポート(チャット対応)",
-          description:
-            "ECサイトのチャットサポート業務です。1日3時間〜、シフト自由。\nパソコンとネット環境があればOKです。",
-          category: "カスタマーサポート",
-          employmentType: "PART_TIME",
-          workStyle: "FULL_REMOTE",
-          location: null,
-          salaryMin: 1200,
-          salaryMax: 1500,
-          tags: "シフト自由,主婦・主夫歓迎,1日3時間〜",
-        },
-      ],
-    },
-    {
-      email: "jobs@pixeldesign.example.com",
-      name: "採用担当 鈴木",
-      companyName: "ピクセルデザイン合同会社",
-      description: "地方拠点のデザイン会社です。首都圏メンバーはほぼ全員リモート勤務です。",
-      website: null,
-      jobs: [
-        {
-          title: "【ハイブリッド】UI/UXデザイナー",
-          description:
-            "toB向けSaaSプロダクトのUI/UXデザインをお任せします。\n月1〜2回の出社(東京オフィス)があります。\n\nFigmaでのデザイン経験がある方を歓迎します。",
-          category: "デザイン",
-          employmentType: "FULL_TIME",
-          workStyle: "HYBRID",
-          location: "東京都(月1〜2回出社)",
-          salaryMin: 4500000,
-          salaryMax: 7000000,
-          tags: "Figma,UI/UX,月1出社",
-        },
-      ],
-    },
-  ];
+  if ((await prisma.client.count()) > 0) {
+    console.log("Clients already exist; skipping demo data.");
+    return;
+  }
 
-  for (const companyData of companiesData) {
-    const user = await prisma.user.upsert({
-      where: { email: companyData.email },
-      update: {},
-      create: {
-        email: companyData.email,
-        name: companyData.name,
-        passwordHash,
-        role: "COMPANY",
-        company: {
-          create: {
-            name: companyData.companyName,
-            description: companyData.description,
-            website: companyData.website,
-          },
-        },
-      },
-      include: { company: true },
+  const now = Date.now();
+  for (const c of CLIENTS) {
+    const client = await prisma.client.create({
+      data: { name: c.name, industry: c.industry, contactName: c.contactName },
     });
+    for (const a of c.accounts) {
+      const account = await prisma.socialAccount.create({ data: { ...a, clientId: client.id } });
 
-    const companyId = user.company!.id;
-
-    for (const job of companyData.jobs) {
-      const existing = await prisma.job.findFirst({
-        where: { companyId, title: job.title },
-      });
-      if (!existing) {
-        await prisma.job.create({
+      for (let i = 0; i < 12; i++) {
+        const publishedAt = new Date(now - between(1, 60) * DAY - between(0, 12) * 3600_000);
+        const impressions = Math.round(a.followers * (0.3 + rand() * 1.5));
+        await prisma.post.create({
           data: {
-            ...job,
-            employmentType: job.employmentType as "FULL_TIME" | "PART_TIME" | "CONTRACT" | "FREELANCE" | "INTERNSHIP",
-            workStyle: job.workStyle as "FULL_REMOTE" | "HYBRID" | "ON_SITE",
-            companyId,
+            accountId: account.id,
+            authorId: user.id,
+            content: `${c.topics[i % c.topics.length]} #${c.name}`,
+            status: "PUBLISHED",
+            scheduledAt: publishedAt,
+            publishedAt,
+            impressions,
+            likes: Math.round(impressions * (0.02 + rand() * 0.06)),
+            comments: Math.round(impressions * rand() * 0.006),
+            shares: Math.round(impressions * rand() * 0.01),
+            saves: Math.round(impressions * rand() * 0.012),
           },
         });
       }
+
+      for (let i = 1; i <= 2; i++) {
+        await prisma.post.create({
+          data: {
+            accountId: account.id,
+            authorId: user.id,
+            content: `【予約】${c.topics[i]} #${c.name}`,
+            status: "SCHEDULED",
+            scheduledAt: new Date(now + i * 2 * DAY),
+          },
+        });
+      }
+      await prisma.post.create({
+        data: { accountId: account.id, authorId: user.id, content: `下書き: ${c.topics[0]}`, status: "DRAFT" },
+      });
     }
   }
 
-  await prisma.user.upsert({
-    where: { email: "seeker@example.com" },
-    update: {},
-    create: {
-      email: "seeker@example.com",
-      name: "デモ 求職者",
-      passwordHash,
-      role: "SEEKER",
-    },
-  });
-
-  console.log("Seed completed.");
-  console.log("Demo accounts (password: password123):");
-  console.log("  Seeker : seeker@example.com");
-  console.log("  Company: hr@cloudworks.example.com");
+  console.log("Seed completed. Demo login: demo@example.com / password123");
 }
 
 main()
