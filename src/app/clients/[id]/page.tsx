@@ -26,10 +26,30 @@ const IG_MESSAGES: Record<string, { text: string; ok: boolean }> = {
   not_configured: { text: "Instagram連携の設定（INSTAGRAM_APP_ID / INSTAGRAM_APP_SECRET）がまだありません", ok: false },
 };
 
+function importMessage(sp: Record<string, string | string[] | undefined>) {
+  const num = (k: string) => Number(typeof sp[k] === "string" ? sp[k] : 0) || 0;
+  switch (sp.ig) {
+    case "imported": {
+      const [n, f, w] = [num("n"), num("f"), num("w")];
+      const parts = [`Instagramから直近90日の投稿を${f}件確認し、新たに${n}件取り込みました。`];
+      if (w > 0) parts.push(`投稿から15分以内の${w}件は、次回の取り込みで追加されます。`);
+      if (f === 0) parts.push("取得できる投稿がありませんでした（ストーリーズは対象外です）。");
+      return { text: parts.join(""), ok: true };
+    }
+    case "import_publishing":
+      return { text: "リールを投稿処理中のため、取り込みを見送りました。処理が終わってからもう一度お試しください。", ok: false };
+    case "import_not_connected":
+      return { text: "このアカウントはInstagramと連携されていません。", ok: false };
+    case "import_error":
+      return { text: `取り込みに失敗しました: ${typeof sp.msg === "string" ? sp.msg : "不明なエラー"}`, ok: false };
+  }
+  return undefined;
+}
+
 export default async function ClientDetailPage({ params, searchParams }: PageProps<"/clients/[id]">) {
   const { id } = await params;
-  const { ig } = await searchParams;
-  const igMessage = typeof ig === "string" ? IG_MESSAGES[ig] : undefined;
+  const sp = await searchParams;
+  const igMessage = importMessage(sp) ?? (typeof sp.ig === "string" ? IG_MESSAGES[sp.ig] : undefined);
   const client = await prisma.client.findUnique({
     where: { id },
     include: {

@@ -28,7 +28,7 @@ export function isAutoPublish(post: { mediaUrl: string | null; account: { platfo
   return post.account.platform === "INSTAGRAM" && !!post.account.igUserId && !!post.account.accessToken && !!post.mediaUrl;
 }
 
-function errorMessage(e: unknown) {
+export function errorMessage(e: unknown) {
   return e instanceof InstagramError ? e.message : e instanceof Error ? e.message : String(e);
 }
 
@@ -176,14 +176,18 @@ export async function syncAccount(accountId: string) {
 
 const IMPORT_SETTLE_MS = 15 * 60 * 1000;
 
+export type ImportResult =
+  | { status: "done"; fetched: number; imported: number; waiting: number }
+  | { status: "skipped"; reason: "not_connected" | "publishing" };
+
 /** Imports posts made directly on Instagram so their metrics are tracked too. */
-export async function importMedia(accountId: string) {
+export async function importMedia(accountId: string): Promise<ImportResult> {
   const account = await prisma.socialAccount.findUnique({ where: { id: accountId } });
-  if (!account?.accessToken || !account.igUserId) return 0;
+  if (!account?.accessToken || !account.igUserId) return { status: "skipped", reason: "not_connected" };
 
   // A reel being published by this app gets its media id moments later; importing it first would duplicate it.
   const inFlight = await prisma.post.count({ where: { accountId, status: "PUBLISHING" } });
-  if (inFlight > 0) return 0;
+  if (inFlight > 0) return { status: "skipped", reason: "publishing" };
 
   const token = decrypt(account.accessToken);
   const media = await listRecentMedia(account.igUserId, token, new Date(Date.now() - METRICS_WINDOW_MS));
@@ -207,9 +211,8 @@ export async function importMedia(accountId: string) {
       permalink: m.permalink ?? null,
       imported: true,
     }));
-  if (rows.length === 0) return 0;
-  const { count } = await prisma.post.createMany({ data: rows, skipDuplicates: true });
-  return count;
+  const imported = rows.length ? (await prisma.post.createMany({ data: rows, skipDuplicates: true })).count : 0;
+  return { status: "done", fetched: media.length, imported, waiting: media.length - candidates.length };
 }
 
 export async function runTick() {
@@ -234,10 +237,11 @@ export async function runTick() {
   let imported = 0;
   for (const { id } of accounts) {
     await syncAccount(id).catch((e) => accountErrors.push(`${id}: ${errorMessage(e)}`));
-    imported += await importMedia(id).catch((e) => {
+    const result = await importMedia(id).catch((e) => {
       accountErrors.push(`${id} import: ${errorMessage(e)}`);
-      return 0;
+      return null;
     });
+    if (result?.status === "done") imported += result.imported;
   }
 
   const synced = await syncMetrics();
