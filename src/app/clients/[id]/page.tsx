@@ -6,6 +6,7 @@ import {
   deleteAccount,
   deleteClient,
   disconnectInstagram,
+  importInstagramNow,
   updateClient,
   updateFollowers,
 } from "@/app/actions/clients";
@@ -13,6 +14,7 @@ import { ClientForm } from "@/components/client-form";
 import { AccountForm } from "@/components/account-form";
 import { PlatformBadge } from "@/components/badges";
 import { ConfirmButton } from "@/components/confirm-button";
+import { PendingButton } from "@/components/pending-button";
 import { cardClass, dangerButtonClass, secondaryButtonClass } from "@/components/ui";
 import { formatNumber } from "@/lib/constants";
 
@@ -83,6 +85,9 @@ export default async function ClientDetailPage({ params, searchParams }: PagePro
                       <span className="rounded bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-700">
                         ✓ 連携済み
                       </span>
+                      <form action={importInstagramNow.bind(null, a.id)}>
+                        <PendingButton pendingLabel="取り込み中...">今すぐ取り込む</PendingButton>
+                      </form>
                       <form action={disconnectInstagram.bind(null, a.id)}>
                         <ConfirmButton
                           message="Instagram連携を解除します。予約中のリールは自動投稿されなくなります。よろしいですか？"

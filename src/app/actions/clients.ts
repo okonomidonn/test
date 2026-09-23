@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { PLATFORMS } from "@/lib/constants";
+import { importMedia, syncAccount, syncMetrics } from "@/lib/publisher";
 
 export type FormState = { error?: string; ok?: boolean };
 
@@ -152,4 +153,16 @@ export async function disconnectInstagram(accountId: string) {
   });
   revalidatePath(`/clients/${account.clientId}`);
   revalidatePath("/posts");
+}
+
+export async function importInstagramNow(accountId: string) {
+  await requireUser();
+  const account = await prisma.socialAccount.findUnique({ where: { id: accountId } });
+  if (!account?.accessToken) return;
+  await syncAccount(accountId).catch(() => {});
+  await importMedia(accountId);
+  await syncMetrics(accountId);
+  revalidatePath(`/clients/${account.clientId}`);
+  revalidatePath("/posts");
+  revalidatePath("/dashboard");
 }

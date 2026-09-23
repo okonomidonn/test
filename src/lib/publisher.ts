@@ -6,7 +6,8 @@ import {
   getContainerStatus,
   getMedia,
   getProfile,
-  getReelInsights,
+  getMediaMetrics,
+  listRecentMedia,
   publishContainer,
   refreshToken,
 } from "@/lib/instagram";
@@ -84,6 +85,7 @@ async function checkAndPublish(post: PostWithAccount) {
     }
     const mediaId = status.status_code === "FINISHED" ? await publishContainer(post.account.igUserId!, token, post.containerId!) : null;
     const media = mediaId ? await getMedia(mediaId, token).catch(() => null) : null;
+    if (mediaId) await prisma.post.deleteMany({ where: { externalId: mediaId, imported: true } });
     await prisma.post.update({
       where: { id: post.id },
       data: {
@@ -126,7 +128,7 @@ export async function advancePost(postId: string, { force = false } = {}) {
   });
 }
 
-async function syncMetrics() {
+export async function syncMetrics(accountId?: string) {
   const now = Date.now();
   const posts = await prisma.post.findMany({
     where: {
@@ -135,6 +137,7 @@ async function syncMetrics() {
       publishedAt: { gte: new Date(now - METRICS_WINDOW_MS) },
       OR: [{ metricsSyncedAt: null }, { metricsSyncedAt: { lt: new Date(now - METRICS_INTERVAL_MS) } }],
       account: { accessToken: { not: null } },
+      ...(accountId && { accountId }),
     },
     include: { account: true },
     orderBy: { metricsSyncedAt: { sort: "asc", nulls: "first" } },
@@ -143,7 +146,7 @@ async function syncMetrics() {
   let synced = 0;
   for (const post of posts) {
     try {
-      const metrics = await getReelInsights(post.externalId!, decrypt(post.account.accessToken!));
+      const metrics = await getMediaMetrics(post.externalId!, decrypt(post.account.accessToken!));
       await prisma.post.update({ where: { id: post.id }, data: { ...metrics, metricsSyncedAt: new Date() } });
       synced++;
     } catch {
@@ -171,6 +174,44 @@ export async function syncAccount(accountId: string) {
   await prisma.socialAccount.update({ where: { id: accountId }, data });
 }
 
+const IMPORT_SETTLE_MS = 15 * 60 * 1000;
+
+/** Imports posts made directly on Instagram so their metrics are tracked too. */
+export async function importMedia(accountId: string) {
+  const account = await prisma.socialAccount.findUnique({ where: { id: accountId } });
+  if (!account?.accessToken || !account.igUserId) return 0;
+
+  // A reel being published by this app gets its media id moments later; importing it first would duplicate it.
+  const inFlight = await prisma.post.count({ where: { accountId, status: "PUBLISHING" } });
+  if (inFlight > 0) return 0;
+
+  const token = decrypt(account.accessToken);
+  const media = await listRecentMedia(account.igUserId, token, new Date(Date.now() - METRICS_WINDOW_MS));
+  const settledBefore = Date.now() - IMPORT_SETTLE_MS;
+  const candidates = media.filter((m) => new Date(m.timestamp).getTime() < settledBefore);
+
+  const known = await prisma.post.findMany({
+    where: { externalId: { in: candidates.map((m) => m.id) } },
+    select: { externalId: true },
+  });
+  const knownIds = new Set(known.map((p) => p.externalId));
+
+  const rows = candidates
+    .filter((m) => !knownIds.has(m.id))
+    .map((m) => ({
+      accountId,
+      content: m.caption?.trim() || "（キャプションなし）",
+      status: "PUBLISHED" as const,
+      publishedAt: new Date(m.timestamp),
+      externalId: m.id,
+      permalink: m.permalink ?? null,
+      imported: true,
+    }));
+  if (rows.length === 0) return 0;
+  const { count } = await prisma.post.createMany({ data: rows, skipDuplicates: true });
+  return count;
+}
+
 export async function runTick() {
   const now = new Date();
   const due = await prisma.post.findMany({
@@ -190,10 +231,15 @@ export async function runTick() {
     select: { id: true },
   });
   const accountErrors: string[] = [];
+  let imported = 0;
   for (const { id } of accounts) {
     await syncAccount(id).catch((e) => accountErrors.push(`${id}: ${errorMessage(e)}`));
+    imported += await importMedia(id).catch((e) => {
+      accountErrors.push(`${id} import: ${errorMessage(e)}`);
+      return 0;
+    });
   }
 
   const synced = await syncMetrics();
-  return { advanced: due.length, accounts: accounts.length, accountErrors, metricsSynced: synced };
+  return { advanced: due.length, accounts: accounts.length, imported, accountErrors, metricsSynced: synced };
 }

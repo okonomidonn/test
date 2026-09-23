@@ -36,7 +36,7 @@ export default async function EditPostPage({ params }: PageProps<"/posts/[id]">)
       {(autoPublish || post.externalId) && (
         <div className={`${cardClass} space-y-2 text-sm`}>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="font-bold">Instagram自動投稿</span>
+            <span className="font-bold">{post.imported ? "Instagramから取り込み" : "Instagram自動投稿"}</span>
             <StatusBadge status={post.status} />
             {(post.status === "SCHEDULED" || post.status === "FAILED") && autoPublish && (
               <form action={publishNow.bind(null, post.id)}>
