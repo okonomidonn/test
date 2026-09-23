@@ -20,7 +20,9 @@ enum Platform {
 enum PostStatus {
   DRAFT
   SCHEDULED
+  PUBLISHING
   PUBLISHED
+  FAILED
 }
 
 model User {
@@ -65,6 +67,12 @@ model SocialAccount {
   platform  Platform
   handle    String
   followers Int      @default(0)
+
+  igUserId       String?
+  accessToken    String?
+  tokenExpiresAt DateTime?
+  connectedAt    DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -91,6 +99,15 @@ model Post {
   comments    Int @default(0)
   shares      Int @default(0)
   saves       Int @default(0)
+
+  containerId     String?
+  externalId      String?
+  permalink       String?
+  publishError    String?
+  publishAttempts Int       @default(0)
+  metricsSyncedAt DateTime?
+  lockedAt        DateTime?
+  publishStartedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

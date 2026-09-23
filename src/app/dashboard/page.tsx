@@ -92,7 +92,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
   const tiles = [
     { label: "公開投稿数", value: formatNumber(published.length) },
-    { label: "インプレッション", value: formatNumber(total.impressions) },
+    { label: "表示・再生数", value: formatNumber(total.impressions) },
     { label: "エンゲージメント", value: formatNumber(engagementCount(total)) },
     { label: "平均エンゲージメント率", value: formatPercent(engagementRate(total)) },
     { label: "総フォロワー", value: formatNumber(totalFollowers) },
@@ -241,7 +241,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
             <thead className="text-left text-xs text-slate-500">
               <tr>
                 <th className="py-1 font-medium">投稿</th>
-                <th className="py-1 text-right font-medium">imp</th>
+                <th className="py-1 text-right font-medium">表示・再生</th>
                 <th className="py-1 text-right font-medium">エンゲージメント</th>
                 <th className="py-1 text-right font-medium">ER</th>
               </tr>
