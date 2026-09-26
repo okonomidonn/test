@@ -1,0 +1,139 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>zaito | 大学生・若手向け完全在宅求人サービス</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.hero{padding:72px 0 0}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
+.hero .badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#4A5573}
+.hero .badge i{width:7px;height:7px;border-radius:50%;background:#3D5AFE}
+.hero h1{margin:24px 0 0;font-size:clamp(38px,5.4vw,68px);font-weight:900;line-height:1.22;letter-spacing:-.02em}
+.hero .lead{margin:20px 0 0;font-size:18px;font-weight:700}
+.hero .lead em{font-style:normal;color:#3D5AFE}
+.search{margin-top:32px;display:flex;gap:8px;padding:8px;border-radius:16px;background:#fff;box-shadow:0 0 0 1.5px #D5DBE7,0 20px 40px -28px rgba(11,21,48,.35)}
+.search label{flex:1;display:flex;align-items:center;gap:10px;padding:0 14px;min-width:0}
+.search label+label{border-left:1px solid #EEF0F4}
+.search .ms{color:#6B7590;font-size:22px}
+.search input,.search select{border:0;outline:0;font:inherit;font-size:15px;width:100%;background:transparent;color:#0B1530;height:48px}
+.popular{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:#6B7590}
+.popular a{display:inline-flex;height:30px;align-items:center;padding:0 12px;border-radius:999px;background:#F4F5F8;color:#3A4563;font-weight:500}
+.stats{margin-top:36px;display:flex;gap:40px}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-family:Outfit,sans-serif;font-size:32px;line-height:1.1}
+.stats span{font-size:12px;color:#6B7590}
+.collage{position:relative;height:600px}
+.collage .jc{position:absolute;width:250px}
+.collage .c1{left:0;top:80px;width:280px;z-index:2;box-shadow:0 30px 60px -30px rgba(11,21,48,.4)}
+.collage .c2{right:0;top:0}
+.collage .c3{right:0;top:318px}
+.collage .c2 .tags,.collage .c3 .tags,.collage .c2 .co,.collage .c3 .co{display:none}
+.collage .c2 .ph,.collage .c3 .ph{aspect-ratio:2/1}
+.sec{padding-top:112px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.catc{display:flex;align-items:center;gap:16px;padding:20px;border-radius:16px;border:1px solid #E6E9F0;color:#0B1530}
+.catc .ic{width:52px;height:52px;border-radius:14px;background:#EEF1FF;color:#3D5AFE;display:flex;align-items:center;justify-content:center}
+.catc .ic .ms{font-size:28px}
+.catc b{display:block;font-size:16px}
+.catc span.n{font-size:12px;color:#6B7590}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;counter-reset:s}
+.step{padding:32px;border-radius:20px;background:#F7F8FB}
+.step .no{font-family:Outfit,sans-serif;font-size:14px;font-weight:700;color:#3D5AFE;letter-spacing:.1em}
+.step h3{margin:12px 0 8px;font-size:20px}
+.step p{margin:0;font-size:14px;color:#3A4563}
+.coband{margin-top:112px;background:#0B1530;color:#fff;border-radius:28px;padding:56px;display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center}
+.coband h2{margin:8px 0 0;font-size:clamp(24px,3vw,34px);font-weight:900;line-height:1.4}
+.coband p{margin:16px 0 0;color:#C9D0E4;font-size:15px}
+.coband ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.coband li{display:flex;gap:10px;align-items:center;font-weight:700}
+.coband li .ms{color:#8FA2FF}
+@media (max-width:860px){
+ .hero{padding-top:36px}
+ .hero .wrap{grid-template-columns:1fr;gap:40px}
+ .search{flex-direction:column;padding:10px}
+ .search label+label{border-left:0;border-top:1px solid #EEF0F4}
+ .search .btn{width:100%}
+ .collage{display:none}
+ .stats{gap:28px}
+ .grid3{grid-template-columns:1fr}
+ .cats{grid-template-columns:1fr 1fr;gap:10px}
+ .catc{flex-direction:column;align-items:flex-start;gap:10px;padding:16px}
+ .steps{grid-template-columns:1fr}
+ .coband{grid-template-columns:1fr;padding:32px 24px;border-radius:20px}
+ .sec{padding-top:80px}
+}
+</style></head><body><header class="hd"><div class="wrap">
+<a class="logo" href="top.html">za<span>i</span>to</a>
+<nav><a href="jobs.html" class="">求人を探す</a><a href="#" class="">企業の方</a><a href="#" class="">zaitoについて</a></nav>
+<div class="hd-r"><a class="btn btn-t hide-sp" href="#">ログイン</a><a class="btn btn-p" href="register.html">無料で登録</a>
+<span class="burger"><span class="ms" style="font-size:22px">menu</span></span></div>
+</div></header>
+<section class="hero"><div class="wrap"><div>
+<span class="badge"><i></i>大学生・若手向け 完全在宅求人サービス</span>
+<h1>大学生のバイトを、<br>もっと自由に。</h1>
+<p class="lead">授業のあいだに、自宅から。<em>完全在宅</em>の仕事だけを集めました。</p>
+<form class="search" action="jobs.html">
+<label><span class="ms">search</span><input placeholder="キーワード（例：Canva）"></label>
+<label><span class="ms">work</span><select><option>職種を選ぶ</option></select></label>
+<button class="btn btn-p btn-lg" type="button"><span class="ms" style="font-size:20px">search</span>検索</button></form>
+<div class="popular">人気：<a href="#">未経験OK</a><a href="#">週10時間以下</a><a href="#">シフト自由</a><a href="#">土日のみOK</a></div>
+<div class="stats"><div><b>128</b><span>掲載中の在宅求人</span></div><div><b>34</b><span>掲載企業</span></div><div><b>100<small style="font-size:16px">%</small></b><span>完全在宅</span></div></div>
+</div>
+<div class="collage"><a class="jc c1" href="job.html"><div class="ph"><img src="img/card-sns.webp" alt=""><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">SNS運用</span><span class="new">NEW</span></div>
+<h3>SNS運用アシスタント（Instagram）</h3><div class="co">株式会社サンプルメディア</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">未経験OK</span><span class="tag">週10時間〜</span></div>
+<div class="pay">時給<b>1,500</b>円〜</div></div></a><a class="jc c2" href="job.html"><div class="ph"><img src="img/card-video.webp" alt=""><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">動画編集</span><span class="new">NEW</span></div>
+<h3>ショート動画の編集（TikTok・リール）</h3><div class="co">合同会社サンプルスタジオ</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">学生歓迎</span><span class="tag">週2日〜</span></div>
+<div class="pay">1本<b>3,000</b>円〜</div></div></a><a class="jc c3" href="job.html"><div class="ph"><img src="img/card-web.webp" alt=""><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">Webマーケティング</span></div>
+<h3>Webマーケティングアシスタント</h3><div class="co">株式会社サンプルグロース</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">学生歓迎</span><span class="tag">シフト自由</span></div>
+<div class="pay">時給<b>1,600</b>円〜</div></div></a></div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-h"><div><div class="eyebrow">NEW JOBS</div><h2>新着の在宅求人</h2></div><a class="more" href="jobs.html">すべて見る<span class="ms" style="font-size:18px">arrow_forward</span></a></div>
+<div class="grid3"><a class="jc" href="job.html"><div class="ph"><img src="img/card-sns.webp" alt=""><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">SNS運用</span><span class="new">NEW</span></div>
+<h3>SNS運用アシスタント（Instagram）</h3><div class="co">株式会社サンプルメディア</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">未経験OK</span><span class="tag">週10時間〜</span></div>
+<div class="pay">時給<b>1,500</b>円〜</div></div></a><a class="jc" href="job.html"><div class="ph"><img src="img/card-video.webp" alt=""><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">動画編集</span><span class="new">NEW</span></div>
+<h3>ショート動画の編集（TikTok・リール）</h3><div class="co">合同会社サンプルスタジオ</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">学生歓迎</span><span class="tag">週2日〜</span></div>
+<div class="pay">1本<b>3,000</b>円〜</div></div></a><a class="jc" href="job.html"><div class="ph"><img src="img/card-web.webp" alt=""><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">Webマーケティング</span></div>
+<h3>Webマーケティングアシスタント</h3><div class="co">株式会社サンプルグロース</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">学生歓迎</span><span class="tag">シフト自由</span></div>
+<div class="pay">時給<b>1,600</b>円〜</div></div></a><a class="jc" href="job.html"><div class="ph"><div class="ill ill-a"><span class="ms">edit_note</span></div><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">ライティング</span><span class="new">NEW</span></div>
+<h3>SEO記事の構成・執筆</h3><div class="co">株式会社サンプルコンテンツ</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">未経験OK</span><span class="tag">納期相談可</span></div>
+<div class="pay">1文字<b>1.5</b>円〜</div></div></a><a class="jc" href="job.html"><div class="ph"><div class="ill ill-b"><span class="ms">support_agent</span></div><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">オンライン事務</span></div>
+<h3>オンライン事務・データ入力</h3><div class="co">株式会社サンプルワークス</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">週10時間〜</span><span class="tag">平日夜OK</span></div>
+<div class="pay">時給<b>1,200</b>円〜</div></div></a><a class="jc" href="job.html"><div class="ph"><div class="ill ill-d"><span class="ms">auto_awesome</span></div><span class="fav"><span class="ms">favorite</span></span></div>
+<div class="bd"><div style="display:flex;gap:6px;align-items:center"><span class="cat">AI関連</span></div>
+<h3>生成AIの回答チェック・評価</h3><div class="co">株式会社サンプルAIラボ</div><div class="tags"><span class="tag">完全在宅</span><span class="tag">学生歓迎</span><span class="tag">土日OK</span></div>
+<div class="pay">時給<b>1,400</b>円〜</div></div></a></div></div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-h"><div><div class="eyebrow">CATEGORY</div><h2>職種から探す</h2></div></div>
+<div class="cats"><a class="catc" href="jobs.html"><span class="ic"><span class="ms">campaign</span></span><div><b>SNS運用</b><span class="n">42件</span></div></a><a class="catc" href="jobs.html"><span class="ic"><span class="ms">movie</span></span><div><b>動画編集</b><span class="n">31件</span></div></a><a class="catc" href="jobs.html"><span class="ic"><span class="ms">trending_up</span></span><div><b>Webマーケ</b><span class="n">18件</span></div></a><a class="catc" href="jobs.html"><span class="ic"><span class="ms">edit_note</span></span><div><b>ライティング</b><span class="n">27件</span></div></a><a class="catc" href="jobs.html"><span class="ic"><span class="ms">support_agent</span></span><div><b>オンライン事務</b><span class="n">24件</span></div></a><a class="catc" href="jobs.html"><span class="ic"><span class="ms">travel_explore</span></span><div><b>リサーチ</b><span class="n">12件</span></div></a><a class="catc" href="jobs.html"><span class="ic"><span class="ms">keyboard</span></span><div><b>データ入力</b><span class="n">15件</span></div></a><a class="catc" href="jobs.html"><span class="ic"><span class="ms">auto_awesome</span></span><div><b>AI関連</b><span class="n">9件</span></div></a></div></div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-h"><div><div class="eyebrow">HOW IT WORKS</div><h2>はじめての在宅ワークも、3ステップ</h2></div></div>
+<div class="steps">
+<div class="step"><div class="no">STEP 01</div><h3>無料で登録</h3><p>メールアドレスかGoogleで1分。大学名や空いている時間を入れておくと、合う求人が見つかりやすくなります。</p></div>
+<div class="step"><div class="no">STEP 02</div><h3>気になる求人に応募</h3><p>報酬・週の稼働時間・必要なスキルを求人ごとに明記。条件に合う仕事だけを選べます。</p></div>
+<div class="step"><div class="no">STEP 03</div><h3>企業とチャットで相談</h3><p>応募後はzaito上のチャットで企業と直接やりとり。面談日程や働き方もここで決まります。</p></div>
+</div>
+<div class="coband"><div><div class="eyebrow" style="color:#8FA2FF">FOR COMPANIES</div><h2>在宅で働ける学生を、<br>採用しませんか？</h2><p>SNS運用・動画編集・事務など、完全在宅の仕事に意欲のある大学生・若手が登録しています。</p>
+<div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-p btn-lg" href="#">無料で求人を掲載する</a><a class="btn btn-lg" style="background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px #3A4563" href="#">資料を見る</a></div></div>
+<ul><li><span class="ms">check_circle</span>初期費用・掲載費 0円（先行掲載期間）</li><li><span class="ms">check_circle</span>求人原稿の作成をサポート</li><li><span class="ms">check_circle</span>応募者とチャットで直接やりとり</li></ul></div>
+</div></section>
+<footer class="ft"><div class="wrap">
+<div class="ft-top"><p>大学生・若手向け<br>完全在宅求人サービス</p>
+<ul><li><a href="jobs.html">求人を探す</a></li><li><a href="#">企業の方</a></li><li><a href="#">zaitoについて</a></li>
+<li><a href="#">よくある質問</a></li><li><a href="#">利用規約</a></li><li><a href="#">プライバシーポリシー</a></li></ul></div>
+<div class="ft-b"><span>運営：zaito 運営事務局</span><small>Copyright © zaito</small></div>
+<div class="logo ft-big" aria-hidden="true">za<span>i</span>to</div>
+</div></footer></body></html>
