@@ -3,8 +3,9 @@
  * 正式ローンチ前のLP用フォーム受付（学生Waiting List・企業問い合わせ）。
  *
  * - 学生Waiting List: 既存の「興味あり登録」(zaito_interest) にメールアドレスだけで
- *   登録する。/interest/ ページからの登録と同じ投稿タイプにまとめ、ローンチ時に
- *   そのまま本登録の案内に使えるようにする。
+ *   登録する（STEP1）。/interest/ ページからの登録と同じ投稿タイプにまとめ、ローンチ時に
+ *   そのまま本登録の案内に使えるようにする。登録後に任意で「興味のある仕事」を
+ *   同じレコードに追記できる（STEP2）。STEP1の応答で返すトークンが必要。
  * - 企業問い合わせ: 「企業問い合わせ」(zaito_company_lead) に保存し、管理者へ
  *   メール通知する。
  *
@@ -99,7 +100,7 @@ function zaito_handle_lp_waitlist() {
         ),
     ) );
     if ( ! empty( $existing ) ) {
-        zaito_lp_respond( true, array( 'already' => true ), 'waitlist' );
+        zaito_lp_respond( true, array( 'already' => true, 'token' => zaito_lp_issue_token( $existing[0] ) ), 'waitlist' );
         return;
     }
 
@@ -120,10 +121,52 @@ function zaito_handle_lp_waitlist() {
         update_post_meta( $interest_id, $key, $value );
     }
 
-    zaito_lp_respond( true, array( 'already' => false ), 'waitlist' );
+    zaito_lp_respond( true, array( 'already' => false, 'token' => zaito_lp_issue_token( $interest_id ) ), 'waitlist' );
 }
 add_action( 'wp_ajax_zaito_lp_waitlist', 'zaito_handle_lp_waitlist' );
 add_action( 'wp_ajax_nopriv_zaito_lp_waitlist', 'zaito_handle_lp_waitlist' );
+
+/**
+ * STEP2（興味のある仕事）の書き込みを、直前にSTEP1を完了したブラウザに限るためのトークン。
+ * メールアドレスを知っているだけの第三者が、他人の登録内容を書き換えられないようにする。
+ */
+function zaito_lp_issue_token( $interest_id ) {
+    $token = wp_generate_password( 32, false );
+    update_post_meta( $interest_id, 'lp_token', $token );
+    return $token;
+}
+
+function zaito_handle_lp_waitlist_jobs() {
+    $email = isset( $_POST['email'] ) ? strtolower( trim( sanitize_email( wp_unslash( $_POST['email'] ) ) ) ) : '';
+    $token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
+    $jobs  = isset( $_POST['desired_jobs'] ) && is_array( $_POST['desired_jobs'] )
+        ? array_values( array_filter( array_map( 'sanitize_text_field', wp_unslash( $_POST['desired_jobs'] ) ) ) )
+        : array();
+
+    if ( ! $email || ! $token || empty( $jobs ) ) {
+        zaito_lp_respond( false, array( 'message' => '入力内容を確認してください' ), 'waitlist' );
+        return;
+    }
+
+    $existing = get_posts( array(
+        'post_type'      => 'zaito_interest',
+        'post_status'    => 'any',
+        'posts_per_page' => 1,
+        'fields'         => 'ids',
+        'meta_query'     => array(
+            array( 'key' => 'email', 'value' => $email ),
+        ),
+    ) );
+    if ( empty( $existing ) || ! hash_equals( (string) get_post_meta( $existing[0], 'lp_token', true ), $token ) ) {
+        zaito_lp_respond( false, array( 'message' => '登録情報が確認できませんでした' ), 'waitlist' );
+        return;
+    }
+
+    update_post_meta( $existing[0], 'interests', array_slice( $jobs, 0, 20 ) );
+    zaito_lp_respond( true, array(), 'waitlist' );
+}
+add_action( 'wp_ajax_zaito_lp_waitlist_jobs', 'zaito_handle_lp_waitlist_jobs' );
+add_action( 'wp_ajax_nopriv_zaito_lp_waitlist_jobs', 'zaito_handle_lp_waitlist_jobs' );
 
 function zaito_handle_lp_company_inquiry() {
     if ( ! empty( $_POST['website'] ) ) {
@@ -131,12 +174,20 @@ function zaito_handle_lp_company_inquiry() {
         return;
     }
 
-    $company = isset( $_POST['company'] ) ? sanitize_text_field( wp_unslash( $_POST['company'] ) ) : '';
-    $name    = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
-    $email   = isset( $_POST['email'] ) ? strtolower( trim( sanitize_email( wp_unslash( $_POST['email'] ) ) ) ) : '';
-    $phone   = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
-    $message = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
+    $fields = array();
+    foreach ( zaito_company_lead_fields() as $key => $label ) {
+        $raw = isset( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : '';
+        $fields[ $key ] = in_array( $key, array( 'job', 'note' ), true ) ? sanitize_textarea_field( $raw ) : sanitize_text_field( $raw );
+    }
+    $fields['email'] = strtolower( trim( sanitize_email( $fields['email'] ) ) );
+    $fields['url']   = esc_url_raw( $fields['url'] );
+    $company = $fields['company'];
+    $email   = $fields['email'];
 
+    if ( ! $company || ! $fields['name'] || ! $fields['job'] ) {
+        zaito_lp_respond( false, array( 'message' => '必須項目を入力してください' ), 'inquiry' );
+        return;
+    }
     if ( ! $email || ! is_email( $email ) ) {
         zaito_lp_respond( false, array( 'message' => '正しいメールアドレスを入力してください' ), 'inquiry' );
         return;
@@ -159,22 +210,16 @@ function zaito_handle_lp_company_inquiry() {
     }
 
     $tracking = zaito_lp_tracking_fields();
-    update_post_meta( $lead_id, 'company', $company );
-    update_post_meta( $lead_id, 'name', $name );
-    update_post_meta( $lead_id, 'email', $email );
-    update_post_meta( $lead_id, 'phone', $phone );
-    update_post_meta( $lead_id, 'message', $message );
-    foreach ( $tracking as $key => $value ) {
+    foreach ( $fields + $tracking as $key => $value ) {
         update_post_meta( $lead_id, $key, $value );
     }
 
     // 企業からの問い合わせは営業上すぐ対応したいので、管理者にメールで通知する。
-    $body = "LPの企業向けフォームから問い合わせがありました。\n\n"
-        . '会社名: ' . $company . "\n"
-        . 'ご担当者: ' . $name . "\n"
-        . 'メール: ' . $email . "\n"
-        . '電話: ' . $phone . "\n"
-        . "内容:\n" . $message . "\n\n"
+    $body = "LPの企業向けフォームから問い合わせがありました。\n\n";
+    foreach ( zaito_company_lead_fields() as $key => $label ) {
+        $body .= $label . ': ' . $fields[ $key ] . "\n";
+    }
+    $body .= "\n"
         . '流入元: ' . $tracking['utm_source'] . ' / ' . $tracking['utm_medium'] . ' / ' . $tracking['utm_campaign'] . "\n"
         . '管理画面: ' . admin_url( 'edit.php?post_type=zaito_company_lead' ) . "\n";
     wp_mail( get_option( 'admin_email' ), '【zaito】企業から問い合わせがありました（' . ( $company ? $company : $email ) . '）', $body );
@@ -185,17 +230,29 @@ add_action( 'wp_ajax_zaito_lp_company_inquiry', 'zaito_handle_lp_company_inquiry
 add_action( 'wp_ajax_nopriv_zaito_lp_company_inquiry', 'zaito_handle_lp_company_inquiry' );
 
 /**
+ * LPの企業向けフォームの項目（キーはフォームのname属性・post meta名）。
+ */
+function zaito_company_lead_fields() {
+    return array(
+        'company'     => '会社名',
+        'name'        => '担当者名',
+        'email'       => 'メールアドレス',
+        'url'         => '会社URL',
+        'job'         => '募集したい仕事内容',
+        'pay'         => '想定報酬',
+        'conditions'  => '勤務条件',
+        'hours'       => '勤務時間',
+        'weeklyHours' => '週の想定稼働時間',
+        'note'        => '自由記述',
+    );
+}
+
+/**
  * CSV出力の列定義。キーはpost meta名（'_date'は登録日時）。
  */
 function zaito_lead_export_columns( $post_type ) {
     if ( 'zaito_company_lead' === $post_type ) {
-        return array(
-            '_date'        => '受付日時',
-            'company'      => '会社名',
-            'name'         => 'ご担当者',
-            'email'        => 'メールアドレス',
-            'phone'        => '電話番号',
-            'message'      => '内容',
+        return array( '_date' => '受付日時' ) + zaito_company_lead_fields() + array(
             'utm_source'   => 'utm_source',
             'utm_medium'   => 'utm_medium',
             'utm_campaign' => 'utm_campaign',
@@ -206,7 +263,7 @@ function zaito_lead_export_columns( $post_type ) {
         '_date'        => '登録日時',
         'email'        => 'メールアドレス',
         'name'         => 'お名前',
-        'interests'    => '興味のある案件',
+        'interests'    => '興味のある仕事',
         'hours'        => '稼働可能時間',
         'source'       => '登録元',
         'utm_source'   => 'utm_source',
