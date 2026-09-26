@@ -57,6 +57,16 @@ function zaito_prelaunch_template_redirect() {
         exit;
     }
 
+    // 営業用の仮ページは、企業に送る掲載イメージとしてLPと同じ新デザインで表示する。
+    if ( is_singular( 'job_listing' ) && '1' === get_post_meta( get_queried_object_id(), '_zaito_preview', true ) ) {
+        $zaito_job = get_queried_object();
+        status_header( 200 );
+        header( 'Content-Type: text/html; charset=UTF-8' );
+        header( 'X-Robots-Tag: noindex, nofollow' );
+        include get_template_directory() . '/lp/job-preview.php';
+        exit;
+    }
+
     if ( is_user_logged_in() ) {
         return;
     }
