@@ -1985,6 +1985,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '岸保産業株式会社',
+            'slug'      => 'kishiho-recruit-marketing',
             'title'     => '採用マーケティング・採用広報アシスタント(学生インターン)',
             'category'  => 'SNS運用・マーケティング',
             'content'   => '創業1945年、業務用厨房用品を10万点以上取り扱う専門商社で、採用マーケティングに関わる学生インターンです。実際の掲載求人によると、Wantedlyを活用した採用広報の企画・実行、採用市場のマーケティング・分析、面接のスケジュール調整などを担当するとのことです。' . "\n\n" . '勤務は完全フルリモートで、PC一台あれば世界中どこからでも働けるとされています。人と話すことが好きな方や、人事・採用の仕事に興味がある方を歓迎しており、少数精鋭の組織のため、自分のアイデアを形にしやすい環境だと考えています。本社は愛知県稲沢市で、シンガポールにも現地法人があります。' . $zaito_preview_disclaimer,
@@ -1999,6 +2000,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '学校法人角川ドワンゴ学園',
+            'slug'      => 'nhigh-net-course-ta',
             'title'     => 'N高グループ ネットコースTA(オンラインでの生徒サポート)',
             'category'  => '教育・学習サポート',
             'content'   => 'N高グループのネットコースで、生徒の学習や学校生活をオンラインでサポートするTA(ティーチングアシスタント)の仕事です。実際の掲載求人によると、15〜30分程度のオンライン面談で学習の進み具合を確認したり進路のアドバイスをしたりするほか、Slackなどでの質問対応、進学・就職書類の作成サポート、志望理由書の添削や面接練習といった受験サポートを担当するとのことです。' . "\n\n" . '勤務は完全リモートで、平日13時〜18時の間で週2日以上・1日5時間以上、半年以上続けられる大学生・大学院生が対象です。入社後は初回から8回までの研修があり、自宅のWi-Fi環境があれば始められます。自分の受験や進路選択の経験を活かせる、大学生だからこそ務まる仕事だと考えています。' . $zaito_preview_disclaimer,
@@ -2013,6 +2015,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社JX通信社',
+            'slug'      => 'jxpress-news-editor',
             'title'     => 'ニュース速報の編集・配信スタッフ(長期インターン)',
             'category'  => 'ライティング・編集',
             'content'   => '速報特化型ニュースアプリ「NewsDigest」やリスク情報配信サービス「FASTALERT」を手がける会社で、ニュース速報の編集・配信に携わる長期インターンです。実際の掲載求人によると、SNSなどに上がる一次情報を収集・分析して現地の状況をいち早く把握する業務と、ニュースアプリ向けに事実確認・編集・配信を行う業務を担当するとのことです。' . "\n\n" . '勤務はリモート中心で(1都3県在住の方は初期研修期間の出社を推奨)、24時間365日のシフト制(1日4時間単位)から週3日以上・週12時間以上で入れます。1〜2か月のマンツーマン研修があり、大学1年生を特に歓迎、3〜4年間続けられる方が対象とのことです。自宅に個室・27インチ以上の4Kディスプレイ・25Mbps以上の回線が必要な点にはご注意ください。報道やニュースに関心のある学生が、社会的な意義の大きい仕事を在宅で経験できる案件だと考えています。' . $zaito_preview_disclaimer,
@@ -2040,12 +2043,22 @@ function zaito_upsert_preview_jobs() {
         ) );
         if ( ! empty( $existing ) ) {
             // 作成済みの仮ページは、管理画面での修正を上書きしないようそのままにする。
-            $links[] = $p['company'] . ': ' . get_permalink( $existing[0]->ID );
+            // ただし日本語タイトルから自動で作られた長いURL（%e6...）は、営業メールに
+            // 貼りやすい短い英字URLに変える（古いURLはWordPressが新しいURLへ転送する）。
+            $job_id = $existing[0]->ID;
+            if ( ! empty( $p['slug'] ) && 0 === strpos( $existing[0]->post_name, '%' ) ) {
+                wp_update_post( array(
+                    'ID'        => $job_id,
+                    'post_name' => $p['slug'],
+                ) );
+            }
+            $links[] = $p['company'] . ': ' . get_permalink( $job_id );
             continue;
         } else {
             $job_id = wp_insert_post( array(
                 'post_type'    => 'job_listing',
                 'post_title'   => $p['title'],
+                'post_name'    => isset( $p['slug'] ) ? $p['slug'] : '',
                 'post_content' => $p['content'],
                 'post_status'  => 'publish',
             ) );
@@ -2076,7 +2089,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-26' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
