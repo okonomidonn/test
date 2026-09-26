@@ -41,12 +41,27 @@ function zaito_prelaunch_template_redirect() {
         return;
     }
 
+    $page = get_query_var( 'zaito_page' );
+
+    // 利用規約・プライバシーポリシーはLPからリンクしているため、LPと同じデザインで表示する。
+    $legal = array(
+        'terms'   => '利用規約',
+        'privacy' => 'プライバシーポリシー',
+    );
+    if ( $page && isset( $legal[ $page ] ) ) {
+        $zaito_legal_slug  = $page;
+        $zaito_legal_title = $legal[ $page ];
+        status_header( 200 );
+        header( 'Content-Type: text/html; charset=UTF-8' );
+        include get_template_directory() . '/lp/legal.php';
+        exit;
+    }
+
     if ( is_user_logged_in() ) {
         return;
     }
 
-    $map  = zaito_prelaunch_redirect_map();
-    $page = get_query_var( 'zaito_page' );
+    $map = zaito_prelaunch_redirect_map();
     if ( $page && isset( $map[ $page ] ) ) {
         wp_safe_redirect( home_url( $map[ $page ] ), 302 );
         exit;
