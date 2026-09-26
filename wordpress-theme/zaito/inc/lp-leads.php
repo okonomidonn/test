@@ -388,7 +388,16 @@ function zaito_lead_admin_columns( $columns ) {
     $columns['date']         = $date;
     return $columns;
 }
-add_filter( 'manage_zaito_interest_posts_columns', 'zaito_lead_admin_columns' );
+
+function zaito_interest_admin_columns( $columns ) {
+    $columns = zaito_lead_admin_columns( $columns );
+    $date    = $columns['date'];
+    unset( $columns['date'] );
+    $columns['zaito_interests'] = '興味のある仕事';
+    $columns['date']            = $date;
+    return $columns;
+}
+add_filter( 'manage_zaito_interest_posts_columns', 'zaito_interest_admin_columns' );
 add_filter( 'manage_zaito_company_lead_posts_columns', 'zaito_lead_admin_columns' );
 
 function zaito_lead_admin_column_value( $column, $post_id ) {
@@ -397,7 +406,36 @@ function zaito_lead_admin_column_value( $column, $post_id ) {
     } elseif ( 'zaito_source' === $column ) {
         $source = get_post_meta( $post_id, 'utm_source', true );
         echo esc_html( $source ? $source : '—' );
+    } elseif ( 'zaito_interests' === $column ) {
+        $interests = get_post_meta( $post_id, 'interests', true );
+        echo esc_html( ! empty( $interests ) ? implode( '、', (array) $interests ) : '—' );
     }
 }
 add_action( 'manage_zaito_interest_posts_custom_column', 'zaito_lead_admin_column_value', 10, 2 );
 add_action( 'manage_zaito_company_lead_posts_custom_column', 'zaito_lead_admin_column_value', 10, 2 );
+
+/**
+ * 1件を開いたときに、登録・問い合わせの内容を読みやすく表示する。
+ * （標準の「カスタムフィールド」欄は初期状態で非表示のうえ、配列が読みにくいため）
+ */
+function zaito_lead_add_detail_box() {
+    foreach ( array( 'zaito_interest', 'zaito_company_lead' ) as $post_type ) {
+        add_meta_box( 'zaito_lead_detail', '登録内容', 'zaito_lead_render_detail_box', $post_type, 'normal', 'high' );
+    }
+}
+add_action( 'add_meta_boxes', 'zaito_lead_add_detail_box' );
+
+function zaito_lead_render_detail_box( $post ) {
+    echo '<table class="widefat striped" style="border:0"><tbody>';
+    foreach ( zaito_lead_export_columns( $post->post_type ) as $key => $label ) {
+        $value = '_date' === $key ? get_the_date( 'Y-m-d H:i', $post ) : get_post_meta( $post->ID, $key, true );
+        if ( is_array( $value ) ) {
+            $value = implode( '、', $value );
+        }
+        if ( '' === (string) $value ) {
+            $value = '—';
+        }
+        echo '<tr><th style="width:180px">' . esc_html( $label ) . '</th><td style="white-space:pre-wrap">' . esc_html( $value ) . '</td></tr>';
+    }
+    echo '</tbody></table>';
+}
