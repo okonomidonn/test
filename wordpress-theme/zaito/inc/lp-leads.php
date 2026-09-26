@@ -128,10 +128,29 @@ function zaito_handle_lp_waitlist() {
 }
 
 /**
+ * info@ドメイン のメールボックス（XServerで作成）が用意できたら true にする。
+ * false の間は、返信しても届かないよう送信専用の noreply@ から送る。
+ */
+if ( ! defined( 'ZAITO_INFO_MAILBOX_READY' ) ) {
+    define( 'ZAITO_INFO_MAILBOX_READY', false );
+}
+
+/**
  * 先行登録した学生への自動返信メール。
  */
 function zaito_lp_send_waitlist_thanks( $email ) {
     $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+
+    if ( ZAITO_INFO_MAILBOX_READY ) {
+        $from    = 'info@' . $host;
+        $reply   = "ご質問があれば、このメールにそのまま返信してください。\n\n"
+            . "※このメールは自動でお送りしています。\n";
+        $contact = 'お問い合わせ: info@' . $host . "\n";
+    } else {
+        $from    = 'noreply@' . $host;
+        $reply   = "※このメールは送信専用のアドレスから自動でお送りしています。返信いただいてもお答えできません。\n";
+        $contact = '';
+    }
 
     $subject = '【zaito】先行登録ありがとうございます';
     $body    = "zaitoへの先行登録ありがとうございます。\n"
@@ -141,13 +160,14 @@ function zaito_lp_send_waitlist_thanks( $email ) {
         . "現在、正式ローンチに向けて掲載企業・求人を準備しています。\n"
         . "公開の準備ができましたら、このメールアドレスにいち早くお知らせします。\n\n"
         . "公開までもうしばらくお待ちください。\n\n"
-        . "※このメールは送信専用のアドレスから自動でお送りしています。返信いただいてもお答えできません。\n"
+        . $reply
         . "※お心当たりのない場合は、お手数ですがこのメールを破棄してください。\n\n"
         . "──────────\n"
         . "zaito（ザイト）\n"
-        . home_url( '/' ) . "\n";
+        . home_url( '/' ) . "\n"
+        . $contact;
 
-    wp_mail( $email, $subject, $body, array( 'From: zaito <noreply@' . $host . '>' ) );
+    wp_mail( $email, $subject, $body, array( 'From: zaito <' . $from . '>' ) );
 }
 add_action( 'wp_ajax_zaito_lp_waitlist', 'zaito_handle_lp_waitlist' );
 add_action( 'wp_ajax_nopriv_zaito_lp_waitlist', 'zaito_handle_lp_waitlist' );
