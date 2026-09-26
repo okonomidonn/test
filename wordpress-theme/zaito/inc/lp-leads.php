@@ -121,7 +121,33 @@ function zaito_handle_lp_waitlist() {
         update_post_meta( $interest_id, $key, $value );
     }
 
+    // 登録済みのアドレスには送らない（第三者が同じアドレスで何度も送らせることを防ぐ）。
+    zaito_lp_send_waitlist_thanks( $email );
+
     zaito_lp_respond( true, array( 'already' => false, 'token' => zaito_lp_issue_token( $interest_id ) ), 'waitlist' );
+}
+
+/**
+ * 先行登録した学生への自動返信メール。
+ */
+function zaito_lp_send_waitlist_thanks( $email ) {
+    $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+
+    $subject = '【zaito】先行登録ありがとうございます';
+    $body    = "zaitoへの先行登録ありがとうございます。\n"
+        . "以下のメールアドレスで登録を受け付けました。\n\n"
+        . '登録メールアドレス: ' . $email . "\n\n"
+        . "zaitoは、大学生・若手向けの完全在宅求人サービスです。\n"
+        . "現在、正式ローンチに向けて掲載企業・求人を準備しています。\n"
+        . "公開の準備ができましたら、このメールアドレスにいち早くお知らせします。\n\n"
+        . "公開までもうしばらくお待ちください。\n\n"
+        . "※このメールは送信専用のアドレスから自動でお送りしています。返信いただいてもお答えできません。\n"
+        . "※お心当たりのない場合は、お手数ですがこのメールを破棄してください。\n\n"
+        . "──────────\n"
+        . "zaito（ザイト）\n"
+        . home_url( '/' ) . "\n";
+
+    wp_mail( $email, $subject, $body, array( 'From: zaito <noreply@' . $host . '>' ) );
 }
 add_action( 'wp_ajax_zaito_lp_waitlist', 'zaito_handle_lp_waitlist' );
 add_action( 'wp_ajax_nopriv_zaito_lp_waitlist', 'zaito_handle_lp_waitlist' );
