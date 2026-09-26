@@ -2059,3 +2059,5 @@ add_action( 'admin_post_zaito_fix_author_display_name', 'zaito_fix_author_displa
 require_once get_template_directory() . '/inc/lp-leads.php';
 // 正式ローンチ前モード（トップページのLP表示・求人サイト側ページの転送）
 require_once get_template_directory() . '/inc/prelaunch.php';
+// 管理画面「求人 > 営業用仮ページ」（仮ページのURL一覧）
+require_once get_template_directory() . '/inc/sales-preview.php';
