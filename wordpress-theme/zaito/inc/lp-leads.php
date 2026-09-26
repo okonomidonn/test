@@ -132,7 +132,7 @@ function zaito_handle_lp_waitlist() {
  * false の間は、返信しても届かないよう送信専用の noreply@ から送る。
  */
 if ( ! defined( 'ZAITO_INFO_MAILBOX_READY' ) ) {
-    define( 'ZAITO_INFO_MAILBOX_READY', false );
+    define( 'ZAITO_INFO_MAILBOX_READY', true );
 }
 
 /**
