@@ -55,6 +55,8 @@ $zaito_icons = array(
     '翻訳'      => array( 'translate', 'c' ),
     'AI'        => array( 'auto_awesome', 'd' ),
     'リサーチ'  => array( 'travel_explore', 'c' ),
+    '教育'      => array( 'school', 'c' ),
+    '学習'      => array( 'school', 'c' ),
 );
 $zaito_icon = null;
 foreach ( array( $zaito_cat, $zaito_job->post_title ) as $zaito_hay ) { // 職種を優先し、なければタイトルから判定
