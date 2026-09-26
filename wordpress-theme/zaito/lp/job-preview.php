@@ -9,6 +9,40 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+/**
+ * 仮ページ本文の簡易整形。「■ 見出し」で始まる段落は小見出しに、「・」で始まる行は箇条書きにする。
+ */
+if ( ! function_exists( 'zaito_preview_format_body' ) ) {
+    function zaito_preview_format_body( $text ) {
+        $html = '';
+        foreach ( preg_split( "/\n\s*\n/", trim( str_replace( "\r", '', $text ) ) ) as $para ) {
+            $lines = array_values( array_filter( array_map( 'trim', explode( "\n", $para ) ), 'strlen' ) );
+            if ( ! $lines ) {
+                continue;
+            }
+            if ( 0 === strpos( $lines[0], '■' ) ) {
+                $html .= '<h3>' . esc_html( trim( preg_replace( '/^■\s*/u', '', array_shift( $lines ) ) ) ) . '</h3>';
+            }
+            $items = array();
+            foreach ( $lines as $line ) {
+                if ( 0 === strpos( $line, '・' ) ) {
+                    $items[] = '<li>' . esc_html( preg_replace( '/^・\s*/u', '', $line ) ) . '</li>';
+                    continue;
+                }
+                if ( $items ) {
+                    $html .= '<ul>' . implode( '', $items ) . '</ul>';
+                    $items = array();
+                }
+                $html .= '<p>' . esc_html( $line ) . '</p>';
+            }
+            if ( $items ) {
+                $html .= '<ul>' . implode( '', $items ) . '</ul>';
+            }
+        }
+        return $html;
+    }
+}
+
 $zaito_lp_url  = home_url( '/' );
 $zaito_id      = $zaito_job->ID;
 $zaito_company = (string) get_post_meta( $zaito_id, '_company_name', true );
@@ -144,6 +178,10 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .blk h2{margin:0 0 16px;font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px}
 .blk h2::before{content:'';width:4px;height:20px;border-radius:2px;background:var(--z-blue)}
 .blk p{margin:0 0 12px;font-size:15px;color:var(--z-text-2)}
+.blk h3{margin:28px 0 10px;font-size:16px;font-weight:700}
+.blk ul{margin:0 0 12px;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.blk li{position:relative;padding-left:18px;font-size:15px;color:var(--z-text-2)}
+.blk li::before{content:'';position:absolute;left:4px;top:.72em;width:6px;height:6px;border-radius:50%;background:var(--z-blue)}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
 .note{margin-top:20px;padding:14px 16px;border-radius:12px;background:var(--z-surface);font-size:12px;color:var(--z-text-4);line-height:1.7}
 .flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -236,7 +274,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 
       <section class="blk">
         <h2>仕事内容</h2>
-        <?php echo wp_kses_post( wpautop( $zaito_body ) ); ?>
+        <?php echo zaito_preview_format_body( $zaito_body ); // 各行はこの関数内でエスケープ済み ?>
         <?php if ( $zaito_note ) : ?>
           <div class="note"><?php echo nl2br( esc_html( $zaito_note ) ); ?></div>
         <?php endif; ?>
@@ -244,7 +282,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 
       <?php if ( $zaito_tags ) : ?>
         <section class="blk">
-          <h2>こんな方を歓迎します</h2>
+          <h2>この求人の特徴</h2>
           <div class="tags">
             <?php foreach ( $zaito_tags as $zaito_t ) : ?>
               <span class="tag"><?php echo esc_html( $zaito_t ); ?></span>
