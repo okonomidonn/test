@@ -2054,3 +2054,6 @@ function zaito_fix_author_display_name() {
     wp_die( '修正しました。ユーザーID: ' . esc_html( $target_user->ID ) . ' の表示名を「ZAITO運営事務局」に変更しました。' );
 }
 add_action( 'admin_post_zaito_fix_author_display_name', 'zaito_fix_author_display_name' );
+
+// 正式ローンチ前のLP用フォーム受付（学生Waiting List・企業問い合わせ）
+require_once get_template_directory() . '/inc/lp-leads.php';
