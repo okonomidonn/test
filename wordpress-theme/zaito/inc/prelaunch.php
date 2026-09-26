@@ -102,7 +102,20 @@ function zaito_render_lp() {
 <link rel="icon" href="<?php echo esc_url( get_template_directory_uri() . '/lp/favicon-32.png' ); ?>" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="<?php echo esc_url( get_template_directory_uri() . '/lp/apple-touch-icon.png' ); ?>">
 <meta name="theme-color" content="#ffffff">
-<script>window.ZAITO_LP = <?php echo wp_json_encode( $config ); ?>; window.__IMAGE_SLOT_STATE_URL = <?php echo wp_json_encode( zaito_lp_asset( 'image-slots.state.json' ) ); ?>;</script>
+<script>
+// LPは幅1440pxで見たときのバランスで作られているため、それより広い画面では
+// ページ全体を拡大して左右の余白が広がりすぎないようにする。
+(function () {
+    var root = document.documentElement;
+    function fit() {
+        var w = window.innerWidth;
+        root.style.zoom = w > 1440 ? String(Math.min(w / 1440, 1.5)) : '';
+    }
+    fit();
+    window.addEventListener('resize', fit);
+})();
+</script>
+<script>window.ZAITO_LP =<?php echo wp_json_encode( $config ); ?>; window.__IMAGE_SLOT_STATE_URL = <?php echo wp_json_encode( zaito_lp_asset( 'image-slots.state.json' ) ); ?>;</script>
 <script src="<?php echo esc_url( zaito_lp_asset( 'vendor/react.production.min.js' ) ); ?>"></script>
 <script src="<?php echo esc_url( zaito_lp_asset( 'vendor/react-dom.production.min.js' ) ); ?>"></script>
 <script src="<?php echo esc_url( zaito_lp_asset( 'support.js' ) ); ?>"></script>
