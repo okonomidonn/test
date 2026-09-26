@@ -21,6 +21,14 @@ function zaito_render_sales_preview_page() {
         wp_die( 'この画面を表示する権限がありません。' );
     }
 
+    // 「仮ページを作成する」ボタン: 登録されていない仮ページをその場で作成する。
+    $created_links = null;
+    if ( isset( $_POST['zaito_create_previews'] ) ) {
+        check_admin_referer( 'zaito_create_previews' );
+        $created_links = zaito_upsert_preview_jobs();
+        update_option( 'zaito_preview_jobs_version', ZAITO_PREVIEW_JOBS_VERSION );
+    }
+
     $jobs = get_posts( array(
         'post_type'        => 'job_listing',
         'post_status'      => 'publish',
@@ -36,6 +44,14 @@ function zaito_render_sales_preview_page() {
     <div class="wrap">
       <h1>営業用仮ページ</h1>
       <p>企業に送る「掲載イメージ」ページの一覧です。一般には公開されておらず、URLを知っている人だけが見られます（検索エンジンにも載りません）。</p>
+      <?php if ( null !== $created_links ) : ?>
+        <div class="notice notice-success"><p>仮ページを確認しました（<?php echo esc_html( count( $created_links ) ); ?>件）。まだなかったものは新しく作成しました。</p></div>
+      <?php endif; ?>
+      <form method="post" style="margin:16px 0">
+        <?php wp_nonce_field( 'zaito_create_previews' ); ?>
+        <button type="submit" name="zaito_create_previews" value="1" class="button button-primary">仮ページを作成する</button>
+        <span class="description" style="margin-left:8px">一覧にない仮ページがあれば作成します。作成済みの仮ページは変更しません。</span>
+      </form>
       <?php if ( ! $jobs ) : ?>
         <p>仮ページはまだありません。</p>
       <?php else : ?>

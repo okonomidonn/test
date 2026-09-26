@@ -1,0 +1,60 @@
+/*
+ * zaito Design System v1 — デザイントークン
+ * 値は Claude Design で作成したLP（lp/zaito-lp.dc.html）で実際に使っているものに合わせている。
+ * 詳しい使い方は design/design-system.md を参照。
+ */
+:root {
+  /* Color: ブランド */
+  --z-blue: #3D5AFE;          /* メインの青。CTA・リンク・選択中（白文字とのコントラスト 5.13） */
+  --z-blue-hover: #2A45D8;    /* ホバー・押下 */
+  --z-blue-light: #EEF1FF;    /* 選択中の背景・カテゴリチップ */
+  --z-blue-on-navy: #A9B8FF;  /* 紺背景の上の青いアクセント文字 */
+  --z-navy: #0B1530;          /* 見出し・本文の基本色、濃い背景 */
+
+  /* Color: 文字 */
+  --z-text: #0B1530;          /* 見出し・重要な本文 */
+  --z-text-2: #3A4563;        /* 本文 */
+  --z-text-3: #4A5573;        /* 補足（ラベル・説明文） */
+  --z-text-4: #6B7590;        /* 注記・キャプション。これより薄いグレーを文字に使わない */
+
+  /* Color: 面・線 */
+  --z-bg: #FFFFFF;
+  --z-surface: #F6F7FA;       /* 薄いグレーの面（ステップ・注記ボックス） */
+  --z-chip: #F2F4F8;          /* 条件タグの背景 */
+  --z-line: #EEF0F4;          /* 区切り線 */
+  --z-border: #E6E9F0;        /* カードの枠 */
+  --z-border-input: #D5DBE7;  /* 入力欄・白いボタンの枠 */
+
+  /* Color: 状態 */
+  --z-error: #C8313B;
+  --z-error-bg: #FDF0F1;
+  --z-success: #1A9B6C;
+
+  /* Typography */
+  --z-font: 'Noto Sans JP', system-ui, sans-serif;
+  --z-font-en: 'Outfit', 'Noto Sans JP', sans-serif; /* ロゴ・数字・英字の見出し */
+  --z-lh-body: 1.75;
+  --z-lh-heading: 1.3;
+
+  /* Radius */
+  --z-r-sm: 8px;    /* 小さいバッジ */
+  --z-r-md: 12px;   /* ボタン・入力欄（基本） */
+  --z-r-lg: 16px;   /* カード */
+  --z-r-xl: 20px;   /* 大きい面（サイドカード・ヒーロー画像） */
+  --z-r-pill: 999px;
+
+  /* Shadow（弱く。常用は sm まで） */
+  --z-shadow-sm: 0 10px 28px -22px rgba(11, 21, 48, .2);
+  --z-shadow-md: 0 24px 48px -32px rgba(11, 21, 48, .35);
+  --z-shadow-cta: 0 12px 28px -12px rgba(61, 90, 254, .6);
+  --z-focus-ring: 0 0 0 4px rgba(61, 90, 254, .14);
+
+  /* Layout */
+  --z-max: 1240px;   /* コンテンツの最大幅（左右20pxの余白込み） */
+  --z-max-text: 760px; /* 読み物ページの本文幅 */
+  --z-gutter: 20px;
+  --z-header-h: 68px;
+
+  /* Motion */
+  --z-ease: .2s ease;
+}

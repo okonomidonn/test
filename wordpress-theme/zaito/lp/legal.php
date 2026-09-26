@@ -26,37 +26,38 @@ $zaito_lp_url = home_url( '/' );
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;family=Outfit:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'tokens.css' ) ); ?>">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:#fff;color:#0B1530;font-family:'Noto Sans JP',system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:'palt';line-height:1.75}
-a{color:#3D5AFE;text-decoration:none}
-a:hover{color:#2A45D8}
-.logo{font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:-0.045em;color:#0B1530;line-height:1}
-.logo span{color:#3D5AFE}
-.hd{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #EEF0F4}
+body{margin:0;background:#fff;color:var(--z-navy);font-family:'Noto Sans JP',system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:'palt';line-height:1.75}
+a{color:var(--z-blue);text-decoration:none}
+a:hover{color:var(--z-blue-hover)}
+.logo{font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:-0.045em;color:var(--z-navy);line-height:1}
+.logo span{color:var(--z-blue)}
+.hd{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--z-line)}
 .hd-in{max-width:1240px;margin:0 auto;padding:0 20px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .hd-in .logo{font-size:30px}
 .hd-nav{display:flex;align-items:center;gap:8px}
-.hd-early{display:inline-flex;align-items:center;height:44px;padding:0 16px;font-size:14px;font-weight:700;color:#0B1530}
-.hd-early:hover{color:#3D5AFE}
-.hd-cta{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 18px;border-radius:10px;background:#3D5AFE;color:#fff;font-size:14px;font-weight:700}
-.hd-cta:hover{background:#2A45D8;color:#fff}
+.hd-early{display:inline-flex;align-items:center;height:44px;padding:0 16px;font-size:14px;font-weight:700;color:var(--z-navy)}
+.hd-early:hover{color:var(--z-blue)}
+.hd-cta{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 18px;border-radius:10px;background:var(--z-blue);color:#fff;font-size:14px;font-weight:700}
+.hd-cta:hover{background:var(--z-blue-hover);color:#fff}
 @media (max-width:560px){.hd-early{display:none}}
 .doc{max-width:760px;margin:0 auto;padding:clamp(40px,7vw,80px) 20px clamp(64px,9vw,112px)}
 .back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700}
 .doc h1{margin:20px 0 0;font-size:clamp(28px,4vw,40px);font-weight:900;line-height:1.3;letter-spacing:-0.01em}
-.doc h2{margin:48px 0 0;padding-top:28px;border-top:1px solid #EEF0F4;font-size:clamp(18px,2vw,20px);font-weight:700;line-height:1.5}
-.doc p{margin:16px 0 0;font-size:15px;color:#3A4563;text-wrap:pretty;overflow-wrap:anywhere}
+.doc h2{margin:48px 0 0;padding-top:28px;border-top:1px solid var(--z-line);font-size:clamp(18px,2vw,20px);font-weight:700;line-height:1.5}
+.doc p{margin:16px 0 0;font-size:15px;color:var(--z-text-2);text-wrap:pretty;overflow-wrap:anywhere}
 .doc h1 + p{margin-top:28px}
-.ft{background:#fff;overflow:hidden;border-top:1px solid #EEF0F4}
+.ft{background:#fff;overflow:hidden;border-top:1px solid var(--z-line)}
 .ft-in{max-width:1240px;margin:0 auto;padding:64px 20px 0;display:flex;flex-direction:column;gap:40px}
 .ft-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:32px}
 .ft-top p{margin:0;font-size:14px;font-weight:700;line-height:1.8}
 .ft ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,auto));gap:14px 40px;font-size:14px}
-.ft ul a{color:#3A4563}
-.ft ul a:hover{color:#0B1530}
-.ft-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:24px;border-top:1px solid #EEF0F4;font-size:12px;color:#6B7590}
+.ft ul a{color:var(--z-text-2)}
+.ft ul a:hover{color:var(--z-navy)}
+.ft-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:24px;border-top:1px solid var(--z-line);font-size:12px;color:var(--z-text-4)}
 .ft-big{font-size:clamp(120px,30vw,400px);line-height:.78;letter-spacing:-0.065em;margin:8px 0 -0.04em -0.04em;user-select:none}
 </style>
 </head>
