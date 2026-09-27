@@ -2076,6 +2076,23 @@ function zaito_upsert_preview_jobs() {
             'job_days'  => '週2日〜',
             'job_target' => '学生限定、ファッション・トレンドが好きな方',
         ),
+        array(
+            'company'   => '株式会社アガルート',
+            'slug'      => 'agaroot-learning-coach',
+            'source_url' => 'https://www.wantedly.com/projects/2262541',
+            'title'     => '中高生のオンライン学習コーチ(学生インターン・アルバイト)',
+            'category'  => '教育・学習サポート',
+            'rev'       => '2026-09-27',
+            'content'   => '難関資格のオンライン予備校「アガルートアカデミー」などを運営する当社で、中学生・高校生の学習をオンラインで支えるコーチングスタッフです。学生の方を歓迎しています。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・中学生〜高校生の学習の進み具合の確認' . "\n" . '・特定の科目の個別指導' . "\n" . '・進路の相談' . "\n" . '・時期や業務量に応じて、「アガルートアカデミー」の運営業務もお任せします' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・フルリモート。すべての業務がオンラインで完結します' . "\n" . '・長時間の拘束はありません' . "\n" . '' . "\n" . '■ 選考' . "\n" . '・面談はオンラインで行います' . "\n" . '' . "\n" . '■ 会社について' . "\n" . '2013年設立。「教育×IT×法律」を軸に、アガルートアカデミー・アガルートメディカル・アガルートコーチングを運営しています。' . $zaito_preview_disclaimer,
+            'salary_type' => '',
+            'salary'    => '',
+            'salary_max' => '',
+            'salary_note' => 'ご相談',
+            'employment_type' => 'インターン・アルバイト',
+            'job_type'  => '完全在宅',
+            'job_days'  => '応相談',
+            'job_target' => '学生歓迎、オンラインで完結、長時間の拘束なし',
+        ),
     );
 
     // 営業対象から外した仮ページ（障がい者採用枠・就労継続支援の案件）はゴミ箱へ移す。
@@ -2179,7 +2196,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27i' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27j' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
