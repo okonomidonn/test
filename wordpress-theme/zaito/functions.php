@@ -2257,12 +2257,13 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社R',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 info@aitem-english.jp へメールで送信（公式サイトのプライバシーポリシー第9条記載の窓口）' ),
             'slug'      => 'aitem-sns-marketing',
             'source_url' => 'https://www.wantedly.com/projects/624928',
             'title'     => '英会話スクール「Aitem」のWeb・SNSマーケティング',
             'category'  => 'SNS運用・マーケティング',
-            'rev'       => '2026-09-27',
-            'content'   => 'SNSで人気の英会話スクール「Aitem」で、Web・SNSマーケティングを担当する仕事です。学生の方も応募できます。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・BtoCのPR・マーケティング' . "\n" . '・Web・SNSでの発信' . "\n" . '・英語講師とのコミュニケーション' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・リモートワーク可' . "\n" . '・週20時間以上、7か月以上' . "\n" . '' . "\n" . '■ 会社について' . "\n" . '2018年設立。受講生約1,000人の英会話スクール「Aitem」を運営しています。' . $zaito_preview_disclaimer,
+            'rev'       => '2026-09-27b',
+            'content'   => 'SNSで人気の英会話スクール「Aitem」で、Web・SNSマーケティングを担当する仕事です。学生の方も応募できます。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・BtoCのPR・マーケティング' . "\n" . '・Web・SNSでの発信' . "\n" . '・英語講師とのコミュニケーション' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・リモートワーク可' . "\n" . '・週20時間以上、7か月以上' . "\n" . '' . "\n" . '■ 会社について' . "\n" . '2017年設立。受講生約1,000人の英会話スクール「Aitem」を運営しています。' . $zaito_preview_disclaimer,
             'salary_type' => '',
             'salary'    => '',
             'salary_max' => '',
@@ -2375,7 +2376,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27v' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27w' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
