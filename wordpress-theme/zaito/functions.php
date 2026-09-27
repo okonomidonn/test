@@ -1859,6 +1859,7 @@ function zaito_upsert_preview_jobs() {
     $previews = array(
         array(
             'company'   => '一般社団法人ミライデザイン機構',
+            'slug'      => 'mirai-design-data-entry',
             'source_url' => 'https://toranet.jp/viewjob/7af587104f6520cd/',
             'title'     => 'データ入力・PC作業スタッフ(障がい者採用枠)',
             'category'  => '事務・データ入力',
@@ -1875,6 +1876,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社ZOS',
+            'slug'      => 'zos-data-entry-video',
             'title'     => 'データ入力・動画編集スタッフ(就労継続支援B型)',
             'category'  => '動画編集',
             'rev'       => '2026-09-27',
@@ -1890,6 +1892,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社PRIDE',
+            'slug'      => 'pride-video-sns',
             'source_url' => 'https://en-gage.net/pridecompany0409_saiyo/',
             'title'     => '動画編集・SNS運用スタッフ',
             'category'  => '動画編集',
@@ -1906,6 +1909,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '合同会社ワンワールド',
+            'slug'      => 'oneworld-data-entry',
             'title'     => 'データ入力スタッフ',
             'category'  => '事務・データ入力',
             'rev'       => '2026-09-27',
@@ -1921,6 +1925,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社コモリク',
+            'slug'      => 'komoriku-data-entry',
             'title'     => 'データ入力・データ収集スタッフ',
             'category'  => '事務・データ入力',
             'rev'       => '2026-09-27',
@@ -1936,6 +1941,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '有限会社ハニーボックス',
+            'slug'      => 'honeybox-home-work',
             'title'     => '内職スタッフ(軽作業)',
             'category'  => 'その他',
             'rev'       => '2026-09-27',
@@ -1951,6 +1957,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社プラコレ',
+            'slug'      => 'placole-wedding-advisor',
             'source_url' => 'https://en-gage.net/pla-cole-dressy/',
             'title'     => '在宅ウェディングチャットアドバイザー',
             'category'  => 'カスタマーサポート',
@@ -1967,6 +1974,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => 'Quasar株式会社',
+            'slug'      => 'quasar-data-assistant',
             'title'     => 'データ入力・編集アシスタント',
             'category'  => '事務・データ入力',
             'rev'       => '2026-09-27',
@@ -1982,6 +1990,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社World Life Mapping',
+            'slug'      => 'wlm-qa-tester',
             'source_url' => 'https://startupclass.co.jp/online/companies/1339/',
             'title'     => '医療機関向けアプリのQAテスター',
             'category'  => 'その他',
@@ -2133,7 +2142,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27e' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27f' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
