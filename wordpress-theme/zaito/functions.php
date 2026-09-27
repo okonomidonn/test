@@ -1994,6 +1994,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '岸保産業株式会社',
+            'source_url' => 'https://www.wantedly.com/projects/2234809',
             'slug'      => 'kishiho-recruit-marketing',
             'title'     => '採用マーケティング・採用広報アシスタント(学生インターン)',
             'category'  => 'SNS運用・マーケティング',
@@ -2010,6 +2011,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '学校法人角川ドワンゴ学園',
+            'source_url' => 'https://01intern.com/job/5757.html',
             'slug'      => 'nhigh-net-course-ta',
             'title'     => 'N高グループ ネットコースTA(オンラインでの生徒サポート)',
             'category'  => '教育・学習サポート',
@@ -2026,6 +2028,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社JX通信社',
+            'source_url' => 'https://01intern.com/job/6976.html',
             'slug'      => 'jxpress-news-editor',
             'title'     => 'ニュース速報の編集・配信スタッフ(長期インターン)',
             'category'  => 'ライティング・編集',
@@ -2055,7 +2058,7 @@ function zaito_upsert_preview_jobs() {
         ) );
         if ( ! empty( $existing ) ) {
             // 作成済みの仮ページは、管理画面での修正を上書きしないようそのままにする。
-            // ただし日本語タイトルから自動で作られた長いURL（%e6...）は、営業メールに
+            // ただし日本語タイトルから自動で作られた長いURL（%e6... を含むもの）は、営業メールに
             // 貼りやすい短い英字URLに変える（古いURLはWordPressが新しいURLへ転送する）。
             $job_id = $existing[0]->ID;
             // 'rev' を上げた仮ページだけは、本文を最新の内容に差し替える。
@@ -2066,11 +2069,15 @@ function zaito_upsert_preview_jobs() {
                 ) );
                 update_post_meta( $job_id, '_zaito_preview_rev', $p['rev'] );
             }
-            if ( ! empty( $p['slug'] ) && 0 === strpos( $existing[0]->post_name, '%' ) ) {
+            if ( ! empty( $p['slug'] ) && false !== strpos( $existing[0]->post_name, '%' ) ) {
                 wp_update_post( array(
                     'ID'        => $job_id,
                     'post_name' => $p['slug'],
                 ) );
+            }
+            // 元の求人ページのURLは、まだ入っていない場合だけ入れる（営業管理画面での入力を優先）。
+            if ( ! empty( $p['source_url'] ) && '' === (string) get_post_meta( $job_id, '_zaito_source_url', true ) ) {
+                update_post_meta( $job_id, '_zaito_source_url', $p['source_url'] );
             }
             $links[] = $p['company'] . ': ' . get_permalink( $job_id );
             continue;
@@ -2101,6 +2108,9 @@ function zaito_upsert_preview_jobs() {
         if ( ! empty( $p['rev'] ) ) {
             update_post_meta( $job_id, '_zaito_preview_rev', $p['rev'] );
         }
+        if ( ! empty( $p['source_url'] ) ) {
+            update_post_meta( $job_id, '_zaito_source_url', $p['source_url'] );
+        }
 
         $links[] = $p['company'] . ': ' . get_permalink( $job_id );
     }
@@ -2112,7 +2122,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27c' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27d' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
