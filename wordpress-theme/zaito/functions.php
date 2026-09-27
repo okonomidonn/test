@@ -2099,6 +2099,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => 'クラウドローン株式会社',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 問い合わせフォーム（採用・人事等）から送信' ),
             'slug'      => 'crowdloan-sns',
             'source_url' => 'https://www.wantedly.com/projects/2155805',
             'title'     => 'fintechスタートアップのSNS運用(学生インターン)',
@@ -2116,6 +2117,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社Driving force',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 問い合わせフォーム（その他）から送信' ),
             'slug'      => 'drivingforce-youtube',
             'source_url' => 'https://c0mpus.com/interns/774',
             'title'     => 'YouTube動画の編集・企画(学生インターン)',
@@ -2251,7 +2253,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27o' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27p' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
