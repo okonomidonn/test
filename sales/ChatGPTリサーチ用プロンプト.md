@@ -55,8 +55,8 @@ PRIDE / ワンワールド / コモリク / ハニーボックス / プラコレ
 - 一部リモート・出社あり: Lightblue、プロパゲート、SAKIYOMI、TOPVIEW JAPAN、BRANCO、emole、movel、DYM、ハイボール、TEAM-X、TRILIA、PLAN-B、アンビエントナビ、アイズバレル、DFA Robotics、TechSuite、ロックスタ、2peace、Bulls、株式会社A（エース）
 - 競合（学生向け求人・インターン情報サイト運営）: futurelabo、COMPUS
 - 募集停止・終了: ance、ライクパス、メディアエンジン、ランドスケイプ、Synergy Career、aquwa、Riparia、岡山トヨタシステムサービス、藤田酒店、デジタルスフィア、GENNE
-- 募集停止・終了（2）: Wallabee、NEW ORDER、Winbook
-- 出社あり（2）: Squad、こころ企画（月1回出社）
+- 募集停止・終了（追加分）: Wallabee、NEW ORDER、Winbook
+- 出社あり（追加分）: Squad、こころ企画（月1回出社）
 - 営業職: カタセル、Spartia、Wonders、ザッツ・オールライト
 - 保留: Priv Tech（募集が古く窓口が製品問い合わせのみ）、Nexi（条件付き在宅・窓口不明）、メディアファースト（学生向けの記載なし）、SCIEN・樹林AI（完全在宅か要確認）
 - 確認済みでリストに載せない: アイフラッグ、Starley、ELYZA、エムニ、Unseed（エンジニア職）、TrustedAI、ギリア、プライムコンディションズ、CreateBase、セグメント、エスキュービズム
