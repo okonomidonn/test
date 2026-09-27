@@ -1858,39 +1858,6 @@ function zaito_upsert_preview_jobs() {
 
     $previews = array(
         array(
-            'company'   => '一般社団法人ミライデザイン機構',
-            'slug'      => 'mirai-design-data-entry',
-            'source_url' => 'https://toranet.jp/viewjob/7af587104f6520cd/',
-            'title'     => 'データ入力・PC作業スタッフ(障がい者採用枠)',
-            'category'  => '事務・データ入力',
-            'rev'       => '2026-09-27',
-            'content'   => '障がいのある方が自分のペースで働ける採用枠で、パソコンを使った事務作業をお任せします。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・データ入力' . "\n" . '・資料の整理、簡単な書類作成' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・在宅勤務' . "\n" . '・体調に合わせて、勤務日数・時間を相談できます' . "\n" . '' . "\n" . '■ 必要なスキル' . "\n" . '・Word・Excelの基本操作(特別なスキルは不要です)' . $zaito_preview_disclaimer,
-            'salary_type' => '',
-            'salary'    => '',
-            'salary_max' => '',
-            'salary_note' => 'ご相談(公開されている求人ページから確認できませんでした)',
-            'employment_type' => '業務委託',
-            'job_type'  => '完全在宅・シフト制',
-            'job_days'  => '応相談',
-            'job_target' => '未経験者歓迎',
-        ),
-        array(
-            'company'   => '株式会社ZOS',
-            'slug'      => 'zos-data-entry-video',
-            'title'     => 'データ入力・動画編集スタッフ(就労継続支援B型)',
-            'category'  => '動画編集',
-            'rev'       => '2026-09-27',
-            'content'   => '就労継続支援B型の枠組みで、在宅でデータ入力や簡単な動画編集をお任せします。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・データ入力' . "\n" . '・テンプレートを使った簡単な動画編集(テロップ入れ・カット編集など)' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・在宅勤務' . "\n" . '・体調や生活リズムに合わせて、無理のないペースで働けます' . "\n" . '' . "\n" . '■ サポート' . "\n" . '・動画編集が未経験でも、マニュアル・研修でサポートします' . $zaito_preview_disclaimer,
-            'salary_type' => '',
-            'salary'    => '',
-            'salary_max' => '',
-            'salary_note' => 'ご相談(公開されている求人ページから確認できませんでした)',
-            'employment_type' => '業務委託',
-            'job_type'  => '完全在宅・シフト制',
-            'job_days'  => '応相談',
-            'job_target' => '未経験者歓迎',
-        ),
-        array(
             'company'   => '株式会社PRIDE',
             'slug'      => 'pride-video-sns',
             'source_url' => 'https://en-gage.net/pridecompany0409_saiyo/',
@@ -2059,6 +2026,24 @@ function zaito_upsert_preview_jobs() {
         ),
     );
 
+    // 営業対象から外した仮ページ（障がい者採用枠・就労継続支援の案件）はゴミ箱へ移す。
+    // ゴミ箱から30日以内なら管理画面の「求人 > ゴミ箱」から復元できる。
+    foreach ( array( '一般社団法人ミライデザイン機構', '株式会社ZOS' ) as $removed_company ) {
+        $removed = get_posts( array(
+            'post_type'      => 'job_listing',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+            'meta_query'     => array(
+                array( 'key' => '_zaito_preview', 'value' => '1' ),
+                array( 'key' => '_company_name', 'value' => $removed_company ),
+            ),
+        ) );
+        foreach ( $removed as $removed_id ) {
+            wp_trash_post( $removed_id );
+        }
+    }
+
     $links = array();
     foreach ( $previews as $p ) {
         $existing = get_posts( array(
@@ -2142,7 +2127,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27f' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27g' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
