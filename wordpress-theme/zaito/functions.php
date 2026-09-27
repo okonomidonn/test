@@ -2153,6 +2153,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => 'StockSun株式会社',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 問い合わせフォーム（取材・提携・その他）から送信' ),
             'slug'      => 'stocksun-marketing-assistant',
             'source_url' => 'https://www.wantedly.com/projects/2056107',
             'title'     => 'Webマーケ支援会社のマーケアシスタント(学生インターン)',
@@ -2390,7 +2391,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27s' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27t' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
