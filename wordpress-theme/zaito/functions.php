@@ -2152,23 +2152,6 @@ function zaito_upsert_preview_jobs() {
             'job_target' => '28・29卒歓迎、SNSが好きな方',
         ),
         array(
-            'company'   => '株式会社青春貢献',
-            'slug'      => 'seishunkouken-webmarketing',
-            'source_url' => 'https://www.wantedly.com/projects/2573132',
-            'title'     => 'Z世代向けSNSマーケ会社のWebマーケティング(学生インターン)',
-            'category'  => 'SNS運用・マーケティング',
-            'rev'       => '2026-09-27',
-            'content'   => 'Z世代向けのSNSマーケティング・採用支援・ブランディングを手がける会社で、Webマーケティングを担当する学生インターンです。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・SNS運用' . "\n" . '・SEO対策' . "\n" . '・LP(ランディングページ)の企画・改善' . "\n" . '・Web広告、LINEでの集客' . "\n" . '・数値の分析' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・フルリモート可(出社は自由)' . "\n" . '・週2〜5日、時間は相談して決めます' . "\n" . '・授業やサークルと両立でき、テスト期間は柔軟に調整できます' . "\n" . '' . "\n" . '■ サポート' . "\n" . '・基本的に1対1で、一人ひとりに合わせてサポートします' . "\n" . '・マーケティング未経験の方も歓迎です' . "\n" . '' . "\n" . '■ 会社について' . "\n" . '2022年設立、東京・恵比寿。「常に青春を世の中に」をパーパスに掲げています。' . $zaito_preview_disclaimer,
-            'salary_type' => '',
-            'salary'    => '',
-            'salary_max' => '',
-            'salary_note' => 'ご相談',
-            'employment_type' => '長期インターン',
-            'job_type'  => '完全在宅可・週2〜5日',
-            'job_days'  => '週2日〜',
-            'job_target' => '大学生歓迎、未経験OK、授業と両立',
-        ),
-        array(
             'company'   => 'StockSun株式会社',
             'slug'      => 'stocksun-marketing-assistant',
             'source_url' => 'https://www.wantedly.com/projects/2056107',
@@ -2306,9 +2289,9 @@ function zaito_upsert_preview_jobs() {
         ),
     );
 
-    // 営業対象から外した仮ページ（障がい者採用枠・就労継続支援の案件）はゴミ箱へ移す。
+    // 営業対象から外した仮ページ（障がい者採用枠・就労継続支援の案件、営業お断りの企業）はゴミ箱へ移す。
     // ゴミ箱から30日以内なら管理画面の「求人 > ゴミ箱」から復元できる。
-    foreach ( array( '一般社団法人ミライデザイン機構', '株式会社ZOS' ) as $removed_company ) {
+    foreach ( array( '一般社団法人ミライデザイン機構', '株式会社ZOS', '株式会社青春貢献' ) as $removed_company ) {
         $removed = get_posts( array(
             'post_type'      => 'job_listing',
             'post_status'    => 'publish',
@@ -2407,7 +2390,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27r' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27s' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
