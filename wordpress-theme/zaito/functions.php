@@ -2188,74 +2188,6 @@ function zaito_upsert_preview_jobs() {
             'job_target' => '28卒、留学中・地方在住OK',
         ),
         array(
-            'company'   => '株式会社Lightblue',
-            'slug'      => 'lightblue-marketing',
-            'source_url' => 'https://www.wantedly.com/projects/2576538',
-            'title'     => '東大発AIスタートアップのマーケティング(学生インターン)',
-            'category'  => 'AI関連',
-            'rev'       => '2026-09-27',
-            'content'   => '生成AIと画像解析を強みとする東大発のAIスタートアップで、自社プロダクトのマーケティングを担当する学生インターンです。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・Webマーケティングの支援' . "\n" . '・ウェビナー・オンラインイベントの企画・運営' . "\n" . '・プレスリリースの作成・配信' . "\n" . '・展示会への出展サポート、販促物の作成' . "\n" . '・トレンドのリサーチと情報発信' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・リモートと出社(東京・千代田区)を組み合わせて働けます' . "\n" . '・面談はオンラインで行います' . "\n" . '' . "\n" . '■ サポート' . "\n" . '・経験のあるメンターがつき、必要なツールやテンプレートの使い方も教わりながら進められます' . "\n" . '・未経験でも挑戦できます' . "\n" . '' . "\n" . '■ こんな方を歓迎します' . "\n" . '・新しいことを自分からキャッチアップできる方' . "\n" . '・生成AIやマーケティング・PRに興味がある方' . $zaito_preview_disclaimer,
-            'salary_type' => '',
-            'salary'    => '',
-            'salary_max' => '',
-            'salary_note' => 'ご相談',
-            'employment_type' => '長期インターン',
-            'job_type'  => '一部リモート(東京)',
-            'job_days'  => '応相談',
-            'job_target' => '学生歓迎、未経験OK、AIに興味がある方',
-        ),
-        array(
-            'company'   => '株式会社プロパゲート',
-            'slug'      => 'propagate-ad-operation',
-            'source_url' => 'https://www.in-fra.jp/long-internships/23825',
-            'title'     => 'Webマーケティング・広告運用(学生インターン)',
-            'category'  => 'SNS運用・マーケティング',
-            'rev'       => '2026-09-27',
-            'content'   => '企業や個人事業主の集客を支援する会社で、Web広告の運用を中心にマーケティングを担当する学生インターンです。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・SNS広告・Google広告の運用設計' . "\n" . '・データの分析、改善提案' . "\n" . '・広告クリエイティブの企画' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・一部リモート可(東京・渋谷)' . "\n" . '・週3日以上・1日6時間以上、9:00〜19:00の間で' . "\n" . '・6か月以上' . "\n" . '' . "\n" . '■ 報酬' . "\n" . '・時給1,300円、交通費全額支給、奨学金3,000円' . "\n" . '' . "\n" . '■ こんな方を歓迎します' . "\n" . '・Webマーケティング未経験の方' . "\n" . '・主体性とチャレンジ精神がある方' . "\n" . '' . "\n" . '■ 会社について' . "\n" . '2020年創業。顧客実績7,000社以上、インターン生30名が在籍しています。' . $zaito_preview_disclaimer,
-            'salary_type' => '時給',
-            'salary'    => '1300',
-            'salary_max' => '',
-            'salary_note' => '',
-            'employment_type' => '長期インターン',
-            'job_type'  => '一部リモート(東京・渋谷)',
-            'job_days'  => '週3日〜',
-            'job_target' => '未経験OK、学生歓迎',
-        ),
-        array(
-            'company'   => '株式会社SAKIYOMI',
-            'slug'      => 'sakiyomi-marketing',
-            'source_url' => 'https://www.wantedly.com/projects/2579206',
-            'title'     => 'SNS運用のプロ集団でのマーケティング(学生インターン)',
-            'category'  => 'SNS運用・マーケティング',
-            'rev'       => '2026-09-27',
-            'content'   => 'Instagram運用などのSNSマーケティングを専門とする会社で、マーケティングを担当する学生インターンです。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・SNS運用・マーケティング' . "\n" . '・入社後しばらくは、インサイドセールス・マーケティング・広告の領域を担当します' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・一部リモート(大阪・梅田エリア)。毎週金曜日と週1回の出社があります' . "\n" . '・フルフレックスで、時間の融通がききます' . "\n" . '' . "\n" . '■ 会社について' . "\n" . 'インフルエンサーマッチング事業やコミュニティ・スクール事業を展開しています。学生インターンが約20名在籍しています。' . $zaito_preview_disclaimer,
-            'salary_type' => '',
-            'salary'    => '',
-            'salary_max' => '',
-            'salary_note' => 'ご相談',
-            'employment_type' => '長期インターン',
-            'job_type'  => '一部リモート(大阪)',
-            'job_days'  => '応相談',
-            'job_target' => '学生歓迎、SNSが好きな方',
-        ),
-        array(
-            'company'   => 'TOPVIEW JAPAN株式会社',
-            'slug'      => 'topview-ai-video',
-            'source_url' => 'https://www.wantedly.com/projects/2413521',
-            'title'     => 'AI動画×インフルエンサーマーケティング(学生インターン)',
-            'category'  => 'AI関連',
-            'rev'       => '2026-09-27',
-            'content'   => 'AI動画生成プラットフォーム「TOPVIEW」の日本法人で、インフルエンサー施策やSNS運用、AI動画づくりに関わる学生インターンです。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・インフルエンサー施策・SNS運用(契約の管理、投稿の企画、分析)' . "\n" . '・イベントの企画・運営' . "\n" . '・AI動画の制作、コンテンツ制作のサポート' . "\n" . '・海外のチームとの連携' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・一部リモート(東京・六本木)' . "\n" . '・平日週4〜5日、1日5時間以上' . "\n" . '' . "\n" . '■ 応募資格' . "\n" . '・マーケティング・AI・SNSに関心がある方' . "\n" . '・基本的なPC・AIツールの操作ができる方' . "\n" . '' . "\n" . '■ こんな方を歓迎します' . "\n" . '・SNS運用やイベント運営の経験がある方' . "\n" . '・動画編集ができる方、中国語・英語ができる方' . $zaito_preview_disclaimer,
-            'salary_type' => '',
-            'salary'    => '',
-            'salary_max' => '',
-            'salary_note' => 'ご相談',
-            'employment_type' => '長期インターン',
-            'job_type'  => '一部リモート(東京・六本木)',
-            'job_days'  => '週4日〜',
-            'job_target' => '学生歓迎、AI・SNSに興味がある方',
-        ),
-        array(
             'company'   => '株式会社R',
             'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 info@aitem-english.jp へメールで送信（公式サイトのプライバシーポリシー第9条記載の窓口）' ),
             'slug'      => 'aitem-sns-marketing',
@@ -2275,9 +2207,10 @@ function zaito_upsert_preview_jobs() {
         ),
     );
 
-    // 営業対象から外した仮ページ（障がい者採用枠・就労継続支援の案件、営業お断りの企業、競合にあたる採用支援会社）はゴミ箱へ移す。
+    // 営業対象から外した仮ページ（障がい者採用枠・就労継続支援の案件、営業お断りの企業、競合にあたる採用支援会社、
+    // 完全在宅ではない一部リモートの求人）はゴミ箱へ移す。
     // ゴミ箱から30日以内なら管理画面の「求人 > ゴミ箱」から復元できる。
-    foreach ( array( '一般社団法人ミライデザイン機構', '株式会社ZOS', '株式会社青春貢献', '株式会社TOKUMORI' ) as $removed_company ) {
+    foreach ( array( '一般社団法人ミライデザイン機構', '株式会社ZOS', '株式会社青春貢献', '株式会社TOKUMORI', '株式会社Lightblue', '株式会社プロパゲート', '株式会社SAKIYOMI', 'TOPVIEW JAPAN株式会社' ) as $removed_company ) {
         $removed = get_posts( array(
             'post_type'      => 'job_listing',
             'post_status'    => 'publish',
@@ -2376,7 +2309,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27w' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27x' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
