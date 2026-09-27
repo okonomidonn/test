@@ -2188,23 +2188,6 @@ function zaito_upsert_preview_jobs() {
             'job_target' => '28卒、留学中・地方在住OK',
         ),
         array(
-            'company'   => '株式会社TOKUMORI',
-            'slug'      => 'tokumori-sns-marketing',
-            'source_url' => 'https://www.wantedly.com/projects/1342576',
-            'title'     => 'HR TechスタートアップのSNSマーケティング(学生インターン)',
-            'category'  => 'SNS運用・マーケティング',
-            'rev'       => '2026-09-27',
-            'content'   => '新卒・中途の採用支援を行うHR Techスタートアップで、SNSを使ったマーケティングを担当する学生インターンです。全国の学生がフルリモートで活躍しています。' . "\n" . '' . "\n" . '■ 主な業務' . "\n" . '・自社サービスの認知拡大と学生集客のためのSNSマーケティング' . "\n" . '・学生向けイベントの企画・運営' . "\n" . '・広報用SNSアカウントの運用' . "\n" . '' . "\n" . '■ 働き方' . "\n" . '・フルリモート(全国どこからでも)' . "\n" . '・週7時間以上。定例ミーティング以外は時間を自由に決められます' . "\n" . '' . "\n" . '■ 対象' . "\n" . '・27卒以降の学生' . "\n" . '' . "\n" . '■ 会社について' . "\n" . '2021年設立。学生インターン200名以上が在籍しています。' . $zaito_preview_disclaimer,
-            'salary_type' => '',
-            'salary'    => '',
-            'salary_max' => '',
-            'salary_note' => '有給(金額はご相談)',
-            'employment_type' => '長期インターン',
-            'job_type'  => '完全在宅・全国OK',
-            'job_days'  => '週7時間〜',
-            'job_target' => '27卒以降、未経験OK',
-        ),
-        array(
             'company'   => '株式会社Lightblue',
             'slug'      => 'lightblue-marketing',
             'source_url' => 'https://www.wantedly.com/projects/2576538',
@@ -2291,9 +2274,9 @@ function zaito_upsert_preview_jobs() {
         ),
     );
 
-    // 営業対象から外した仮ページ（障がい者採用枠・就労継続支援の案件、営業お断りの企業）はゴミ箱へ移す。
+    // 営業対象から外した仮ページ（障がい者採用枠・就労継続支援の案件、営業お断りの企業、競合にあたる採用支援会社）はゴミ箱へ移す。
     // ゴミ箱から30日以内なら管理画面の「求人 > ゴミ箱」から復元できる。
-    foreach ( array( '一般社団法人ミライデザイン機構', '株式会社ZOS', '株式会社青春貢献' ) as $removed_company ) {
+    foreach ( array( '一般社団法人ミライデザイン機構', '株式会社ZOS', '株式会社青春貢献', '株式会社TOKUMORI' ) as $removed_company ) {
         $removed = get_posts( array(
             'post_type'      => 'job_listing',
             'post_status'    => 'publish',
@@ -2392,7 +2375,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27u' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27v' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
