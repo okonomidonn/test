@@ -2060,6 +2060,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社DONUTS',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 問い合わせフォーム（人事・採用・人材紹介について）から送信' ),
             'slug'      => 'donuts-ray-writer',
             'source_url' => 'https://www.in-fra.jp/long-internships/preview/11734',
             'title'     => '女性向けメディア「Ray」の記事制作スタッフ(学生限定)',
@@ -2178,7 +2179,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27h' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27i' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
