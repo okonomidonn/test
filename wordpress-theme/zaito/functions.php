@@ -1992,6 +1992,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '学校法人角川ドワンゴ学園',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 saiyo-edu@nnn.ac.jp（人事部 採用研修課）へメールで送信' ),
             'source_url' => 'https://01intern.com/job/5757.html',
             'slug'      => 'nhigh-net-course-ta',
             'title'     => 'N高グループ ネットコースTA(オンラインでの生徒サポート)',
@@ -2345,7 +2346,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27z' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27z2' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
