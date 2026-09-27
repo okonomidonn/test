@@ -1859,6 +1859,7 @@ function zaito_upsert_preview_jobs() {
     $previews = array(
         array(
             'company'   => '一般社団法人ミライデザイン機構',
+            'source_url' => 'https://toranet.jp/viewjob/7af587104f6520cd/',
             'title'     => 'データ入力・PC作業スタッフ(障がい者採用枠)',
             'category'  => '事務・データ入力',
             'rev'       => '2026-09-27',
@@ -1889,6 +1890,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社PRIDE',
+            'source_url' => 'https://en-gage.net/pridecompany0409_saiyo/',
             'title'     => '動画編集・SNS運用スタッフ',
             'category'  => '動画編集',
             'rev'       => '2026-09-27',
@@ -1949,6 +1951,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社プラコレ',
+            'source_url' => 'https://en-gage.net/pla-cole-dressy/',
             'title'     => '在宅ウェディングチャットアドバイザー',
             'category'  => 'カスタマーサポート',
             'rev'       => '2026-09-27',
@@ -1979,6 +1982,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社World Life Mapping',
+            'source_url' => 'https://startupclass.co.jp/online/companies/1339/',
             'title'     => '医療機関向けアプリのQAテスター',
             'category'  => 'その他',
             'rev'       => '2026-09-27',
@@ -2028,6 +2032,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社JX通信社',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 問い合わせフォーム（種別: その他）から送信' ),
             'source_url' => 'https://01intern.com/job/6976.html',
             'slug'      => 'jxpress-news-editor',
             'title'     => 'ニュース速報の編集・配信スタッフ(長期インターン)',
@@ -2074,6 +2079,12 @@ function zaito_upsert_preview_jobs() {
                     'ID'        => $job_id,
                     'post_name' => $p['slug'],
                 ) );
+            }
+            // 営業状況は、営業管理画面でまだ何も入力されていない場合だけ初期値を入れる。
+            if ( ! empty( $p['sales'] ) && '' === (string) get_post_meta( $job_id, '_zaito_sales_status', true ) ) {
+                update_post_meta( $job_id, '_zaito_sales_status', $p['sales']['status'] );
+                update_post_meta( $job_id, '_zaito_sales_date', $p['sales']['date'] );
+                update_post_meta( $job_id, '_zaito_sales_note', $p['sales']['note'] );
             }
             // 元の求人ページのURLは、まだ入っていない場合だけ入れる（営業管理画面での入力を優先）。
             if ( ! empty( $p['source_url'] ) && '' === (string) get_post_meta( $job_id, '_zaito_source_url', true ) ) {
@@ -2122,7 +2133,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27d' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27e' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
