@@ -2207,6 +2207,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => '株式会社SCIEN',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 問い合わせフォーム（インターン・採用に関するご質問）から送信' ),
             'slug'      => 'scien-ai-project',
             'source_url' => 'https://01intern.com/job/6943.html',
             'title'     => 'AIプロジェクトの推進サポート(学生インターン)',
@@ -2290,8 +2291,9 @@ function zaito_upsert_preview_jobs() {
                     'post_name' => $p['slug'],
                 ) );
             }
-            // 営業状況は、営業管理画面でまだ何も入力されていない場合だけ初期値を入れる。
-            if ( ! empty( $p['sales'] ) && '' === (string) get_post_meta( $job_id, '_zaito_sales_status', true ) ) {
+            // 営業状況は、営業管理画面でまだ何も入力されていないか「未送信」のままの場合だけ入れる
+            // （営業管理画面で「保存する」を押すと、全行が「未送信」で保存されるため）。
+            if ( ! empty( $p['sales'] ) && in_array( (string) get_post_meta( $job_id, '_zaito_sales_status', true ), array( '', 'todo' ), true ) ) {
                 update_post_meta( $job_id, '_zaito_sales_status', $p['sales']['status'] );
                 update_post_meta( $job_id, '_zaito_sales_date', $p['sales']['date'] );
                 update_post_meta( $job_id, '_zaito_sales_note', $p['sales']['note'] );
@@ -2343,7 +2345,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27y' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27z' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
