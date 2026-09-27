@@ -2171,6 +2171,7 @@ function zaito_upsert_preview_jobs() {
         ),
         array(
             'company'   => 'R3corporation株式会社',
+            'sales'     => array( 'status' => 'waiting', 'date' => '2026-09-27', 'note' => '2026-09-27 問い合わせフォーム（r3c.jp）から送信' ),
             'slug'      => 'r3corporation-remote',
             'source_url' => 'https://www.wantedly.com/projects/2386877',
             'title'     => 'マーケ・動画編集などを経験できるフルリモートインターン(学生)',
@@ -2391,7 +2392,7 @@ function zaito_upsert_preview_jobs() {
  * 仮ページのデータ(zaito_upsert_preview_jobs)を追加したら、このバージョンを上げる。
  * 次に投稿権限のあるユーザーが管理画面を開いたとき、一度だけ自動で作成する。
  */
-define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27t' );
+define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-27u' );
 
 function zaito_maybe_upsert_preview_jobs() {
     if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
