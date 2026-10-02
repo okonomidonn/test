@@ -133,9 +133,10 @@ $zaito_facts = array(
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'tokens.css' ) ); ?>">
 <style>
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:84px}
 body{margin:0;background:#fff;color:var(--z-navy);font-family:'Noto Sans JP',system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:'palt';line-height:1.75}
 a{color:var(--z-blue);text-decoration:none}
+a:focus-visible,.btn:focus-visible{outline:3px solid var(--z-blue);outline-offset:3px;border-radius:10px}
 .ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;white-space:nowrap;font-feature-settings:'liga';display:inline-block}
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
 .logo{font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:-0.045em;color:var(--z-navy);line-height:1}
@@ -154,11 +155,11 @@ a{color:var(--z-blue);text-decoration:none}
 .pv{margin-top:24px;display:flex;gap:16px;align-items:flex-start;background:var(--z-navy);color:#fff;border-radius:16px;padding:18px 22px}
 .pv .ms{font-size:24px;color:var(--z-blue-on-navy);margin-top:2px}
 .pv b{display:block;font-size:15px}
-.pv p{margin:4px 0 0;font-size:13px;color:#C9D0E4;line-height:1.7}
+.pv p{margin:4px 0 0;font-size:14px;color:#C9D0E4;line-height:1.7}
 
 .dg{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:56px;padding-top:28px}
 .hero-img{aspect-ratio:21/8;border-radius:20px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.hero-img.ill{aspect-ratio:21/5}
+.hero-img.ill{aspect-ratio:21/4}
 .hero-img img{width:100%;height:100%;object-fit:cover}
 .hero-img .ms{font-size:88px}
 .ill-a{background:linear-gradient(135deg,var(--z-blue-light),#DCE3FF);color:var(--z-blue)}
@@ -171,7 +172,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .facts{margin-top:28px;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--z-border);border-radius:16px;overflow:hidden}
 .facts div{padding:18px 20px;display:flex;flex-direction:column;gap:4px;min-width:0}
 .facts div+div{border-left:1px solid var(--z-line)}
-.facts span{font-size:12px;color:var(--z-text-4);display:flex;align-items:center;gap:4px}
+.facts span{font-size:13px;color:var(--z-text-4);display:flex;align-items:center;gap:4px}
 .facts span .ms{font-size:16px}
 .facts b{font-size:15px;line-height:1.5;overflow-wrap:anywhere}
 .blk{margin-top:48px}
@@ -183,22 +184,22 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .blk li{position:relative;padding-left:18px;font-size:15px;color:var(--z-text-2)}
 .blk li::before{content:'';position:absolute;left:4px;top:.72em;width:6px;height:6px;border-radius:50%;background:var(--z-blue)}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
-.note{margin-top:20px;padding:14px 16px;border-radius:12px;background:var(--z-surface);font-size:12px;color:var(--z-text-4);line-height:1.7}
-.flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.flow .s{padding:10px 16px;border-radius:12px;background:var(--z-surface);font-size:14px;font-weight:700}
-.flow .ms{color:var(--z-text-4)}
+.note{margin-top:20px;padding:14px 16px;border-radius:12px;background:var(--z-surface);font-size:13px;color:var(--z-text-3);line-height:1.7}
+.flow{margin:0;padding:0;list-style:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap;counter-reset:fl}
+.blk .flow li{display:flex;align-items:center;gap:8px;padding:0;color:var(--z-navy);counter-increment:fl}
+.blk .flow li::before{content:none}
+.blk .flow li span{padding:10px 16px;border-radius:12px;background:var(--z-surface);font-size:14px;font-weight:700}
+.blk .flow li+li::before{content:'arrow_forward';position:static;width:auto;height:auto;border-radius:0;background:none;font-family:'Material Symbols Rounded';font-feature-settings:'liga';font-size:20px;line-height:1;color:var(--z-text-4)}
 
 .side{align-self:start;position:sticky;top:92px;display:flex;flex-direction:column;gap:16px}
 .apply{border:1px solid var(--z-border);border-radius:20px;padding:24px;box-shadow:0 24px 48px -32px rgba(11,21,48,.35)}
 .apply .pay{font-size:13px;color:var(--z-text-2)}
 .apply .pay b{font-family:'Outfit',sans-serif;font-size:36px;color:var(--z-navy);margin:0 2px;letter-spacing:-.01em}
 .apply .pay.txt{font-size:16px;font-weight:700;color:var(--z-navy)}
-.apply .dl{margin:18px 0;display:flex;flex-direction:column;gap:10px;font-size:14px}
-.apply .dl div{display:flex;justify-content:space-between;gap:12px}
-.apply .dl span{color:var(--z-text-4);flex:none}
-.apply .dl b{text-align:right}
+.apply .pay{margin-bottom:18px}
 .apply .btn{width:100%;cursor:default}
-.apply .cap{margin:10px 0 0;font-size:12px;color:var(--z-text-4);text-align:center}
+.smp{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:rgba(255,255,255,.22);font-size:12px;font-weight:700}
+.apply .cap{margin:10px 0 0;font-size:13px;color:var(--z-text-4);text-align:center}
 .ask{border-radius:20px;background:var(--z-surface);padding:24px;font-size:14px;color:var(--z-text-2)}
 .ask b{display:block;color:var(--z-navy);font-size:16px;margin-bottom:8px}
 .ask .btn{width:100%;margin-top:16px}
@@ -210,24 +211,30 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .ft-top p{margin:0;font-weight:700;line-height:1.8}
 .ft-top nav{display:flex;flex-wrap:wrap;gap:12px 32px}
 .ft-top nav a{color:var(--z-text-2)}
-.ft-b{display:flex;justify-content:space-between;padding-top:20px;border-top:1px solid var(--z-line);font-size:12px;color:var(--z-text-4)}
+.ft-b{display:flex;justify-content:space-between;padding-top:20px;border-top:1px solid var(--z-line);font-size:13px;color:var(--z-text-4)}
 .ft-big{font-size:clamp(120px,24vw,340px);line-height:.78;letter-spacing:-0.065em;margin:4px 0 -0.04em -0.04em;user-select:none}
 
 @media (max-width:860px){
  .dg{grid-template-columns:1fr;gap:0}
  .hero-img{aspect-ratio:16/8;border-radius:16px}
- .hero-img.ill{aspect-ratio:16/6}
+ .hero-img.ill{aspect-ratio:16/5}
  .hero-img .ms{font-size:64px}
  .pv{padding:16px 18px}
- .pv p{font-size:12px}
+ .pv p{font-size:13px}
+ .blk p,.blk li{font-size:16px}
+ .flow{flex-direction:column;align-items:stretch;gap:8px}
+ .blk .flow li{gap:12px}
+ .blk .flow li::before,.blk .flow li+li::before{content:counter(fl);position:static;font-family:'Outfit',sans-serif;flex:none;width:28px;height:28px;border-radius:50%;background:var(--z-blue);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
+ .blk .flow li span{flex:1}
  .facts{grid-template-columns:1fr 1fr}
  .facts div:nth-child(3){border-left:0}
  .facts div:nth-child(n+3){border-top:1px solid var(--z-line)}
  .side{position:static;margin-top:40px}
  .side .apply{display:none}
  .spbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--z-line);padding:12px 16px calc(12px + env(safe-area-inset-bottom));gap:12px;align-items:center}
- .spbar .pay{font-size:11px;color:var(--z-text-2);line-height:1.3;max-width:40%}
+ .spbar .pay{font-size:13px;color:var(--z-text-2);line-height:1.3;max-width:42%}
  .spbar .pay b{font-family:'Outfit',sans-serif;font-size:22px;color:var(--z-navy)}
+ .spbar .pay b.txt{font-family:inherit;font-size:15px;display:block;margin-top:2px}
  .spbar .btn{flex:1;height:52px}
  body{padding-bottom:84px}
  .hd .btn{padding:0 14px}
@@ -293,7 +300,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 
       <section class="blk">
         <h2>zaitoでの応募の流れ</h2>
-        <div class="flow"><span class="s">zaitoで応募</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="s">企業とチャットでやりとり</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="s">面談・選考</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="s">業務開始</span></div>
+        <ol class="flow"><li><span>zaitoで応募</span></li><li><span>企業とチャットでやりとり</span></li><li><span>面談・選考</span></li><li><span>業務開始</span></li></ol>
       </section>
     </div>
 
@@ -304,12 +311,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
         <?php else : ?>
           <div class="pay txt"><?php echo esc_html( $zaito_pay_text ); ?></div>
         <?php endif; ?>
-        <div class="dl">
-          <div><span>勤務形態</span><b><?php echo esc_html( $zaito_facts[1][2] ); ?></b></div>
-          <div><span>勤務日数</span><b><?php echo esc_html( $zaito_facts[2][2] ); ?></b></div>
-          <div><span>雇用形態</span><b><?php echo esc_html( $zaito_facts[3][2] ); ?></b></div>
-        </div>
-        <span class="btn btn-p btn-lg" aria-disabled="true">この求人に応募する</span>
+        <span class="btn btn-p btn-lg" aria-disabled="true">この求人に応募する<span class="smp">見本</span></span>
         <p class="cap">掲載イメージのため、応募ボタンは動作しません</p>
       </div>
       <div class="ask">
@@ -322,7 +324,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 </main>
 
 <div class="spbar">
-  <div class="pay"><?php if ( $zaito_has_pay ) : ?><?php echo esc_html( $zaito_pay_unit ); ?><br><b><?php echo esc_html( $zaito_pay_main ); ?></b><?php echo esc_html( $zaito_pay_tail ); ?><?php else : ?>報酬<br><b style="font-family:inherit;font-size:16px">ご相談</b><?php endif; ?></div>
+  <div class="pay"><?php if ( $zaito_has_pay ) : ?><?php echo esc_html( $zaito_pay_unit ); ?><br><b><?php echo esc_html( $zaito_pay_main ); ?></b><?php echo esc_html( $zaito_pay_tail ); ?><?php else : ?>報酬<br><b class="txt"><?php echo esc_html( $zaito_pay_text ); ?></b><?php endif; ?></div>
   <a class="btn btn-p" href="<?php echo esc_url( $zaito_mail ); ?>">掲載について返信する</a>
 </div>
 
