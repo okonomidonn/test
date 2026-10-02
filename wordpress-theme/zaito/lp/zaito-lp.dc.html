@@ -128,7 +128,7 @@ a:hover{color:#2A45D8}
       <div style="position:{{ mainPos }};left:0;top:{{ mainTopPos }};width:{{ mainW }};z-index:2;background:#fff;border:1px solid #DDE2EB;border-radius:16px;padding:10px;display:flex;flex-direction:column;box-shadow:0 18px 44px -28px rgba(11,21,48,.28);cursor:pointer;transition:border-color .2s, transform .25s" style-hover="border-color:#C3CAD9;transform:translateY(-2px)">
         <div style="height:{{ mainImgH }};border-radius:10px;overflow:hidden;background:#F2F4F8"><image-slot id="card-sns" shape="rounded" radius="10" placeholder="SNS運用のイメージ（デスク・PCなど）"></image-slot></div>
         <div style="padding:18px 14px 12px;display:flex;flex-direction:column;gap:12px">
-          <span style="align-self:flex-start;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;background:#EEF1FF;color:#2A45D8">SNS運用</span>
+          <span style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;background:#EEF1FF;color:#2A45D8">SNS運用</span><span style="font-size:12px;font-weight:500;color:#6B7590;white-space:nowrap">※掲載イメージ</span></span>
           <span style="font-size:clamp(18px,1.8vw,21px);font-weight:700;line-height:1.45;color:#0B1530">SNS運用アシスタント</span>
           <span style="display:flex;flex-wrap:wrap;gap:6px"><span style="font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;background:#F2F4F8;color:#4A5573;white-space:nowrap">完全在宅</span><span style="font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;background:#F2F4F8;color:#4A5573;white-space:nowrap">学生歓迎</span><span style="font-size:12px;font-weight:500;padding:5px 12px;border-radius:999px;background:#F2F4F8;color:#4A5573;white-space:nowrap">週10時間〜</span></span>
           <span style="margin-top:6px;padding-top:14px;border-top:1px solid #EEF0F4;display:flex;align-items:center;justify-content:space-between"><span style="display:flex;align-items:baseline;gap:5px;color:#0B1530"><span style="font-size:12px;font-weight:700;color:#4A5573">時給</span><span style="font-family:'Outfit',sans-serif;font-size:clamp(24px,2.4vw,28px);font-weight:600;letter-spacing:-0.01em">1,500</span><span style="font-size:13px;font-weight:700">円〜</span></span><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;font-feature-settings:'liga';white-space:nowrap;color:#6B7590">arrow_forward</span></span>
@@ -345,7 +345,7 @@ a:hover{color:#2A45D8}
       <p style="margin:0;font-size:clamp(19px,2.3vw,24px);line-height:1.8;font-weight:700;color:#0B1530;text-wrap:pretty">課題を感じたのは、<br>探す側のひとりとしてでした。</p>
       <p style="margin:0;font-size:16px;line-height:2;color:#3A4563;text-wrap:pretty">私自身、現役大学生としてアルバイトを探す中で、「学生が応募できる完全在宅求人が探しづらい」という課題を感じたことが、zaitoを作るきっかけです。</p>
       <p style="margin:0;font-size:16px;line-height:2;color:#3A4563;text-wrap:pretty">授業やサークル、就職活動などと両立しながら、場所に縛られず働ける選択肢をもっと増やしたい。そんな思いから、zaitoの立ち上げを進めています。</p>
-      <p style="margin:8px 0 0;font-size:14px;font-weight:700;color:#0B1530;letter-spacing:.04em">zaito 運営事務局</p>
+      <p style="margin:8px 0 0;font-size:14px;font-weight:700;color:#0B1530;letter-spacing:.04em">zaito 運営事務局<span style="display:block;margin-top:4px;font-weight:500;color:#4A5573;letter-spacing:0">慶應義塾大学の現役学生が運営しています</span></p>
     </div>
   </div>
 </section>
@@ -494,19 +494,7 @@ a:hover{color:#2A45D8}
       <h2 id="faq-title" style="margin:0;font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.4;letter-spacing:-0.01em">よくある質問</h2>
     </div>
     <div data-reveal="" style="display:flex;flex-direction:column;border-top:1px solid #E6E9F0">
-      <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="6">
-        <div style="border-bottom:1px solid #E6E9F0">
-          <h3 style="margin:0">
-            <button type="button" id="{{ f.btnId }}" onClick="{{ f.toggle }}" aria-expanded="{{ f.open }}" aria-controls="{{ f.panelId }}" style="width:100%;min-height:72px;display:flex;align-items:center;gap:16px;padding:20px 0;background:transparent;border:0;font:inherit;font-size:16px;font-weight:700;color:#0B1530;text-align:left;cursor:pointer;line-height:1.6" style-hover="color:#3D5AFE">
-              <span style="flex:1">{{ f.q }}</span>
-              <span aria-hidden="true" style="flex:none;width:32px;height:32px;border-radius:50%;background:#F4F5F8;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;font-feature-settings:'liga';white-space:nowrap;color:#0B1530;transition:transform .25s;transform:{{ f.rot }}">add</span>
-            </button>
-          </h3>
-          <sc-if value="{{ f.open }}">
-            <div id="{{ f.panelId }}" role="region" aria-labelledby="{{ f.btnId }}" style="padding:0 48px 24px 0;font-size:15px;line-height:1.95;color:#3A4563">{{ f.a }}</div>
-          </sc-if>
-        </div>
-      </sc-for>
+      <!--ZAITO_FAQ-->
     </div>
   </div>
 </section>
@@ -577,14 +565,10 @@ function tracking() {
 const FAIL_MSG = '送信に失敗しました。時間をおいてもう一度お試しください。';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const JOBS = ['SNS運用','動画編集','Webマーケティング','ライティング','オンライン事務','リサーチ','データ入力','AI関連','その他'];
-const FAQS = [
-  ['掲載料金はいくらですか？','現在、先行掲載企業については無料です。'],
-  ['どのような求人を掲載できますか？','大学生・若手が応募可能で、原則としてリモートで完結する求人を対象としています。'],
-  ['求職者は現在どのくらいいますか？','現在は正式ローンチ前のため、先行登録ユーザーを募集しています。'],
-  ['応募数は保証されますか？','現段階では応募数の保証は行っていません。'],
-  ['求人原稿がなくても大丈夫ですか？','募集内容をお伺いし、zaito運営が求人原稿の作成をサポートします。'],
-  ['アルバイト以外も掲載できますか？','大学生・若手が応募可能で、サービスの掲載基準に合う募集であれば相談可能です。'],
-];
+// GA4（測定IDが設定されているときだけ gtag が存在する）にイベントを送る。
+function track(name, params) {
+  try { if (typeof window !== 'undefined' && window.gtag) window.gtag('event', name, params || {}); } catch (e) {}
+}
 
 async function submitLead(kind, payload) {
   const body = new URLSearchParams({ action: ACTIONS[kind], ...tracking() });
@@ -597,7 +581,7 @@ async function submitLead(kind, payload) {
 }
 
 class Component extends DCLogic {
-  state = { w: typeof window !== 'undefined' ? window.innerWidth : 1200, menuOpen: false, formInView: false, faqOpen: -1, jobs: [], eaErr: {}, eaSubmitErr: '', heroErr: {}, heroSubmitErr: '', scrolled40: false, heroInView: true, fcDismissed: false, eaStep: 1, eaEmail: '', eaSending: false, jbSending: false, jbErr: '', jbSkipped: false, coErr: {}, coDone: false, coSending: false };
+  state = { w: typeof window !== 'undefined' ? window.innerWidth : 1200, menuOpen: false, formInView: false, jobs: [], eaErr: {}, eaSubmitErr: '', heroErr: {}, heroSubmitErr: '', scrolled40: false, heroInView: true, fcDismissed: false, eaStep: 1, eaEmail: '', eaSending: false, jbSending: false, jbErr: '', jbSkipped: false, coErr: {}, coDone: false, coSending: false };
 
   componentDidMount() {
     document.documentElement.lang = 'ja';
@@ -660,7 +644,7 @@ class Component extends DCLogic {
     try {
       const r = await submitLead('early', { email });
       // STEP 1 成功 = Waiting List 登録完了
-      if (r.ok) { this.lpToken = (r.data && r.data.token) || ''; this.setState({ eaSending: false, eaStep: 2, eaEmail: email, eaErr: {}, heroErr: {} }); }
+      if (r.ok) { track('sign_up', { method: 'waitlist' }); this.lpToken = (r.data && r.data.token) || ''; this.setState({ eaSending: false, eaStep: 2, eaEmail: email, eaErr: {}, heroErr: {} }); }
       else this.setState({ eaSending: false, [msgKey]: FAIL_MSG });
     } catch { this.setState({ eaSending: false, [msgKey]: FAIL_MSG }); }
     finally { this.eaLock = false; }
@@ -686,7 +670,7 @@ class Component extends DCLogic {
     this.setState({ jbSending: true, jbErr: '' });
     try {
       const r = await submitLead('jobs', { email: this.state.eaEmail, token: this.lpToken || '', desired_jobs: this.state.jobs });
-      if (r.ok) this.setState({ jbSending: false, eaStep: 3 });
+      if (r.ok) { track('waitlist_interests', { count: this.state.jobs.length }); this.setState({ jbSending: false, eaStep: 3 }); }
       else this.setState({ jbSending: false, jbErr: FAIL_MSG });
     } catch { this.setState({ jbSending: false, jbErr: FAIL_MSG }); }
     finally { this.jbLock = false; }
@@ -709,7 +693,7 @@ class Component extends DCLogic {
     this.setState({ coSending: true });
     try {
       const r = await submitLead('company', d);
-      if (r.ok) this.setState({ coSending: false, coDone: true });
+      if (r.ok) { track('generate_lead', { lead_type: 'company_inquiry' }); this.setState({ coSending: false, coDone: true }); }
       else this.setState({ coSending: false, coErr: { job: '送信に失敗しました。時間をおいて再度お試しください。' } });
     }
     catch { this.setState({ coSending: false, coErr: { job: '送信に失敗しました。時間をおいて再度お試しください。' } }); }
@@ -789,8 +773,6 @@ class Component extends DCLogic {
       coDone: s.coDone, coForm: !s.coDone, coSending: s.coSending, coLabel: s.coSending ? '送信中...' : '無料掲載について相談する',
       submitEarly: this.submitEarly, submitCompany: this.submitCompany,
       clearEarlyErr: this.clearErr('eaErr'), clearCoErr: this.clearErr('coErr'),
-      faqs: FAQS.map(([q, a], i) => ({ q, a, open: s.faqOpen === i, btnId: 'faq-q' + i, panelId: 'faq-a' + i, rot: s.faqOpen === i ? 'rotate(45deg)' : 'none',
-        toggle: () => this.setState(st => ({ faqOpen: st.faqOpen === i ? -1 : i })) })),
     };
   }
 }

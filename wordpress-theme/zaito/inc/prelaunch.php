@@ -16,6 +16,165 @@ if ( ! defined( 'ZAITO_PRELAUNCH' ) ) {
 }
 
 /**
+ * LPの「よくある質問」。HTMLに直接出力し（検索エンジンやAI検索が読めるように）、
+ * 同じ内容を構造化データ（FAQPage）にも使う。
+ */
+function zaito_lp_faqs() {
+    return array(
+        array( '掲載料金はいくらですか？', '現在、先行掲載企業については無料です。' ),
+        array( 'どのような求人を掲載できますか？', '大学生・若手が応募可能で、原則としてリモートで完結する求人を対象としています。' ),
+        array( '求職者は現在どのくらいいますか？', '現在は正式ローンチ前のため、先行登録ユーザーを募集しています。' ),
+        array( '応募数は保証されますか？', '現段階では応募数の保証は行っていません。' ),
+        array( '求人原稿がなくても大丈夫ですか？', '募集内容をお伺いし、zaito運営が求人原稿の作成をサポートします。' ),
+        array( 'アルバイト以外も掲載できますか？', '大学生・若手が応募可能で、サービスの掲載基準に合う募集であれば相談可能です。' ),
+    );
+}
+
+/**
+ * FAQの開閉は <details> で行う（JavaScriptなしで動き、文章もHTMLに残る）。
+ */
+function zaito_lp_faq_html() {
+    $html = '';
+    foreach ( zaito_lp_faqs() as $faq ) {
+        $html .= '<details class="zfaq"><summary><h3>' . esc_html( $faq[0] ) . '</h3><span class="zfaq-ic" aria-hidden="true">add</span></summary>'
+            . '<div class="zfaq-a">' . esc_html( $faq[1] ) . '</div></details>';
+    }
+    return $html;
+}
+
+/**
+ * 構造化データ（運営組織・サイト・よくある質問）。
+ */
+function zaito_lp_json_ld() {
+    $faq = array();
+    foreach ( zaito_lp_faqs() as $item ) {
+        $faq[] = array(
+            '@type'          => 'Question',
+            'name'           => $item[0],
+            'acceptedAnswer' => array( '@type' => 'Answer', 'text' => $item[1] ),
+        );
+    }
+    $data = array(
+        '@context' => 'https://schema.org',
+        '@graph'   => array(
+            array(
+                '@type'        => 'Organization',
+                '@id'          => home_url( '/#organization' ),
+                'name'         => 'zaito',
+                'url'          => home_url( '/' ),
+                'logo'         => get_template_directory_uri() . '/lp/apple-touch-icon.png',
+                'email'        => 'info@zaito-work.com',
+                'description'  => '大学生・若手向けの完全在宅求人サービス',
+                'contactPoint' => array(
+                    '@type'       => 'ContactPoint',
+                    'contactType' => 'customer support',
+                    'email'       => 'info@zaito-work.com',
+                ),
+            ),
+            array(
+                '@type'      => 'WebSite',
+                '@id'        => home_url( '/#website' ),
+                'name'       => 'zaito',
+                'url'        => home_url( '/' ),
+                'inLanguage' => 'ja',
+                'publisher'  => array( '@id' => home_url( '/#organization' ) ),
+            ),
+            array(
+                '@type'      => 'FAQPage',
+                '@id'        => home_url( '/#faq' ),
+                'mainEntity' => $faq,
+            ),
+        ),
+    );
+    return '<script type="application/ld+json">' . wp_json_encode( $data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>';
+}
+
+/**
+ * Googleアナリティクス（GA4）。管理画面「設定 > 一般」の「GA4 測定ID」に入力されているときだけ出力する。
+ */
+function zaito_ga4_id() {
+    $id = strtoupper( trim( (string) get_option( 'zaito_ga4_id', '' ) ) );
+    return preg_match( '/^G-[A-Z0-9]{4,}$/', $id ) ? $id : '';
+}
+
+function zaito_ga4_snippet() {
+    $id = zaito_ga4_id();
+    if ( ! $id ) {
+        return '';
+    }
+    return '<script async src="https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $id ) . '"></script>'
+        . '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config",' . wp_json_encode( $id ) . ');</script>';
+}
+
+function zaito_ga4_register_setting() {
+    register_setting( 'general', 'zaito_ga4_id', array(
+        'type'              => 'string',
+        'sanitize_callback' => function ( $v ) {
+            $v = strtoupper( trim( (string) $v ) );
+            return preg_match( '/^G-[A-Z0-9]{4,}$/', $v ) ? $v : '';
+        },
+        'default'           => '',
+    ) );
+    add_settings_field( 'zaito_ga4_id', 'GA4 測定ID（zaito）', function () {
+        echo '<input type="text" name="zaito_ga4_id" id="zaito_ga4_id" class="regular-text" placeholder="G-XXXXXXXXXX" value="' . esc_attr( get_option( 'zaito_ga4_id', '' ) ) . '">';
+        echo '<p class="description">Googleアナリティクスの測定ID（G-から始まる文字列）を入れると、LPと利用規約・プライバシーポリシーのページで計測を始めます。空欄にすると計測しません。</p>';
+    }, 'general', 'default', array( 'label_for' => 'zaito_ga4_id' ) );
+}
+add_action( 'admin_init', 'zaito_ga4_register_setting' );
+
+/**
+ * 公開前は、検索エンジンに渡すサイトマップを公開中のページ（トップ・利用規約・プライバシーポリシー）だけにする。
+ * WordPressが自動で載せる投稿・固定ページ・カテゴリー・ユーザーのサイトマップは止める。
+ */
+function zaito_prelaunch_sitemap_providers( $provider, $name ) {
+    if ( ZAITO_PRELAUNCH && in_array( $name, array( 'posts', 'taxonomies', 'users' ), true ) ) {
+        return false;
+    }
+    return $provider;
+}
+add_filter( 'wp_sitemaps_add_provider', 'zaito_prelaunch_sitemap_providers', 10, 2 );
+
+if ( class_exists( 'WP_Sitemaps_Provider' ) && ! class_exists( 'Zaito_Prelaunch_Sitemap' ) ) {
+    class Zaito_Prelaunch_Sitemap extends WP_Sitemaps_Provider {
+        public function __construct() {
+            $this->name        = 'zaito';
+            $this->object_type = 'zaito';
+        }
+
+        public function get_url_list( $page_num, $object_subtype = '' ) {
+            return array(
+                array( 'loc' => home_url( '/' ) ),
+                array( 'loc' => home_url( '/terms/' ) ),
+                array( 'loc' => home_url( '/privacy/' ) ),
+            );
+        }
+
+        public function get_max_num_pages( $object_subtype = '' ) {
+            return 1;
+        }
+    }
+}
+
+function zaito_prelaunch_register_sitemap() {
+    if ( ZAITO_PRELAUNCH && class_exists( 'Zaito_Prelaunch_Sitemap' ) && function_exists( 'wp_register_sitemap_provider' ) ) {
+        wp_register_sitemap_provider( 'zaito', new Zaito_Prelaunch_Sitemap() );
+    }
+}
+add_action( 'init', 'zaito_prelaunch_register_sitemap' );
+
+/**
+ * 公開前に残っている旧テーマのページ（サンプルページなど）は、検索結果に出さない。
+ */
+function zaito_prelaunch_noindex( $robots ) {
+    if ( ZAITO_PRELAUNCH && ! is_admin() && ! is_front_page() ) {
+        $robots['noindex']  = true;
+        $robots['nofollow'] = true;
+    }
+    return $robots;
+}
+add_filter( 'wp_robots', 'zaito_prelaunch_noindex' );
+
+/**
  * ログアウト状態でLPへ転送する求人サイト側のページ（バーチャルルート名 => 転送先）。
  */
 function zaito_prelaunch_redirect_map() {
@@ -127,6 +286,19 @@ function zaito_render_lp() {
 <link rel="icon" href="<?php echo esc_url( get_template_directory_uri() . '/lp/favicon-32.png' ); ?>" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="<?php echo esc_url( get_template_directory_uri() . '/lp/apple-touch-icon.png' ); ?>">
 <meta name="theme-color" content="#ffffff">
+<?php echo zaito_lp_json_ld(); // 内容はこの関数内でエンコード済み ?>
+<?php echo zaito_ga4_snippet(); // 測定IDは形式チェック済み ?>
+<style>
+.zfaq{border-bottom:1px solid #E6E9F0}
+.zfaq summary{list-style:none;min-height:72px;display:flex;align-items:center;gap:16px;padding:20px 0;cursor:pointer;color:#0B1530}
+.zfaq summary::-webkit-details-marker{display:none}
+.zfaq summary:hover{color:#3D5AFE}
+.zfaq summary:focus-visible{outline:3px solid #3D5AFE;outline-offset:4px;border-radius:8px}
+.zfaq h3{flex:1;margin:0;font-size:16px;font-weight:700;line-height:1.6;color:inherit}
+.zfaq-ic{flex:none;width:32px;height:32px;border-radius:50%;background:#F4F5F8;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:20px;line-height:1;font-feature-settings:'liga';white-space:nowrap;color:#0B1530;transition:transform .25s}
+.zfaq[open] .zfaq-ic{transform:rotate(45deg)}
+.zfaq-a{padding:0 48px 24px 0;font-size:15px;line-height:1.95;color:#3A4563}
+</style>
 <script>
 // LPは幅1440pxで見たときのバランスで作られているため、それより広い画面では
 // ページ全体を拡大して左右の余白が広がりすぎないようにする。
@@ -150,6 +322,7 @@ function zaito_render_lp() {
     $html = str_replace( '<script src="./support.js"></script>', $head, $html );
     $html = str_replace( '<script src="./image-slot.js"></script>', '<script src="' . esc_url( zaito_lp_asset( 'image-slot.js' ) ) . '"></script>', $html );
     $html = str_replace( '<html>', '<html lang="ja">', $html );
+    $html = str_replace( '<!--ZAITO_FAQ-->', zaito_lp_faq_html(), $html );
     $html = str_replace(
         '<body>',
         '<body><noscript><p style="padding:24px;font-family:sans-serif">zaitoは大学生・若手向けの完全在宅求人サービスです。ページを表示するにはJavaScriptを有効にしてください。お問い合わせ: info@zaito-work.com</p></noscript>',

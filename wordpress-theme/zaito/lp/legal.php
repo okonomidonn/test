@@ -60,6 +60,7 @@ a:hover{color:var(--z-blue-hover)}
 .ft-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:24px;border-top:1px solid var(--z-line);font-size:12px;color:var(--z-text-4)}
 .ft-big{font-size:clamp(120px,30vw,400px);line-height:.78;letter-spacing:-0.065em;margin:8px 0 -0.04em -0.04em;user-select:none}
 </style>
+<?php if ( function_exists( 'zaito_ga4_snippet' ) ) { echo zaito_ga4_snippet(); } // 測定IDは形式チェック済み ?>
 </head>
 <body>
 <header class="hd">
