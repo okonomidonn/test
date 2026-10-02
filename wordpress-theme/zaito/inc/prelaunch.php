@@ -92,8 +92,13 @@ function zaito_lp_json_ld() {
 /**
  * Googleアナリティクス（GA4）。管理画面「設定 > 一般」の「GA4 測定ID」に入力されているときだけ出力する。
  */
+if ( ! defined( 'ZAITO_GA4_DEFAULT_ID' ) ) {
+    // zaito-work.com 用のGA4測定ID。管理画面で別のIDを保存した場合はそちらを使い、空欄で保存すると計測を止める。
+    define( 'ZAITO_GA4_DEFAULT_ID', 'G-0X7SF35P0L' );
+}
+
 function zaito_ga4_id() {
-    $id = strtoupper( trim( (string) get_option( 'zaito_ga4_id', '' ) ) );
+    $id = strtoupper( trim( (string) get_option( 'zaito_ga4_id', ZAITO_GA4_DEFAULT_ID ) ) );
     return preg_match( '/^G-[A-Z0-9]{4,}$/', $id ) ? $id : '';
 }
 
@@ -116,7 +121,7 @@ function zaito_ga4_register_setting() {
         'default'           => '',
     ) );
     add_settings_field( 'zaito_ga4_id', 'GA4 測定ID（zaito）', function () {
-        echo '<input type="text" name="zaito_ga4_id" id="zaito_ga4_id" class="regular-text" placeholder="G-XXXXXXXXXX" value="' . esc_attr( get_option( 'zaito_ga4_id', '' ) ) . '">';
+        echo '<input type="text" name="zaito_ga4_id" id="zaito_ga4_id" class="regular-text" placeholder="G-XXXXXXXXXX" value="' . esc_attr( get_option( 'zaito_ga4_id', ZAITO_GA4_DEFAULT_ID ) ) . '">';
         echo '<p class="description">Googleアナリティクスの測定ID（G-から始まる文字列）を入れると、LPと利用規約・プライバシーポリシーのページで計測を始めます。空欄にすると計測しません。</p>';
     }, 'general', 'default', array( 'label_for' => 'zaito_ga4_id' ) );
 }
