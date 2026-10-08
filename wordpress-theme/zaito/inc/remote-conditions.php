@@ -34,6 +34,12 @@ function zaito_remote_job_tags() {
         'anymind-video-localize'   => array( 'tanjikan' ),
         'jurin-ai-strategy'        => array( 'tanjikan' ),
         'emuni-ai-engineer'        => array( 'tanjikan' ),
+        'jmty-cs-supporter'        => array( 'mikeiken' ),
+        'vividgarden-marketing-support' => array( 'mikeiken' ),
+        'vividgarden-producer-support'  => array( 'mikeiken' ),
+        'cosoji-accounting'        => array( 'tanjikan' ),
+        'linkties-ai-assistant'    => array( 'tanjikan' ),
+        'hackazouk-web-designer'   => array( 'tanjikan' ),
     );
 }
 
@@ -116,7 +122,9 @@ function zaito_remote_conditions() {
                 '業務委託の募集が多く、働く時間を自分で調整しやすい反面、報酬は稼働した時間や件数で決まります。契約の形（業務委託かアルバイトか）と、報酬の計算のしかたを応募前に確かめておくと安心です。',
             ),
             'match' => function ( $j ) {
-                return (bool) preg_match( '/社会人|主婦|既卒|副業|フリーランス/u', $j['target'] );
+                // 対象に学生が書かれていない求人（経験で条件を決めているものなど）と、社会人・主婦などを明記した求人。
+                return ! preg_match( '/学生|大学|全学年/u', $j['target'] )
+                    || preg_match( '/社会人|主婦|既卒|副業|フリーランス/u', $j['target'] );
             },
         ),
         'jimu'      => array(
