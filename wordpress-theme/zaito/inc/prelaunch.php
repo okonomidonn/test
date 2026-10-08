@@ -147,11 +147,19 @@ if ( class_exists( 'WP_Sitemaps_Provider' ) && ! class_exists( 'Zaito_Prelaunch_
         }
 
         public function get_url_list( $page_num, $object_subtype = '' ) {
-            return array(
+            $urls = array(
                 array( 'loc' => home_url( '/' ) ),
+                array( 'loc' => zaito_remote_url() ),
                 array( 'loc' => home_url( '/terms/' ) ),
                 array( 'loc' => home_url( '/privacy/' ) ),
             );
+            // まとめ求人の詳細（募集中のもの）
+            foreach ( zaito_remote_jobs() as $job ) {
+                if ( empty( $job['closed'] ) ) {
+                    $urls[] = array( 'loc' => zaito_remote_url( $job['slug'] ), 'lastmod' => $job['checked'] );
+                }
+            }
+            return $urls;
         }
 
         public function get_max_num_pages( $object_subtype = '' ) {

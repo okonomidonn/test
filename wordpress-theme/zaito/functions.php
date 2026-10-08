@@ -280,7 +280,7 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '10';
+    $version = '11';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -2430,3 +2430,5 @@ require_once get_template_directory() . '/inc/lp-leads.php';
 require_once get_template_directory() . '/inc/prelaunch.php';
 // 管理画面「求人 > 営業用仮ページ」（仮ページのURL一覧）
 require_once get_template_directory() . '/inc/sales-preview.php';
+// まとめ求人（/remote/）: 公開されている完全在宅の求人を運営が確認してまとめたもの
+require_once get_template_directory() . '/inc/remote-jobs.php';

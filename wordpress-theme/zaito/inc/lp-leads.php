@@ -90,6 +90,31 @@ function zaito_handle_lp_waitlist() {
         return;
     }
 
+    $result = zaito_lp_find_or_create_interest( $email, 'lp' );
+    if ( ! $result ) {
+        zaito_lp_respond( false, array( 'message' => '登録に失敗しました。時間をおいて再度お試しください' ), 'waitlist' );
+        return;
+    }
+    list( $interest_id, $created ) = $result;
+    // このブラウザを登録済みにし、まとめ求人の応募ページへそのまま進めるようにする。
+    zaito_remote_set_member_cookie( $interest_id );
+    if ( ! $created ) {
+        zaito_lp_respond( true, array( 'already' => true, 'token' => zaito_lp_issue_token( $interest_id ) ), 'waitlist' );
+        return;
+    }
+
+    // 登録済みのアドレスには送らない（第三者が同じアドレスで何度も送らせることを防ぐ）。
+    zaito_lp_send_waitlist_thanks( $email );
+
+    zaito_lp_respond( true, array( 'already' => false, 'token' => zaito_lp_issue_token( $interest_id ) ), 'waitlist' );
+}
+
+/**
+ * メールアドレスで「興味あり登録」(zaito_interest) を探し、なければ作る。
+ * 戻り値は array( 登録ID, 新しく作ったか )。作れなかった場合は false。
+ * $source は登録した場所（lp: トップページの先行登録、remote: まとめ求人）。
+ */
+function zaito_lp_find_or_create_interest( $email, $source ) {
     $existing = get_posts( array(
         'post_type'      => 'zaito_interest',
         'post_status'    => 'any',
@@ -100,8 +125,7 @@ function zaito_handle_lp_waitlist() {
         ),
     ) );
     if ( ! empty( $existing ) ) {
-        zaito_lp_respond( true, array( 'already' => true, 'token' => zaito_lp_issue_token( $existing[0] ) ), 'waitlist' );
-        return;
+        return array( (int) $existing[0], false );
     }
 
     $interest_id = wp_insert_post( array(
@@ -109,22 +133,16 @@ function zaito_handle_lp_waitlist() {
         'post_title'  => $email,
         'post_status' => 'private',
     ) );
-
     if ( ! $interest_id || is_wp_error( $interest_id ) ) {
-        zaito_lp_respond( false, array( 'message' => '登録に失敗しました。時間をおいて再度お試しください' ), 'waitlist' );
-        return;
+        return false;
     }
 
     update_post_meta( $interest_id, 'email', $email );
-    update_post_meta( $interest_id, 'source', 'lp' );
+    update_post_meta( $interest_id, 'source', $source );
     foreach ( zaito_lp_tracking_fields() as $key => $value ) {
         update_post_meta( $interest_id, $key, $value );
     }
-
-    // 登録済みのアドレスには送らない（第三者が同じアドレスで何度も送らせることを防ぐ）。
-    zaito_lp_send_waitlist_thanks( $email );
-
-    zaito_lp_respond( true, array( 'already' => false, 'token' => zaito_lp_issue_token( $interest_id ) ), 'waitlist' );
+    return array( (int) $interest_id, true );
 }
 
 /**
@@ -136,9 +154,10 @@ if ( ! defined( 'ZAITO_INFO_MAILBOX_READY' ) ) {
 }
 
 /**
- * 先行登録した学生への自動返信メール。
+ * 先行登録した学生への自動返信メール。$context が remote のときは、
+ * まとめ求人の詳細ページから登録した学生向けの文面にする。
  */
-function zaito_lp_send_waitlist_thanks( $email ) {
+function zaito_lp_send_waitlist_thanks( $email, $context = 'lp' ) {
     $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
 
     if ( ZAITO_INFO_MAILBOX_READY ) {
@@ -152,14 +171,27 @@ function zaito_lp_send_waitlist_thanks( $email ) {
         $contact = '';
     }
 
-    $subject = '【zaito】先行登録ありがとうございます';
-    $body    = "zaitoへの先行登録ありがとうございます。\n"
-        . "以下のメールアドレスで登録を受け付けました。\n\n"
-        . '登録メールアドレス: ' . $email . "\n\n"
-        . "zaitoは、大学生・若手向けの完全在宅求人サービスです。\n"
-        . "現在、正式ローンチに向けて掲載企業・求人を準備しています。\n"
-        . "公開の準備ができましたら、このメールアドレスにいち早くお知らせします。\n\n"
-        . "公開までもうしばらくお待ちください。\n\n"
+    if ( 'remote' === $context ) {
+        $subject = '【zaito】登録ありがとうございます';
+        $intro   = "zaitoへの登録ありがとうございます。\n"
+            . "以下のメールアドレスで登録を受け付けました。\n\n"
+            . '登録メールアドレス: ' . $email . "\n\n"
+            . "zaitoは、大学生・若手向けの完全在宅求人サービスです。\n"
+            . "いま募集中の完全在宅の求人は、こちらから見られます。\n"
+            . home_url( '/remote/' ) . "\n\n"
+            . "新しい求人が入ったときや、zaitoの正式公開のときに、このメールアドレスにお知らせします。\n\n";
+    } else {
+        $subject = '【zaito】先行登録ありがとうございます';
+        $intro   = "zaitoへの先行登録ありがとうございます。\n"
+            . "以下のメールアドレスで登録を受け付けました。\n\n"
+            . '登録メールアドレス: ' . $email . "\n\n"
+            . "zaitoは、大学生・若手向けの完全在宅求人サービスです。\n"
+            . "現在、正式ローンチに向けて掲載企業・求人を準備しています。\n"
+            . "公開の準備ができましたら、このメールアドレスにいち早くお知らせします。\n\n"
+            . "いま募集中の完全在宅の求人は、こちらから見られます。\n"
+            . home_url( '/remote/' ) . "\n\n";
+    }
+    $body = $intro
         . $reply
         . "※お心当たりのない場合は、お手数ですがこのメールを破棄してください。\n\n"
         . "──────────\n"
