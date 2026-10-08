@@ -167,6 +167,10 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .ft-top p{margin:0;font-weight:700;line-height:1.8}
 .ft-top nav{display:flex;flex-wrap:wrap;gap:12px 32px}
 .ft-top nav a{color:var(--z-text-2)}
+.ft-brand{display:flex;flex-direction:column;gap:14px}
+.sns{display:flex;gap:10px}
+.sns a{width:40px;height:40px;border-radius:50%;background:var(--z-surface);color:var(--z-navy);display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s}
+.sns a:hover{background:var(--z-navy);color:#fff}
 .ft-b{display:flex;justify-content:space-between;gap:16px;padding-top:20px;border-top:1px solid var(--z-line);font-size:13px;color:var(--z-text-4)}
 .ft-big{font-size:clamp(120px,24vw,340px);line-height:.78;letter-spacing:-0.065em;margin:4px 0 -0.04em -0.04em;user-select:none}
 

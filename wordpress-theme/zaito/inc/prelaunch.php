@@ -19,6 +19,24 @@ if ( ! defined( 'ZAITO_PRELAUNCH' ) ) {
  * LPの「よくある質問」。HTMLに直接出力し（検索エンジンやAI検索が読めるように）、
  * 同じ内容を構造化データ（FAQPage）にも使う。
  */
+/**
+ * zaitoのSNSアカウント（フッターなどに表示）。
+ */
+function zaito_sns_accounts() {
+    return array(
+        array( 'X（旧Twitter）', 'https://x.com/zaito_work', '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78L17.75 3zm-1.08 16.17h1.7L7.4 4.74H5.58l11.09 14.43z"/></svg>' ),
+        array( 'Instagram', 'https://www.instagram.com/zaito_work/', '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.21 8.8 2.2 12 2.2zm0 4.86a4.94 4.94 0 1 0 0 9.88 4.94 4.94 0 0 0 0-9.88zm0 8.15a3.21 3.21 0 1 1 0-6.42 3.21 3.21 0 0 1 0 6.42zm5.13-9.5a1.15 1.15 0 1 0 0 2.3 1.15 1.15 0 0 0 0-2.3z"/></svg>' ),
+    );
+}
+
+function zaito_sns_links_html() {
+    $html = '<div class="sns" aria-label="zaitoのSNS">';
+    foreach ( zaito_sns_accounts() as $a ) {
+        $html .= '<a href="' . esc_url( $a[1] ) . '" target="_blank" rel="noopener" aria-label="' . esc_attr( 'zaitoの' . $a[0] ) . '">' . $a[2] . '</a>';
+    }
+    return $html . '</div>';
+}
+
 function zaito_lp_faqs() {
     return array(
         array( '掲載料金はいくらですか？', '現在、先行掲載企業については無料です。' ),

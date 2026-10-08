@@ -61,14 +61,15 @@ a:hover{color:var(--z-blue-hover)}
 .ft-big{font-size:clamp(120px,30vw,400px);line-height:.78;letter-spacing:-0.065em;margin:8px 0 -0.04em -0.04em;user-select:none}
 </style>
 <?php if ( function_exists( 'zaito_ga4_snippet' ) ) { echo zaito_ga4_snippet(); } // 測定IDは形式チェック済み ?>
+<style>.sns{display:flex;gap:10px}.sns a{width:40px;height:40px;border-radius:50%;background:#F6F7FA;color:#0B1530;display:flex;align-items:center;justify-content:center}.sns a:hover{background:#0B1530;color:#fff}</style>
 </head>
 <body>
 <header class="hd">
   <div class="hd-in">
     <a class="logo" href="<?php echo esc_url( $zaito_lp_url ); ?>" aria-label="zaito トップへ">za<span>i</span>to</a>
     <div class="hd-nav">
-      <a class="hd-early" href="<?php echo esc_url( $zaito_lp_url . '#early' ); ?>">先行登録</a>
-      <a class="hd-cta" href="<?php echo esc_url( $zaito_lp_url . '#contact' ); ?>">無料で求人掲載</a>
+      <a class="hd-early" href="<?php echo esc_url( $zaito_lp_url ); ?>">求人を探す</a>
+      <a class="hd-cta" href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">無料で求人掲載</a>
     </div>
   </div>
 </header>
@@ -81,12 +82,12 @@ a:hover{color:var(--z-blue-hover)}
 <footer class="ft">
   <div class="ft-in">
     <div class="ft-top">
-      <p>大学生・若手向け<br>完全在宅求人サービス</p>
+      <div style="display:flex;flex-direction:column;gap:14px"><p>出社なしの仕事だけを<br>集めた求人サイト</p><?php echo zaito_sns_links_html(); // SVGと固定URLのみ ?></div>
       <nav aria-label="フッターナビゲーション">
         <ul>
-          <li><a href="<?php echo esc_url( $zaito_lp_url . '#about' ); ?>">サービスについて</a></li>
-          <li><a href="<?php echo esc_url( $zaito_lp_url . '#companies' ); ?>">企業の方</a></li>
-          <li><a href="<?php echo esc_url( $zaito_lp_url . '#contact' ); ?>">お問い合わせ</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/' ) ); ?>">求人を探す</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">お問い合わせ</a></li>
           <li><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a></li>
           <li><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></li>
         </ul>
