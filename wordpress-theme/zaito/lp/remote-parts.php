@@ -14,10 +14,11 @@ if ( ! function_exists( 'zaito_remote_group' ) ) {
     function zaito_remote_group( $category ) {
         $groups = array(
             array( 'SNS・マーケ', array( 'SNS', 'マーケ' ), 'campaign', 'a' ),
-            array( '教育・サポート', array( '教育', '学習' ), 'school', 'c' ),
-            array( 'ライティング・編集', array( 'ライティング', '編集' ), 'edit_note', 'd' ),
-            array( 'エンジニア・デザイン', array( 'エンジニア', 'デザイン' ), 'code', 'b' ),
-            array( '事務・アシスタント', array( '事務', 'アシスタント' ), 'description', 'e' ),
+            array( '教育', array( '教育', '学習' ), 'school', 'c' ),
+            array( 'ライティング・編集', array( 'ライティング', '編集', 'ライター' ), 'edit_note', 'd' ),
+            array( 'エンジニア', array( 'エンジニア' ), 'code', 'b' ),
+            array( 'デザイン・動画', array( 'デザイン', '動画' ), 'palette', 'f' ),
+            array( '事務・サポート', array( '事務', 'アシスタント', '秘書', 'サポート' ), 'support_agent', 'e' ),
         );
         foreach ( $groups as $g ) {
             foreach ( $g[1] as $key ) {

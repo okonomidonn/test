@@ -35,6 +35,7 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .t-c{--tone:#C25F0E;--tone-bg:#FFF3E6;--tone-bg2:#FFE2C2}
 .t-d{--tone:#6A3FD1;--tone-bg:#F3EEFF;--tone-bg2:#E2D8FF}
 .t-e{--tone:#3A4563;--tone-bg:#F2F4F8;--tone-bg2:#E3E7EF}
+.t-f{--tone:#B8336A;--tone-bg:#FDEEF4;--tone-bg2:#F9D8E6}
 
 /* 一覧: ヒーロー */
 .hero{background:linear-gradient(180deg,#F3F5FF 0%,#F8F9FC 70%,#fff 100%);border-bottom:1px solid var(--z-line)}
