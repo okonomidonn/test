@@ -217,9 +217,11 @@ function zaito_prelaunch_template_redirect() {
 
     $page = get_query_var( 'zaito_page' );
 
-    // 以前のトップページ（LP）は、企業向けの案内・掲載の問い合わせフォームとして /for-companies/ で表示する。
+    // 企業向けの案内と掲載の問い合わせフォーム。
     if ( 'for-companies' === $page ) {
-        zaito_render_lp( home_url( '/for-companies/' ) );
+        status_header( 200 );
+        header( 'Content-Type: text/html; charset=UTF-8' );
+        include get_template_directory() . '/lp/companies.php';
         exit;
     }
 

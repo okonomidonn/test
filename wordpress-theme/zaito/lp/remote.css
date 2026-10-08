@@ -170,6 +170,54 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .ft-b{display:flex;justify-content:space-between;gap:16px;padding-top:20px;border-top:1px solid var(--z-line);font-size:13px;color:var(--z-text-4)}
 .ft-big{font-size:clamp(120px,24vw,340px);line-height:.78;letter-spacing:-0.065em;margin:4px 0 -0.04em -0.04em;user-select:none}
 
+/* 企業向けページ */
+.cta-row{margin-top:10px;display:flex;flex-wrap:wrap;gap:12px}
+.co-sec{margin-top:80px}
+.co-sec>h2{margin:0 0 20px;font-size:clamp(22px,2.6vw,28px);font-weight:900}
+.why{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.why li{padding:26px;border:1px solid var(--z-border);border-radius:18px;display:flex;flex-direction:column;gap:10px}
+.why .ic{width:48px;height:48px;border-radius:14px;background:var(--tone-bg);color:var(--tone);display:flex;align-items:center;justify-content:center;font-size:26px}
+.why b{font-size:17px}
+.why p{margin:0;font-size:14px;color:var(--z-text-2);line-height:1.8}
+.flow4{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;counter-reset:f4}
+.flow4 li{position:relative;padding:22px 20px;border-radius:16px;background:var(--z-surface);display:flex;flex-direction:column;gap:6px;counter-increment:f4}
+.flow4 li::before{content:counter(f4);width:30px;height:30px;border-radius:50%;background:var(--z-blue);color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.flow4 b{font-size:16px}
+.flow4 span{font-size:14px;color:var(--z-text-2);line-height:1.7}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rules>div{padding:24px;border-radius:18px}
+.rules .yes{background:#EFF8F3}
+.rules .no{background:#FDF1F2}
+.rules b{display:flex;align-items:center;gap:8px;font-size:16px}
+.rules .yes b .ms{color:#1A8A62}
+.rules .no b .ms{color:#C8313B}
+.rules ul{margin:12px 0 0;padding:0 0 0 1.2em;font-size:14px;color:var(--z-text-2);line-height:1.9}
+.faq details{border-bottom:1px solid var(--z-border)}
+.faq summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;cursor:pointer;font-size:16px;font-weight:700}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .ms{flex:none;width:32px;height:32px;border-radius:50%;background:var(--z-surface);display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .25s}
+.faq details[open] summary .ms{transform:rotate(45deg)}
+.faq details p{margin:0 0 20px;padding-right:48px;font-size:15px;color:var(--z-text-2);line-height:1.9}
+.contact{scroll-margin-top:84px}
+.contact-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:48px;padding:40px;border-radius:24px;background:var(--z-surface)}
+.contact-in h2{margin:0 0 12px;font-size:clamp(22px,2.6vw,28px);font-weight:900}
+.contact-in>div>p{margin:0;font-size:15px;color:var(--z-text-2)}
+#zco{display:flex;flex-direction:column;gap:16px}
+#zco[hidden],.done[hidden]{display:none}
+#zco label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--z-text-2)}
+#zco .lt{display:flex;align-items:center;gap:6px}
+#zco em{font-style:normal;font-size:11px;padding:1px 6px;border-radius:4px;background:var(--z-blue-light);color:var(--z-blue)}
+#zco label{position:relative}
+#zco input:not([type=hidden]),#zco textarea{width:100%;padding:13px 14px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1.5px var(--z-border-input);background:#fff;font-family:inherit;font-size:16px;font-weight:400;color:var(--z-navy);resize:vertical}
+#zco input:focus,#zco textarea:focus{outline:none;box-shadow:inset 0 0 0 2px var(--z-blue)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#zco .legal{margin:0;font-size:12px;color:var(--z-text-4)}
+#zco .err{margin:0;font-size:14px;color:#C8313B;font-weight:700}
+.done{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:28px;border-radius:18px;background:#fff}
+.done .ms{font-size:36px;color:#1A8A62}
+.done b{font-size:18px}
+.done p{margin:0;font-size:15px;color:var(--z-text-2)}
+
 @media (max-width:860px){
  .hd nav a.tx{display:none}
  .hero-in{padding:36px 0 24px;gap:24px}
@@ -189,6 +237,10 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
  .how{margin-top:56px}
  .how ol{grid-template-columns:1fr}
  .biz{padding:20px}
+ .co-sec{margin-top:56px}
+ .why,.flow4,.rules,.row2{grid-template-columns:1fr}
+ .contact-in{grid-template-columns:1fr;gap:24px;padding:24px 18px;margin:0 -4px}
+ .cta-row .btn{flex:1 1 100%}
  .dg{grid-template-columns:1fr;gap:0}
  .facts div{grid-template-columns:1fr;gap:2px}
  .lead,.blk p,.steps li{font-size:16px}
