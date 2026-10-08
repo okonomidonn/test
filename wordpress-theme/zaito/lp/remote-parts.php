@@ -41,6 +41,37 @@ if ( ! function_exists( 'zaito_remote_group' ) ) {
     }
 }
 
+if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
+    /**
+     * 登録直後に聞く任意のプロフィール（立場・学年・学校名・やってみたい仕事）の入力欄。
+     * 求人詳細とトップページの登録フォームで共通。学年・学校名は学生を選んだときだけJSで表示する。
+     */
+    function zaito_remote_profile_fields() {
+        $opts = zaito_remote_profile_options();
+        ?>
+    <fieldset><legend>いまの立場</legend><div class="chips">
+      <?php foreach ( $opts['role'] as $o ) : ?>
+        <label><input type="radio" name="role" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
+      <?php endforeach; ?>
+    </div></fieldset>
+    <div class="stu" hidden>
+      <fieldset><legend>学年</legend><div class="chips">
+        <?php foreach ( $opts['grade'] as $o ) : ?>
+          <label><input type="radio" name="grade" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
+        <?php endforeach; ?>
+      </div></fieldset>
+      <label class="lb" for="zschool">学校名</label>
+      <input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" placeholder="例：〇〇大学">
+    </div>
+    <fieldset><legend>やってみたい仕事（いくつでも）</legend><div class="chips">
+      <?php foreach ( $opts['interests'] as $o ) : ?>
+        <label><input type="checkbox" name="interests[]" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
+      <?php endforeach; ?>
+    </div></fieldset>
+        <?php
+    }
+}
+
 if ( ! function_exists( 'zaito_remote_head' ) ) {
     function zaito_remote_head( $title, $description, $canonical, $json_ld = null ) {
         ?>

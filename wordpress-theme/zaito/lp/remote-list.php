@@ -111,6 +111,7 @@ $zaito_card = function ( $j ) {
         <span class="eb">REMOTE JOBS</span>
         <h1>出社なしの仕事だけを、<br>集めました。</h1>
         <p>「在宅」で探しても、出社ありの求人が混ざる。zaitoは、自宅だけで働ける求人を運営が1件ずつ確認して載せています。</p>
+        <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
       </div>
       <dl class="stats">
         <div><dt>掲載中の求人</dt><dd><b><?php echo esc_html( count( $zaito_open ) ); ?></b>件</dd></div>
@@ -142,6 +143,42 @@ $zaito_card = function ( $j ) {
       <?php foreach ( $zaito_closed as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
     </ul>
   <?php endif; ?>
+
+  <section class="signup-band" id="signup" aria-labelledby="signup-title">
+    <div class="sb-copy">
+      <span class="ms" aria-hidden="true">mark_email_unread</span>
+      <h2 id="signup-title">新しい在宅求人を、<br>メールで受け取る</h2>
+      <p>求人は随時追加しています。メールアドレスを登録すると、新しい完全在宅の求人が入ったときにお知らせします。登録は無料です。配信をやめたいときは、届いたメールに返信するだけで止められます。</p>
+    </div>
+    <div class="sb-form">
+      <form id="ztop" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
+        <input type="hidden" name="action" value="zaito_remote_register">
+        <input type="hidden" name="job" value="">
+        <input type="hidden" name="utm_source" value=""><input type="hidden" name="utm_medium" value=""><input type="hidden" name="utm_campaign" value=""><input type="hidden" name="referrer" value="">
+        <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <label for="ztopemail">メールアドレス</label>
+        <div class="sb-row">
+          <input type="email" id="ztopemail" name="email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
+          <button type="submit" class="btn btn-p btn-lg">無料で登録する</button>
+        </div>
+        <p class="legal">登録すると、<a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>と<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a>に同意したものとみなします。</p>
+        <p class="err" id="ztoperr" role="alert"></p>
+      </form>
+      <form class="profile" id="zprofile" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
+        <b>登録できました</b>
+        <p>よければ、あなたに合う求人をお知らせするために教えてください（任意・どれも押すだけ）。</p>
+        <input type="hidden" name="action" value="zaito_remote_profile">
+        <?php zaito_remote_profile_fields(); ?>
+        <button type="submit" class="btn btn-p btn-lg">保存する</button>
+        <button type="button" class="skip" id="zskip">答えずに閉じる</button>
+      </form>
+      <div class="sb-done" id="zdone" hidden>
+        <span class="ms" aria-hidden="true">check_circle</span>
+        <b id="zdonetitle">登録が完了しました</b>
+        <p id="zdonetext">新しい在宅求人が入ったら、メールでお知らせします。気になる求人は「応募ページへ進む」からそのまま応募できます。</p>
+      </div>
+    </div>
+  </section>
 
   <section class="how" aria-labelledby="how-title">
     <h2 id="how-title">zaitoの使い方</h2>
@@ -182,6 +219,55 @@ $zaito_card = function ( $j ) {
       count.textContent = n;
     });
   });
+  // 新着求人のメール登録（トップページ）
+  var top = document.getElementById('ztop');
+  var profile = document.getElementById('zprofile');
+  var stu = profile.querySelector('.stu');
+  var done = document.getElementById('zdone');
+  var terr = document.getElementById('ztoperr');
+  function track(name, params) { if (typeof window.gtag === 'function') { window.gtag('event', name, params); } }
+  function showDone(title, text) {
+    top.hidden = true; profile.hidden = true; done.hidden = false;
+    if (title) document.getElementById('zdonetitle').textContent = title;
+    if (text) document.getElementById('zdonetext').textContent = text;
+  }
+  if (/(?:^|;\s*)zaito_m=1/.test(document.cookie)) {
+    showDone('登録済みです', '新しい在宅求人が入ったら、登録したメールアドレスにお知らせします。');
+  }
+  var q = new URLSearchParams(location.search);
+  ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (k) { top.elements[k].value = q.get(k) || ''; });
+  top.elements.referrer.value = document.referrer || '';
+  top.addEventListener('submit', function (e) {
+    e.preventDefault();
+    terr.textContent = '';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(top.elements.email.value.trim())) { terr.textContent = '正しいメールアドレスを入力してください'; return; }
+    var btn = top.querySelector('button[type=submit]');
+    btn.disabled = true;
+    // form.action は name="action" の入力欄を指してしまうため、属性から読む。
+    fetch(top.getAttribute('action'), { method: 'POST', body: new FormData(top), credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res || !res.success) { throw new Error(res && res.data && res.data.message ? res.data.message : ''); }
+        if (!res.data.created) { showDone('登録済みです', 'このメールアドレスはすでに登録されています。新しい在宅求人が入ったらお知らせします。'); return; }
+        track('sign_up', { method: 'top' });
+        top.hidden = true; profile.hidden = false;
+      })
+      .catch(function (x) {
+        btn.disabled = false;
+        terr.textContent = x.message || '登録できませんでした。時間をおいてもう一度お試しください';
+      });
+  });
+  profile.addEventListener('change', function (e) {
+    if (e.target.name === 'role') { stu.hidden = !/生$/.test(e.target.value); }
+  });
+  profile.addEventListener('submit', function (e) {
+    e.preventDefault();
+    profile.querySelector('button[type=submit]').disabled = true;
+    fetch(profile.getAttribute('action'), { method: 'POST', body: new FormData(profile), credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function () { track('profile_complete', { from: 'top' }); }, function () {})
+      .then(function () { showDone(); });
+  });
+  document.getElementById('zskip').addEventListener('click', function () { showDone(); });
 })();
 </script>
 </body>

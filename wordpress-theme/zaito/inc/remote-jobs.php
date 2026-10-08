@@ -636,7 +636,8 @@ function zaito_handle_remote_register() {
         $fail( '送信回数が多すぎます。しばらくしてからお試しください' );
     }
 
-    $result = zaito_lp_find_or_create_interest( $email, 'remote' );
+    // 登録元: 求人詳細の応募ボタンからなら remote、トップページの新着登録からなら top。
+    $result = zaito_lp_find_or_create_interest( $email, $job ? 'remote' : 'top' );
     if ( ! $result ) {
         $fail( '登録に失敗しました。時間をおいて再度お試しください' );
     }

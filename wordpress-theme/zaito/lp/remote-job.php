@@ -18,7 +18,6 @@ $zaito_closed  = ! empty( $zaito_j['closed'] );
 $zaito_go      = zaito_remote_url( $zaito_j['slug'] ) . 'go/';
 $zaito_initial = mb_substr( preg_replace( '/^(株式会社|合同会社|有限会社|学校法人)|(株式会社|合同会社|有限会社)$/u', '', $zaito_j['company'] ), 0, 1 );
 $zaito_error   = isset( $_GET['signup'] ) && 'error' === $_GET['signup'];
-$zaito_profile_opts = zaito_remote_profile_options();
 
 $zaito_title = $zaito_j['title'] . '（' . $zaito_j['company'] . '）｜完全在宅の求人 | zaito';
 $zaito_desc  = $zaito_j['company'] . 'の「' . $zaito_j['title'] . '」。' . $zaito_j['summary'] . '在宅の条件はzaito運営が確認済みです。';
@@ -119,25 +118,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
             <b>登録できました</b>
             <p>よければ、あなたに合う求人をお知らせするために教えてください（任意・どれも押すだけ）。</p>
             <input type="hidden" name="action" value="zaito_remote_profile">
-            <fieldset><legend>いまの立場</legend><div class="chips">
-              <?php foreach ( $zaito_profile_opts['role'] as $zaito_o ) : ?>
-                <label><input type="radio" name="role" value="<?php echo esc_attr( $zaito_o ); ?>"><span><?php echo esc_html( $zaito_o ); ?></span></label>
-              <?php endforeach; ?>
-            </div></fieldset>
-            <div class="stu" hidden>
-              <fieldset><legend>学年</legend><div class="chips">
-                <?php foreach ( $zaito_profile_opts['grade'] as $zaito_o ) : ?>
-                  <label><input type="radio" name="grade" value="<?php echo esc_attr( $zaito_o ); ?>"><span><?php echo esc_html( $zaito_o ); ?></span></label>
-                <?php endforeach; ?>
-              </div></fieldset>
-              <label class="lb" for="zschool">学校名</label>
-              <input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" placeholder="例：〇〇大学">
-            </div>
-            <fieldset><legend>やってみたい仕事（いくつでも）</legend><div class="chips">
-              <?php foreach ( $zaito_profile_opts['interests'] as $zaito_o ) : ?>
-                <label><input type="checkbox" name="interests[]" value="<?php echo esc_attr( $zaito_o ); ?>"><span><?php echo esc_html( $zaito_o ); ?></span></label>
-              <?php endforeach; ?>
-            </div></fieldset>
+            <?php zaito_remote_profile_fields(); ?>
             <button type="submit" class="btn btn-p btn-lg">保存して応募ページへ進む</button>
             <a class="skip" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow">答えずに応募ページへ進む</a>
           </form>

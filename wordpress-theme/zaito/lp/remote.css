@@ -218,6 +218,30 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .done b{font-size:18px}
 .done p{margin:0;font-size:15px;color:var(--z-text-2)}
 
+/* トップページ: 新着求人のメール登録 */
+.alert-link{align-self:flex-start;margin-top:4px;display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:700}
+.alert-link .ms{font-size:20px}
+.signup-band{margin-top:72px;scroll-margin-top:84px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:start;padding:40px;border-radius:24px;background:linear-gradient(135deg,#EEF1FF,#F6F3FF)}
+.sb-copy>.ms{width:52px;height:52px;border-radius:14px;background:#fff;color:var(--z-blue);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:var(--z-shadow-sm)}
+.sb-copy h2{margin:16px 0 10px;font-size:clamp(22px,2.6vw,30px);font-weight:900;line-height:1.4}
+.sb-copy p{margin:0;font-size:15px;color:var(--z-text-2)}
+.sb-form{background:#fff;border-radius:18px;padding:24px;box-shadow:var(--z-shadow-md)}
+#ztop[hidden],.sb-done[hidden]{display:none}
+#ztop>label{display:block;font-size:13px;font-weight:700;color:var(--z-text-2);margin-bottom:6px}
+.sb-row{display:flex;gap:10px}
+.sb-row input{flex:1;min-width:0;height:56px;padding:0 14px;border-radius:12px;border:0;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font-family:inherit;font-size:16px;color:var(--z-navy)}
+.sb-row input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--z-blue)}
+.sb-row .btn{flex:none}
+#ztop .legal{margin:10px 0 0;font-size:12px;color:var(--z-text-4)}
+#ztop .err{margin:8px 0 0;font-size:14px;color:#C8313B;font-weight:700}
+.sb-form .profile{margin-top:0;padding-top:0;border-top:0}
+.sb-form .profile .btn{width:100%}
+.sb-form .skip{width:100%;border:0;background:none;font-family:inherit;cursor:pointer}
+.sb-done{display:flex;flex-direction:column;gap:6px}
+.sb-done .ms{font-size:36px;color:#1A8A62}
+.sb-done b{font-size:18px}
+.sb-done p{margin:0;font-size:14px;color:var(--z-text-2);line-height:1.8}
+
 @media (max-width:860px){
  .hd nav a.tx{display:none}
  .hero-in{padding:36px 0 24px;gap:24px}
@@ -238,6 +262,10 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
  .how ol{grid-template-columns:1fr}
  .biz{padding:20px}
  .co-sec{margin-top:56px}
+ .signup-band{grid-template-columns:1fr;gap:24px;padding:24px 18px;margin-top:56px}
+ .sb-form{padding:18px}
+ .sb-row{flex-direction:column}
+ .sb-row .btn{width:100%}
  .why,.flow4,.rules,.row2{grid-template-columns:1fr}
  .contact-in{grid-template-columns:1fr;gap:24px;padding:24px 18px;margin:0 -4px}
  .cta-row .btn{flex:1 1 100%}
