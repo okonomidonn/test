@@ -6,6 +6,40 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+if ( ! function_exists( 'zaito_remote_group' ) ) {
+    /**
+     * 職種を、絞り込み・色分けに使う大きな分類にまとめる。
+     * 戻り値は array( 分類名, アイコン, 色 )。色は remote.css の .t-a〜.t-e。
+     */
+    function zaito_remote_group( $category ) {
+        $groups = array(
+            array( 'SNS・マーケ', array( 'SNS', 'マーケ' ), 'campaign', 'a' ),
+            array( '教育・サポート', array( '教育', '学習' ), 'school', 'c' ),
+            array( 'ライティング・編集', array( 'ライティング', '編集' ), 'edit_note', 'd' ),
+            array( 'エンジニア・デザイン', array( 'エンジニア', 'デザイン' ), 'code', 'b' ),
+            array( '事務・アシスタント', array( '事務', 'アシスタント' ), 'description', 'e' ),
+        );
+        foreach ( $groups as $g ) {
+            foreach ( $g[1] as $key ) {
+                if ( false !== strpos( $category, $key ) ) {
+                    return array( $g[0], $g[2], $g[3] );
+                }
+            }
+        }
+        return array( 'その他', 'work', 'e' );
+    }
+
+    /**
+     * 「時給1,500〜2,500円」を、単位・金額・残りに分けて金額を大きく見せる。分けられなければ null。
+     */
+    function zaito_remote_pay_parts( $pay ) {
+        if ( preg_match( '/^(時給|日給|月給)([\d,]+(?:〜[\d,]+)?)(円.*)$/u', $pay, $m ) ) {
+            return array( $m[1], $m[2], $m[3] );
+        }
+        return null;
+    }
+}
+
 if ( ! function_exists( 'zaito_remote_head' ) ) {
     function zaito_remote_head( $title, $description, $canonical, $json_ld = null ) {
         ?>

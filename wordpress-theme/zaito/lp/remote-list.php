@@ -7,27 +7,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 require_once __DIR__ . '/remote-parts.php';
 
-/**
- * 職種を絞り込みの大きな分類にまとめる。
- */
-function zaito_remote_group( $category ) {
-    $groups = array(
-        'SNS・マーケ'        => array( 'SNS', 'マーケ' ),
-        '教育・学習サポート' => array( '教育', '学習' ),
-        'ライティング・編集' => array( 'ライティング', '編集' ),
-        'エンジニア・デザイン' => array( 'エンジニア', 'デザイン' ),
-        '事務・アシスタント' => array( '事務', 'アシスタント' ),
-    );
-    foreach ( $groups as $name => $keys ) {
-        foreach ( $keys as $key ) {
-            if ( false !== strpos( $category, $key ) ) {
-                return $name;
-            }
-        }
-    }
-    return 'その他';
-}
-
 $zaito_jobs   = zaito_remote_jobs();
 $zaito_open   = array_values( array_filter( $zaito_jobs, function ( $j ) {
     return empty( $j['closed'] );
@@ -35,13 +14,34 @@ $zaito_open   = array_values( array_filter( $zaito_jobs, function ( $j ) {
 $zaito_closed = array_values( array_filter( $zaito_jobs, function ( $j ) {
     return ! empty( $j['closed'] );
 } ) );
+
+// 条件の書き添えがない求人、報酬が書かれている求人を先に並べる（同じ条件の中では元の順番）。
+$zaito_rank = function ( $j ) {
+    return ( empty( $j['caution'] ) ? 0 : 2 ) + ( '' !== $j['pay'] ? 0 : 1 );
+};
+foreach ( $zaito_open as $zaito_i => $zaito_j ) {
+    $zaito_open[ $zaito_i ]['_order'] = $zaito_i;
+}
+usort( $zaito_open, function ( $a, $b ) use ( $zaito_rank ) {
+    $d = $zaito_rank( $a ) - $zaito_rank( $b );
+    return $d ? $d : $a['_order'] - $b['_order'];
+} );
+
+// 分類ごとの件数（絞り込みボタンに表示）。
 $zaito_groups = array();
 foreach ( $zaito_open as $zaito_j ) {
-    $zaito_groups[ zaito_remote_group( $zaito_j['category'] ) ] = true;
+    $zaito_g = zaito_remote_group( $zaito_j['category'] );
+    if ( ! isset( $zaito_groups[ $zaito_g[0] ] ) ) {
+        $zaito_groups[ $zaito_g[0] ] = array( 'icon' => $zaito_g[1], 'tone' => $zaito_g[2], 'n' => 0 );
+    }
+    $zaito_groups[ $zaito_g[0] ]['n']++;
 }
-$zaito_checked = max( array_map( function ( $j ) {
+$zaito_checked  = max( array_map( function ( $j ) {
     return $j['checked'];
 }, $zaito_jobs ) );
+$zaito_verified = count( array_filter( $zaito_open, function ( $j ) {
+    return empty( $j['caution'] );
+} ) );
 
 $zaito_title = 'zaito | 出社なしの仕事だけを集めた、完全在宅の求人サイト';
 $zaito_desc  = '「在宅」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅の求人を、運営が1件ずつ確認してまとめています。SNS運用、Webマーケ、教育、ライティング、エンジニアなど。';
@@ -63,27 +63,39 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url(), array(
 ) );
 
 $zaito_card = function ( $j ) {
-    $group = zaito_remote_group( $j['category'] );
+    $g       = zaito_remote_group( $j['category'] );
+    $pay     = zaito_remote_pay_parts( $j['pay'] );
+    $initial = mb_substr( preg_replace( '/^(株式会社|合同会社|有限会社|学校法人)|(株式会社|合同会社|有限会社)$/u', '', $j['company'] ), 0, 1 );
     ?>
-    <li class="card<?php echo ! empty( $j['closed'] ) ? ' closed' : ''; ?>" data-group="<?php echo esc_attr( $group ); ?>">
+    <li class="card t-<?php echo esc_attr( $g[2] ); ?><?php echo ! empty( $j['closed'] ) ? ' closed' : ''; ?>" data-group="<?php echo esc_attr( $g[0] ); ?>">
       <a href="<?php echo esc_url( zaito_remote_url( $j['slug'] ) ); ?>">
-        <div class="top">
-          <span class="cat"><?php echo esc_html( $j['category'] ); ?></span>
-          <?php if ( ! empty( $j['closed'] ) ) : ?>
-            <span class="warn">募集終了</span>
-          <?php elseif ( ! empty( $j['caution'] ) ) : ?>
-            <span class="warn"><span class="ms" aria-hidden="true">info</span>条件あり</span>
-          <?php else : ?>
-            <span class="ok"><span class="ms" aria-hidden="true">verified</span>完全在宅を確認</span>
+        <div class="band"><span class="ms" aria-hidden="true"><?php echo esc_html( $g[1] ); ?></span><span class="bcat"><?php echo esc_html( $j['category'] ); ?></span></div>
+        <div class="body">
+          <h2><?php echo esc_html( $j['title'] ); ?></h2>
+          <span class="co"><span class="av" aria-hidden="true"><?php echo esc_html( $initial ); ?></span><?php echo esc_html( $j['company'] ); ?></span>
+          <div class="pay">
+            <?php if ( $pay ) : ?>
+              <span class="u"><?php echo esc_html( $pay[0] ); ?></span><b><?php echo esc_html( $pay[1] ); ?></b><span class="u"><?php echo esc_html( $pay[2] ); ?></span>
+            <?php elseif ( '' !== $j['pay'] ) : ?>
+              <span class="tx"><?php echo esc_html( $j['pay'] ); ?></span>
+            <?php else : ?>
+              <span class="none">報酬は募集ページで確認</span>
+            <?php endif; ?>
+          </div>
+          <?php if ( $j['hours'] ) : ?>
+            <p class="hrs"><span class="ms" aria-hidden="true">schedule</span><span><?php echo esc_html( $j['hours'] ); ?></span></p>
           <?php endif; ?>
+          <div class="tags">
+            <?php if ( ! empty( $j['closed'] ) ) : ?>
+              <span class="warn">募集終了</span>
+            <?php elseif ( ! empty( $j['caution'] ) ) : ?>
+              <span class="warn"><span class="ms" aria-hidden="true">info</span>条件あり</span>
+            <?php else : ?>
+              <span class="ok"><span class="ms" aria-hidden="true">verified</span>完全在宅</span>
+            <?php endif; ?>
+            <span class="tg"><?php echo esc_html( $j['target'] ); ?></span>
+          </div>
         </div>
-        <h2><?php echo esc_html( $j['title'] ); ?></h2>
-        <span class="co"><?php echo esc_html( $j['company'] ); ?></span>
-        <dl>
-          <dt><span class="ms" aria-hidden="true">payments</span>報酬</dt><dd><?php echo esc_html( $j['pay'] ? $j['pay'] : '元のページで確認' ); ?></dd>
-          <dt><span class="ms" aria-hidden="true">schedule</span>稼働</dt><dd><?php echo esc_html( $j['hours'] ? $j['hours'] : '元のページで確認' ); ?></dd>
-          <dt><span class="ms" aria-hidden="true">school</span>対象</dt><dd><?php echo esc_html( $j['target'] ); ?></dd>
-        </dl>
       </a>
     </li>
     <?php
@@ -92,42 +104,56 @@ $zaito_card = function ( $j ) {
 <body>
 <?php zaito_remote_header(); ?>
 
-<main class="wrap">
-  <div class="lh">
-    <span class="eb">REMOTE JOBS</span>
-    <h1>出社なしの仕事だけを、<br>集めました。</h1>
-    <p>「在宅」で探しても、出社ありの求人が混ざる。zaitoは、自宅だけで働ける求人を運営が1件ずつ確認してまとめています。いまは学生が応募できる求人が中心です。</p>
-  </div>
-
-  <ol class="how" aria-label="使い方">
-    <li><span class="ms" aria-hidden="true">verified</span><span><b>在宅の条件を確認済み</b><small>求人ページを運営が読み、出社の有無を確かめています。</small></span></li>
-    <li><span class="ms" aria-hidden="true">mail</span><span><b>無料登録で応募ページへ</b><small>メールアドレスだけで登録でき、新着求人もお知らせします。</small></span></li>
-    <li><span class="ms" aria-hidden="true">open_in_new</span><span><b>応募は企業の募集ページから</b><small>各企業の募集ページ（Wantedlyなど）から応募します。</small></span></li>
-  </ol>
-
-  <?php if ( count( $zaito_groups ) > 1 ) : ?>
-    <div class="filters" role="group" aria-label="職種で絞り込む">
-      <button type="button" data-filter="" aria-pressed="true">すべて</button>
-      <?php foreach ( array_keys( $zaito_groups ) as $zaito_g ) : ?>
-        <button type="button" data-filter="<?php echo esc_attr( $zaito_g ); ?>" aria-pressed="false"><?php echo esc_html( $zaito_g ); ?></button>
-      <?php endforeach; ?>
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-in">
+      <div class="hero-copy">
+        <span class="eb">REMOTE JOBS</span>
+        <h1>出社なしの仕事だけを、<br>集めました。</h1>
+        <p>「在宅」で探しても、出社ありの求人が混ざる。zaitoは、自宅だけで働ける求人を運営が1件ずつ確認して載せています。</p>
+      </div>
+      <dl class="stats">
+        <div><dt>掲載中の求人</dt><dd><b><?php echo esc_html( count( $zaito_open ) ); ?></b>件</dd></div>
+        <div><dt>完全在宅を確認</dt><dd><b><?php echo esc_html( $zaito_verified ); ?></b>件</dd></div>
+        <div><dt>登録・利用料</dt><dd><b>0</b>円</dd></div>
+      </dl>
     </div>
-  <?php endif; ?>
 
-  <p class="count" aria-live="polite"><span id="zcount"><?php echo esc_html( count( $zaito_open ) ); ?></span>件の求人（<?php echo esc_html( date_i18n( 'Y年n月j日', strtotime( $zaito_checked ) ) ); ?>に確認）</p>
+    <?php if ( count( $zaito_groups ) > 1 ) : ?>
+      <div class="filters" role="group" aria-label="職種で絞り込む">
+        <button type="button" data-filter="" aria-pressed="true"><span class="ms" aria-hidden="true">apps</span>すべて<small><?php echo esc_html( count( $zaito_open ) ); ?></small></button>
+        <?php foreach ( $zaito_groups as $zaito_name => $zaito_g ) : ?>
+          <button type="button" class="t-<?php echo esc_attr( $zaito_g['tone'] ); ?>" data-filter="<?php echo esc_attr( $zaito_name ); ?>" aria-pressed="false"><span class="ms" aria-hidden="true"><?php echo esc_html( $zaito_g['icon'] ); ?></span><?php echo esc_html( $zaito_name ); ?><small><?php echo esc_html( $zaito_g['n'] ); ?></small></button>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </div>
+</section>
+
+<main class="wrap">
+  <p class="count" aria-live="polite"><b id="zcount"><?php echo esc_html( count( $zaito_open ) ); ?></b>件の求人<span>・<?php echo esc_html( date_i18n( 'n月j日', strtotime( $zaito_checked ) ) ); ?>に運営が確認</span></p>
   <ul class="cards" id="zcards">
     <?php foreach ( $zaito_open as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
   </ul>
 
   <?php if ( $zaito_closed ) : ?>
-    <h2 style="margin:56px 0 0;font-size:18px">募集が終了した求人</h2>
+    <h2 class="sub">募集が終了した求人</h2>
     <ul class="cards">
       <?php foreach ( $zaito_closed as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
     </ul>
   <?php endif; ?>
 
+  <section class="how" aria-labelledby="how-title">
+    <h2 id="how-title">zaitoの使い方</h2>
+    <ol>
+      <li><span class="ms" aria-hidden="true">search</span><b>求人を探す</b><span>載っているのは、運営が出社の有無を確かめた求人だけです。</span></li>
+      <li><span class="ms" aria-hidden="true">mail</span><b>無料で登録</b><span>メールアドレスだけで登録でき、新しい求人もお知らせします。</span></li>
+      <li><span class="ms" aria-hidden="true">open_in_new</span><b>募集ページから応募</b><span>応募と選考は、各企業の募集ページ（Wantedlyなど）で行います。</span></li>
+    </ol>
+  </section>
+
   <a class="biz" href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">
-    <span><b>完全在宅の人材を募集している企業の方へ</b>zaitoへの求人掲載は無料です。求人原稿の作成もお手伝いします。</span>
+    <span><b>在宅で働く人を募集している企業の方へ</b>zaitoへの求人掲載は無料です。求人原稿の作成もお手伝いします。</span>
     <span class="ms" aria-hidden="true">arrow_forward</span>
   </a>
 

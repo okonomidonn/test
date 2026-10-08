@@ -29,37 +29,76 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .crumb{margin:24px 0 0;font-size:13px;color:var(--z-text-4)}
 .crumb a{color:var(--z-text-3)}
 
-/* 一覧 */
-.lh{padding:56px 0 8px;display:flex;flex-direction:column;gap:14px;max-width:760px}
-.lh .eb{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;color:var(--z-blue)}
-.lh h1{margin:0;font-size:clamp(26px,3.6vw,40px);font-weight:900;line-height:1.4}
-.lh p{margin:0;font-size:15px;color:var(--z-text-2)}
-.how{margin:28px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.how li{display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-radius:14px;background:var(--z-surface);font-size:14px;color:var(--z-text-2);line-height:1.65}
-.how li .ms{font-size:22px;color:var(--z-blue);flex:none;margin-top:1px}
-.how li b{display:block;color:var(--z-navy);font-size:15px}
-.how li small{font-size:14px}
-.filters{margin:40px 0 0;display:flex;flex-wrap:wrap;gap:8px}
-.filters button{height:38px;padding:0 14px;border-radius:999px;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border-input);color:var(--z-text-2);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+/* 職種ごとの色（カードの帯・絞り込みボタン） */
+.t-a{--tone:#3D5AFE;--tone-bg:#EEF1FF;--tone-bg2:#DCE3FF}
+.t-b{--tone:#1A8A62;--tone-bg:#E9F7F1;--tone-bg2:#CFEFE2}
+.t-c{--tone:#C25F0E;--tone-bg:#FFF3E6;--tone-bg2:#FFE2C2}
+.t-d{--tone:#6A3FD1;--tone-bg:#F3EEFF;--tone-bg2:#E2D8FF}
+.t-e{--tone:#3A4563;--tone-bg:#F2F4F8;--tone-bg2:#E3E7EF}
+
+/* 一覧: ヒーロー */
+.hero{background:linear-gradient(180deg,#F3F5FF 0%,#F8F9FC 70%,#fff 100%);border-bottom:1px solid var(--z-line)}
+.hero-in{padding:56px 0 32px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:28px 48px}
+.hero-copy{display:flex;flex-direction:column;gap:14px;max-width:640px}
+.hero .eb{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;color:var(--z-blue)}
+.hero h1{margin:0;font-size:clamp(30px,4.4vw,50px);font-weight:900;line-height:1.3;letter-spacing:-0.01em}
+.hero p{margin:0;font-size:16px;color:var(--z-text-2)}
+.stats{margin:0;display:flex;background:#fff;border:1px solid var(--z-border);border-radius:18px;box-shadow:var(--z-shadow-sm)}
+.stats div{padding:16px 24px;min-width:128px}
+.stats div+div{border-left:1px solid var(--z-line)}
+.stats dt{font-size:13px;color:var(--z-text-4)}
+.stats dd{margin:2px 0 0;font-size:14px;font-weight:700;color:var(--z-text-2)}
+.stats dd b{font-family:'Outfit',sans-serif;font-size:32px;line-height:1.1;color:var(--z-navy);margin-right:2px}
+.filters{padding:0 0 28px;display:flex;flex-wrap:wrap;gap:10px}
+.filters button{--tone:var(--z-navy);--tone-bg:#fff;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 16px 0 12px;border-radius:12px;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border);color:var(--z-navy);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:box-shadow .2s,background .2s}
+.filters button:hover{box-shadow:inset 0 0 0 1.5px var(--z-border-input)}
+.filters button .ms{width:28px;height:28px;border-radius:8px;background:var(--tone-bg);color:var(--tone);display:flex;align-items:center;justify-content:center;font-size:18px}
+.filters button small{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--z-text-4)}
 .filters button[aria-pressed="true"]{background:var(--z-navy);color:#fff;box-shadow:none}
-.count{margin:20px 0 0;font-size:14px;color:var(--z-text-3)}
-.cards{margin:12px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:16px}
-.card a{height:100%;display:flex;flex-direction:column;gap:10px;padding:22px;border:1px solid var(--z-border);border-radius:18px;color:var(--z-navy);transition:box-shadow .2s,transform .2s,border-color .2s}
-.card a:hover{border-color:var(--z-border-input);box-shadow:0 20px 40px -28px rgba(11,21,48,.4);transform:translateY(-2px)}
-.card .top{display:flex;flex-wrap:wrap;gap:6px}
-.card h2{margin:4px 0 0;font-size:17px;font-weight:700;line-height:1.55}
-.card .co{font-size:14px;color:var(--z-text-2)}
-.card dl{margin:auto 0 0;padding-top:10px;border-top:1px solid var(--z-line);display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
-.card dt{color:var(--z-text-4);display:flex;align-items:center;gap:4px}
-.card dt .ms{font-size:16px}
-.card dd{margin:0;color:var(--z-text-2);overflow-wrap:anywhere}
+.filters button[aria-pressed="true"] small{color:#A9B3CC}
+.filters button[aria-pressed="true"] .ms{background:rgba(255,255,255,.14);color:#fff}
+
+/* 一覧: カード */
+.count{margin:32px 0 0;font-size:14px;color:var(--z-text-3)}
+.count b{font-family:'Outfit',sans-serif;font-size:22px;color:var(--z-navy);margin-right:2px}
+.count span{color:var(--z-text-4)}
+.cards{margin:14px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:20px}
+.card a{height:100%;display:flex;flex-direction:column;border:1px solid var(--z-border);border-radius:18px;overflow:hidden;color:var(--z-navy);background:#fff;transition:box-shadow .2s,transform .2s,border-color .2s}
+.card a:hover{border-color:var(--z-border-input);box-shadow:0 22px 44px -28px rgba(11,21,48,.42);transform:translateY(-3px)}
+.band{height:64px;padding:0 20px;display:flex;align-items:center;gap:10px;background:linear-gradient(120deg,var(--tone-bg),var(--tone-bg2));color:var(--tone)}
+.band .ms{font-size:26px}
+.band .bcat{font-size:13px;font-weight:700}
+.card .body{flex:1;display:flex;flex-direction:column;gap:10px;padding:18px 20px 20px}
+.card h2{margin:0;font-size:17px;font-weight:700;line-height:1.55}
+.card .co{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--z-text-3)}
+.card .co .av{width:22px;height:22px;border-radius:6px;background:var(--z-navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none}
+.card .pay{margin-top:4px;display:flex;align-items:baseline;gap:2px;min-height:34px;flex-wrap:wrap}
+.card .pay .u{font-size:13px;color:var(--z-text-3);font-weight:700}
+.card .pay b{font-family:'Outfit',sans-serif;font-size:26px;line-height:1.1;margin:0 2px;letter-spacing:-.01em}
+.card .pay .tx{font-size:15px;font-weight:700;line-height:1.5}
+.card .pay .none{font-size:14px;color:var(--z-text-4)}
+.card .hrs{margin:0;display:flex;gap:6px;font-size:13px;color:var(--z-text-3);line-height:1.6}
+.card .hrs .ms{font-size:16px;margin-top:2px;color:var(--z-text-4)}
+.card .hrs span:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .tags{margin-top:auto;padding-top:12px;border-top:1px solid var(--z-line);display:flex;flex-wrap:wrap;gap:6px}
+.card .tg{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;background:var(--z-chip);color:var(--z-text-2);font-size:12px;font-weight:500;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card.closed a{opacity:.55}
-.biz{margin:56px 0 0;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 28px;border-radius:18px;background:var(--z-navy);color:#fff;transition:transform .2s}
+.sub{margin:56px 0 0;font-size:18px}
+
+/* 一覧: 使い方・企業向け・注記 */
+.how{margin:72px 0 0}
+.how h2{margin:0 0 16px;font-size:20px;font-weight:700}
+.how ol{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:hw}
+.how li{position:relative;display:flex;flex-direction:column;gap:6px;padding:22px 22px 22px;border-radius:16px;background:var(--z-surface);font-size:14px;color:var(--z-text-2);line-height:1.7;counter-increment:hw}
+.how li::after{content:counter(hw);position:absolute;top:16px;right:20px;font-family:'Outfit',sans-serif;font-size:28px;font-weight:700;color:#DDE2EC}
+.how li .ms{font-size:24px;color:var(--z-blue)}
+.how li b{font-size:16px;color:var(--z-navy)}
+.biz{margin:24px 0 0;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 28px;border-radius:18px;background:var(--z-navy);color:#fff;transition:transform .2s}
 .biz:hover{color:#fff;transform:translateY(-2px)}
-.biz b{display:block;font-size:17px;margin-bottom:4px}
+.biz b{display:block;font-size:17px;margin-bottom:4px;color:#fff}
 .biz span{font-size:14px;color:#C9D0E4;line-height:1.7}
 .biz .ms{font-size:28px;color:#fff;flex:none}
-.disc{margin:24px 0 0;padding:18px 20px;border-radius:14px;background:var(--z-surface);font-size:13px;color:var(--z-text-3);line-height:1.8}
+.disc{margin:24px 0 0;padding:18px 20px;border-radius:14px;border:1px solid var(--z-line);font-size:13px;color:var(--z-text-3);line-height:1.8}
 .disc b{color:var(--z-text-2)}
 
 /* 詳細 */
@@ -132,11 +171,23 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 
 @media (max-width:860px){
  .hd nav a.tx{display:none}
- .lh{padding-top:36px}
- .how{grid-template-columns:1fr;gap:6px;margin-top:20px}
- .how li{padding:10px 14px;align-items:center}
- .how li small{display:none}
- .how li .ms{margin-top:0}
+ .hero-in{padding:36px 0 24px;gap:24px}
+ .hero p{font-size:15px}
+ .stats{width:100%}
+ .stats div{flex:1;min-width:0;padding:12px 14px}
+ .stats dt{font-size:12px}
+ .stats dd b{font-size:26px}
+ .filters{flex-wrap:nowrap;overflow-x:auto;margin:0 -20px;padding:0 20px 20px;scrollbar-width:none}
+ .filters::-webkit-scrollbar{display:none}
+ .filters button{flex:none}
+ .count{margin-top:24px}
+ .cards{gap:14px}
+ .band{height:46px;padding:0 16px}
+ .band .ms{font-size:22px}
+ .card .body{padding:14px 16px 16px;gap:8px}
+ .how{margin-top:56px}
+ .how ol{grid-template-columns:1fr}
+ .biz{padding:20px}
  .dg{grid-template-columns:1fr;gap:0}
  .facts div{grid-template-columns:1fr;gap:2px}
  .lead,.blk p,.steps li{font-size:16px}
