@@ -1,6 +1,6 @@
 <?php
 /**
- * まとめ求人（/remote/）。
+ * まとめ求人（一覧はトップページ、詳細は /remote/{slug}/）。
  *
  * 公開されている完全在宅・学生OKの求人を、運営が1件ずつ確認してまとめたもの。
  * zaitoに載せるのは会社名・職種・報酬・稼働条件・在宅の根拠・元のページへのリンクだけで、
@@ -285,8 +285,11 @@ function zaito_remote_job( $slug ) {
     return null;
 }
 
+/**
+ * 一覧はトップページ（/）。詳細は /remote/{slug}/。
+ */
 function zaito_remote_url( $slug = '' ) {
-    return home_url( '/remote/' . ( $slug ? $slug . '/' : '' ) );
+    return $slug ? home_url( '/remote/' . $slug . '/' ) : home_url( '/' );
 }
 
 /* ---------- URL ---------- */
@@ -314,10 +317,9 @@ function zaito_remote_template_redirect() {
     }
     $slug = (string) get_query_var( 'zaito_remote' );
 
+    // 一覧はトップページに移したため、/remote/ はトップページへ転送する。
     if ( '' === $slug ) {
-        status_header( 200 );
-        header( 'Content-Type: text/html; charset=UTF-8' );
-        include get_template_directory() . '/lp/remote-list.php';
+        wp_safe_redirect( home_url( '/' ), 301 );
         exit;
     }
 
@@ -469,6 +471,58 @@ function zaito_handle_remote_register() {
 }
 add_action( 'wp_ajax_zaito_remote_register', 'zaito_handle_remote_register' );
 add_action( 'wp_ajax_nopriv_zaito_remote_register', 'zaito_handle_remote_register' );
+
+/* ---------- 登録後のプロフィール（任意） ---------- */
+
+/**
+ * 登録の直後に聞く任意の項目。どれも押すだけで答えられる選択肢にする（学校名だけ入力）。
+ */
+function zaito_remote_profile_options() {
+    return array(
+        'role'      => array( '大学生', '大学院生', '専門学校・短大生', '高校生', '社会人', '主婦・主夫', 'その他' ),
+        'grade'     => array( '1年', '2年', '3年', '4年以上' ),
+        'interests' => array( 'SNS運用', 'Webマーケティング', 'ライティング・編集', '動画編集', 'デザイン', 'エンジニア', '事務・アシスタント', '教育・学習サポート', 'カスタマーサポート', 'リサーチ・データ入力' ),
+    );
+}
+
+/**
+ * プロフィールの保存。登録済みのCookieがあるブラウザだけが、その人の登録に書き込める。
+ */
+function zaito_handle_remote_profile() {
+    $member = zaito_remote_member_id();
+    if ( ! $member ) {
+        wp_send_json_error( array( 'message' => '登録情報が確認できませんでした' ), 400 );
+    }
+    if ( zaito_lp_rate_limited( 'remote_profile' ) ) {
+        wp_send_json_error( array( 'message' => '送信回数が多すぎます。しばらくしてからお試しください' ), 400 );
+    }
+    $opts = zaito_remote_profile_options();
+
+    $role = isset( $_POST['role'] ) ? sanitize_text_field( wp_unslash( $_POST['role'] ) ) : '';
+    if ( in_array( $role, $opts['role'], true ) ) {
+        update_post_meta( $member, 'role', $role );
+    }
+    $grade = isset( $_POST['grade'] ) ? sanitize_text_field( wp_unslash( $_POST['grade'] ) ) : '';
+    if ( in_array( $grade, $opts['grade'], true ) ) {
+        update_post_meta( $member, 'grade', $grade );
+    }
+    $school = isset( $_POST['school'] ) ? sanitize_text_field( wp_unslash( $_POST['school'] ) ) : '';
+    if ( '' !== $school ) {
+        update_post_meta( $member, 'school', mb_substr( $school, 0, 80 ) );
+    }
+    $picked = isset( $_POST['interests'] ) && is_array( $_POST['interests'] )
+        ? array_values( array_intersect( array_map( 'sanitize_text_field', wp_unslash( $_POST['interests'] ) ), $opts['interests'] ) )
+        : array();
+    if ( $picked ) {
+        // 先行登録（トップページ）で答えた「興味のある仕事」があれば残して足す。
+        $current = get_post_meta( $member, 'interests', true );
+        $current = is_array( $current ) ? $current : array();
+        update_post_meta( $member, 'interests', array_slice( array_values( array_unique( array_merge( $current, $picked ) ) ), 0, 20 ) );
+    }
+    wp_send_json_success( array() );
+}
+add_action( 'wp_ajax_zaito_remote_profile', 'zaito_handle_remote_profile' );
+add_action( 'wp_ajax_nopriv_zaito_remote_profile', 'zaito_handle_remote_profile' );
 
 /* ---------- 管理画面「求人 > まとめ求人」 ---------- */
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * まとめ求人の一覧（/remote/）。inc/remote-jobs.php から読み込む。
+ * まとめ求人の一覧。トップページ（/）として inc/prelaunch.php から読み込む。
  */
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -43,8 +43,8 @@ $zaito_checked = max( array_map( function ( $j ) {
     return $j['checked'];
 }, $zaito_jobs ) );
 
-$zaito_title = '大学生OKの完全在宅求人・インターン一覧 | zaito';
-$zaito_desc  = '出社なしで働ける、大学生OKの在宅求人・長期インターンを、zaito運営が1件ずつ確認してまとめています。SNS運用、Webマーケ、教育、ライティング、エンジニアなど。';
+$zaito_title = 'zaito | 出社なしの仕事だけを集めた、完全在宅の求人サイト';
+$zaito_desc  = '「在宅」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅の求人を、運営が1件ずつ確認してまとめています。SNS運用、Webマーケ、教育、ライティング、エンジニアなど。';
 
 $zaito_items = array();
 foreach ( $zaito_open as $zaito_i => $zaito_j ) {
@@ -58,7 +58,7 @@ foreach ( $zaito_open as $zaito_i => $zaito_j ) {
 zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url(), array(
     '@context'        => 'https://schema.org',
     '@type'           => 'ItemList',
-    'name'            => '大学生OKの完全在宅求人',
+    'name'            => '完全在宅の求人',
     'itemListElement' => $zaito_items,
 ) );
 
@@ -95,14 +95,14 @@ $zaito_card = function ( $j ) {
 <main class="wrap">
   <div class="lh">
     <span class="eb">REMOTE JOBS</span>
-    <h1>大学生OKの、完全在宅の求人</h1>
-    <p>「在宅」で探しても出社ありの求人が混ざる。そんな手間をなくすため、出社なしで働ける学生向けの求人を、zaito運営が1件ずつ確認してまとめています。</p>
+    <h1>出社なしの仕事だけを、<br>集めました。</h1>
+    <p>「在宅」で探しても、出社ありの求人が混ざる。zaitoは、自宅だけで働ける求人を運営が1件ずつ確認してまとめています。いまは学生が応募できる求人が中心です。</p>
   </div>
 
   <ol class="how" aria-label="使い方">
-    <li><span class="ms" aria-hidden="true">verified</span><span><b>在宅の条件を確認済み</b>求人ページを運営が読み、出社の有無を確かめています。</span></li>
-    <li><span class="ms" aria-hidden="true">mail</span><span><b>無料登録で応募ページへ</b>メールアドレスだけで登録でき、新着求人もお知らせします。</span></li>
-    <li><span class="ms" aria-hidden="true">open_in_new</span><span><b>応募は企業の募集ページから</b>各企業の募集ページ（Wantedlyなど）から応募します。</span></li>
+    <li><span class="ms" aria-hidden="true">verified</span><span><b>在宅の条件を確認済み</b><small>求人ページを運営が読み、出社の有無を確かめています。</small></span></li>
+    <li><span class="ms" aria-hidden="true">mail</span><span><b>無料登録で応募ページへ</b><small>メールアドレスだけで登録でき、新着求人もお知らせします。</small></span></li>
+    <li><span class="ms" aria-hidden="true">open_in_new</span><span><b>応募は企業の募集ページから</b><small>各企業の募集ページ（Wantedlyなど）から応募します。</small></span></li>
   </ol>
 
   <?php if ( count( $zaito_groups ) > 1 ) : ?>
@@ -125,6 +125,11 @@ $zaito_card = function ( $j ) {
       <?php foreach ( $zaito_closed as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
     </ul>
   <?php endif; ?>
+
+  <a class="biz" href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">
+    <span><b>完全在宅の人材を募集している企業の方へ</b>zaitoへの求人掲載は無料です。求人原稿の作成もお手伝いします。</span>
+    <span class="ms" aria-hidden="true">arrow_forward</span>
+  </a>
 
   <div class="disc">
     <b>この一覧について</b><br>

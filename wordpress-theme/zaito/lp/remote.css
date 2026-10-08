@@ -38,6 +38,7 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .how li{display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-radius:14px;background:var(--z-surface);font-size:14px;color:var(--z-text-2);line-height:1.65}
 .how li .ms{font-size:22px;color:var(--z-blue);flex:none;margin-top:1px}
 .how li b{display:block;color:var(--z-navy);font-size:15px}
+.how li small{font-size:14px}
 .filters{margin:40px 0 0;display:flex;flex-wrap:wrap;gap:8px}
 .filters button{height:38px;padding:0 14px;border-radius:999px;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border-input);color:var(--z-text-2);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
 .filters button[aria-pressed="true"]{background:var(--z-navy);color:#fff;box-shadow:none}
@@ -53,7 +54,12 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .card dt .ms{font-size:16px}
 .card dd{margin:0;color:var(--z-text-2);overflow-wrap:anywhere}
 .card.closed a{opacity:.55}
-.disc{margin:48px 0 0;padding:18px 20px;border-radius:14px;background:var(--z-surface);font-size:13px;color:var(--z-text-3);line-height:1.8}
+.biz{margin:56px 0 0;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 28px;border-radius:18px;background:var(--z-navy);color:#fff;transition:transform .2s}
+.biz:hover{color:#fff;transform:translateY(-2px)}
+.biz b{display:block;font-size:17px;margin-bottom:4px}
+.biz span{font-size:14px;color:#C9D0E4;line-height:1.7}
+.biz .ms{font-size:28px;color:#fff;flex:none}
+.disc{margin:24px 0 0;padding:18px 20px;border-radius:14px;background:var(--z-surface);font-size:13px;color:var(--z-text-3);line-height:1.8}
 .disc b{color:var(--z-text-2)}
 
 /* 詳細 */
@@ -95,6 +101,23 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .signup .btn{margin-top:12px}
 .signup .legal{margin:10px 0 0;font-size:12px;color:var(--z-text-4);line-height:1.7}
 .signup .err{margin:10px 0 0;font-size:14px;color:#C8313B;font-weight:700}
+.profile{margin-top:18px;padding-top:18px;border-top:1px solid var(--z-line)}
+.profile[hidden],.profile .stu[hidden]{display:none}
+.profile>b{display:block;font-size:16px}
+.profile>p{margin:6px 0 4px;font-size:14px;color:var(--z-text-2);line-height:1.7}
+.profile fieldset{margin:14px 0 0;padding:0;border:0;min-width:0}
+.profile legend{padding:0;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--z-text-2)}
+.profile .lb{display:block;margin:14px 0 6px;font-size:13px;font-weight:700;color:var(--z-text-2)}
+.profile input[type=text]{width:100%;height:48px;padding:0 14px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font-family:inherit;font-size:16px;color:var(--z-navy)}
+.profile input[type=text]:focus{outline:none;box-shadow:inset 0 0 0 2px var(--z-blue)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{position:relative;cursor:pointer}
+.chips input{position:absolute;opacity:0;width:1px;height:1px}
+.chips span{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font-size:14px;font-weight:500;color:var(--z-text-2)}
+.chips input:checked+span{background:var(--z-blue-light);color:var(--z-blue);box-shadow:inset 0 0 0 1.5px var(--z-blue);font-weight:700}
+.chips input:focus-visible+span{outline:3px solid var(--z-blue);outline-offset:2px}
+.profile .btn{margin-top:18px}
+.profile .skip{display:block;margin-top:12px;text-align:center;font-size:14px;color:var(--z-text-3)}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .spbar{display:none}
 
@@ -110,7 +133,10 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 @media (max-width:860px){
  .hd nav a.tx{display:none}
  .lh{padding-top:36px}
- .how{grid-template-columns:1fr}
+ .how{grid-template-columns:1fr;gap:6px;margin-top:20px}
+ .how li{padding:10px 14px;align-items:center}
+ .how li small{display:none}
+ .how li .ms{margin-top:0}
  .dg{grid-template-columns:1fr;gap:0}
  .facts div{grid-template-columns:1fr;gap:2px}
  .lead,.blk p,.steps li{font-size:16px}

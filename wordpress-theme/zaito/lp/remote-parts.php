@@ -51,8 +51,8 @@ if ( ! function_exists( 'zaito_remote_header' ) ) {
   <a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="zaito トップへ">za<span>i</span>to</a>
   <nav aria-label="メインナビゲーション">
     <a class="tx" href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a>
-    <a class="tx" href="<?php echo esc_url( home_url( '/#companies' ) ); ?>">企業の方</a>
-    <a class="btn btn-p" href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">無料で求人掲載</a>
+    <a class="tx" href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方</a>
+    <a class="btn btn-p" href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">無料で求人掲載</a>
   </nav>
 </div></header>
         <?php
@@ -63,8 +63,8 @@ if ( ! function_exists( 'zaito_remote_footer' ) ) {
     function zaito_remote_footer() {
         ?>
 <footer class="ft"><div class="wrap">
-  <div class="ft-top"><p>大学生・若手向け<br>完全在宅求人サービス</p>
-    <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">zaitoについて</a><a href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a><a href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">掲載・削除のご依頼</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
+  <div class="ft-top"><p>出社なしの仕事だけを<br>集めた求人サイト</p>
+    <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方へ</a><a href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">掲載・削除のご依頼</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
   <div class="ft-b"><span>運営：zaito 運営事務局</span><small>Copyright © zaito</small></div>
   <div class="logo ft-big" aria-hidden="true">za<span>i</span>to</div>
 </div></footer>

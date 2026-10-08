@@ -18,6 +18,7 @@ $zaito_closed  = ! empty( $zaito_j['closed'] );
 $zaito_go      = zaito_remote_url( $zaito_j['slug'] ) . 'go/';
 $zaito_initial = mb_substr( preg_replace( '/^(株式会社|合同会社|有限会社|学校法人)|(株式会社|合同会社|有限会社)$/u', '', $zaito_j['company'] ), 0, 1 );
 $zaito_error   = isset( $_GET['signup'] ) && 'error' === $_GET['signup'];
+$zaito_profile_opts = zaito_remote_profile_options();
 
 $zaito_title = $zaito_j['title'] . '（' . $zaito_j['company'] . '）｜完全在宅の求人 | zaito';
 $zaito_desc  = $zaito_j['company'] . 'の「' . $zaito_j['title'] . '」。' . $zaito_j['summary'] . '在宅の条件はzaito運営が確認済みです。';
@@ -113,6 +114,33 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
             <p class="legal">登録すると、<a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>と<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a>に同意したものとみなします。</p>
             <p class="err" id="zerr" role="alert"><?php echo $zaito_error ? '登録できませんでした。メールアドレスを確認して、もう一度お試しください。' : ''; ?></p>
           </form>
+
+          <form class="profile" id="zprofile" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
+            <b>登録できました</b>
+            <p>よければ、あなたに合う求人をお知らせするために教えてください（任意・どれも押すだけ）。</p>
+            <input type="hidden" name="action" value="zaito_remote_profile">
+            <fieldset><legend>いまの立場</legend><div class="chips">
+              <?php foreach ( $zaito_profile_opts['role'] as $zaito_o ) : ?>
+                <label><input type="radio" name="role" value="<?php echo esc_attr( $zaito_o ); ?>"><span><?php echo esc_html( $zaito_o ); ?></span></label>
+              <?php endforeach; ?>
+            </div></fieldset>
+            <div class="stu" hidden>
+              <fieldset><legend>学年</legend><div class="chips">
+                <?php foreach ( $zaito_profile_opts['grade'] as $zaito_o ) : ?>
+                  <label><input type="radio" name="grade" value="<?php echo esc_attr( $zaito_o ); ?>"><span><?php echo esc_html( $zaito_o ); ?></span></label>
+                <?php endforeach; ?>
+              </div></fieldset>
+              <label class="lb" for="zschool">学校名</label>
+              <input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" placeholder="例：〇〇大学">
+            </div>
+            <fieldset><legend>やってみたい仕事（いくつでも）</legend><div class="chips">
+              <?php foreach ( $zaito_profile_opts['interests'] as $zaito_o ) : ?>
+                <label><input type="checkbox" name="interests[]" value="<?php echo esc_attr( $zaito_o ); ?>"><span><?php echo esc_html( $zaito_o ); ?></span></label>
+              <?php endforeach; ?>
+            </div></fieldset>
+            <button type="submit" class="btn btn-p btn-lg">保存して応募ページへ進む</button>
+            <a class="skip" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow">答えずに応募ページへ進む</a>
+          </form>
         <?php endif; ?>
       </div>
     </aside>
@@ -134,6 +162,8 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
   var slug = <?php echo wp_json_encode( $zaito_j['slug'] ); ?>;
   var form = document.getElementById('zsignup');
   var err = document.getElementById('zerr');
+  var profile = document.getElementById('zprofile');
+  var stu = profile.querySelector('.stu');
   function member() { return /(?:^|;\s*)zaito_m=1/.test(document.cookie); }
   function track(name, params) { if (typeof window.gtag === 'function') { window.gtag('event', name, params); } }
   function openForm() {
@@ -171,14 +201,33 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
       .then(function (r) { return r.json(); })
       .then(function (res) {
         if (!res || !res.success) { throw new Error(res && res.data && res.data.message ? res.data.message : ''); }
-        if (res.data.created) { track('sign_up', { method: 'remote' }); }
         track('remote_apply_click', { job: slug });
-        location.href = res.data.go;
+        if (!res.data.created) { location.href = res.data.go; return; }
+        // はじめて登録した人にだけ、任意のプロフィールを聞いてから応募ページへ進める。
+        track('sign_up', { method: 'remote' });
+        form.hidden = true;
+        profile.hidden = false;
+        profile.dataset.go = res.data.go;
+        profile.scrollIntoView({ behavior: 'smooth', block: 'start' });
       })
       .catch(function (x) {
         btn.disabled = false;
         err.textContent = x.message || '登録できませんでした。時間をおいてもう一度お試しください';
       });
+  });
+
+  // 学生を選んだときだけ、学年と学校名を出す。
+  profile.addEventListener('change', function (e) {
+    if (e.target.name === 'role') { stu.hidden = !/生$/.test(e.target.value); }
+  });
+  profile.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = profile.querySelector('button[type=submit]');
+    btn.disabled = true;
+    var go = function () { location.href = profile.dataset.go; };
+    fetch(profile.getAttribute('action'), { method: 'POST', body: new FormData(profile), credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function () { track('profile_complete', { job: slug }); }, function () {})
+      .then(go, go);
   });
 })();
 </script>

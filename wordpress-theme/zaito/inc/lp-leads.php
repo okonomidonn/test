@@ -176,9 +176,9 @@ function zaito_lp_send_waitlist_thanks( $email, $context = 'lp' ) {
         $intro   = "zaitoへの登録ありがとうございます。\n"
             . "以下のメールアドレスで登録を受け付けました。\n\n"
             . '登録メールアドレス: ' . $email . "\n\n"
-            . "zaitoは、大学生・若手向けの完全在宅求人サービスです。\n"
-            . "いま募集中の完全在宅の求人は、こちらから見られます。\n"
-            . home_url( '/remote/' ) . "\n\n"
+            . "zaitoは、出社なしで働ける完全在宅の求人を、運営が1件ずつ確認して集めたサイトです。\n"
+            . "いま募集中の求人は、こちらから見られます。\n"
+            . home_url( '/' ) . "\n\n"
             . "新しい求人が入ったときや、zaitoの正式公開のときに、このメールアドレスにお知らせします。\n\n";
     } else {
         $subject = '【zaito】先行登録ありがとうございます';
@@ -189,7 +189,7 @@ function zaito_lp_send_waitlist_thanks( $email, $context = 'lp' ) {
             . "現在、正式ローンチに向けて掲載企業・求人を準備しています。\n"
             . "公開の準備ができましたら、このメールアドレスにいち早くお知らせします。\n\n"
             . "いま募集中の完全在宅の求人は、こちらから見られます。\n"
-            . home_url( '/remote/' ) . "\n\n";
+            . home_url( '/' ) . "\n\n";
     }
     $body = $intro
         . $reply
@@ -341,6 +341,9 @@ function zaito_lead_export_columns( $post_type ) {
         '_date'        => '登録日時',
         'email'        => 'メールアドレス',
         'name'         => 'お名前',
+        'role'         => '立場',
+        'grade'        => '学年',
+        'school'       => '学校名',
         'interests'    => '興味のある仕事',
         'hours'        => '稼働可能時間',
         'source'       => '登録元',
@@ -445,6 +448,7 @@ function zaito_interest_admin_columns( $columns ) {
     $columns = zaito_lead_admin_columns( $columns );
     $date    = $columns['date'];
     unset( $columns['date'] );
+    $columns['zaito_profile']   = '立場・学年';
     $columns['zaito_interests'] = '興味のある仕事';
     $columns['date']            = $date;
     return $columns;
@@ -458,6 +462,13 @@ function zaito_lead_admin_column_value( $column, $post_id ) {
     } elseif ( 'zaito_source' === $column ) {
         $source = get_post_meta( $post_id, 'utm_source', true );
         echo esc_html( $source ? $source : '—' );
+    } elseif ( 'zaito_profile' === $column ) {
+        $parts = array_filter( array(
+            get_post_meta( $post_id, 'role', true ),
+            get_post_meta( $post_id, 'grade', true ),
+            get_post_meta( $post_id, 'school', true ),
+        ) );
+        echo esc_html( $parts ? implode( '・', $parts ) : '—' );
     } elseif ( 'zaito_interests' === $column ) {
         $interests = get_post_meta( $post_id, 'interests', true );
         echo esc_html( ! empty( $interests ) ? implode( '、', (array) $interests ) : '—' );

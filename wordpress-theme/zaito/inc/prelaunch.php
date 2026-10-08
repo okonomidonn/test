@@ -149,7 +149,7 @@ if ( class_exists( 'WP_Sitemaps_Provider' ) && ! class_exists( 'Zaito_Prelaunch_
         public function get_url_list( $page_num, $object_subtype = '' ) {
             $urls = array(
                 array( 'loc' => home_url( '/' ) ),
-                array( 'loc' => zaito_remote_url() ),
+                array( 'loc' => home_url( '/for-companies/' ) ),
                 array( 'loc' => home_url( '/terms/' ) ),
                 array( 'loc' => home_url( '/privacy/' ) ),
             );
@@ -193,9 +193,8 @@ add_filter( 'wp_robots', 'zaito_prelaunch_noindex' );
 function zaito_prelaunch_redirect_map() {
     return array(
         'jobs'          => '/',
-        'register'      => '/#early',
-        'interest'      => '/#early',
-        'for-companies' => '/#companies',
+        'register'      => '/',
+        'interest'      => '/',
     );
 }
 
@@ -207,13 +206,22 @@ function zaito_prelaunch_template_redirect() {
     if ( is_front_page() && ! get_query_var( 'zaito_page' ) && ! is_search() ) {
         // 運営者は /?classic=1 で従来の求人サイトのトップを確認できる。
         if ( ! ( isset( $_GET['classic'] ) && current_user_can( 'manage_options' ) ) ) {
-            zaito_render_lp();
+            // トップページは「まとめ求人」の一覧。
+            status_header( 200 );
+            header( 'Content-Type: text/html; charset=UTF-8' );
+            include get_template_directory() . '/lp/remote-list.php';
             exit;
         }
         return;
     }
 
     $page = get_query_var( 'zaito_page' );
+
+    // 以前のトップページ（LP）は、企業向けの案内・掲載の問い合わせフォームとして /for-companies/ で表示する。
+    if ( 'for-companies' === $page ) {
+        zaito_render_lp( home_url( '/for-companies/' ) );
+        exit;
+    }
 
     // 利用規約・プライバシーポリシーはLPからリンクしているため、LPと同じデザインで表示する。
     $legal = array(
@@ -267,7 +275,8 @@ function zaito_lp_asset( $file ) {
     return get_template_directory_uri() . '/lp/' . $file . '?ver=' . $ver;
 }
 
-function zaito_render_lp() {
+function zaito_render_lp( $canonical = '' ) {
+    $canonical = $canonical ? $canonical : home_url( '/' );
     $html = file_get_contents( get_template_directory() . '/lp/zaito-lp.dc.html' );
     if ( false === $html ) {
         return;
@@ -284,13 +293,13 @@ function zaito_render_lp() {
     ?>
 <title><?php echo esc_html( $title ); ?></title>
 <meta name="description" content="<?php echo esc_attr( $description ); ?>">
-<link rel="canonical" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+<link rel="canonical" href="<?php echo esc_url( $canonical ); ?>">
 <meta property="og:site_name" content="zaito">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="<?php echo esc_attr( $title ); ?>">
 <meta property="og:description" content="<?php echo esc_attr( $og_desc ); ?>">
-<meta property="og:url" content="<?php echo esc_url( home_url( '/' ) ); ?>">
+<meta property="og:url" content="<?php echo esc_url( $canonical ); ?>">
 <meta property="og:image" content="<?php echo esc_url( get_template_directory_uri() . '/lp/ogp.png' ); ?>">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
