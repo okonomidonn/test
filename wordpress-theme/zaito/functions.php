@@ -2432,3 +2432,5 @@ require_once get_template_directory() . '/inc/prelaunch.php';
 require_once get_template_directory() . '/inc/sales-preview.php';
 // まとめ求人（/remote/）: 公開されている完全在宅の求人を運営が確認してまとめたもの
 require_once get_template_directory() . '/inc/remote-jobs.php';
+// 新着求人メールの一斉配信（管理画面「求人 > 新着メール配信」）と配信停止リンク
+require_once get_template_directory() . '/inc/newsletter.php';

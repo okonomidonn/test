@@ -348,6 +348,7 @@ function zaito_lead_export_columns( $post_type ) {
         'interests'    => '興味のある仕事',
         'hours'        => '稼働可能時間',
         'source'       => '登録元',
+        'unsubscribed' => '配信停止日',
         'utm_source'   => 'utm_source',
         'utm_medium'   => 'utm_medium',
         'utm_campaign' => 'utm_campaign',
