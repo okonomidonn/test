@@ -1,13 +1,16 @@
 <?php
 /**
- * まとめ求人の一覧。トップページ（/）として inc/prelaunch.php から読み込む。
+ * まとめ求人の一覧。トップページ（/）として inc/prelaunch.php から、
+ * 条件別の一覧（/zaitaku/{slug}/）として inc/remote-jobs.php から（$zaito_list_cond をセットして）読み込む。
  */
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 require_once __DIR__ . '/remote-parts.php';
 
-$zaito_jobs   = zaito_remote_jobs();
+$zaito_cond    = isset( $zaito_list_cond ) ? zaito_remote_conditions()[ $zaito_list_cond ] : null;
+$zaito_jobs    = $zaito_cond ? zaito_remote_condition_jobs( $zaito_list_cond ) : zaito_remote_jobs();
+$zaito_actives = zaito_remote_active_conditions();
 $zaito_open   = array_values( array_filter( $zaito_jobs, function ( $j ) {
     return empty( $j['closed'] );
 } ) );
@@ -43,8 +46,15 @@ $zaito_verified = count( array_filter( $zaito_open, function ( $j ) {
     return empty( $j['caution'] );
 } ) );
 
-$zaito_title = 'zaito | 出社なしの仕事だけを集めた、完全在宅の求人サイト';
-$zaito_desc  = '「在宅」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅の求人を、運営が1件ずつ確認してまとめています。SNS運用、Webマーケ、教育、ライティング、エンジニアなど。';
+if ( $zaito_cond ) {
+    $zaito_title = $zaito_cond['title'] . ' | zaito';
+    $zaito_desc  = mb_substr( $zaito_cond['body'][0], 0, 110 ) . '（' . count( $zaito_jobs ) . '件・運営が在宅の条件を確認済み）';
+    $zaito_canon = zaito_remote_condition_url( $zaito_list_cond );
+} else {
+    $zaito_title = 'zaito | 出社なしの仕事だけを集めた、完全在宅の求人サイト';
+    $zaito_desc  = '「在宅」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅の求人を、運営が1件ずつ確認してまとめています。SNS運用、Webマーケ、教育、ライティング、エンジニアなど。';
+    $zaito_canon = zaito_remote_url();
+}
 
 $zaito_items = array();
 foreach ( $zaito_open as $zaito_i => $zaito_j ) {
@@ -55,10 +65,10 @@ foreach ( $zaito_open as $zaito_i => $zaito_j ) {
         'name'     => $zaito_j['title'] . '（' . $zaito_j['company'] . '）',
     );
 }
-zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url(), array(
+zaito_remote_head( $zaito_title, $zaito_desc, $zaito_canon, array(
     '@context'        => 'https://schema.org',
     '@type'           => 'ItemList',
-    'name'            => '完全在宅の求人',
+    'name'            => $zaito_cond ? $zaito_cond['h1'] : '完全在宅の求人',
     'itemListElement' => $zaito_items,
 ) );
 
@@ -108,9 +118,17 @@ $zaito_card = function ( $j ) {
   <div class="wrap">
     <div class="hero-in">
       <div class="hero-copy">
+        <?php if ( $zaito_cond ) : ?>
+          <p class="crumb"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">完全在宅の求人</a> ／ <?php echo esc_html( $zaito_cond['label'] ); ?></p>
+          <h1><?php echo esc_html( $zaito_cond['h1'] ); ?></h1>
+          <?php foreach ( $zaito_cond['body'] as $zaito_para ) : ?>
+            <p><?php echo esc_html( $zaito_para ); ?></p>
+          <?php endforeach; ?>
+        <?php else : ?>
         <span class="eb">REMOTE JOBS</span>
         <h1>出社なしの仕事だけを、<br>集めました。</h1>
         <p>「在宅」で探しても、出社ありの求人が混ざる。zaitoは、自宅だけで働ける求人を運営が1件ずつ確認して載せています。</p>
+        <?php endif; ?>
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
       </div>
       <dl class="stats">
@@ -120,7 +138,7 @@ $zaito_card = function ( $j ) {
       </dl>
     </div>
 
-    <?php if ( count( $zaito_groups ) > 1 ) : ?>
+    <?php if ( ! $zaito_cond && count( $zaito_groups ) > 1 ) : ?>
       <div class="filters" role="group" aria-label="職種で絞り込む">
         <button type="button" data-filter="" aria-pressed="true"><span class="ms" aria-hidden="true">apps</span>すべて<small><?php echo esc_html( count( $zaito_open ) ); ?></small></button>
         <?php foreach ( $zaito_groups as $zaito_name => $zaito_g ) : ?>
@@ -142,6 +160,17 @@ $zaito_card = function ( $j ) {
     <ul class="cards">
       <?php foreach ( $zaito_closed as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
     </ul>
+  <?php endif; ?>
+
+  <?php if ( $zaito_actives ) : ?>
+    <nav class="conds" aria-labelledby="conds-title">
+      <h2 id="conds-title">条件で探す</h2>
+      <div class="conds-list">
+      <?php foreach ( $zaito_actives as $zaito_cs => $zaito_cn ) : $zaito_cd = zaito_remote_conditions()[ $zaito_cs ]; ?>
+        <a href="<?php echo esc_url( zaito_remote_condition_url( $zaito_cs ) ); ?>"<?php echo isset( $zaito_list_cond ) && $zaito_list_cond === $zaito_cs ? ' aria-current="page"' : ''; ?>><span class="ms" aria-hidden="true"><?php echo esc_html( $zaito_cd['icon'] ); ?></span><?php echo esc_html( $zaito_cd['label'] ); ?><small><?php echo esc_html( $zaito_cn ); ?></small></a>
+      <?php endforeach; ?>
+      </div>
+    </nav>
   <?php endif; ?>
 
   <section class="signup-band" id="signup" aria-labelledby="signup-title">

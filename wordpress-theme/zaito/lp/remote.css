@@ -242,6 +242,19 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .sb-done b{font-size:18px}
 .sb-done p{margin:0;font-size:14px;color:var(--z-text-2);line-height:1.8}
 
+/* 条件で探す（一覧ページの下）・条件別ページ */
+.conds{margin-top:64px}
+.conds h2{margin:0 0 14px;font-size:20px;font-weight:700}
+.conds-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.conds-list a{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;border:1px solid var(--z-border);color:var(--z-navy);font-size:15px;font-weight:700;transition:border-color .2s,box-shadow .2s}
+.conds-list a:hover{border-color:var(--z-border-input);box-shadow:var(--z-shadow-sm)}
+.conds-list a[aria-current="page"]{background:var(--z-navy);color:#fff;border-color:var(--z-navy)}
+.conds-list .ms{font-size:22px;color:var(--z-blue)}
+.conds-list a[aria-current="page"] .ms{color:#fff}
+.conds-list small{margin-left:auto;font-family:'Outfit',sans-serif;font-size:13px;color:var(--z-text-4)}
+.hero .crumb{margin:0;font-size:13px}
+.hero-copy p+p{margin-top:-4px}
+
 @media (max-width:860px){
  .hd nav a.tx{display:none}
  .hero-in{padding:36px 0 24px;gap:24px}
@@ -262,6 +275,9 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
  .how ol{grid-template-columns:1fr}
  .biz{padding:20px}
  .co-sec{margin-top:56px}
+ .conds{margin-top:48px}
+ .conds-list{grid-template-columns:1fr 1fr}
+ .conds-list a{padding:12px;font-size:14px;gap:6px}
  .signup-band{grid-template-columns:1fr;gap:24px;padding:24px 18px;margin-top:56px}
  .sb-form{padding:18px}
  .sb-row{flex-direction:column}

@@ -153,6 +153,10 @@ if ( class_exists( 'WP_Sitemaps_Provider' ) && ! class_exists( 'Zaito_Prelaunch_
                 array( 'loc' => home_url( '/terms/' ) ),
                 array( 'loc' => home_url( '/privacy/' ) ),
             );
+            // 条件別の一覧
+            foreach ( array_keys( zaito_remote_active_conditions() ) as $cond ) {
+                $urls[] = array( 'loc' => zaito_remote_condition_url( $cond ) );
+            }
             // まとめ求人の詳細（募集中のもの）
             foreach ( zaito_remote_jobs() as $job ) {
                 if ( empty( $job['closed'] ) ) {

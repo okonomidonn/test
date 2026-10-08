@@ -500,6 +500,21 @@ function zaito_remote_template_redirect() {
     }
     $slug = (string) get_query_var( 'zaito_remote' );
 
+    // 条件別の一覧（/zaitaku/{slug}/）。求人が少なすぎる条件はトップページへ。
+    $cond = (string) get_query_var( 'zaito_cond' );
+    if ( '' !== $cond ) {
+        $active = zaito_remote_active_conditions();
+        if ( ! isset( $active[ $cond ] ) ) {
+            wp_safe_redirect( home_url( '/' ), 302 );
+            exit;
+        }
+        $zaito_list_cond = $cond;
+        status_header( 200 );
+        header( 'Content-Type: text/html; charset=UTF-8' );
+        include get_template_directory() . '/lp/remote-list.php';
+        exit;
+    }
+
     // 一覧はトップページに移したため、/remote/ はトップページへ転送する。
     if ( '' === $slug ) {
         wp_safe_redirect( home_url( '/' ), 301 );
