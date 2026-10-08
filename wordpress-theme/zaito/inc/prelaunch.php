@@ -102,12 +102,21 @@ function zaito_ga4_id() {
     return preg_match( '/^G-[A-Z0-9]{4,}$/', $id ) ? $id : '';
 }
 
+/**
+ * Search Consoleの所有権確認用メタタグ（設定 > 一般 で入力した値）。
+ * <head> に入れるものなので、GA4のタグと一緒に出力する。
+ */
+function zaito_gsc_meta() {
+    $code = trim( (string) get_option( 'zaito_gsc_verify', '' ) );
+    return preg_match( '/^[A-Za-z0-9_-]{10,100}$/', $code ) ? '<meta name="google-site-verification" content="' . esc_attr( $code ) . '">' : '';
+}
+
 function zaito_ga4_snippet() {
     $id = zaito_ga4_id();
     if ( ! $id ) {
-        return '';
+        return zaito_gsc_meta();
     }
-    return '<script async src="https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $id ) . '"></script>'
+    return zaito_gsc_meta() . '<script async src="https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $id ) . '"></script>'
         . '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config",' . wp_json_encode( $id ) . ');</script>';
 }
 
@@ -124,6 +133,23 @@ function zaito_ga4_register_setting() {
         echo '<input type="text" name="zaito_ga4_id" id="zaito_ga4_id" class="regular-text" placeholder="G-XXXXXXXXXX" value="' . esc_attr( get_option( 'zaito_ga4_id', ZAITO_GA4_DEFAULT_ID ) ) . '">';
         echo '<p class="description">Googleアナリティクスの測定ID（G-から始まる文字列）を入れると、LPと利用規約・プライバシーポリシーのページで計測を始めます。空欄にすると計測しません。</p>';
     }, 'general', 'default', array( 'label_for' => 'zaito_ga4_id' ) );
+
+    register_setting( 'general', 'zaito_gsc_verify', array(
+        'type'              => 'string',
+        'sanitize_callback' => function ( $v ) {
+            $v = trim( (string) $v );
+            // メタタグをまるごと貼られた場合は content の値だけを取り出す。
+            if ( preg_match( '/content=["\']([^"\']+)["\']/', $v, $m ) ) {
+                $v = $m[1];
+            }
+            return preg_match( '/^[A-Za-z0-9_-]{10,100}$/', $v ) ? $v : '';
+        },
+        'default'           => '',
+    ) );
+    add_settings_field( 'zaito_gsc_verify', 'Search Console 確認コード（zaito）', function () {
+        echo '<input type="text" name="zaito_gsc_verify" id="zaito_gsc_verify" class="regular-text" placeholder="<meta name=&quot;google-site-verification&quot; ...> をそのまま貼り付け" value="' . esc_attr( get_option( 'zaito_gsc_verify', '' ) ) . '">';
+        echo '<p class="description">Search Consoleの「HTMLタグ」で表示されるメタタグを貼り付けて保存すると、全ページに入ります。</p>';
+    }, 'general', 'default', array( 'label_for' => 'zaito_gsc_verify' ) );
 }
 add_action( 'admin_init', 'zaito_ga4_register_setting' );
 
