@@ -40,6 +40,7 @@ function zaito_remote_job_tags() {
         'cosoji-accounting'        => array( 'tanjikan' ),
         'linkties-ai-assistant'    => array( 'tanjikan' ),
         'hackazouk-web-designer'   => array( 'tanjikan' ),
+        'mediafirst-writer'        => array( 'mikeiken' ),
     );
 }
 
