@@ -3,7 +3,7 @@
 動画は8秒。画面の流れに合わせて区切りを入れてある。
 - 0〜1.5秒：見出し
 - 1.8〜6秒：スマホの求人一覧がスクロール
-- 6.3秒〜：ロゴと「登録無料」
+- 6.3秒〜：「完全在宅の仕事なら、zaito」と「登録無料」
 
 設定
 - 入力：SSML
@@ -24,7 +24,7 @@
   <break time="300ms"/>
   未経験・ブランクOK、時給<say-as interpret-as="cardinal">1300</say-as>円からの求人をまとめました。
   <break time="250ms"/>
-  <sub alias="ザイト">zaito</sub>、登録無料です。
+  完全在宅の仕事なら、<sub alias="ザイト">zaito</sub>。
 </speak>
 ```
 
@@ -36,7 +36,7 @@
   <break time="300ms"/>
   経理、秘書、営業事務。出社なしの事務求人をまとめました。
   <break time="250ms"/>
-  <sub alias="ザイト">zaito</sub>、登録無料です。
+  完全在宅の仕事なら、<sub alias="ザイト">zaito</sub>。
 </speak>
 ```
 
@@ -48,7 +48,7 @@
   <break time="300ms"/>
   授業の合間に、自宅から。学生OKの求人をまとめました。
   <break time="250ms"/>
-  <sub alias="ザイト">zaito</sub>、登録無料です。
+  完全在宅の仕事なら、<sub alias="ザイト">zaito</sub>。
 </speak>
 ```
 
