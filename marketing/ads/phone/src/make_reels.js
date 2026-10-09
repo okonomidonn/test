@@ -14,7 +14,7 @@ const ads = [
 const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const fontRoute = async r => { const u=r.request().url(); const body=cp.execFileSync('curl',['-sS','-A',r.request().headers()['user-agent'],u]); await r.fulfill({status:200,body,headers:{'content-type':u.includes('googleapis')?'text/css':'font/woff2','access-control-allow-origin':'*'}}); };
 
-// 求人一覧を縦に長く撮る。広告と同じく、時給1,300円未満・報酬なしの求人と、会社名・サービス名は見せない。
+// 求人一覧を縦に長く撮る。広告と同じく、時給1,300円未満・報酬なし・注意書きつきの求人と、会社名・サービス名は見せない。
 async function captureList(b, page) {
   const ctx = await b.newContext({ viewport: { width: 390, height: 780 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   const p = await ctx.newPage();
@@ -26,7 +26,7 @@ async function captureList(b, page) {
     document.querySelectorAll('#zcards .card').forEach(card => {
       const b = card.querySelector('.pay b'); const u = card.querySelector('.pay .u');
       const min = b && u && u.textContent.includes('時給') ? parseInt(b.textContent.replace(/,/g, ''), 10) : 0;
-      if (!(min >= 1300)) card.remove();
+      if (!(min >= 1300) || card.textContent.includes('条件あり')) card.remove();
     });
     document.querySelectorAll('#zcards .card h2').forEach(h => {
       h.textContent = h.textContent.replace(/[^「」]*「[^」]*」の?/g, '').replace(/N高グループ\s*/g, 'オンライン高校の').replace(/^\s+/, '');
@@ -60,7 +60,7 @@ body{width:${W}px;height:${H}px;overflow:hidden;font-family:'Noto Sans JP',sans-
 .ln{display:flex;align-items:flex-end;justify-content:center}
 .box{background:#fff;color:#E0197F;font-size:124px;font-weight:900;line-height:1.08;padding:6px 18px 12px;letter-spacing:-.02em;box-shadow:10px 10px 0 #1A1650}
 .rest,.plain{color:#fff;font-size:76px;font-weight:900;line-height:1.25;letter-spacing:-.01em;text-shadow:0 5px 0 #1A1650,0 0 28px rgba(26,22,80,.45);white-space:nowrap;margin-left:8px}
-.phone{position:absolute;left:110px;top:860px;width:520px;height:1080px;border-radius:70px;background:#1b1b22;padding:16px;box-shadow:0 40px 80px -20px rgba(30,0,60,.55),inset 0 0 0 3px #3a3a46}
+.phone{position:absolute;left:290px;top:900px;width:500px;height:1040px;border-radius:70px;background:#1b1b22;padding:16px;box-shadow:0 40px 80px -20px rgba(30,0,60,.55),inset 0 0 0 3px #3a3a46}
 .phone .scr{width:100%;height:100%;border-radius:56px;overflow:hidden;background:#fff;position:relative}
 .phone img{width:100%;display:block;will-change:transform}
 .bar{position:absolute;left:0;right:0;top:0;height:120px;z-index:1;background:rgba(255,255,255,.96);border-bottom:1px solid #E6E9F2;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 18px}
@@ -68,21 +68,19 @@ body{width:${W}px;height:${H}px;overflow:hidden;font-family:'Noto Sans JP',sans-
 .bbtn{font-size:20px;font-weight:900;color:#fff;background:#3D5AFE;padding:10px 18px;border-radius:12px}
 .phone img{margin-top:120px}
 .phone .notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:130px;height:34px;border-radius:20px;background:#1b1b22;z-index:2}
-.badges{position:absolute;right:120px;top:960px;display:flex;flex-direction:column;align-items:flex-end;gap:18px}
-.badge{font-size:40px;font-weight:900;color:#1A1650;background:#FFE600;padding:12px 26px;border-radius:14px;border:5px solid #1A1650;box-shadow:6px 6px 0 #1A1650}
-.end{position:absolute;left:90px;right:90px;top:520px;background:#fff;border-radius:48px;padding:70px 40px 64px;display:flex;flex-direction:column;align-items:center;gap:18px;box-shadow:0 40px 90px -30px rgba(26,22,80,.7)}
-.logo{font-family:'Outfit';font-weight:800;font-size:170px;letter-spacing:-.05em;color:#0B1530;line-height:1}
-.logo span{color:#3D5AFE}
-.lead{font-size:44px;font-weight:900;color:#0B1530;text-align:center;line-height:1.45}
-.free{margin-top:18px;font-size:40px;font-weight:900;color:#fff;background:#3D5AFE;padding:16px 44px;border-radius:999px}
-.note{position:absolute;left:0;right:0;top:800px;text-align:center;font-size:26px;font-weight:700;color:rgba(255,255,255,.85)}
+.badges{display:flex;justify-content:center;gap:22px;margin-top:34px}
+.badge{font-size:36px;font-weight:900;color:#1A1650;background:#FFE600;padding:12px 26px;border-radius:14px;border:5px solid #1A1650;box-shadow:6px 6px 0 #1A1650}
+.end{position:absolute;left:0;right:0;top:560px;display:flex;flex-direction:column;align-items:center;gap:22px}
+.logo{font-family:'Outfit';font-weight:800;font-size:200px;letter-spacing:-.05em;color:#fff;line-height:1;text-shadow:0 8px 0 #1A1650}
+.logo span{color:#FFE600}
+.lead{font-size:50px;font-weight:900;color:#fff;text-shadow:0 4px 0 #1A1650;text-align:center;line-height:1.45}
+.free{margin-top:26px;font-size:44px;font-weight:900;color:#3D5AFE;background:#fff;box-shadow:6px 6px 0 #1A1650;padding:16px 44px;border-radius:999px}
+.note{margin-top:36px;font-size:26px;font-weight:700;color:rgba(255,255,255,.85)}
 </style></head><body><div class="wrap"><div class="dots"></div>
 <div class="ring" style="width:620px;height:620px;right:-200px;top:-200px"></div><div class="ring" style="width:360px;height:360px;left:-140px;top:900px"></div>
-<div class="copy"><div class="tag">${esc(ad.tag)}</div>${ln}</div>
+<div class="copy"><div class="tag">${esc(ad.tag)}</div>${ln}<div class="badges">${ad.badges.map(b=>`<span class="badge">${esc(b)}</span>`).join('')}</div></div>
 <div class="phone"><div class="notch"></div><div class="scr"><div class="bar"><span class="blogo">za<span>i</span>to</span><span class="bbtn">無料で登録</span></div><img src="data:image/png;base64,${shot.b64}"></div></div>
-<div class="badges">${ad.badges.map(b=>`<span class="badge">${esc(b)}</span>`).join('')}</div>
-<div class="end"><div class="logo">za<span>i</span>to</div><div class="lead">出社なしの仕事だけを<br>集めた求人サイト</div><div class="free">登録無料</div></div>
-<div class="note">画面は掲載中の求人の一例（2026年10月）</div>
+<div class="end"><div class="logo">za<span>i</span>to</div><div class="lead">出社なしの仕事だけを<br>集めた求人サイト</div><div class="free">登録無料</div><div class="note">画面は掲載中の求人の一例（2026年10月）</div></div>
 </div>
 <script>
 const clamp = (v) => Math.max(0, Math.min(1, v));
@@ -90,6 +88,8 @@ const out = (v) => 1 - Math.pow(1 - clamp(v), 3);
 const back = (v) => { v = clamp(v); const c = 1.7; return 1 + (c + 1) * Math.pow(v - 1, 3) + c * Math.pow(v - 1, 2); };
 const scrH = 1080 - 32 - 120, imgH = 488 * ${shot.ratio};
 const scroll = Math.max(0, imgH - scrH);
+// スマホは見出しとバッジのすぐ下に置く（見出しの行数で高さが変わるため）
+const cp = document.querySelector('.copy'); document.querySelector('.phone').style.top = (cp.offsetTop + cp.offsetHeight + 50) + 'px';
 window.frame = (t) => {
   const q = (s) => document.querySelector(s);
   // 0〜1.6秒：見出しが順に出る
@@ -97,16 +97,17 @@ window.frame = (t) => {
   document.querySelectorAll('.ln').forEach((e, i) => { const k = (t - 0.35 - i * 0.28) / 0.45; e.style.cssText = 'opacity:' + clamp(k * 2) + ';transform:translateY(' + (60 * (1 - out(k))) + 'px) scale(' + (0.85 + 0.15 * back(k)) + ')'; });
   // 0.9秒〜：スマホが下から出て、1.8〜6.2秒で求人をスクロール
   const pk = out((t - 0.9) / 0.7);
-  q('.phone').style.transform = 'translateY(' + (900 * (1 - pk)) + 'px) rotate(-5deg)';
+  const gone = out((t - 6.0) / 0.6);
+  q('.phone').style.transform = 'translateY(' + (900 * (1 - pk) + 1100 * gone) + 'px) rotate(-4deg)';
   const sk = clamp((t - 1.8) / 4.4); const se = sk < 0.5 ? 2 * sk * sk : 1 - Math.pow(-2 * sk + 2, 2) / 2;
   q('.phone img').style.transform = 'translateY(' + (-scroll * se) + 'px)';
-  q('.note').style.opacity = clamp((t - 1.2) / 0.4) * (1 - clamp((t - 6.2) / 0.3));
   // 2.8秒〜：バッジ
   document.querySelectorAll('.badge').forEach((e, i) => { const k = (t - 2.8 - i * 0.35) / 0.4; e.style.cssText = 'opacity:' + clamp(k * 3) + ';transform:scale(' + (0.4 + 0.6 * back(k)) + ') rotate(' + (i % 2 ? 2 : -2) + 'deg)'; });
-  // 6.3秒〜：締めのカード
-  const ek = (t - 6.3) / 0.5; const end = q('.end');
-  end.style.cssText = 'opacity:' + clamp(ek * 2) + ';transform:translateY(' + (80 * (1 - out(ek))) + 'px) scale(' + (0.9 + 0.1 * back(ek)) + ')';
-  q('.copy').style.opacity = q('.badges').style.opacity = 1 - clamp(ek * 2);
+  // 6.0秒〜：見出しとスマホが下がり、ロゴが出る
+  // 6.3秒〜：ロゴと「登録無料」
+  const ek = (t - 6.3) / 0.6; const end = q('.end');
+  end.style.cssText = 'opacity:' + clamp(ek * 1.5) + ';transform:translateY(' + (60 * (1 - out(ek))) + 'px) scale(' + (0.92 + 0.08 * out(ek)) + ')';
+  const fade = clamp((t - 6.0) / 0.4); q('.copy').style.opacity = 1 - fade; q('.copy').style.transform = 'translateY(' + (-40 * fade) + 'px)';
 };
 </script></body></html>`;
 }
@@ -127,7 +128,7 @@ window.frame = (t) => {
       await p.screenshot({ path: `${dir}/f${String(f).padStart(4, '0')}.jpg`, type: 'jpeg', quality: 92 });
     }
     // 確認用に、要所のコマを書き出す
-    if (process.env.PREVIEW) for (const t of [1.5, 4, 7.5]) { await p.evaluate((t) => window.frame(t), t); await p.screenshot({ path: `${process.env.PREVIEW}/${ad.id}_${t}.png` }); }
+    if (process.env.PREVIEW) for (const t of [4, 6.4, 7.5]) { await p.evaluate((t) => window.frame(t), t); await p.screenshot({ path: `${process.env.PREVIEW}/${ad.id}_${t}.png` }); }
     const mp4 = `${OUT}/zaito_reel_${ad.id}.mp4`;
     cp.execFileSync(FFMPEG, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', `${dir}/f%04d.jpg`, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20', '-preset', 'slow', '-movflags', '+faststart', mp4]);
     fs.rmSync(dir, { recursive: true, force: true });
