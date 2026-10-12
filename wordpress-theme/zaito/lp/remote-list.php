@@ -9,7 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/remote-parts.php';
 
 $zaito_cond    = isset( $zaito_list_cond ) ? zaito_remote_conditions()[ $zaito_list_cond ] : null;
-$zaito_jobs    = $zaito_cond ? zaito_remote_condition_jobs( $zaito_list_cond ) : zaito_remote_jobs();
+// トップページは、最初に届けたい大学生・大学院生向け（学生OK）の求人だけを並べる。社会人向けは条件別の一覧へ。
+$zaito_jobs    = $zaito_cond ? zaito_remote_condition_jobs( $zaito_list_cond ) : zaito_remote_condition_jobs( 'gakusei' );
+$zaito_others  = $zaito_cond ? 0 : count( zaito_remote_condition_jobs( 'shakaijin' ) );
 $zaito_actives = zaito_remote_active_conditions();
 $zaito_open   = array_values( array_filter( $zaito_jobs, function ( $j ) {
     return empty( $j['closed'] );
@@ -46,10 +48,11 @@ $zaito_checked  = max( array_map( function ( $j ) {
 if ( $zaito_cond ) {
     $zaito_title = $zaito_cond['title'] . ' | zaito';
     $zaito_desc  = mb_substr( $zaito_cond['body'][0], 0, 110 ) . '（' . count( $zaito_jobs ) . '件・運営が在宅の条件を確認済み）';
-    $zaito_canon = zaito_remote_condition_url( $zaito_list_cond );
+    // 学生OKの一覧はトップページと同じ内容なので、評価をトップにまとめる。
+    $zaito_canon = 'gakusei' === $zaito_list_cond ? zaito_remote_url() : zaito_remote_condition_url( $zaito_list_cond );
 } else {
-    $zaito_title = '在宅バイト・完全在宅の求人｜出社なしの仕事だけを集めたzaito';
-    $zaito_desc  = '「在宅バイト」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅のバイト・パート・インターンを、運営が1件ずつ確認してまとめています。事務、カスタマーサポート、SNS運用、ライター、エンジニアなど。';
+    $zaito_title = '大学生の在宅バイト・長期インターン｜出社なしの求人だけを集めたzaito';
+    $zaito_desc  = '「在宅バイト」で探しても出社ありが混ざる。zaitoは、大学生・大学院生が自宅から働ける完全在宅のバイト・長期インターンを、運営が1件ずつ確認してまとめています。SNS運用、マーケティング、教育、ライター、エンジニアなど。';
     $zaito_canon = zaito_remote_url();
 }
 
@@ -123,14 +126,17 @@ $zaito_card = function ( $j ) {
             <p><?php echo esc_html( $zaito_para ); ?></p>
           <?php endforeach; ?>
         <?php else : ?>
-        <span class="eb">REMOTE JOBS</span>
-        <h1>出社なしの仕事だけを、<br>集めました。</h1>
-        <p>「在宅」で探しても、出社ありの求人が混ざる。zaitoは、自宅だけで働ける求人を運営が1件ずつ確認して載せています。</p>
+        <span class="eb">FOR STUDENTS</span>
+        <h1>大学生の在宅バイト、<br>出社なしだけ。</h1>
+        <p>「在宅OK」で探しても、研修や会議で出社がある求人が混ざる。zaitoは、授業の合間に自宅から働ける求人だけを、運営が1件ずつ確認して載せています。</p>
         <?php endif; ?>
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
+        <?php if ( $zaito_others ) : ?>
+          <a class="alert-link sub" href="<?php echo esc_url( zaito_remote_condition_url( 'shakaijin' ) ); ?>"><span class="ms" aria-hidden="true">work_history</span>社会人・経験者の方の求人はこちら（<?php echo esc_html( $zaito_others ); ?>件）</a>
+        <?php endif; ?>
       </div>
       <dl class="stats">
-        <div><dt>掲載中の求人</dt><dd><b><?php echo esc_html( count( $zaito_open ) ); ?></b>件</dd></div>
+        <div><dt><?php echo $zaito_cond ? '掲載中の求人' : '学生OKの求人'; ?></dt><dd><b><?php echo esc_html( count( $zaito_open ) ); ?></b>件</dd></div>
         <div><dt>出社ありの求人</dt><dd><b>0</b>件<a class="kj" href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a></dd></div>
         <div><dt>登録・利用料</dt><dd><b>0</b>円</dd></div>
       </dl>
@@ -156,7 +162,7 @@ $zaito_card = function ( $j ) {
         <li class="mini-cta" id="zmini">
           <div class="mc-copy">
             <span class="ms" aria-hidden="true">mark_email_unread</span>
-            <p><b>新しい完全在宅の求人を、メールで受け取る</b>メールアドレスだけで登録できます。無料です。</p>
+            <p><b>希望に合う新着だけ、メールで受け取る</b>メールアドレスだけで登録できます。無料です。</p>
           </div>
           <form id="zminiform" novalidate>
             <label class="sr" for="zminiemail">メールアドレス</label>
@@ -191,7 +197,7 @@ $zaito_card = function ( $j ) {
     <div class="sb-copy">
       <span class="ms" aria-hidden="true">mark_email_unread</span>
       <h2 id="signup-title">新しい在宅求人を、<br>メールで受け取る</h2>
-      <p>求人は随時追加しています。メールアドレスを登録すると、新しい完全在宅の求人が入ったときにお知らせします。登録は無料です。配信をやめたいときは、届いたメールに返信するだけで止められます。</p>
+      <p>求人は随時追加しています。登録すると、やってみたい仕事・働ける日数・希望の時給に合う新しい求人だけをメールでお知らせします。登録は無料です。配信をやめたいときは、メールの停止リンクか返信ですぐに止められます。</p>
     </div>
     <div class="sb-form">
       <form id="ztop" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
@@ -209,7 +215,7 @@ $zaito_card = function ( $j ) {
       </form>
       <form class="profile" id="zprofile" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
         <b>登録できました</b>
-        <p>よければ、あなたに合う求人をお知らせするために教えてください（任意・どれも押すだけ）。</p>
+        <p>あなたの希望に合う新着だけをメールで送るために教えてください（任意・どれも押すだけ）。答えた内容に合わない求人は送りません。</p>
         <input type="hidden" name="action" value="zaito_remote_profile">
         <?php zaito_remote_profile_fields(); ?>
         <button type="submit" class="btn btn-p btn-lg">保存する</button>

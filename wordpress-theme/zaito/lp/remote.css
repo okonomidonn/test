@@ -225,6 +225,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 /* トップページ: 新着求人のメール登録 */
 .alert-link{align-self:flex-start;margin-top:4px;display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:700}
 .alert-link .ms{font-size:20px}
+.alert-link.sub{margin-top:0;color:var(--z-text-2);font-size:14px}
 .signup-band{margin-top:72px;scroll-margin-top:84px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:start;padding:40px;border-radius:24px;background:linear-gradient(135deg,#EEF1FF,#F6F3FF)}
 .sb-copy>.ms{width:52px;height:52px;border-radius:14px;background:#fff;color:var(--z-blue);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:var(--z-shadow-sm)}
 .sb-copy h2{margin:16px 0 10px;font-size:clamp(22px,2.6vw,30px);font-weight:900;line-height:1.4}

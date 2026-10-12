@@ -3,6 +3,10 @@
  * 新着求人メールの一斉配信（管理画面「求人 > 新着メール配信」）。
  *
  * - 送り先: 「興味あり登録」(zaito_interest) のメールアドレス全員。配信停止した人は除く。
+ * - 希望条件に合わせる: 選んだ求人のうち、その人の希望（立場・やってみたい仕事・働ける日数・時給の下限）に
+ *   合うものだけを一人ずつ選んで送る。合う求人が1件もない人には送らない。
+ * - 計測: 求人へのリンクに配信ID・登録ID・署名を付け、配信ごとに「メールから戻った人」
+ *   「応募ページへ進んだ人」「配信停止した人」を数える（zaito_nl_stats）。
  * - 中身: 運営が選んだまとめ求人（zaito_remote_jobs()）の一覧。リンクはzaitoの求人ページ
  *   （応募ボタンの登録・クリック記録を通るように）に、流入元が分かるUTMを付けて貼る。
  * - 送信: 管理画面を開いたまま、JavaScriptが20件ずつ送る（サーバーの実行時間の上限に
@@ -47,8 +51,12 @@ function zaito_nl_unsub_sig( $id ) {
     return hash_hmac( 'sha256', 'zaito_unsub|' . (int) $id, wp_salt( 'auth' ) );
 }
 
-function zaito_nl_unsub_url( $id ) {
-    return add_query_arg( array( 'zaito_unsub' => (int) $id, 'sig' => zaito_nl_unsub_sig( $id ) ), home_url( '/' ) );
+function zaito_nl_unsub_url( $id, $campaign = '' ) {
+    $args = array( 'zaito_unsub' => (int) $id, 'sig' => zaito_nl_unsub_sig( $id ) );
+    if ( '' !== $campaign ) {
+        $args['c'] = $campaign;
+    }
+    return add_query_arg( $args, home_url( '/' ) );
 }
 
 function zaito_nl_mark_unsubscribed( $id ) {
@@ -69,6 +77,9 @@ function zaito_nl_handle_unsubscribe() {
 
     $done = false;
     if ( $ok && 'POST' === ( isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' ) ) {
+        if ( ! get_post_meta( $id, 'unsubscribed', true ) && isset( $_GET['c'] ) ) {
+            zaito_nl_stat( sanitize_key( wp_unslash( $_GET['c'] ) ), 'unsub', $id );
+        }
         zaito_nl_mark_unsubscribed( $id );
         $done = true;
     }
@@ -99,20 +110,147 @@ function zaito_nl_handle_unsubscribe() {
 }
 add_action( 'init', 'zaito_nl_handle_unsubscribe', 1 );
 
+/* ---------- 希望条件との照らし合わせ ---------- */
+
+/**
+ * 「やってみたい仕事」の選択肢を、求人の分類（zaito_remote_group）に対応させる。
+ */
+function zaito_nl_interest_groups() {
+    return array(
+        'SNS運用'            => 'SNS・マーケ',
+        'Webマーケティング'  => 'SNS・マーケ',
+        'ライティング・編集' => 'ライティング・編集',
+        '動画編集'           => 'デザイン・動画',
+        'デザイン'           => 'デザイン・動画',
+        'エンジニア'         => 'エンジニア',
+        '事務・アシスタント' => '事務・サポート',
+        'カスタマーサポート' => '事務・サポート',
+        'リサーチ・データ入力' => '事務・サポート',
+        '教育・学習サポート' => '教育',
+    );
+}
+
+/**
+ * 登録者の希望条件。答えていない項目は空（＝条件にしない）。
+ */
+function zaito_nl_member_prefs( $id ) {
+    $map       = zaito_nl_interest_groups();
+    $interests = get_post_meta( $id, 'interests', true );
+    $groups    = array();
+    foreach ( is_array( $interests ) ? $interests : array() as $i ) {
+        if ( isset( $map[ $i ] ) ) {
+            $groups[ $map[ $i ] ] = true;
+        }
+    }
+    $days = (string) get_post_meta( $id, 'days', true );
+    return array(
+        'role'     => (string) get_post_meta( $id, 'role', true ),
+        'groups'   => array_keys( $groups ),
+        'days_max' => preg_match( '/週(\d)〜(\d)日|週(\d)日/u', $days, $m ) ? (int) ( ! empty( $m[2] ) ? $m[2] : $m[3] ) : 0,
+        'min_pay'  => preg_match( '/時給([\d,]+)円以上/u', (string) get_post_meta( $id, 'min_pay', true ), $m2 ) ? (int) str_replace( ',', '', $m2[1] ) : 0,
+    );
+}
+
+/**
+ * 求人が希望条件に合うか。分からない項目（求人に日数が書かれていないなど）は合うものとして扱う。
+ */
+function zaito_nl_job_matches( $prefs, $j ) {
+    $student = (bool) preg_match( '/生$/u', $prefs['role'] );
+    if ( $student && ! preg_match( '/学生|大学|全学年/u', $j['target'] ) ) {
+        return false;
+    }
+    if ( $prefs['groups'] ) {
+        $g = zaito_remote_group( $j['category'] );
+        if ( ! in_array( $g[0], $prefs['groups'], true ) ) {
+            return false;
+        }
+    }
+    if ( $prefs['min_pay'] && zaito_remote_hourly_min( $j['pay'] ) < $prefs['min_pay'] ) {
+        return false;
+    }
+    if ( $prefs['days_max'] && preg_match( '/週(\d)/u', $j['hours'], $m ) && (int) $m[1] > $prefs['days_max'] ) {
+        return false;
+    }
+    return true;
+}
+
+/* ---------- 配信ごとの計測 ---------- */
+
+function zaito_nl_stat( $campaign, $kind, $member ) {
+    if ( '' === $campaign || ! $member ) {
+        return;
+    }
+    $stats = get_option( 'zaito_nl_stats', array() );
+    $stats = is_array( $stats ) ? $stats : array();
+    if ( ! isset( $stats[ $campaign ] ) ) {
+        $stats[ $campaign ] = array( 'returns' => array(), 'clicks' => array(), 'unsub' => array() );
+    }
+    if ( 'clicks' === $kind ) {
+        $stats[ $campaign ]['clicks'][ $member ] = ( isset( $stats[ $campaign ]['clicks'][ $member ] ) ? $stats[ $campaign ]['clicks'][ $member ] : 0 ) + 1;
+    } elseif ( ! isset( $stats[ $campaign ][ $kind ][ $member ] ) ) {
+        $stats[ $campaign ][ $kind ][ $member ] = current_time( 'Y-m-d H:i' );
+    }
+    update_option( 'zaito_nl_stats', array_slice( $stats, -50, null, true ), false );
+}
+
+function zaito_nl_link_sig( $campaign, $member ) {
+    return substr( hash_hmac( 'sha256', 'zaito_nl|' . $campaign . '|' . (int) $member, wp_salt( 'auth' ) ), 0, 16 );
+}
+
+/**
+ * メールのリンクから来た人を数える。登録済みの本人なので、登録済みの印（Cookie）も付け直す
+ * （別の端末で開いても、応募ページへそのまま進めるように）。この訪問の間に応募ページへ進んだら、その配信の成果として数える。
+ */
+function zaito_nl_track_return() {
+    if ( ! isset( $_GET['nl'], $_GET['m'], $_GET['s'] ) ) {
+        return;
+    }
+    $campaign = sanitize_key( wp_unslash( $_GET['nl'] ) );
+    $member   = (int) $_GET['m'];
+    $sig      = (string) wp_unslash( $_GET['s'] );
+    if ( ! $member || 'zaito_interest' !== get_post_type( $member ) || ! hash_equals( zaito_nl_link_sig( $campaign, $member ), $sig ) ) {
+        return;
+    }
+    zaito_nl_stat( $campaign, 'returns', $member );
+    if ( ! zaito_remote_member_id() ) {
+        zaito_remote_set_member_cookie( $member );
+    }
+    setcookie( 'zaito_nl', $campaign . '.' . $member, array( 'expires' => time() + DAY_IN_SECONDS, 'path' => '/', 'secure' => is_ssl(), 'httponly' => true, 'samesite' => 'Lax' ) );
+    $_COOKIE['zaito_nl'] = $campaign . '.' . $member;
+}
+add_action( 'init', 'zaito_nl_track_return', 5 );
+
+/**
+ * 応募ページへ進んだとき（zaito_remote_record_click）に呼ばれる。メールから来た訪問なら、その配信に数える。
+ */
+function zaito_nl_track_click( $slug, $member ) {
+    $raw = isset( $_COOKIE['zaito_nl'] ) ? (string) wp_unslash( $_COOKIE['zaito_nl'] ) : '';
+    if ( preg_match( '/^([a-z0-9_-]+)\.(\d+)$/', $raw, $m ) && (int) $m[2] === (int) $member ) {
+        zaito_nl_stat( $m[1], 'clicks', $member );
+    }
+}
+add_action( 'zaito_remote_click', 'zaito_nl_track_click', 10, 2 );
+
 /* ---------- メールの中身 ---------- */
 
-function zaito_nl_job_url( $slug, $campaign ) {
-    return add_query_arg( array(
+function zaito_nl_job_url( $slug, $campaign, $member = 0 ) {
+    $args = array(
         'utm_source'   => 'newsletter',
         'utm_medium'   => 'email',
         'utm_campaign' => $campaign,
-    ), zaito_remote_url( $slug ) );
+    );
+    if ( $member ) {
+        $args['nl'] = $campaign;
+        $args['m']  = (int) $member;
+        $args['s']  = zaito_nl_link_sig( $campaign, $member );
+    }
+    return add_query_arg( $args, '' === $slug ? home_url( '/' ) : zaito_remote_url( $slug ) );
 }
 
 /**
  * 本文。{UNSUB} は送るときに一人ずつの停止リンクに置き換える。
  */
-function zaito_nl_build_body( $intro, $slugs, $campaign ) {
+function zaito_nl_build_body( $intro, $slugs, $campaign, $member = 0 ) {
     $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
     $body = trim( $intro ) . "\n\n"
         . "━━━━━━━━━━━━━━━━\n"
@@ -128,12 +266,12 @@ function zaito_nl_build_body( $intro, $slugs, $campaign ) {
             . '　報酬：' . ( $j['pay'] ? $j['pay'] : '募集ページで確認' ) . "\n"
             . ( $j['hours'] ? '　働き方：' . $j['hours'] . "\n" : '' )
             . ( ! empty( $j['caution'] ) ? '　※' . $j['caution'] . "\n" : '' )
-            . '　' . zaito_nl_job_url( $slug, $campaign ) . "\n\n";
+            . '　' . zaito_nl_job_url( $slug, $campaign, $member ) . "\n\n";
     }
     $body .= "すべての在宅求人を見る\n"
-        . add_query_arg( array( 'utm_source' => 'newsletter', 'utm_medium' => 'email', 'utm_campaign' => $campaign ), home_url( '/' ) ) . "\n\n"
+        . zaito_nl_job_url( '', $campaign, $member ) . "\n\n"
         . "──────────\n"
-        . "このメールは、zaitoに登録したメールアドレスにお送りしています。\n"
+        . "このメールは、zaitoに登録したメールアドレスに、登録時に答えていただいた希望に合う求人をお送りしています。\n"
         . "配信を停止する: {UNSUB}\n"
         . "（このメールに「配信停止」と返信していただいても停止できます）\n\n"
         . "zaito（ザイト）出社なしの仕事だけを集めた求人サイト\n"
@@ -219,6 +357,8 @@ function zaito_nl_render_admin() {
           </tbody>
         </table>
 
+        <p><label><input type="checkbox" name="match" value="1" checked> 一人ずつ、希望条件（立場・やってみたい仕事・働ける日数・時給の下限）に合う求人だけを送る。合う求人がない人には送らない</label><br><span class="description">チェックを入れると、件名は「あなたの希望に合う在宅求人が◯件入りました」に自動で変わります。希望を答えていない人には、選んだ求人をすべて送ります。</span></p>
+
         <h2>2. 件名と冒頭の文章</h2>
         <p><label>件名<br><input type="text" name="subject" id="znl-subject" class="large-text" style="max-width:960px" value=""></label></p>
         <p><label>冒頭の文章<br><textarea name="intro" rows="4" class="large-text" style="max-width:960px"><?php echo esc_textarea( zaito_nl_default_intro() ); ?></textarea></label></p>
@@ -237,10 +377,26 @@ function zaito_nl_render_admin() {
       <h2>配信の記録</h2>
       <?php if ( $history ) : ?>
         <table class="widefat striped" style="max-width:960px">
-          <thead><tr><th style="width:160px">日時</th><th>件名</th><th style="width:90px">求人</th><th style="width:90px">送信</th><th style="width:90px">失敗</th></tr></thead>
+          <thead><tr><th style="width:140px">日時</th><th>件名</th><th style="width:60px">求人</th><th style="width:70px">送信</th><th style="width:90px">合う求人なし</th><th style="width:90px">メールから戻った</th><th style="width:90px">応募ページへ進んだ</th><th style="width:70px">配信停止</th></tr></thead>
           <tbody>
-          <?php foreach ( array_reverse( $history ) as $h ) : ?>
-            <tr><td><?php echo esc_html( $h['date'] ); ?></td><td><?php echo esc_html( $h['subject'] ); ?></td><td><?php echo esc_html( $h['jobs'] ); ?>件</td><td><?php echo esc_html( $h['sent'] ); ?>人</td><td><?php echo esc_html( $h['failed'] ); ?>人</td></tr>
+          <?php
+          $stats = get_option( 'zaito_nl_stats', array() );
+          foreach ( array_reverse( $history ) as $h ) :
+              $st   = ! empty( $h['id'] ) && isset( $stats[ $h['id'] ] ) ? $stats[ $h['id'] ] : array( 'returns' => array(), 'clicks' => array(), 'unsub' => array() );
+              $pct  = function ( $n ) use ( $h ) {
+                  return $h['sent'] ? $n . '人（' . round( 100 * $n / $h['sent'] ) . '%）' : $n . '人';
+              };
+              ?>
+            <tr>
+              <td><?php echo esc_html( $h['date'] ); ?></td>
+              <td><?php echo esc_html( $h['subject'] ); ?><?php echo ! empty( $h['match'] ) ? '<br><span style="color:#646970">希望条件に合わせて送信</span>' : ''; ?></td>
+              <td><?php echo esc_html( $h['jobs'] ); ?>件</td>
+              <td><?php echo esc_html( $h['sent'] ); ?>人<?php echo $h['failed'] ? '<br><span style="color:#b32d2e">失敗' . esc_html( $h['failed'] ) . '人</span>' : ''; ?></td>
+              <td><?php echo esc_html( isset( $h['skipped'] ) ? $h['skipped'] . '人' : '—' ); ?></td>
+              <td><?php echo esc_html( $pct( count( $st['returns'] ) ) ); ?></td>
+              <td><?php echo esc_html( $pct( count( $st['clicks'] ) ) ); ?></td>
+              <td><?php echo esc_html( $pct( count( $st['unsub'] ) ) ); ?></td>
+            </tr>
           <?php endforeach; ?>
           </tbody>
         </table>
@@ -301,7 +457,7 @@ function zaito_nl_render_admin() {
           status.textContent = '送信中… ' + res.data.next + ' / ' + res.data.total + '人（失敗 ' + res.data.failed + '人）。この画面を閉じないでください。';
           if (res.data.done) {
             status.style.color = '#1a7f55';
-            status.textContent = '送信が完了しました：' + res.data.sent + '人に送信（失敗 ' + res.data.failed + '人）';
+            status.textContent = '送信が完了しました：' + res.data.sent + '人に送信（希望に合う求人がなく送らなかった人 ' + res.data.skipped + '人、失敗 ' + res.data.failed + '人）';
             return;
           }
           setTimeout(loop, 1500);
@@ -341,8 +497,8 @@ function zaito_nl_read_form() {
     if ( '' === $subject ) {
         wp_send_json_error( array( 'message' => '件名を入力してください' ), 400 );
     }
-    $campaign = current_time( 'Ymd' );
-    return array( $slugs, $subject, zaito_nl_build_body( $intro, $slugs, $campaign ) );
+    $campaign = current_time( 'YmdHi' );
+    return array( $slugs, $subject, zaito_nl_build_body( $intro, $slugs, $campaign ), $intro, $campaign );
 }
 
 function zaito_nl_ajax_preview() {
@@ -366,19 +522,22 @@ add_action( 'wp_ajax_zaito_nl_test', 'zaito_nl_ajax_test' );
 
 function zaito_nl_ajax_start() {
     zaito_nl_check();
-    list( $slugs, $subject, $body ) = zaito_nl_read_form();
+    list( $slugs, $subject, , $intro, $campaign ) = zaito_nl_read_form();
     $to = zaito_nl_recipients();
     if ( ! $to ) {
         wp_send_json_error( array( 'message' => '送り先がいません' ), 400 );
     }
     update_option( 'zaito_nl_campaign', array(
+        'id'      => $campaign,
         'subject' => $subject,
-        'body'    => $body,
+        'intro'   => $intro,
         'slugs'   => $slugs,
+        'match'   => ! empty( $_POST['match'] ),
         'to'      => $to,
         'next'    => 0,
         'sent'    => 0,
         'failed'  => 0,
+        'skipped' => 0,
         'started' => current_time( 'Y-m-d H:i' ),
     ), false );
     wp_send_json_success( array( 'total' => count( $to ) ) );
@@ -400,7 +559,21 @@ function zaito_nl_ajax_batch() {
         if ( get_post_meta( $id, 'unsubscribed', true ) || ! is_email( $email ) ) {
             continue;
         }
-        if ( zaito_nl_send_one( $email, $c['subject'], $c['body'], zaito_nl_unsub_url( $id ) ) ) {
+        $slugs = $c['slugs'];
+        if ( $c['match'] ) {
+            $prefs = zaito_nl_member_prefs( $id );
+            $slugs = array_values( array_filter( $slugs, function ( $slug ) use ( $prefs ) {
+                $j = zaito_remote_job( $slug );
+                return $j && zaito_nl_job_matches( $prefs, $j );
+            } ) );
+            if ( ! $slugs ) {
+                $c['skipped']++; // 希望に合う求人がない人には送らない
+                continue;
+            }
+        }
+        $subject = $c['match'] ? '【zaito】あなたの希望に合う在宅求人が' . count( $slugs ) . '件入りました' : $c['subject'];
+        $body    = zaito_nl_build_body( $c['intro'], $slugs, $c['id'], $id );
+        if ( zaito_nl_send_one( $email, $subject, $body, zaito_nl_unsub_url( $id, $c['id'] ) ) ) {
             $c['sent']++;
         } else {
             $c['failed']++;
@@ -412,6 +585,9 @@ function zaito_nl_ajax_batch() {
         $history   = get_option( 'zaito_nl_history', array() );
         $history   = is_array( $history ) ? $history : array();
         $history[] = array(
+            'id'      => $c['id'],
+            'match'   => $c['match'],
+            'skipped' => $c['skipped'],
             'date'    => $c['started'],
             'subject' => $c['subject'],
             'jobs'    => count( $c['slugs'] ),
@@ -429,6 +605,6 @@ function zaito_nl_ajax_batch() {
     } else {
         update_option( 'zaito_nl_campaign', $c, false );
     }
-    wp_send_json_success( array( 'next' => $end, 'total' => $total, 'sent' => $c['sent'], 'failed' => $c['failed'], 'done' => $done ) );
+    wp_send_json_success( array( 'next' => $end, 'total' => $total, 'sent' => $c['sent'], 'failed' => $c['failed'], 'skipped' => $c['skipped'], 'done' => $done ) );
 }
 add_action( 'wp_ajax_zaito_nl_batch', 'zaito_nl_ajax_batch' );

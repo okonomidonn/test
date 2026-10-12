@@ -104,7 +104,8 @@ if ( ! function_exists( 'zaito_remote_job_posting' ) ) {
 
 if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     /**
-     * 登録直後に聞く任意のプロフィール（立場・学年・学校名・やってみたい仕事）の入力欄。
+     * 登録直後に聞く任意の希望条件（立場・学年・学校名・やってみたい仕事・働ける日数・希望の時給）の入力欄。
+ * 新着メールは、この答えに合う求人だけを送る（inc/newsletter.php）。
      * 求人詳細とトップページの登録フォームで共通。学年・学校名は学生を選んだときだけJSで表示する。
      */
     function zaito_remote_profile_fields() {
@@ -127,6 +128,16 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     <fieldset><legend>やってみたい仕事（いくつでも）</legend><div class="chips">
       <?php foreach ( $opts['interests'] as $o ) : ?>
         <label><input type="checkbox" name="interests[]" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
+      <?php endforeach; ?>
+    </div></fieldset>
+    <fieldset><legend>週に働けそうな日数</legend><div class="chips">
+      <?php foreach ( $opts['days'] as $o ) : ?>
+        <label><input type="radio" name="days" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
+      <?php endforeach; ?>
+    </div></fieldset>
+    <fieldset><legend>希望の時給</legend><div class="chips">
+      <?php foreach ( $opts['min_pay'] as $o ) : ?>
+        <label><input type="radio" name="min_pay" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
       <?php endforeach; ?>
     </div></fieldset>
         <?php

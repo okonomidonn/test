@@ -346,6 +346,8 @@ function zaito_lead_export_columns( $post_type ) {
         'grade'        => '学年',
         'school'       => '学校名',
         'interests'    => '興味のある仕事',
+        'days'         => '週に働けそうな日数',
+        'min_pay'      => '希望の時給',
         'hours'        => '稼働可能時間',
         'source'       => '登録元',
         'unsubscribed' => '配信停止日',
@@ -469,6 +471,8 @@ function zaito_lead_admin_column_value( $column, $post_id ) {
             get_post_meta( $post_id, 'role', true ),
             get_post_meta( $post_id, 'grade', true ),
             get_post_meta( $post_id, 'school', true ),
+            get_post_meta( $post_id, 'days', true ),
+            get_post_meta( $post_id, 'min_pay', true ),
         ) );
         echo esc_html( $parts ? implode( '・', $parts ) : '—' );
     } elseif ( 'zaito_interests' === $column ) {

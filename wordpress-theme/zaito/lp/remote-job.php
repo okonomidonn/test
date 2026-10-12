@@ -124,7 +124,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 
           <form class="profile" id="zprofile" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
             <b>登録できました</b>
-            <p>よければ、あなたに合う求人をお知らせするために教えてください（任意・どれも押すだけ）。</p>
+            <p>あなたの希望に合う新着だけをメールで送るために教えてください（任意・どれも押すだけ）。答えた内容に合わない求人は送りません。</p>
             <input type="hidden" name="action" value="zaito_remote_profile">
             <?php zaito_remote_profile_fields(); ?>
             <button type="submit" class="btn btn-p btn-lg">保存して応募ページへ進む</button>

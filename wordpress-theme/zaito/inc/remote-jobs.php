@@ -1222,6 +1222,8 @@ function zaito_remote_record_click( $slug, $member ) {
     $stats[ $slug ]['members'][ $member ] = current_time( 'Y-m-d' );
     $stats[ $slug ]['last']                = current_time( 'Y-m-d H:i' );
     update_option( 'zaito_remote_stats', $stats, false );
+    // 新着メールから来た訪問なら、その配信の成果として数える（inc/newsletter.php）。
+    do_action( 'zaito_remote_click', $slug, $member );
 
     $clicked = get_post_meta( $member, 'remote_clicks', true );
     $clicked = is_array( $clicked ) ? $clicked : array();
@@ -1294,6 +1296,8 @@ function zaito_remote_profile_options() {
         'role'      => array( '大学生', '大学院生', '専門学校・短大生', '高校生', '社会人', '主婦・主夫', 'その他' ),
         'grade'     => array( '1年', '2年', '3年', '4年以上' ),
         'interests' => array( 'SNS運用', 'Webマーケティング', 'ライティング・編集', '動画編集', 'デザイン', 'エンジニア', '事務・アシスタント', '教育・学習サポート', 'カスタマーサポート', 'リサーチ・データ入力' ),
+        'days'      => array( '週1〜2日', '週3〜4日', '週5日' ),
+        'min_pay'   => array( 'こだわらない', '時給1,200円以上', '時給1,500円以上', '時給2,000円以上' ),
     );
 }
 
@@ -1321,6 +1325,12 @@ function zaito_handle_remote_profile() {
     $school = isset( $_POST['school'] ) ? sanitize_text_field( wp_unslash( $_POST['school'] ) ) : '';
     if ( '' !== $school ) {
         update_post_meta( $member, 'school', mb_substr( $school, 0, 80 ) );
+    }
+    foreach ( array( 'days', 'min_pay' ) as $key ) {
+        $val = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';
+        if ( in_array( $val, $opts[ $key ], true ) ) {
+            update_post_meta( $member, $key, $val );
+        }
     }
     $picked = isset( $_POST['interests'] ) && is_array( $_POST['interests'] )
         ? array_values( array_intersect( array_map( 'sanitize_text_field', wp_unslash( $_POST['interests'] ) ), $opts['interests'] ) )
