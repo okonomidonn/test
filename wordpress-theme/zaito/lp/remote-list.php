@@ -51,8 +51,8 @@ if ( $zaito_cond ) {
     $zaito_desc  = mb_substr( $zaito_cond['body'][0], 0, 110 ) . '（' . count( $zaito_jobs ) . '件・運営が在宅の条件を確認済み）';
     $zaito_canon = zaito_remote_condition_url( $zaito_list_cond );
 } else {
-    $zaito_title = 'zaito | 出社なしの仕事だけを集めた、完全在宅の求人サイト';
-    $zaito_desc  = '「在宅」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅の求人を、運営が1件ずつ確認してまとめています。SNS運用、Webマーケ、教育、ライティング、エンジニアなど。';
+    $zaito_title = '在宅バイト・完全在宅の求人｜出社なしの仕事だけを集めたzaito';
+    $zaito_desc  = '「在宅バイト」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅のバイト・パート・インターンを、運営が1件ずつ確認してまとめています。事務、カスタマーサポート、SNS運用、ライター、エンジニアなど。';
     $zaito_canon = zaito_remote_url();
 }
 

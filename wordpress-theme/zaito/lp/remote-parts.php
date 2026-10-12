@@ -41,6 +41,66 @@ if ( ! function_exists( 'zaito_remote_group' ) ) {
     }
 }
 
+if ( ! function_exists( 'zaito_remote_job_posting' ) ) {
+    /**
+     * Googleの求人枠（Googleしごと検索）向けの JobPosting 構造化データ。
+     * 募集が終わった求人には出さない。validThrough は運営の確認日から30日（2週間ごとに確認し直す前提）。
+     */
+    function zaito_remote_job_posting( $j ) {
+        if ( ! empty( $j['closed'] ) ) {
+            return null;
+        }
+        $text  = $j['title'] . $j['summary'] . $j['target'] . $j['pay'] . ( isset( $j['caution'] ) ? $j['caution'] : '' );
+        $types = array();
+        if ( false !== strpos( $text, '業務委託' ) || false !== strpos( $text, '成果報酬' ) ) {
+            $types[] = 'CONTRACTOR';
+        }
+        if ( false !== strpos( $text, 'インターン' ) ) {
+            $types[] = 'INTERN';
+        }
+        if ( ! $types ) {
+            $types[] = 'PART_TIME';
+        }
+        $rows = array(
+            '仕事内容' => $j['summary'],
+            '在宅の条件' => $j['remote'],
+            '報酬'     => $j['pay'] ? $j['pay'] : '募集ページで確認してください',
+            '稼働条件' => $j['hours'] ? $j['hours'] : '募集ページで確認してください',
+            '対象'     => $j['target'],
+        );
+        if ( ! empty( $j['caution'] ) ) {
+            $rows['注意'] = $j['caution'];
+        }
+        $desc = '';
+        foreach ( $rows as $k => $v ) {
+            $desc .= '<p><strong>' . esc_html( $k ) . '</strong><br>' . esc_html( $v ) . '</p>';
+        }
+        $desc .= '<p>応募と選考は、' . esc_html( $j['company'] ) . 'の募集ページで行います。在宅の条件はzaito運営が' . esc_html( date_i18n( 'Y年n月j日', strtotime( $j['checked'] ) ) ) . 'に確認しました。</p>';
+        $data = array(
+            '@type'              => 'JobPosting',
+            'title'              => $j['title'],
+            'description'        => $desc,
+            'datePosted'         => $j['checked'],
+            'validThrough'       => gmdate( 'Y-m-d', strtotime( $j['checked'] . ' +30 days' ) ) . 'T23:59:59+09:00',
+            'employmentType'     => $types,
+            'hiringOrganization' => array( '@type' => 'Organization', 'name' => $j['company'] ),
+            'jobLocationType'    => 'TELECOMMUTE',
+            'applicantLocationRequirements' => array( '@type' => 'Country', 'name' => 'JP' ),
+            'directApply'        => false,
+            'url'                => zaito_remote_url( $j['slug'] ),
+        );
+        // 「時給1,300〜1,500円」の形のときだけ、金額をGoogleに渡す（成果報酬などは渡さない）。
+        if ( preg_match( '/^時給([\d,]+)(?:〜([\d,]+))?円/u', $j['pay'], $m ) ) {
+            $value = array( '@type' => 'QuantitativeValue', 'unitText' => 'HOUR', 'minValue' => (int) str_replace( ',', '', $m[1] ) );
+            if ( ! empty( $m[2] ) ) {
+                $value['maxValue'] = (int) str_replace( ',', '', $m[2] );
+            }
+            $data['baseSalary'] = array( '@type' => 'MonetaryAmount', 'currency' => 'JPY', 'value' => $value );
+        }
+        return $data;
+    }
+}
+
 if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     /**
      * 登録直後に聞く任意のプロフィール（立場・学年・学校名・やってみたい仕事）の入力欄。

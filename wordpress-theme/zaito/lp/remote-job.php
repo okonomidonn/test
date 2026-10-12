@@ -30,14 +30,23 @@ $zaito_facts = array(
     array( 'fact_check', 'zaitoの確認日', date_i18n( 'Y年n月j日', strtotime( $zaito_j['checked'] ) ), '募集内容はその後変わっている場合があります' ),
 );
 
-zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug'] ), array(
-    '@context'        => 'https://schema.org',
-    '@type'           => 'BreadcrumbList',
-    'itemListElement' => array(
-        array( '@type' => 'ListItem', 'position' => 1, 'name' => 'zaito', 'item' => home_url( '/' ) ),
-        array( '@type' => 'ListItem', 'position' => 2, 'name' => '完全在宅の求人', 'item' => zaito_remote_url() ),
-        array( '@type' => 'ListItem', 'position' => 3, 'name' => $zaito_j['title'] ),
+$zaito_ld = array(
+    array(
+        '@type'           => 'BreadcrumbList',
+        'itemListElement' => array(
+            array( '@type' => 'ListItem', 'position' => 1, 'name' => 'zaito', 'item' => home_url( '/' ) ),
+            array( '@type' => 'ListItem', 'position' => 2, 'name' => '完全在宅の求人', 'item' => zaito_remote_url() ),
+            array( '@type' => 'ListItem', 'position' => 3, 'name' => $zaito_j['title'] ),
+        ),
     ),
+);
+$zaito_posting = zaito_remote_job_posting( $zaito_j );
+if ( $zaito_posting ) {
+    $zaito_ld[] = $zaito_posting;
+}
+zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug'] ), array(
+    '@context' => 'https://schema.org',
+    '@graph'   => $zaito_ld,
 ) );
 ?>
 <body class="has-spbar">
