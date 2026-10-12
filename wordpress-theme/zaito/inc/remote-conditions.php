@@ -51,6 +51,14 @@ function zaito_remote_job_tags() {
         'bluefield-research-engineer' => array( 'tanjikan' ),
         'unseed-ai-engineer'       => array( 'tanjikan' ),
         'directsourcing-sourcer'   => array( 'tanjikan' ),
+        'lpixel-annotator'         => array( 'tanjikan' ),
+        'lpixel-ml-engineer'       => array( 'tanjikan' ),
+        'leadfactory-btob-marketing' => array( 'mikeiken' ),
+        '3sunny-cs'                => array( 'mikeiken' ),
+        'fronteo-doc-reviewer'     => array( 'mikeiken' ),
+        'kumono-media-intern'      => array( 'mikeiken' ),
+        'itmedia-nlab-writer'      => array( 'mikeiken' ),
+        'prointern-intern'         => array( 'mikeiken' ),
     );
 }
 
