@@ -238,6 +238,28 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .sb-row .btn{flex:none}
 #ztop .legal{margin:10px 0 0;font-size:12px;color:var(--z-text-4)}
 #ztop .err{margin:8px 0 0;font-size:14px;color:#C8313B;font-weight:700}
+/* 求人3件目のあとの登録欄 */
+.mini-cta{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;padding:20px 24px;border-radius:20px;background:linear-gradient(135deg,#EEF1FF,#F6F3FF);box-shadow:inset 0 0 0 1.5px #DCE2FF}
+.mc-copy{flex:1 1 280px;display:flex;align-items:center;gap:14px}
+.mc-copy>.ms{flex:none;width:44px;height:44px;border-radius:12px;background:#fff;color:var(--z-blue);display:flex;align-items:center;justify-content:center;font-size:24px}
+.mc-copy p{margin:0;font-size:14px;color:var(--z-text-2);line-height:1.6}
+.mc-copy b{display:block;font-size:16px;color:var(--z-navy);font-weight:900}
+#zminiform{flex:1 1 320px;display:flex;gap:8px}
+#zminiform input{flex:1;min-width:0;height:50px;padding:0 14px;border-radius:12px;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font-family:inherit;font-size:16px;color:var(--z-navy)}
+#zminiform input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--z-blue)}
+#zminiform .btn{flex:none;height:50px}
+.mini-cta .err{flex-basis:100%;margin:0;font-size:14px;color:#C8313B;font-weight:700}
+.mini-cta .err:empty{display:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* 広告から来た人向けの、画面下の登録への帯 */
+.sbar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:70;width:min(560px,calc(100% - 24px));display:flex;align-items:center;gap:12px;padding:10px 10px 10px 18px;border-radius:16px;background:var(--z-navy);color:#fff;box-shadow:0 12px 32px -8px rgba(11,21,48,.45)}
+.sbar[hidden]{display:none}
+.sbar p{flex:1;margin:0;font-size:12px;color:rgba(255,255,255,.75);line-height:1.4}
+.sbar p b{display:block;font-size:15px;color:#fff;font-weight:900}
+.sbar .btn{flex:none;height:46px;padding:0 18px}
+.sbar-x{flex:none;width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sbar-x .ms{font-size:20px}
+body.has-sbar{padding-bottom:96px}
 .sb-form .profile{margin-top:0;padding-top:0;border-top:0}
 .sb-form .profile .btn{width:100%}
 .sb-form .skip{width:100%;border:0;background:none;font-family:inherit;cursor:pointer}
@@ -286,6 +308,11 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
  .sb-form{padding:18px}
  .sb-row{flex-direction:column}
  .sb-row .btn{width:100%}
+ .mini-cta{padding:18px 16px}
+ #zminiform{flex-direction:column}
+ #zminiform input{flex:none;height:52px}
+ #zminiform .btn{width:100%}
+ .sbar{bottom:calc(10px + env(safe-area-inset-bottom))}
  .why,.flow4,.rules,.row2{grid-template-columns:1fr}
  .contact-in{grid-template-columns:1fr;gap:24px;padding:24px 18px;margin:0 -4px}
  .cta-row .btn{flex:1 1 100%}

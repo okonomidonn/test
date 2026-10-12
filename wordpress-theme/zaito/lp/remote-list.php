@@ -152,7 +152,23 @@ $zaito_card = function ( $j ) {
 <main class="wrap">
   <p class="count" aria-live="polite"><b id="zcount"><?php echo esc_html( count( $zaito_open ) ); ?></b>件の求人<span>・<?php echo esc_html( date_i18n( 'n月j日', strtotime( $zaito_checked ) ) ); ?>に運営が確認</span></p>
   <ul class="cards" id="zcards">
-    <?php foreach ( $zaito_open as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
+    <?php foreach ( $zaito_open as $zaito_i => $zaito_j ) : ?>
+      <?php $zaito_card( $zaito_j ); ?>
+      <?php if ( 2 === $zaito_i ) : // 3件目のあとに、スクロールしなくても目に入る登録欄を置く ?>
+        <li class="mini-cta" id="zmini">
+          <div class="mc-copy">
+            <span class="ms" aria-hidden="true">mark_email_unread</span>
+            <p><b>新しい完全在宅の求人を、メールで受け取る</b>メールアドレスだけで登録できます。無料です。</p>
+          </div>
+          <form id="zminiform" novalidate>
+            <label class="sr" for="zminiemail">メールアドレス</label>
+            <input type="email" id="zminiemail" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
+            <button type="submit" class="btn btn-p">無料で登録</button>
+          </form>
+          <p class="err" id="zminierr" role="alert"></p>
+        </li>
+      <?php endif; ?>
+    <?php endforeach; ?>
   </ul>
 
   <?php if ( $zaito_closed ) : ?>
@@ -230,6 +246,11 @@ $zaito_card = function ( $j ) {
 </main>
 
 <?php zaito_remote_footer(); ?>
+<div class="sbar" id="zbar" hidden>
+  <p><b>新着の在宅求人をメールで</b>登録無料・メールアドレスだけ</p>
+  <a class="btn btn-p" href="#signup" id="zbargo">登録する</a>
+  <button type="button" class="sbar-x" id="zbarx" aria-label="閉じる"><span class="ms" aria-hidden="true">close</span></button>
+</div>
 <script>
 (function () {
   var buttons = document.querySelectorAll('.filters button');
@@ -266,26 +287,77 @@ $zaito_card = function ( $j ) {
   var q = new URLSearchParams(location.search);
   ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (k) { top.elements[k].value = q.get(k) || ''; });
   top.elements.referrer.value = document.referrer || '';
-  top.addEventListener('submit', function (e) {
-    e.preventDefault();
-    terr.textContent = '';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(top.elements.email.value.trim())) { terr.textContent = '正しいメールアドレスを入力してください'; return; }
-    var btn = top.querySelector('button[type=submit]');
+  var mini = document.getElementById('zmini');
+  var bar = document.getElementById('zbar');
+  var isEmail = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); };
+  // 下の登録欄・求人3件目のあとの登録欄のどちらからでも、同じフォーム(#ztop)で送る。
+  function register(btn, err, method, after) {
     btn.disabled = true;
     // form.action は name="action" の入力欄を指してしまうため、属性から読む。
     fetch(top.getAttribute('action'), { method: 'POST', body: new FormData(top), credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
       .then(function (r) { return r.json(); })
       .then(function (res) {
         if (!res || !res.success) { throw new Error(res && res.data && res.data.message ? res.data.message : ''); }
-        if (!res.data.created) { showDone('登録済みです', 'このメールアドレスはすでに登録されています。新しい在宅求人が入ったらお知らせします。'); return; }
-        track('sign_up', { method: 'top' });
+        if (bar) { bar.hidden = true; }
+        if (!res.data.created) { showDone('登録済みです', 'このメールアドレスはすでに登録されています。新しい在宅求人が入ったらお知らせします。'); after(false); return; }
+        track('sign_up', { method: method });
         top.hidden = true; profile.hidden = false;
+        after(true);
       })
       .catch(function (x) {
         btn.disabled = false;
-        terr.textContent = x.message || '登録できませんでした。時間をおいてもう一度お試しください';
+        err.textContent = x.message || '登録できませんでした。時間をおいてもう一度お試しください';
       });
+  }
+  top.addEventListener('submit', function (e) {
+    e.preventDefault();
+    terr.textContent = '';
+    if (!isEmail(top.elements.email.value.trim())) { terr.textContent = '正しいメールアドレスを入力してください'; return; }
+    register(top.querySelector('button[type=submit]'), terr, 'top', function () {});
   });
+  if (mini) {
+    var mform = document.getElementById('zminiform');
+    var merr = document.getElementById('zminierr');
+    mform.addEventListener('submit', function (e) {
+      e.preventDefault();
+      merr.textContent = '';
+      var v = document.getElementById('zminiemail').value.trim();
+      if (!isEmail(v)) { merr.textContent = '正しいメールアドレスを入力してください'; return; }
+      top.elements.email.value = v;
+      register(mform.querySelector('button'), merr, 'inline', function (created) {
+        mini.innerHTML = '<div class="mc-copy"><span class="ms" aria-hidden="true">check_circle</span><p><b>' + (created ? '登録できました' : '登録済みです') + '</b>新しい完全在宅の求人が入ったら、メールでお知らせします。</p></div>';
+        if (created) { document.getElementById('signup').scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+  }
+  // 広告から来た未登録の人には、画面の下に登録への帯を出す（登録欄が見えている間と、閉じたあとは出さない）。
+  var member = /(?:^|;\s*)zaito_m=1/.test(document.cookie);
+  var fromAd = q.get('utm_medium') === 'paid';
+  try { if (fromAd) { sessionStorage.setItem('zaito_ad', '1'); } fromAd = fromAd || sessionStorage.getItem('zaito_ad') === '1'; } catch (x) {}
+  if (member && mini) { mini.remove(); mini = null; }
+  var closed = false;
+  try { closed = sessionStorage.getItem('zaito_bar_x') === '1'; } catch (x) {}
+  if (bar && fromAd && !member && !closed) {
+    var band = document.getElementById('signup');
+    var inView = false;
+    var sync = function () { bar.hidden = inView || window.scrollY < 300; document.body.classList.toggle('has-sbar', !bar.hidden); };
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { inView = es[0].isIntersecting; sync(); }).observe(band);
+    }
+    window.addEventListener('scroll', sync, { passive: true });
+    sync();
+    document.getElementById('zbargo').addEventListener('click', function (e) {
+      e.preventDefault();
+      band.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(function () { top.elements.email.focus({ preventScroll: true }); }, 500);
+      track('signup_bar_click', {});
+    });
+    document.getElementById('zbarx').addEventListener('click', function () {
+      bar.hidden = true; document.body.classList.remove('has-sbar');
+      window.removeEventListener('scroll', sync);
+      try { sessionStorage.setItem('zaito_bar_x', '1'); } catch (x) {}
+    });
+  }
   profile.addEventListener('change', function (e) {
     if (e.target.name === 'role') { stu.hidden = !/生$/.test(e.target.value); }
   });
