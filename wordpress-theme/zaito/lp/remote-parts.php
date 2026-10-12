@@ -102,6 +102,26 @@ if ( ! function_exists( 'zaito_remote_job_posting' ) ) {
     }
 }
 
+if ( ! function_exists( 'zaito_remote_card_attrs' ) ) {
+    /**
+     * 一覧の絞り込みに使う data 属性（時給の下限・学生OK・社会人OK・週の最少日数・未経験OK）。
+     */
+    function zaito_remote_card_attrs( $j ) {
+        $student = (bool) preg_match( '/学生|大学|全学年/u', $j['target'] );
+        $adult   = ! $student || (bool) preg_match( '/社会人|主婦|既卒|副業|フリーランス/u', $j['target'] );
+        $days    = preg_match( '/週(\d)(?:日|〜)/u', $j['hours'], $m ) ? (int) $m[1] : 0;
+        $newbie  = function_exists( 'zaito_remote_has_tag' ) && zaito_remote_has_tag( $j, 'mikeiken' ) || (bool) preg_match( '/未経験|経験不問|経験は不問/u', $j['target'] );
+        return sprintf(
+            ' data-pay="%d" data-student="%d" data-adult="%d" data-days="%d" data-newbie="%d"',
+            function_exists( 'zaito_remote_hourly_min' ) ? zaito_remote_hourly_min( $j['pay'] ) : 0,
+            $student ? 1 : 0,
+            $adult ? 1 : 0,
+            $days,
+            $newbie ? 1 : 0
+        );
+    }
+}
+
 if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     /**
      * 登録直後に聞く任意の希望条件（立場・学年・学校名・やってみたい仕事・働ける日数・希望の時給）の入力欄。

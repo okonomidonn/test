@@ -245,6 +245,14 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .doc p{margin:14px 0 0}
 .doc ul{margin:14px 0 0;padding-left:1.3em}
 .doc li+li{margin-top:6px}
+.refine{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:0 0 28px;margin-top:-12px}
+.refine label{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--z-text-2)}
+.refine select{height:42px;padding:0 34px 0 12px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1.5px var(--z-border);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235B6478' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center;-webkit-appearance:none;appearance:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--z-navy);cursor:pointer}
+.refine .chk{height:42px;padding:0 14px;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border);cursor:pointer}
+.refine .chk input{width:18px;height:18px;accent-color:var(--z-blue);margin:0}
+.refine .chk span{font-size:14px;color:var(--z-navy)}
+.none{margin:24px 0 0;padding:28px;border-radius:16px;background:#F6F7FA;text-align:center;font-size:15px;color:var(--z-text-2)}
+.none button{margin-left:8px;border:0;background:none;color:var(--z-blue);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
 .mini-cta{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;padding:20px 24px;border-radius:20px;background:linear-gradient(135deg,#EEF1FF,#F6F3FF);box-shadow:inset 0 0 0 1.5px #DCE2FF}
 .mc-copy{flex:1 1 280px;display:flex;align-items:center;gap:14px}
 .mc-copy>.ms{flex:none;width:44px;height:44px;border-radius:12px;background:#fff;color:var(--z-blue);display:flex;align-items:center;justify-content:center;font-size:24px}
@@ -311,6 +319,10 @@ body.has-sbar{padding-bottom:96px}
  .sb-row{flex-direction:column}
  .sb-row .btn{width:100%}
  .mini-cta{padding:18px 16px}
+ .refine{gap:8px;margin-top:-16px}
+ .refine label{flex:1 1 calc(50% - 8px);flex-direction:column;align-items:stretch;gap:4px;font-size:12px}
+ .refine select{width:100%}
+ .refine .chk{flex-direction:row;align-items:center;align-self:flex-end;height:42px}
  #zminiform{flex-direction:column}
  #zminiform input{flex:none;height:52px}
  #zminiform .btn{width:100%}

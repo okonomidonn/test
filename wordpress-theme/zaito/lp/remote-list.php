@@ -74,7 +74,7 @@ $zaito_card = function ( $j ) {
     $pay     = zaito_remote_pay_parts( $j['pay'] );
     $initial = mb_substr( preg_replace( '/^(株式会社|合同会社|有限会社|学校法人)|(株式会社|合同会社|有限会社)$/u', '', $j['company'] ), 0, 1 );
     ?>
-    <li class="card t-<?php echo esc_attr( $g[2] ); ?><?php echo ! empty( $j['closed'] ) ? ' closed' : ''; ?>" data-group="<?php echo esc_attr( $g[0] ); ?>">
+    <li class="card t-<?php echo esc_attr( $g[2] ); ?><?php echo ! empty( $j['closed'] ) ? ' closed' : ''; ?>" data-group="<?php echo esc_attr( $g[0] ); ?>" data-slug="<?php echo esc_attr( $j['slug'] ); ?>"<?php echo zaito_remote_card_attrs( $j ); // 数値と0/1だけ ?>>
       <a href="<?php echo esc_url( zaito_remote_url( $j['slug'] ) ); ?>">
         <div class="band"><span class="ms" aria-hidden="true"><?php echo esc_html( $g[1] ); ?></span><span class="bcat"><?php echo esc_html( $j['category'] ); ?></span></div>
         <div class="body">
@@ -139,6 +139,25 @@ $zaito_card = function ( $j ) {
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+    <div class="refine" role="group" aria-label="条件で絞り込む">
+      <label><span>時給</span><select id="zf-pay">
+        <option value="0">こだわらない</option>
+        <option value="1200">1,200円以上</option>
+        <option value="1500">1,500円以上</option>
+        <option value="2000">2,000円以上</option>
+      </select></label>
+      <label><span>応募できる人</span><select id="zf-who">
+        <option value="">だれでも</option>
+        <option value="student">学生OK</option>
+        <option value="adult">社会人・経験者</option>
+      </select></label>
+      <label><span>週の日数</span><select id="zf-days">
+        <option value="0">こだわらない</option>
+        <option value="2">週2日からOK</option>
+        <option value="3">週3日からOK</option>
+      </select></label>
+      <label class="chk"><input type="checkbox" id="zf-new"><span>未経験OK</span></label>
+    </div>
   </div>
 </section>
 
@@ -163,6 +182,7 @@ $zaito_card = function ( $j ) {
       <?php endif; ?>
     <?php endforeach; ?>
   </ul>
+  <p class="none" id="znone" hidden>条件に合う求人がありません。<button type="button" id="znone-reset">条件をリセット</button></p>
 
   <?php if ( $zaito_closed ) : ?>
     <h2 class="sub">募集が終了した求人</h2>
@@ -249,18 +269,38 @@ $zaito_card = function ( $j ) {
   var buttons = document.querySelectorAll('.filters button');
   var cards = document.querySelectorAll('#zcards .card');
   var count = document.getElementById('zcount');
+  // 職種のボタンと、時給・応募できる人・週の日数・未経験OKの条件を組み合わせて絞り込む。
+  // 求人に書かれていない項目（日数が分からないなど）は、その条件を選んだときは出さない。
+  var group = '';
+  var fPay = document.getElementById('zf-pay'), fWho = document.getElementById('zf-who'), fDays = document.getElementById('zf-days'), fNew = document.getElementById('zf-new');
+  var none = document.getElementById('znone');
+  function applyFilters() {
+    var pay = +fPay.value, who = fWho.value, days = +fDays.value, nw = fNew.checked, n = 0;
+    cards.forEach(function (c) {
+      var d = c.dataset;
+      var show = (!group || d.group === group)
+        && (!pay || +d.pay >= pay)
+        && (!who || (who === 'student' ? d.student === '1' : d.adult === '1'))
+        && (!days || (+d.days > 0 && +d.days <= days))
+        && (!nw || d.newbie === '1');
+      c.style.display = show ? '' : 'none';
+      if (show) n++;
+    });
+    count.textContent = n;
+    if (none) none.hidden = n > 0;
+  }
   buttons.forEach(function (b) {
     b.addEventListener('click', function () {
-      var g = b.getAttribute('data-filter');
-      var n = 0;
+      group = b.getAttribute('data-filter');
       buttons.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      cards.forEach(function (c) {
-        var show = !g || c.getAttribute('data-group') === g;
-        c.style.display = show ? '' : 'none';
-        if (show) n++;
-      });
-      count.textContent = n;
+      applyFilters();
     });
+  });
+  [fPay, fWho, fDays, fNew].forEach(function (el) { el.addEventListener('change', applyFilters); });
+  document.getElementById('znone-reset').addEventListener('click', function () {
+    fPay.value = '0'; fWho.value = ''; fDays.value = '0'; fNew.checked = false; group = '';
+    buttons.forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-filter') === '' ? 'true' : 'false'); });
+    applyFilters();
   });
   // 新着求人のメール登録（トップページ）
   var top = document.getElementById('ztop');
