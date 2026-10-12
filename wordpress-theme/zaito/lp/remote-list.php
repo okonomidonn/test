@@ -143,29 +143,31 @@ $zaito_card = function ( $j ) {
       </div>
     <?php endif; ?>
     <div class="refine" role="group" aria-label="条件で絞り込む">
-      <label><span>時給</span><select id="zf-pay">
-        <option value="0">こだわらない</option>
-        <option value="1200">1,200円以上</option>
-        <option value="1500">1,500円以上</option>
-        <option value="2000">2,000円以上</option>
-      </select></label>
-      <label><span>応募できる人</span><select id="zf-who">
-        <option value="">だれでも</option>
-        <option value="student">学生OK</option>
-        <option value="adult">社会人・経験者</option>
-      </select></label>
-      <label><span>週の日数</span><select id="zf-days">
-        <option value="0">こだわらない</option>
-        <option value="2">週2日からOK</option>
-        <option value="3">週3日からOK</option>
-      </select></label>
-      <label class="chk"><input type="checkbox" id="zf-new"><span>未経験OK</span></label>
+      <span class="rl">条件</span>
+      <div class="qchips">
+        <button type="button" data-k="who" data-v="student" aria-pressed="false">学生OK<small></small></button>
+        <button type="button" data-k="who" data-v="adult" aria-pressed="false">社会人・主婦OK<small></small></button>
+        <button type="button" data-k="newbie" data-v="1" aria-pressed="false">未経験OK<small></small></button>
+        <button type="button" data-k="days" data-v="2" aria-pressed="false">週1〜2日でOK<small></small></button>
+        <button type="button" data-k="pay" data-v="1200" aria-pressed="false">時給1,200円〜<small></small></button>
+        <button type="button" data-k="pay" data-v="1500" aria-pressed="false">時給1,500円〜<small></small></button>
+        <button type="button" data-k="pay" data-v="2000" aria-pressed="false">時給2,000円〜<small></small></button>
+        <button type="button" class="qfav" data-k="fav" data-v="1" aria-pressed="false"><span class="ms" aria-hidden="true">favorite</span>保存した求人<small></small></button>
+      </div>
     </div>
   </div>
 </section>
 
 <main class="wrap">
-  <p class="count" aria-live="polite"><b id="zcount"><?php echo esc_html( count( $zaito_open ) ); ?></b>件の求人<span>・<?php echo esc_html( date_i18n( 'n月j日', strtotime( $zaito_checked ) ) ); ?>に運営が確認</span></p>
+  <div class="count-bar">
+    <p class="count" aria-live="polite"><b id="zcount"><?php echo esc_html( count( $zaito_open ) ); ?></b>件の求人<span>・<?php echo esc_html( date_i18n( 'n月j日', strtotime( $zaito_checked ) ) ); ?>に運営が確認</span></p>
+    <button type="button" class="clear" id="zclear" hidden><span class="ms" aria-hidden="true">close</span>条件をクリア</button>
+    <label class="sort"><span class="sr">並び替え</span><span class="ms" aria-hidden="true">swap_vert</span><select id="zsort">
+      <option value="">おすすめ順</option>
+      <option value="pay">時給が高い順</option>
+      <option value="new">新しく載った順</option>
+    </select></label>
+  </div>
   <ul class="cards" id="zcards">
     <?php foreach ( $zaito_open as $zaito_i => $zaito_j ) : ?>
       <?php $zaito_card( $zaito_j ); ?>
@@ -269,42 +271,116 @@ $zaito_card = function ( $j ) {
 </div>
 <script>
 (function () {
-  var buttons = document.querySelectorAll('.filters button');
-  var cards = document.querySelectorAll('#zcards .card');
-  var count = document.getElementById('zcount');
-  // 職種のボタンと、時給・応募できる人・週の日数・未経験OKの条件を組み合わせて絞り込む。
+  // 絞り込み: 職種（1つ）＋条件のチップ（応募できる人・時給はどれか1つ、ほかはオン/オフ）＋並び替え。
   // 求人に書かれていない項目（日数が分からないなど）は、その条件を選んだときは出さない。
-  var group = '';
-  var fPay = document.getElementById('zf-pay'), fWho = document.getElementById('zf-who'), fDays = document.getElementById('zf-days'), fNew = document.getElementById('zf-new');
+  // 選んだ条件はURLに残し、共有や戻るボタンでも同じ絞り込みで開けるようにする。
+  var list = document.getElementById('zcards');
+  var cards = Array.prototype.slice.call(list.querySelectorAll('.card'));
+  cards.forEach(function (c, i) { c.dataset.i = i; });
+  var groupBtns = document.querySelectorAll('.filters button');
+  var chips = document.querySelectorAll('.qchips button');
+  var count = document.getElementById('zcount');
   var none = document.getElementById('znone');
-  function applyFilters() {
-    var pay = +fPay.value, who = fWho.value, days = +fDays.value, nw = fNew.checked, n = 0;
-    cards.forEach(function (c) {
-      var d = c.dataset;
-      var show = (!group || d.group === group)
-        && (!pay || +d.pay >= pay)
-        && (!who || (who === 'student' ? d.student === '1' : d.adult === '1'))
-        && (!days || (+d.days > 0 && +d.days <= days))
-        && (!nw || d.newbie === '1');
-      c.style.display = show ? '' : 'none';
-      if (show) n++;
+  var clearBtn = document.getElementById('zclear');
+  var sortSel = document.getElementById('zsort');
+  var st = { g: '', who: '', pay: 0, days: 0, newbie: 0, fav: 0 };
+  function favs() { try { return JSON.parse(localStorage.getItem('zaito_favs') || '[]'); } catch (e) { return []; } }
+  function match(d, s, saved) {
+    return (!s.g || d.group === s.g)
+      && (!s.who || (s.who === 'student' ? d.student === '1' : d.adult === '1'))
+      && (!s.pay || +d.pay >= s.pay)
+      && (!s.days || (+d.days > 0 && +d.days <= s.days))
+      && (!s.newbie || d.newbie === '1')
+      && (!s.fav || saved.indexOf(d.slug) !== -1);
+  }
+  function countWith(patch, saved) {
+    var s = Object.assign({}, st, patch), n = 0;
+    cards.forEach(function (c) { if (match(c.dataset, s, saved)) n++; });
+    return n;
+  }
+  function sortCards() {
+    var by = sortSel.value;
+    var sorted = cards.slice().sort(function (a, b) {
+      var x = a.dataset, y = b.dataset;
+      if (by === 'pay' && +y.pay !== +x.pay) return +y.pay - +x.pay;
+      if (by === 'new' && +y.listed !== +x.listed) return +y.listed - +x.listed;
+      return x.i - y.i;
     });
+    sorted.forEach(function (c) { list.appendChild(c); });
+  }
+  function apply(push) {
+    var saved = favs(), n = 0, shown = [];
+    list.querySelectorAll('.card').forEach(function (c) {
+      var show = match(c.dataset, st, saved);
+      c.style.display = show ? '' : 'none';
+      if (show) { n++; shown.push(c); }
+    });
+    // 登録の案内は、表示中の3件目のあとに置き直す（少ないときは最後）。
+    var mini = document.getElementById('zmini');
+    if (mini) {
+      var anchor = shown[Math.min(2, shown.length - 1)];
+      if (anchor) anchor.after(mini); else list.appendChild(mini);
+    }
     count.textContent = n;
     if (none) none.hidden = n > 0;
+    groupBtns.forEach(function (b) {
+      var g = b.getAttribute('data-filter');
+      b.setAttribute('aria-pressed', g === st.g ? 'true' : 'false');
+      var sm = b.querySelector('small');
+      if (sm) sm.textContent = countWith({ g: g }, saved);
+    });
+    // 条件のチップには「押したら何件になるか」を出し、0件になるものは薄くする。
+    chips.forEach(function (b) {
+      var k = b.getAttribute('data-k'), v = b.getAttribute('data-v');
+      var on = String(st[k]) === v;
+      var p = {}; p[k] = k === 'who' ? v : +v;
+      var c = on ? n : countWith(p, saved);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.querySelector('small').textContent = c;
+      b.classList.toggle('zero', !on && c === 0);
+    });
+    var active = st.g || st.who || st.pay || st.days || st.newbie || st.fav;
+    clearBtn.hidden = !active;
+    if (push !== false && window.history.replaceState) {
+      var q = new URLSearchParams(location.search);
+      ['g', 'who', 'pay', 'days', 'newbie', 'fav'].forEach(function (k) { if (st[k]) q.set(k, st[k]); else q.delete(k); });
+      if (sortSel.value) q.set('sort', sortSel.value); else q.delete('sort');
+      var qs = q.toString();
+      history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+    }
   }
-  buttons.forEach(function (b) {
+  groupBtns.forEach(function (b) {
+    b.addEventListener('click', function () { st.g = b.getAttribute('data-filter'); apply(); });
+  });
+  chips.forEach(function (b) {
     b.addEventListener('click', function () {
-      group = b.getAttribute('data-filter');
-      buttons.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      applyFilters();
+      var k = b.getAttribute('data-k'), v = b.getAttribute('data-v');
+      var val = k === 'who' ? v : +v;
+      st[k] = String(st[k]) === v ? (k === 'who' ? '' : 0) : val;
+      apply();
+      track('job_filter', { filter: k, value: String(st[k]) });
     });
   });
-  [fPay, fWho, fDays, fNew].forEach(function (el) { el.addEventListener('change', applyFilters); });
-  document.getElementById('znone-reset').addEventListener('click', function () {
-    fPay.value = '0'; fWho.value = ''; fDays.value = '0'; fNew.checked = false; group = '';
-    buttons.forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-filter') === '' ? 'true' : 'false'); });
-    applyFilters();
+  sortSel.addEventListener('change', function () { sortCards(); apply(); track('job_sort', { sort: sortSel.value || 'default' }); });
+  function reset() { st = { g: '', who: '', pay: 0, days: 0, newbie: 0, fav: 0 }; apply(); }
+  clearBtn.addEventListener('click', reset);
+  document.getElementById('znone-reset').addEventListener('click', reset);
+  // ♡を押したら、保存した求人の件数・絞り込みを更新する。
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('[data-fav]')) setTimeout(function () { apply(false); }, 0);
   });
+  (function restore() {
+    var q = new URLSearchParams(location.search);
+    var groups = Array.prototype.map.call(groupBtns, function (b) { return b.getAttribute('data-filter'); });
+    if (q.get('g') && groups.indexOf(q.get('g')) !== -1) st.g = q.get('g');
+    if (q.get('who') === 'student' || q.get('who') === 'adult') st.who = q.get('who');
+    ['pay', 'days', 'newbie', 'fav'].forEach(function (k) {
+      var v = +q.get(k);
+      if (document.querySelector('.qchips [data-k="' + k + '"][data-v="' + v + '"]')) st[k] = v;
+    });
+    if (q.get('sort') === 'pay' || q.get('sort') === 'new') { sortSel.value = q.get('sort'); sortCards(); }
+    apply(false);
+  })();
   // 新着求人のメール登録（トップページ）
   var top = document.getElementById('ztop');
   var profile = document.getElementById('zprofile');

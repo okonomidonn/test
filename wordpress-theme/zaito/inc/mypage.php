@@ -39,9 +39,6 @@ function zaito_my_set_cookie( $interest_id ) {
     );
     setcookie( 'zaito_my', (int) $interest_id . '.' . zaito_my_sign( $interest_id ), $opts );
     $_COOKIE['zaito_my'] = (int) $interest_id . '.' . zaito_my_sign( $interest_id );
-    // ページのJSが「保存をサーバーにも送るか」を判断する目印（中身は見ない）。
-    $opts['httponly'] = false;
-    setcookie( 'zaito_myf', '1', $opts );
     if ( ! zaito_remote_member_id() ) {
         zaito_remote_set_member_cookie( $interest_id );
     }
@@ -184,24 +181,68 @@ function zaito_fav_get( $id ) {
 }
 
 /**
- * 求人ページで保存・解除したとき（本人確認済みのブラウザだけ）。
+ * ♡の記録。求人ごとに「保存された回数」「外された回数」と、いま保存しているブラウザ（匿名のID）を残す。
+ * ブラウザのIDは fav.js が localStorage に作る乱数で、サーバーには短いハッシュだけを置く。
+ */
+function zaito_fav_record( $slug, $on, $bid ) {
+    $stats = get_option( 'zaito_fav_stats', array() );
+    $stats = is_array( $stats ) ? $stats : array();
+    if ( ! isset( $stats[ $slug ] ) ) {
+        $stats[ $slug ] = array( 'adds' => 0, 'removes' => 0, 'saved' => array(), 'last' => '' );
+    }
+    $key = substr( hash_hmac( 'sha256', 'zaito_fav|' . $bid, wp_salt( 'auth' ) ), 0, 12 );
+    $was = isset( $stats[ $slug ]['saved'][ $key ] );
+    // 同じブラウザが同じ状態を送り直しただけなら数えない。
+    if ( $on && ! $was ) {
+        $stats[ $slug ]['adds']++;
+        $stats[ $slug ]['saved'][ $key ] = current_time( 'Y-m-d' );
+        $stats[ $slug ]['last']          = current_time( 'Y-m-d H:i' );
+    } elseif ( ! $on && $was ) {
+        $stats[ $slug ]['removes']++;
+        unset( $stats[ $slug ]['saved'][ $key ] );
+    } else {
+        return;
+    }
+    update_option( 'zaito_fav_stats', $stats, false );
+}
+
+/**
+ * 同じIPからの♡は10分に60回まで数える（連打やボットで数字がふくらまないように）。
+ */
+function zaito_fav_rate_limited() {
+    $ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
+    $key = 'zaito_fav_rl_' . md5( $ip );
+    $n   = (int) get_transient( $key );
+    if ( $n >= 60 ) {
+        return true;
+    }
+    set_transient( $key, $n + 1, 10 * MINUTE_IN_SECONDS );
+    return false;
+}
+
+/**
+ * 求人ページで保存・解除したとき。だれの♡も記録し、本人確認済みのブラウザなら登録にも保存する。
  */
 function zaito_handle_fav_toggle() {
-    $id = zaito_my_id();
-    if ( ! $id ) {
-        wp_send_json_error( array( 'message' => 'login' ), 401 );
-    }
     $slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
     if ( ! $slug || ! zaito_remote_job( $slug ) ) {
         wp_send_json_error( array( 'message' => 'not found' ), 400 );
     }
-    $on   = ! empty( $_POST['on'] );
+    $on  = ! empty( $_POST['on'] );
+    $bid = isset( $_POST['bid'] ) ? (string) wp_unslash( $_POST['bid'] ) : '';
+    if ( preg_match( '/^[a-z0-9]{16,40}$/', $bid ) && ! zaito_fav_rate_limited() ) {
+        zaito_fav_record( $slug, $on, $bid );
+    }
+    $id = zaito_my_id();
+    if ( ! $id ) {
+        wp_send_json_success( array( 'saved' => 'browser' ) );
+    }
     $favs = array_values( array_diff( zaito_fav_get( $id ), array( $slug ) ) );
     if ( $on ) {
         array_unshift( $favs, $slug );
     }
     update_post_meta( $id, 'favorites', array_slice( $favs, 0, ZAITO_FAV_MAX ) );
-    wp_send_json_success( array( 'favorites' => $favs ) );
+    wp_send_json_success( array( 'saved' => 'member' ) );
 }
 add_action( 'wp_ajax_zaito_fav', 'zaito_handle_fav_toggle' );
 add_action( 'wp_ajax_nopriv_zaito_fav', 'zaito_handle_fav_toggle' );
@@ -304,7 +345,7 @@ add_action( 'wp_ajax_nopriv_zaito_my_save', 'zaito_handle_my_save' );
  */
 function zaito_handle_my_logout() {
     $opts = array( 'expires' => time() - HOUR_IN_SECONDS, 'path' => '/', 'secure' => is_ssl(), 'samesite' => 'Lax' );
-    foreach ( array( 'zaito_my', 'zaito_myf', 'zaito_member', 'zaito_m' ) as $c ) {
+    foreach ( array( 'zaito_my', 'zaito_myf', 'zaito_member', 'zaito_m' ) /* zaito_myf は以前の目印 */ as $c ) {
         setcookie( $c, '', $opts );
     }
     wp_send_json_success( array() );

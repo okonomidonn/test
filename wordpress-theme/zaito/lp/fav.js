@@ -1,6 +1,6 @@
 /*
  * 求人の保存（♡）。保存した求人はこのブラウザ（localStorage）に置き、
- * マイページを使えるブラウザ（zaito_myf Cookie）ではサーバーにも保存する（inc/mypage.php）。
+ * ♡を押すたびにサーバーへ送って数を記録し、マイページを使えるブラウザでは登録にも保存する（inc/mypage.php）。
  * 読み込み元の <script data-ajax="admin-ajax.phpのURL" data-my="マイページのURL">。
  */
 (function () {
@@ -18,7 +18,17 @@
   function save(list) {
     try { localStorage.setItem(KEY, JSON.stringify(list.slice(0, 100))); } catch (e) {}
   }
-  function isMy() { return /(?:^|;\s*)zaito_myf=1/.test(document.cookie); }
+  // 匿名のブラウザID（♡の数を「同じブラウザは1回」と数えるため）。
+  function bid() {
+    try {
+      var v = localStorage.getItem('zaito_bid');
+      if (!v) {
+        v = Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(12)), function (n) { return ('0' + n.toString(16)).slice(-2); }).join('');
+        localStorage.setItem('zaito_bid', v);
+      }
+      return v;
+    } catch (e) { return ''; }
+  }
   function post(data) {
     var fd = new FormData();
     Object.keys(data).forEach(function (k) {
@@ -67,7 +77,7 @@
     paint();
     notice(on);
     if (typeof window.gtag === 'function') window.gtag('event', on ? 'fav_add' : 'fav_remove', { job: slug });
-    if (ajax && isMy()) post({ action: 'zaito_fav', slug: slug, on: on ? '1' : '' }).catch(function () {});
+    if (ajax) post({ action: 'zaito_fav', slug: slug, on: on ? '1' : '', bid: bid() }).catch(function () {});
   }
 
   document.addEventListener('click', function (e) {
@@ -82,5 +92,5 @@
   window.addEventListener('storage', function (e) { if (e.key === KEY) paint(); });
   paint();
 
-  window.zaitoFav = { load: load, save: save, paint: paint, post: post };
+  window.zaitoFav = { load: load, save: save, paint: paint, post: post, bid: bid };
 })();

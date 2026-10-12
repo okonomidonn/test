@@ -104,7 +104,7 @@ if ( ! function_exists( 'zaito_remote_job_posting' ) ) {
 
 if ( ! function_exists( 'zaito_remote_card_attrs' ) ) {
     /**
-     * 一覧の絞り込みに使う data 属性（時給の下限・学生OK・社会人OK・週の最少日数・未経験OK）。
+     * 一覧の絞り込み・並び替えに使う data 属性（時給の下限・学生OK・社会人OK・週の最少日数・未経験OK・掲載日）。
      */
     function zaito_remote_card_attrs( $j ) {
         $student = (bool) preg_match( '/学生|大学|全学年/u', $j['target'] );
@@ -112,12 +112,13 @@ if ( ! function_exists( 'zaito_remote_card_attrs' ) ) {
         $days    = preg_match( '/週(\d)(?:日|〜)/u', $j['hours'], $m ) ? (int) $m[1] : 0;
         $newbie  = function_exists( 'zaito_remote_has_tag' ) && zaito_remote_has_tag( $j, 'mikeiken' ) || (bool) preg_match( '/未経験|経験不問|経験は不問/u', $j['target'] );
         return sprintf(
-            ' data-pay="%d" data-student="%d" data-adult="%d" data-days="%d" data-newbie="%d"',
+            ' data-pay="%d" data-student="%d" data-adult="%d" data-days="%d" data-newbie="%d" data-listed="%d"',
             function_exists( 'zaito_remote_hourly_min' ) ? zaito_remote_hourly_min( $j['pay'] ) : 0,
             $student ? 1 : 0,
             $adult ? 1 : 0,
             $days,
-            $newbie ? 1 : 0
+            $newbie ? 1 : 0,
+            (int) str_replace( '-', '', ! empty( $j['listed'] ) ? $j['listed'] : $j['checked'] )
         );
     }
 }

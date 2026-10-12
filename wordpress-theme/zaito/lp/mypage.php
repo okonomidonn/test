@@ -94,7 +94,7 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
       x.textContent = '外す';
       x.addEventListener('click', function () {
         F.save(F.load().filter(function (v) { return v !== j.slug; }));
-        if (state === 'member') post({ action: 'zaito_fav', slug: j.slug, on: '' }).catch(function () {});
+        post({ action: 'zaito_fav', slug: j.slug, on: '', bid: F.bid() }).catch(function () {});
         li.remove();
         empty.hidden = favs.children.length > 0;
       });

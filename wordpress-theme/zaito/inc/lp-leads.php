@@ -348,6 +348,7 @@ function zaito_lead_export_columns( $post_type ) {
         'interests'    => '興味のある仕事',
         'days'         => '週に働けそうな日数',
         'min_pay'      => '希望の時給',
+        'favorites'    => '保存した求人',
         'hours'        => '稼働可能時間',
         'source'       => '登録元',
         'unsubscribed' => '配信停止日',
