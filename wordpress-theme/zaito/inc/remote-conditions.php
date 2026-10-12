@@ -244,6 +244,7 @@ function zaito_remote_condition_url( $slug ) {
 
 function zaito_remote_condition_rewrite() {
     add_rewrite_rule( '^zaitaku/([a-z0-9-]+)/?$', 'index.php?zaito_page=remote&zaito_cond=$matches[1]', 'top' );
+    add_rewrite_rule( '^kijun/?$', 'index.php?zaito_page=kijun', 'top' );
 }
 add_action( 'init', 'zaito_remote_condition_rewrite' );
 

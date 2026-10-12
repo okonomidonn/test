@@ -80,7 +80,8 @@ if ( ! function_exists( 'zaito_remote_job_posting' ) ) {
             '@type'              => 'JobPosting',
             'title'              => $j['title'],
             'description'        => $desc,
-            'datePosted'         => $j['checked'],
+            // 企業が最初に公開した日が分からない求人が多いため、zaitoに最初に載せた日を使う（確認し直しても変えない）。
+            'datePosted'         => ! empty( $j['listed'] ) ? $j['listed'] : $j['checked'],
             'validThrough'       => gmdate( 'Y-m-d', strtotime( $j['checked'] . ' +30 days' ) ) . 'T23:59:59+09:00',
             'employmentType'     => $types,
             'hiringOrganization' => array( '@type' => 'Organization', 'name' => $j['company'] ),
@@ -190,7 +191,7 @@ if ( ! function_exists( 'zaito_remote_footer' ) ) {
         ?>
 <footer class="ft"><div class="wrap">
   <div class="ft-top"><div class="ft-brand"><p>出社なしの仕事だけを<br>集めた求人サイト</p><?php echo zaito_sns_links_html(); // SVGと固定URLのみ ?></div>
-    <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方へ</a><a href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">掲載・削除のご依頼</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
+    <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a><a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方へ</a><a href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">掲載・削除のご依頼</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
   <div class="ft-b"><span>運営：zaito 運営事務局</span><small>Copyright © zaito</small></div>
   <div class="logo ft-big" aria-hidden="true">za<span>i</span>to</div>
 </div></footer>

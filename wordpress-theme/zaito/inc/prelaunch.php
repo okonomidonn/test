@@ -194,6 +194,7 @@ if ( class_exists( 'WP_Sitemaps_Provider' ) && ! class_exists( 'Zaito_Prelaunch_
             $urls = array(
                 array( 'loc' => home_url( '/' ) ),
                 array( 'loc' => home_url( '/for-companies/' ) ),
+                array( 'loc' => home_url( '/kijun/' ) ),
                 array( 'loc' => home_url( '/terms/' ) ),
                 array( 'loc' => home_url( '/privacy/' ) ),
             );
@@ -270,6 +271,14 @@ function zaito_prelaunch_template_redirect() {
         status_header( 200 );
         header( 'Content-Type: text/html; charset=UTF-8' );
         include get_template_directory() . '/lp/companies.php';
+        exit;
+    }
+
+    // 掲載基準。
+    if ( 'kijun' === $page ) {
+        status_header( 200 );
+        header( 'Content-Type: text/html; charset=UTF-8' );
+        include get_template_directory() . '/lp/kijun.php';
         exit;
     }
 

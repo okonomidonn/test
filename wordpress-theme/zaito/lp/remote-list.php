@@ -42,9 +42,6 @@ foreach ( $zaito_open as $zaito_j ) {
 $zaito_checked  = max( array_map( function ( $j ) {
     return $j['checked'];
 }, $zaito_jobs ) );
-$zaito_verified = count( array_filter( $zaito_open, function ( $j ) {
-    return empty( $j['caution'] );
-} ) );
 
 if ( $zaito_cond ) {
     $zaito_title = $zaito_cond['title'] . ' | zaito';
@@ -98,10 +95,11 @@ $zaito_card = function ( $j ) {
           <div class="tags">
             <?php if ( ! empty( $j['closed'] ) ) : ?>
               <span class="warn">募集終了</span>
-            <?php elseif ( ! empty( $j['caution'] ) ) : ?>
-              <span class="warn"><span class="ms" aria-hidden="true">info</span>条件あり</span>
             <?php else : ?>
               <span class="ok"><span class="ms" aria-hidden="true">verified</span>完全在宅</span>
+            <?php endif; ?>
+            <?php if ( ! empty( $j['contract'] ) ) : ?>
+              <span class="kt"><?php echo esc_html( $j['contract'] ); ?></span>
             <?php endif; ?>
             <span class="tg"><?php echo esc_html( $j['target'] ); ?></span>
           </div>
@@ -133,7 +131,7 @@ $zaito_card = function ( $j ) {
       </div>
       <dl class="stats">
         <div><dt>掲載中の求人</dt><dd><b><?php echo esc_html( count( $zaito_open ) ); ?></b>件</dd></div>
-        <div><dt>完全在宅を確認</dt><dd><b><?php echo esc_html( $zaito_verified ); ?></b>件</dd></div>
+        <div><dt>出社ありの求人</dt><dd><b>0</b>件<a class="kj" href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a></dd></div>
         <div><dt>登録・利用料</dt><dd><b>0</b>円</dd></div>
       </dl>
     </div>

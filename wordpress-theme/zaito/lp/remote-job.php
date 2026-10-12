@@ -27,7 +27,8 @@ $zaito_facts = array(
     array( 'payments', '報酬', $zaito_j['pay'] ? $zaito_j['pay'] : '元のページで確認してください', '' ),
     array( 'schedule', '稼働条件', $zaito_j['hours'] ? $zaito_j['hours'] : '元のページで確認してください', '' ),
     array( 'school', '対象', $zaito_j['target'], '' ),
-    array( 'fact_check', 'zaitoの確認日', date_i18n( 'Y年n月j日', strtotime( $zaito_j['checked'] ) ), '募集内容はその後変わっている場合があります' ),
+    array( 'description', '契約の形', ! empty( $zaito_j['contract'] ) ? $zaito_j['contract'] : '募集ページで確認してください', '' ),
+    array( 'fact_check', 'zaitoの確認日', date_i18n( 'Y年n月j日', strtotime( $zaito_j['checked'] ) ), '募集内容はその後変わっている場合があります。確認していることは<a href="' . esc_url( home_url( '/kijun/' ) ) . '">掲載基準</a>をご覧ください' ),
 );
 
 $zaito_ld = array(
@@ -61,8 +62,6 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         <span class="cat"><?php echo esc_html( $zaito_j['category'] ); ?></span>
         <?php if ( $zaito_closed ) : ?>
           <span class="warn">募集終了</span>
-        <?php elseif ( ! empty( $zaito_j['caution'] ) ) : ?>
-          <span class="warn"><span class="ms" aria-hidden="true">info</span>条件あり</span>
         <?php else : ?>
           <span class="ok"><span class="ms" aria-hidden="true">verified</span>完全在宅を確認</span>
         <?php endif; ?>
@@ -73,7 +72,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 
       <dl class="facts">
         <?php foreach ( $zaito_facts as $zaito_f ) : ?>
-          <div><dt><span class="ms" aria-hidden="true"><?php echo esc_html( $zaito_f[0] ); ?></span><?php echo esc_html( $zaito_f[1] ); ?></dt><dd><?php echo esc_html( $zaito_f[2] ); ?><?php if ( $zaito_f[3] ) : ?><small><?php echo esc_html( $zaito_f[3] ); ?></small><?php endif; ?></dd></div>
+          <div><dt><span class="ms" aria-hidden="true"><?php echo esc_html( $zaito_f[0] ); ?></span><?php echo esc_html( $zaito_f[1] ); ?></dt><dd><?php echo esc_html( $zaito_f[2] ); ?><?php if ( $zaito_f[3] ) : ?><small><?php echo wp_kses( $zaito_f[3], array( 'a' => array( 'href' => array() ) ) ); ?></small><?php endif; ?></dd></div>
         <?php endforeach; ?>
       </dl>
       <?php if ( ! empty( $zaito_j['caution'] ) ) : ?>
