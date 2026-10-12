@@ -190,7 +190,7 @@ if ( ! function_exists( 'zaito_remote_head' ) ) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;family=Outfit:wght@500;600;700&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&amp;display=block" rel="stylesheet">
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'tokens.css' ) ); ?>">
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'remote.css' ) ); ?>">
 <?php if ( $json_ld ) : ?>
@@ -209,6 +209,7 @@ if ( ! function_exists( 'zaito_remote_header' ) ) {
   <a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="zaito トップへ">za<span>i</span>to</a>
   <nav aria-label="メインナビゲーション">
     <a class="tx" href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a>
+    <a class="tx my" href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>" aria-label="マイページ（保存した求人）"><span class="ms" aria-hidden="true">favorite</span><span class="lb">マイページ</span></a>
     <a class="tx" href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方</a>
     <a class="btn btn-p" href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">無料で求人掲載</a>
   </nav>
@@ -222,10 +223,11 @@ if ( ! function_exists( 'zaito_remote_footer' ) ) {
         ?>
 <footer class="ft"><div class="wrap">
   <div class="ft-top"><div class="ft-brand"><p>出社なしの仕事だけを<br>集めた求人サイト</p><?php echo zaito_sns_links_html(); // SVGと固定URLのみ ?></div>
-    <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a><a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方へ</a><a href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">掲載・削除のご依頼</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
+    <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a><a href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>">マイページ</a><a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方へ</a><a href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">掲載・削除のご依頼</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
   <div class="ft-b"><span>運営：zaito 運営事務局</span><small>Copyright © zaito</small></div>
   <div class="logo ft-big" aria-hidden="true">za<span>i</span>to</div>
 </div></footer>
+<script src="<?php echo esc_url( zaito_lp_asset( 'fav.js' ) ); ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-my="<?php echo esc_url( home_url( '/mypage/' ) ); ?>"></script>
         <?php
     }
 }

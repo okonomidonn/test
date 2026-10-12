@@ -104,6 +104,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         <?php else : ?>
           <a class="btn btn-p btn-lg" id="zgo" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow">応募ページへ進む<span class="ms" aria-hidden="true">open_in_new</span></a>
           <p class="cap"><?php echo esc_html( $zaito_j['company'] ); ?>の募集ページに移動します</p>
+          <button type="button" class="btn btn-g fav-wide" data-fav="<?php echo esc_attr( $zaito_j['slug'] ); ?>" aria-pressed="false"><span class="ms" aria-hidden="true">favorite</span><span class="lb">保存する</span></button>
 
           <form class="signup<?php echo $zaito_error ? ' on' : ''; ?>" id="zsignup" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
             <b>無料登録して応募ページへ</b>

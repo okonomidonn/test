@@ -59,7 +59,9 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .count span{color:var(--z-text-4)}
 .cards{margin:14px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:20px}
 .card a{height:100%;display:flex;flex-direction:column;border:1px solid var(--z-border);border-radius:18px;overflow:hidden;color:var(--z-navy);background:#fff;transition:box-shadow .2s,transform .2s,border-color .2s}
-.card a:hover{border-color:var(--z-border-input);box-shadow:0 22px 44px -28px rgba(11,21,48,.42);transform:translateY(-3px)}
+.card a:hover{border-color:var(--z-border-input);box-shadow:0 22px 44px -28px rgba(11,21,48,.42)}
+.card{position:relative;transition:transform .2s}
+.card:hover{transform:translateY(-3px)}
 .band{height:64px;padding:0 20px;display:flex;align-items:center;gap:10px;background:linear-gradient(120deg,var(--tone-bg),var(--tone-bg2));color:var(--tone)}
 .band .ms{font-size:26px}
 .band .bcat{font-size:13px;font-weight:700}
@@ -79,6 +81,41 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .card .tg{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;background:var(--z-chip);color:var(--z-text-2);font-size:12px;font-weight:500;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card.closed a{opacity:.55}
 .sub{margin:56px 0 0;font-size:18px}
+
+/* 保存（♡） */
+.fav{position:absolute;top:10px;right:10px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:var(--z-text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px -8px rgba(11,21,48,.4);transition:color .2s,transform .15s}
+.fav .ms{font-size:24px}
+.fav:hover{color:#E0245E}
+.fav:active{transform:scale(.9)}
+.fav[aria-pressed="true"],.fav-wide[aria-pressed="true"]{color:#E0245E}
+.fav[aria-pressed="true"] .ms,.fav-wide[aria-pressed="true"] .ms{font-variation-settings:'FILL' 1}
+.apply .fav-wide{margin-top:12px}
+.fav-wide[aria-pressed="true"]{box-shadow:inset 0 0 0 1.5px #F4B6C8;background:#FFF5F8}
+.fav-toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:80;transform:translate(-50%,20px);opacity:0;pointer-events:none;display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:12px;background:var(--z-navy);color:#fff;font-size:14px;font-weight:500;white-space:nowrap;transition:opacity .2s,transform .2s}
+.fav-toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.fav-toast a{color:var(--z-blue-on-navy);font-weight:700;text-decoration:underline}
+.hd nav a.my{display:inline-flex;align-items:center;gap:4px}
+.hd nav a.my .ms{font-size:20px}
+
+/* マイページ */
+.my-sec{margin:28px 0 0;padding:24px;border:1px solid var(--z-border);border-radius:18px;background:#fff}
+.doc .my-sec h2{margin:0 0 6px;padding:0;border:0;font-size:18px}
+.my-sec>p{margin:0 0 14px;font-size:14px;color:var(--z-text-3)}
+.doc .my-favs{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.doc .my-favs li{margin:0;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;background:var(--z-surface)}
+.my-favs a.t{flex:1;min-width:0;color:var(--z-navy)}
+.my-favs a.t b{display:block;font-size:15px;line-height:1.5}
+.my-favs a.t span{display:block;font-size:13px;color:var(--z-text-3)}
+.my-favs .x{flex:none;height:36px;padding:0 12px;border:0;border-radius:10px;background:#fff;color:var(--z-text-3);font:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:inset 0 0 0 1px var(--z-border-input)}
+.my-favs .cl{color:var(--z-error);font-weight:700}
+.my-empty{margin:8px 0 0;font-size:14px;color:var(--z-text-4)}
+.my-login{display:flex;gap:10px}
+.my-login input{flex:1;height:50px;padding:0 16px;border:1.5px solid var(--z-border-input);border-radius:12px;font:inherit;font-size:16px}
+.my-mail{display:flex;align-items:center;gap:10px;margin:18px 0 0;font-size:15px;font-weight:700}
+.my-mail input{width:20px;height:20px}
+.my-acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.my-ok{color:var(--z-success);font-size:14px;font-weight:700}
+.my-out{border:0;background:none;color:var(--z-text-3);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:8px 0}
 
 /* 一覧: 使い方・企業向け・注記 */
 .how{margin:72px 0 0}
@@ -297,6 +334,13 @@ body.has-sbar{padding-bottom:96px}
 
 @media (max-width:860px){
  .hd nav a.tx{display:none}
+ .hd nav a.tx.my{display:inline-flex;padding:0 6px}
+ .hd nav a.my .lb{display:none}
+ .hd nav a.my .ms{font-size:26px}
+ .fav{top:4px;right:6px}
+ .my-sec{padding:18px 16px}
+ .my-login{flex-direction:column}
+ .my-login .btn{width:100%;height:50px}
  .hero-in{padding:36px 0 24px;gap:24px}
  .hero p{font-size:15px}
  .filters{flex-wrap:nowrap;overflow-x:auto;margin:0 -20px;padding:0 20px 20px;scrollbar-width:none}

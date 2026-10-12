@@ -1584,6 +1584,8 @@ function zaito_handle_remote_register() {
         zaito_lp_send_waitlist_thanks( $email, 'remote' );
     }
     zaito_remote_set_member_cookie( $interest_id );
+    // 新しく登録したブラウザは本人とみなし、マイページを使えるようにする（inc/mypage.php）。
+    do_action( 'zaito_remote_registered', $interest_id, $created );
 
     if ( $json ) {
         wp_send_json_success( array( 'go' => $go, 'created' => $created ) );

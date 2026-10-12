@@ -105,6 +105,9 @@ $zaito_card = function ( $j ) {
           </div>
         </div>
       </a>
+      <?php if ( empty( $j['closed'] ) ) : ?>
+        <button type="button" class="fav" data-fav="<?php echo esc_attr( $j['slug'] ); ?>" aria-pressed="false" aria-label="<?php echo esc_attr( $j['title'] ); ?>を保存"><span class="ms" aria-hidden="true">favorite</span></button>
+      <?php endif; ?>
     </li>
     <?php
 };

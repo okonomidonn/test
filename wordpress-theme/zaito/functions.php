@@ -280,7 +280,7 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '13';
+    $version = '14';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -2436,3 +2436,5 @@ require_once get_template_directory() . '/inc/remote-jobs.php';
 require_once get_template_directory() . '/inc/remote-conditions.php';
 // 新着求人メールの一斉配信（管理画面「求人 > 新着メール配信」）と配信停止リンク
 require_once get_template_directory() . '/inc/newsletter.php';
+
+require_once get_template_directory() . '/inc/mypage.php';

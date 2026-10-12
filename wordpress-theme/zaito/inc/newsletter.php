@@ -217,6 +217,8 @@ function zaito_nl_track_return() {
     }
     setcookie( 'zaito_nl', $campaign . '.' . $member, array( 'expires' => time() + DAY_IN_SECONDS, 'path' => '/', 'secure' => is_ssl(), 'httponly' => true, 'samesite' => 'Lax' ) );
     $_COOKIE['zaito_nl'] = $campaign . '.' . $member;
+    // 本人専用のリンクなので、マイページも使えるようにする（inc/mypage.php）。
+    do_action( 'zaito_nl_returned', $member );
 }
 add_action( 'init', 'zaito_nl_track_return', 5 );
 
@@ -247,6 +249,10 @@ function zaito_nl_job_url( $slug, $campaign, $member = 0 ) {
     return add_query_arg( $args, '' === $slug ? home_url( '/' ) : zaito_remote_url( $slug ) );
 }
 
+function zaito_nl_mypage_url( $campaign, $member ) {
+    return add_query_arg( array( 'nl' => $campaign, 'm' => (int) $member, 's' => zaito_nl_link_sig( $campaign, $member ) ), home_url( '/mypage/' ) );
+}
+
 /**
  * 本文。{UNSUB} は送るときに一人ずつの停止リンクに置き換える。
  */
@@ -272,6 +278,7 @@ function zaito_nl_build_body( $intro, $slugs, $campaign, $member = 0 ) {
         . zaito_nl_job_url( '', $campaign, $member ) . "\n\n"
         . "──────────\n"
         . "このメールは、zaitoに登録したメールアドレスに、登録時に答えていただいた希望に合う求人をお送りしています。\n"
+        . ( $member ? "希望条件の変更・保存した求人（マイページ）\n" . zaito_nl_mypage_url( $campaign, $member ) . "\n" : '' )
         . "配信を停止する: {UNSUB}\n"
         . "（このメールに「配信停止」と返信していただいても停止できます）\n\n"
         . "zaito（ザイト）出社なしの仕事だけを集めた求人サイト\n"
