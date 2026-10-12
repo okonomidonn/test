@@ -165,7 +165,7 @@ $zaito_card = function ( $j ) {
     <label class="sort"><span class="sr">並び替え</span><span class="ms" aria-hidden="true">swap_vert</span><select id="zsort">
       <option value="">おすすめ順</option>
       <option value="pay">時給が高い順</option>
-      <option value="new">新しく載った順</option>
+      <option value="new">新着順</option>
     </select></label>
   </div>
   <ul class="cards" id="zcards">
