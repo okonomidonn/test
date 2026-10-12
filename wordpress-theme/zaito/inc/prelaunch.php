@@ -200,9 +200,6 @@ if ( class_exists( 'WP_Sitemaps_Provider' ) && ! class_exists( 'Zaito_Prelaunch_
             );
             // 条件別の一覧
             foreach ( array_keys( zaito_remote_active_conditions() ) as $cond ) {
-                if ( 'gakusei' === $cond ) {
-                    continue; // トップページと同じ内容
-                }
                 $urls[] = array( 'loc' => zaito_remote_condition_url( $cond ) );
             }
             // まとめ求人の詳細（募集中のもの）

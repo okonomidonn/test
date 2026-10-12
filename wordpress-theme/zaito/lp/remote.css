@@ -44,12 +44,6 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .hero .eb{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;letter-spacing:.16em;color:var(--z-blue)}
 .hero h1{margin:0;font-size:clamp(30px,4.4vw,50px);font-weight:900;line-height:1.3;letter-spacing:-0.01em}
 .hero p{margin:0;font-size:16px;color:var(--z-text-2)}
-.stats{margin:0;display:flex;background:#fff;border:1px solid var(--z-border);border-radius:18px;box-shadow:var(--z-shadow-sm)}
-.stats div{padding:16px 24px;min-width:128px}
-.stats div+div{border-left:1px solid var(--z-line)}
-.stats dt{font-size:13px;color:var(--z-text-4)}
-.stats dd{margin:2px 0 0;font-size:14px;font-weight:700;color:var(--z-text-2)}
-.stats dd b{font-family:'Outfit',sans-serif;font-size:32px;line-height:1.1;color:var(--z-navy);margin-right:2px}
 .filters{padding:0 0 28px;display:flex;flex-wrap:wrap;gap:10px}
 .filters button{--tone:var(--z-navy);--tone-bg:#fff;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 16px 0 12px;border-radius:12px;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border);color:var(--z-navy);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:box-shadow .2s,background .2s}
 .filters button:hover{box-shadow:inset 0 0 0 1.5px var(--z-border-input)}
@@ -225,7 +219,6 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 /* トップページ: 新着求人のメール登録 */
 .alert-link{align-self:flex-start;margin-top:4px;display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:700}
 .alert-link .ms{font-size:20px}
-.alert-link.sub{margin-top:0;color:var(--z-text-2);font-size:14px}
 .signup-band{margin-top:72px;scroll-margin-top:84px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:start;padding:40px;border-radius:24px;background:linear-gradient(135deg,#EEF1FF,#F6F3FF)}
 .sb-copy>.ms{width:52px;height:52px;border-radius:14px;background:#fff;color:var(--z-blue);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:var(--z-shadow-sm)}
 .sb-copy h2{margin:16px 0 10px;font-size:clamp(22px,2.6vw,30px);font-weight:900;line-height:1.4}
@@ -241,7 +234,6 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 #ztop .err{margin:8px 0 0;font-size:14px;color:#C8313B;font-weight:700}
 /* 求人3件目のあとの登録欄 */
 .card .kt{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;color:#3D5AFE;background:#EEF1FF}
-.stats .kj{display:block;margin-top:4px;font-size:12px;font-weight:700}
 /* 掲載基準などの読み物ページ */
 .doc{max-width:760px;padding-top:clamp(32px,6vw,64px);padding-bottom:clamp(56px,8vw,96px)}
 .doc .back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700}
@@ -299,10 +291,6 @@ body.has-sbar{padding-bottom:96px}
  .hd nav a.tx{display:none}
  .hero-in{padding:36px 0 24px;gap:24px}
  .hero p{font-size:15px}
- .stats{width:100%}
- .stats div{flex:1;min-width:0;padding:12px 14px}
- .stats dt{font-size:12px}
- .stats dd b{font-size:26px}
  .filters{flex-wrap:nowrap;overflow-x:auto;margin:0 -20px;padding:0 20px 20px;scrollbar-width:none}
  .filters::-webkit-scrollbar{display:none}
  .filters button{flex:none}

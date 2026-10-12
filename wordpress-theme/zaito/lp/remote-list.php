@@ -9,9 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/remote-parts.php';
 
 $zaito_cond    = isset( $zaito_list_cond ) ? zaito_remote_conditions()[ $zaito_list_cond ] : null;
-// トップページは、最初に届けたい大学生・大学院生向け（学生OK）の求人だけを並べる。社会人向けは条件別の一覧へ。
-$zaito_jobs    = $zaito_cond ? zaito_remote_condition_jobs( $zaito_list_cond ) : zaito_remote_condition_jobs( 'gakusei' );
-$zaito_others  = $zaito_cond ? 0 : count( zaito_remote_condition_jobs( 'shakaijin' ) );
+$zaito_jobs    = $zaito_cond ? zaito_remote_condition_jobs( $zaito_list_cond ) : zaito_remote_jobs();
 $zaito_actives = zaito_remote_active_conditions();
 $zaito_open   = array_values( array_filter( $zaito_jobs, function ( $j ) {
     return empty( $j['closed'] );
@@ -48,11 +46,10 @@ $zaito_checked  = max( array_map( function ( $j ) {
 if ( $zaito_cond ) {
     $zaito_title = $zaito_cond['title'] . ' | zaito';
     $zaito_desc  = mb_substr( $zaito_cond['body'][0], 0, 110 ) . '（' . count( $zaito_jobs ) . '件・運営が在宅の条件を確認済み）';
-    // 学生OKの一覧はトップページと同じ内容なので、評価をトップにまとめる。
-    $zaito_canon = 'gakusei' === $zaito_list_cond ? zaito_remote_url() : zaito_remote_condition_url( $zaito_list_cond );
+    $zaito_canon = zaito_remote_condition_url( $zaito_list_cond );
 } else {
-    $zaito_title = '大学生の在宅バイト・長期インターン｜出社なしの求人だけを集めたzaito';
-    $zaito_desc  = '「在宅バイト」で探しても出社ありが混ざる。zaitoは、大学生・大学院生が自宅から働ける完全在宅のバイト・長期インターンを、運営が1件ずつ確認してまとめています。SNS運用、マーケティング、教育、ライター、エンジニアなど。';
+    $zaito_title = '在宅バイト・完全在宅の求人｜出社なしの仕事だけを集めたzaito';
+    $zaito_desc  = '「在宅バイト」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅のバイト・パート・長期インターンを、運営が1件ずつ確認してまとめています。学生OK・未経験OKの求人も。事務、カスタマーサポート、SNS運用、ライター、エンジニアなど。';
     $zaito_canon = zaito_remote_url();
 }
 
@@ -126,20 +123,12 @@ $zaito_card = function ( $j ) {
             <p><?php echo esc_html( $zaito_para ); ?></p>
           <?php endforeach; ?>
         <?php else : ?>
-        <span class="eb">FOR STUDENTS</span>
-        <h1>大学生の在宅バイト、<br>出社なしだけ。</h1>
-        <p>「在宅OK」で探しても、研修や会議で出社がある求人が混ざる。zaitoは、授業の合間に自宅から働ける求人だけを、運営が1件ずつ確認して載せています。</p>
+        <span class="eb">REMOTE JOBS</span>
+        <h1>出社なしの仕事だけを、<br>集めました。</h1>
+        <p>「在宅OK」で探しても、研修や会議で出社がある求人が混ざる。zaitoは、自宅だけで働ける求人を運営が1件ずつ確認して載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
         <?php endif; ?>
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
-        <?php if ( $zaito_others ) : ?>
-          <a class="alert-link sub" href="<?php echo esc_url( zaito_remote_condition_url( 'shakaijin' ) ); ?>"><span class="ms" aria-hidden="true">work_history</span>社会人・経験者の方の求人はこちら（<?php echo esc_html( $zaito_others ); ?>件）</a>
-        <?php endif; ?>
       </div>
-      <dl class="stats">
-        <div><dt><?php echo $zaito_cond ? '掲載中の求人' : '学生OKの求人'; ?></dt><dd><b><?php echo esc_html( count( $zaito_open ) ); ?></b>件</dd></div>
-        <div><dt>出社ありの求人</dt><dd><b>0</b>件<a class="kj" href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a></dd></div>
-        <div><dt>登録・利用料</dt><dd><b>0</b>円</dd></div>
-      </dl>
     </div>
 
     <?php if ( ! $zaito_cond && count( $zaito_groups ) > 1 ) : ?>
