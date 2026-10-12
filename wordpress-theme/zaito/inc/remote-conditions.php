@@ -41,6 +41,16 @@ function zaito_remote_job_tags() {
         'linkties-ai-assistant'    => array( 'tanjikan' ),
         'hackazouk-web-designer'   => array( 'tanjikan' ),
         'mediafirst-writer'        => array( 'mikeiken' ),
+        'livco-sns-marketing'      => array( 'mikeiken' ),
+        'nexuslink-career-app'     => array( 'mikeiken' ),
+        'timers-school-sales'      => array( 'mikeiken' ),
+        'upsider-inside-sales'     => array( 'mikeiken' ),
+        'startupkenpo-cs'          => array( 'mikeiken' ),
+        'proseltraction-web-ops'   => array( 'tanjikan' ),
+        'kkgen-ai-engineer'        => array( 'tanjikan' ),
+        'bluefield-research-engineer' => array( 'tanjikan' ),
+        'unseed-ai-engineer'       => array( 'tanjikan' ),
+        'directsourcing-sourcer'   => array( 'tanjikan' ),
     );
 }
 
