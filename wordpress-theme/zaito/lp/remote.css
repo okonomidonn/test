@@ -344,6 +344,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .count-bar{display:flex;align-items:center;gap:12px;margin:32px 0 0}
 .count-bar .count{margin:0}
 .count-bar .clear{display:inline-flex;align-items:center;gap:2px;height:32px;padding:0 12px 0 8px;border:0;border-radius:999px;background:var(--z-blue-light);color:var(--z-blue);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.count-bar .clear[hidden]{display:none}
 .count-bar .clear .ms{font-size:16px}
 .count-bar .sort{margin-left:auto;display:inline-flex;align-items:center;gap:4px;color:var(--z-text-3)}
 .count-bar .sort .ms{font-size:18px}
@@ -403,9 +404,9 @@ body.has-sbar{padding-bottom:96px}
  .my-login .btn{width:100%;height:50px}
  .hero-in{padding:36px 0 24px;gap:24px}
  .hero p{font-size:15px}
- .filters{flex-wrap:nowrap;overflow-x:auto;margin:0 -20px;padding:0 20px 20px;scrollbar-width:none}
- .filters::-webkit-scrollbar{display:none}
- .filters button{flex:none}
+ .filters{gap:8px;padding:0 0 16px}
+ .filters button{height:40px;padding:0 12px 0 8px;gap:6px;font-size:13px}
+ .filters button .ms{width:24px;height:24px;font-size:16px}
  .count{margin-top:24px}
  .cards{gap:14px}
  .band{height:46px;padding:0 16px}
@@ -425,11 +426,10 @@ body.has-sbar{padding-bottom:96px}
  .sb-row input{flex:none;width:100%;height:56px}
  .sb-row .btn{width:100%}
  .mini-cta{padding:18px 16px}
- .refine{display:block;margin:-6px -20px 0;padding:0 0 18px}
+ .refine{display:block;margin:-4px 0 0;padding:0 0 18px}
  .refine .rl{display:none}
- .qchips{flex-wrap:nowrap;overflow-x:auto;padding:0 20px;scrollbar-width:none}
- .qchips::-webkit-scrollbar{display:none}
- .qchips button{flex:none}
+ .qchips{gap:6px}
+ .qchips button{height:34px;padding:0 11px;font-size:12.5px}
  .count-bar{margin-top:20px;gap:8px;flex-wrap:wrap}
  .count-bar .count span{display:none}
  #zminiform{flex-direction:column}

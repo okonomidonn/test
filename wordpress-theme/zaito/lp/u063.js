@@ -2,7 +2,7 @@
 /*
  * 登録直後の希望条件フォーム（form.profile[data-steps]）を、1問ずつ表示する形に組み替える。
  * - 答えた質問は上に小さなチップとしてたたまれ、押すとその質問に戻れる。上のバーが1問ごとに伸びる。
- * - 選ばずに「次へ」を押すと、欄がゆれて理由を表示する。答えたくない質問は「この質問はとばす」で進める。
+ * - 1つだけ選ぶ質問は、選ぶと自動で次へ進む。選ばずに「次へ」を押すと、欄がゆれて理由を表示する。答えたくない質問は「この質問はとばす」で進める。
  * - 最後の質問で、ページにもともとある送信ボタンを押す（保存とその後の動きはページ側の処理のまま）。
  * - 「学年・学校名」は、立場で学生を選んだときだけ質問に入る（.stu の hidden はページ側が切り替える）。
  * JSが動かないときは、元のフォーム（全部の質問が並んだ形）のまま使える。
@@ -189,9 +189,16 @@
     form.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); advance(); }
     });
+    var autoT = 0;
     form.addEventListener('change', function (e) {
       var q = e.target.closest('.u063-q');
       if (q && q.classList.contains('bad')) ok(q);
+      // 1つだけ選ぶ質問（立場・日数・時給）は、選んだら少し待って自動で次へ進む。
+      // 学年は学校名も入力するので進めない。複数選べる「やってみたい仕事」も進めない。
+      if (q && e.target.type === 'radio' && q.getAttribute('data-step') !== 'stu' && active()[cur] === q) {
+        clearTimeout(autoT);
+        autoT = setTimeout(function () { if (active()[cur] === q) advance(); }, 320);
+      }
       // 立場を変えると「学年・学校名」の質問が増減するので、数と高さをそろえ直す。
       // 学生以外に変えたら、学年・学校名の答えも消す。
       if (e.target.name === 'role') setTimeout(function () {
