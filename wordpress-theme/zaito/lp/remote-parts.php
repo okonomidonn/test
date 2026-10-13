@@ -131,13 +131,16 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
      */
     function zaito_remote_profile_fields() {
         $opts = zaito_remote_profile_options();
+        // 質問ごとの .pq は、登録直後のフォームで1問ずつ表示するときの区切り（lp/u063.js）。マイページではそのまま並べる。
         ?>
+    <div class="pq" data-step="role" data-hint="立場に合う求人だけをお送りします">
     <fieldset><legend>いまの立場</legend><div class="chips">
       <?php foreach ( $opts['role'] as $o ) : ?>
         <label><input type="radio" name="role" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
       <?php endforeach; ?>
     </div></fieldset>
-    <div class="stu" hidden>
+    </div>
+    <div class="stu pq" data-step="stu" data-hint="どちらも空欄のままで大丈夫です" data-optional="1" hidden>
       <fieldset><legend>学年</legend><div class="chips">
         <?php foreach ( $opts['grade'] as $o ) : ?>
           <label><input type="radio" name="grade" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
@@ -146,21 +149,27 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
       <label class="lb" for="zschool">学校名</label>
       <input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" placeholder="例：〇〇大学">
     </div>
+    <div class="pq" data-step="interests" data-hint="いくつ選んでもかまいません">
     <fieldset><legend>やってみたい仕事（いくつでも）</legend><div class="chips">
       <?php foreach ( $opts['interests'] as $o ) : ?>
         <label><input type="checkbox" name="interests[]" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
       <?php endforeach; ?>
     </div></fieldset>
+    </div>
+    <div class="pq" data-step="days" data-hint="働ける日数に合う求人だけをお送りします">
     <fieldset><legend>週に働けそうな日数</legend><div class="chips">
       <?php foreach ( $opts['days'] as $o ) : ?>
         <label><input type="radio" name="days" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
       <?php endforeach; ?>
     </div></fieldset>
+    </div>
+    <div class="pq" data-step="min_pay" data-hint="選んだ時給より低い求人は送りません">
     <fieldset><legend>希望の時給</legend><div class="chips">
       <?php foreach ( $opts['min_pay'] as $o ) : ?>
         <label><input type="radio" name="min_pay" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
       <?php endforeach; ?>
     </div></fieldset>
+    </div>
         <?php
     }
 }

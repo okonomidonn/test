@@ -115,6 +115,8 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .my-mail input{width:20px;height:20px}
 .my-acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
 .my-ok{color:var(--z-success);font-size:14px;font-weight:700}
+.my-login-sec{margin:28px 0 0}
+.doc .my-note{margin:16px auto 0;max-width:340px;font-size:13px;line-height:1.7;color:var(--z-text-3)}
 .my-out{border:0;background:none;color:var(--z-text-3);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:8px 0}
 
 /* 一覧: 使い方・企業向け・注記 */

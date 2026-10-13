@@ -227,7 +227,7 @@ $zaito_card = function ( $j ) {
         <p class="legal">登録すると、<a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>と<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a>に同意したものとみなします。</p>
         <p class="err" id="ztoperr" role="alert"></p>
       </form>
-      <form class="profile" id="zprofile" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
+      <form class="profile" id="zprofile" data-steps method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
         <b>登録できました</b>
         <p>あなたの希望に合う新着だけをメールで送るために教えてください（任意・どれも押すだけ）。答えた内容に合わない求人は送りません。</p>
         <input type="hidden" name="action" value="zaito_remote_profile">
@@ -235,6 +235,8 @@ $zaito_card = function ( $j ) {
         <button type="submit" class="btn btn-p btn-lg">保存する</button>
         <button type="button" class="skip" id="zskip">答えずに閉じる</button>
       </form>
+<link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u063.css' ) ); ?>">
+<script src="<?php echo esc_url( zaito_lp_asset( 'u063.js' ) ); ?>"></script>
       <div class="sb-done" id="zdone" hidden>
         <span class="ms" aria-hidden="true">check_circle</span>
         <b id="zdonetitle">登録が完了しました</b>

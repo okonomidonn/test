@@ -123,7 +123,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
             <p class="err" id="zerr" role="alert"><?php echo $zaito_error ? '登録できませんでした。メールアドレスを確認して、もう一度お試しください。' : ''; ?></p>
           </form>
 
-          <form class="profile" id="zprofile" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
+          <form class="profile" id="zprofile" data-steps method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
             <b>登録できました</b>
             <p>あなたの希望に合う新着だけをメールで送るために教えてください（任意・どれも押すだけ）。答えた内容に合わない求人は送りません。</p>
             <input type="hidden" name="action" value="zaito_remote_profile">
@@ -131,6 +131,8 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
             <button type="submit" class="btn btn-p btn-lg">保存して応募ページへ進む</button>
             <a class="skip" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow">答えずに応募ページへ進む</a>
           </form>
+<link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u063.css' ) ); ?>">
+<script src="<?php echo esc_url( zaito_lp_asset( 'u063.js' ) ); ?>"></script>
         <?php endif; ?>
       </div>
     </aside>

@@ -24,18 +24,28 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     <p class="my-empty" id="zmy-empty" hidden>保存した求人はまだありません。<a href="<?php echo esc_url( home_url( '/' ) ); ?>">求人を探す</a></p>
   </section>
 
-  <section class="my-sec" id="zmy-guest" hidden aria-labelledby="zmy-login-t">
-    <h2 id="zmy-login-t">登録したメールアドレスでログイン</h2>
-    <p id="zmy-guest-text">ログインすると、希望条件の変更や、別のスマホ・パソコンでの保存した求人の確認ができます。登録したメールアドレスに、ログイン用のリンクを送ります。</p>
-    <form class="my-login" id="zmy-login" novalidate>
-      <label class="sr" for="zmy-email">メールアドレス</label>
-      <input type="email" id="zmy-email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
-      <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-      <button type="submit" class="btn btn-p">ログインリンクを送る</button>
-    </form>
-    <p class="err" id="zmy-login-err" role="alert"></p>
-    <p class="my-ok" id="zmy-sent" hidden>登録されているメールアドレスなら、ログイン用のリンクを送りました。メールを確認してください（届かないときは迷惑メールのフォルダも確認してください）。</p>
-    <p style="margin-top:14px;font-size:14px;color:var(--z-text-3)">まだ登録していない方は、<a href="<?php echo esc_url( home_url( '/#signup' ) ); ?>">トップページから無料で登録</a>できます。</p>
+  <section class="my-login-sec" id="zmy-guest" hidden aria-labelledby="zmy-login-t">
+    <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u064.css' ) ); ?>">
+    <div class="u064" id="zmy-u064">
+      <div class="u064-art" aria-hidden="true"><div class="u064-env"><span class="u064-clip"><span class="u064-back"></span><span class="u064-letter"><i></i><i></i><i></i></span></span><span class="u064-front"></span><span class="u064-flap"></span><span class="u064-badge"><svg viewBox="0 0 20 20"><path d="M5 10.5l3.5 3.5L15 7"/></svg></span></div></div>
+      <form class="u064-pane u064-ask" id="zmy-login" novalidate>
+        <h2 id="zmy-login-t">パスワードなしでログイン</h2>
+        <p id="zmy-guest-text">登録したメールアドレスに、ログイン用のリンクを送ります。</p>
+        <label class="u064-box"><input type="email" id="zmy-email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com" aria-label="登録したメールアドレス" aria-describedby="zmy-login-err"></label>
+        <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="u064-b" type="submit">ログインリンクを送る</button>
+        <p class="u064-err" id="zmy-login-err" role="alert"></p>
+      </form>
+      <div class="u064-pane u064-done" id="zmy-sent" aria-hidden="true" aria-live="polite">
+        <h3>メールを確認してください</h3>
+        <p>登録されているアドレスなら、<b class="u064-to"></b> にログイン用のリンクを送りました。リンクは24時間有効です。届かないときは迷惑メールのフォルダも見てください。</p>
+        <a class="u064-b u064-mail" href="#" target="_blank" rel="noopener" tabindex="-1" hidden>メールを開く</a>
+        <button class="u064-b ghost u064-re" type="button" tabindex="-1" aria-disabled="true"><svg class="u064-ring" viewBox="0 0 20 20" aria-hidden="true"><circle class="t" cx="10" cy="10" r="8"/><circle class="p" cx="10" cy="10" r="8" pathLength="100"/></svg><span>もう一度送る · 60秒</span></button>
+        <button class="u064-link" type="button" tabindex="-1">別のメールアドレスで送る</button>
+      </div>
+    </div>
+    <p class="my-note">ログインすると、希望条件の変更や、別のスマホ・パソコンで保存した求人の確認ができます。まだ登録していない方は、<a href="<?php echo esc_url( home_url( '/#signup' ) ); ?>">トップページから無料で登録</a>できます。</p>
+    <script src="<?php echo esc_url( zaito_lp_asset( 'u064.js' ) ); ?>"></script>
   </section>
 
   <section class="my-sec" id="zmy-member" hidden aria-labelledby="zmy-pref-t">
@@ -139,7 +149,7 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     } else {
       who.textContent = 'このブラウザで保存した求人を表示しています。';
       if (/[?&]login=expired/.test(location.search)) {
-        document.getElementById('zmy-guest-text').textContent = 'ログイン用のリンクの期限が切れているか、正しくありません。もう一度メールアドレスを入れてください。';
+        document.getElementById('zmy-guest-text').textContent = 'リンクの期限が切れているか、正しくありません。もう一度送ってください。';
       }
       guest.hidden = false;
     }
@@ -147,19 +157,12 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     who.textContent = '読み込めませんでした。時間をおいて、もう一度開いてください。';
   });
 
-  document.getElementById('zmy-login').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var err = document.getElementById('zmy-login-err');
-    var v = document.getElementById('zmy-email').value.trim();
-    err.textContent = '';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { err.textContent = '正しいメールアドレスを入力してください'; return; }
-    var btn = this.querySelector('button');
-    btn.disabled = true;
-    post({ action: 'zaito_my_login', email: v, website: this.querySelector('[name=website]').value }).then(function (r) {
-      btn.disabled = false;
-      if (r && r.success) { document.getElementById('zmy-sent').hidden = false; }
-      else { err.textContent = (r && r.data && r.data.message) || '送信できませんでした'; }
-    }).catch(function () { btn.disabled = false; err.textContent = '送信できませんでした。通信状況を確認してください'; });
+  // ログイン用リンクの送信（封筒の動きは lp/u064.js）。
+  window.zaitoU064(document.getElementById('zmy-u064'), function (email) {
+    return post({ action: 'zaito_my_login', email: email, website: document.querySelector('#zmy-login [name=website]').value }).then(function (r) {
+      if (!r || !r.success) throw ((r && r.data && r.data.message) || '送信できませんでした');
+      if (typeof window.gtag === 'function') window.gtag('event', 'mypage_login_link');
+    }, function () { throw '送信できませんでした。通信状況を確認してください'; });
   });
 
   prefs.addEventListener('submit', function (e) {

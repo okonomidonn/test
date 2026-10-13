@@ -1,0 +1,81 @@
+/* Lucian UX/UI Prompt #063 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#063 */
+/*
+ * 登録直後の希望条件を1問ずつ聞くフォーム（form.profile[data-steps]、lp/u063.js が組み立てる）。
+ * 色は tokens.css の --z-* に対応させる。サイトにダークテーマはまだないため、
+ * ダークの値は :root[data-theme="dark"] のときだけ使う（元のダークの値をそのまま残している）。
+ */
+.u063{
+  --ux-surface:#fff;
+  --ux-surface-2:var(--z-surface);
+  --ux-surface-3:var(--z-border);
+  --ux-ink:var(--z-navy);
+  --ux-ink-2:var(--z-text-2);
+  --ux-ink-3:var(--z-text-4);
+  --ux-line:var(--z-line);
+  --ux-line-2:var(--z-border-input);
+  --ux-accent:var(--z-blue);
+  --ux-accent-soft:var(--z-blue-light);
+  --ux-accent-ink:#fff;
+  --ux-mint:var(--z-success);
+  --ux-danger:var(--z-error);
+  --ux-page:#fff;
+  --ux-grad:linear-gradient(120deg,#3D5AFE,#3D8BFF 55%,#1A9B6C);
+  --ux-ease:cubic-bezier(.2,.8,.2,1);
+  --ux-spring:cubic-bezier(.34,1.45,.64,1);
+}
+:root[data-theme="dark"] .u063{
+  --ux-surface:#13141C;--ux-surface-2:#1A1B25;--ux-surface-3:#252632;
+  --ux-ink:#F4F0E8;--ux-ink-2:rgba(244,240,232,.68);--ux-ink-3:rgba(244,240,232,.42);
+  --ux-line:rgba(255,255,255,.08);--ux-line-2:rgba(255,255,255,.16);
+  --ux-accent:#A9B8FF;--ux-accent-soft:rgba(169,184,255,.15);--ux-accent-ink:#0B0C12;
+  --ux-mint:#7EE8C0;--ux-danger:#FF7D8C;--ux-page:#07080D;
+  --ux-grad:linear-gradient(120deg,#A9B8FF,#7DB4FF 55%,#A5F2D3);
+}
+.u063,.u063 *,.u063 *::before,.u063 *::after{box-sizing:border-box}
+.u063 [hidden]{display:none!important}
+
+.u063-bar{display:flex;gap:6px;margin-top:16px}
+.u063-bar i{flex:1;height:5px;border-radius:3px;background:var(--ux-surface-3);overflow:hidden}
+.u063-bar i::after{content:"";display:block;height:100%;border-radius:inherit;background:var(--ux-grad);transform:scaleX(0);transform-origin:0 50%;transition:transform .6s var(--ux-ease)}
+.u063-bar i.on::after{transform:none}
+.u063-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:34px;margin-top:16px}
+.u063-chip{height:32px;padding:0 12px 0 8px;border:0;border-radius:999px;display:inline-flex;align-items:center;gap:6px;background:var(--ux-surface-2);font:inherit;font-size:12.5px;font-weight:700;color:var(--ux-ink-2);max-width:100%;cursor:pointer;animation:u063-chip .55s var(--ux-spring) backwards;transition:background-color .2s}
+.u063-chip:hover{background:var(--ux-surface-3)}
+.u063-chip:focus-visible{outline:2px solid var(--ux-accent);outline-offset:2px}
+.u063-chip i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--ux-mint);color:var(--ux-accent-ink);flex:none}
+.u063-chip.skip i{background:var(--ux-line-2)}
+.u063-chip i svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.u063-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@keyframes u063-chip{from{opacity:0;transform:translateY(60px) scale(.8)}}
+/* 質問ごとに高さが違うため、表示中の質問の高さに合わせる */
+.u063-stage{position:relative;margin-top:10px;transition:height .55s var(--ux-ease)}
+.u063-q{position:absolute;left:0;right:0;top:0;transition:transform .55s var(--ux-ease),opacity .35s}
+.u063-q.out{transform:translateY(-40px);opacity:0;pointer-events:none}
+.u063-q.wait{transform:translateY(50px);opacity:0;pointer-events:none}
+.u063-q>small{font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--ux-accent)}
+.u063 .u063-q fieldset{margin:0}
+.u063 .u063-q legend,.u063 .u063-q>fieldset:first-of-type legend{display:block;margin:6px 0 16px;font-size:21px;font-weight:900;line-height:1.35;letter-spacing:-.02em;color:var(--ux-ink)}
+.u063 .u063-q .stu-in fieldset legend{margin:6px 0 12px}
+.u063 .u063-q .lb{margin:16px 0 6px}
+.u063-in{transition:border-color .3s}
+.u063-q.bad .u063-in{animation:u063-no .4s}
+.u063-q.bad .chips span{box-shadow:inset 0 0 0 1.5px var(--ux-danger)}
+@keyframes u063-no{20%{transform:translateX(-7px)}45%{transform:translateX(6px)}70%{transform:translateX(-3px)}}
+.u063-msg{min-height:20px;margin-top:10px;font-size:12.5px;font-weight:650;color:var(--ux-ink-3)}
+.u063-q.bad .u063-msg{color:var(--ux-danger)}
+.u063-skipq{margin-top:4px;padding:6px 0;border:0;background:none;font:inherit;font-size:13px;font-weight:700;color:var(--ux-ink-3);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.u063-next{width:100%;height:54px;margin-top:14px;border:0;border-radius:17px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ux-ink);color:var(--ux-page);font:inherit;font-size:15.5px;font-weight:700;cursor:pointer;transition:transform .3s var(--ux-spring),background-color .3s}
+.u063-next:active{transform:scale(.97)}
+.u063-next:disabled{opacity:.6;cursor:default}
+.u063-next:focus-visible{outline:2px solid var(--ux-accent);outline-offset:3px}
+.u063-next svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s var(--ux-spring)}
+.u063-next:hover svg{transform:translateX(3px)}
+/* 元の送信ボタンは、最後の質問で「次へ」から押す */
+.u063 .u063-orig{display:none!important}
+
+@media (prefers-reduced-motion:reduce){
+  .u063,.u063 *,.u063 *::before,.u063 *::after{
+    animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important;
+  }
+}

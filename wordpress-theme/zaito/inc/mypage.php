@@ -108,10 +108,10 @@ function zaito_handle_my_login() {
         'meta_query'     => array( array( 'key' => 'email', 'value' => $email ) ),
     ) );
     if ( $ids ) {
-        // 同じアドレスに送るのは10分に1回まで。
+        // 同じアドレスに送るのは60秒に1回まで（マイページの「もう一度送る」も60秒待つ）。
         $key = 'zaito_my_mail_' . md5( $email );
         if ( ! get_transient( $key ) ) {
-            set_transient( $key, 1, 10 * MINUTE_IN_SECONDS );
+            set_transient( $key, 1, MINUTE_IN_SECONDS );
             $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
             $body = "zaitoのマイページを開くリンクです。\n\n"
                 . zaito_my_login_url( $ids[0] ) . "\n\n"
