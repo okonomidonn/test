@@ -92,5 +92,10 @@
   window.addEventListener('storage', function (e) { if (e.key === KEY) paint(); });
   paint();
 
+  // 登録済みのブラウザでは、ヘッダーの「無料登録」を出さない。
+  if (/(?:^|;\s*)zaito_m=1/.test(document.cookie)) {
+    document.querySelectorAll('.hd .js-signup').forEach(function (a) { a.remove(); });
+  }
+
   window.zaitoFav = { load: load, save: save, paint: paint, post: post, bid: bid };
 })();

@@ -438,6 +438,15 @@ if ( ! $zaito_cond ) :
   top.elements.referrer.value = document.referrer || '';
   var mini = document.getElementById('zmini');
   var bar = document.getElementById('zbar');
+  // ヘッダーの「無料登録」は、ページ下の登録欄へ移ってメールアドレスの入力欄を選ぶ。
+  document.querySelectorAll('.hd .js-signup').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+      setTimeout(function () { if (!top.hidden) top.elements.email.focus({ preventScroll: true }); }, 500);
+      track('signup_header_click', {});
+    });
+  });
   var isEmail = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); };
   // 下の登録欄・求人3件目のあとの登録欄のどちらからでも、同じフォーム(#ztop)で送る。
   function register(btn, err, method, after) {

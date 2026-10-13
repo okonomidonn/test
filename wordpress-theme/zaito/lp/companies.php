@@ -32,7 +32,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
 ) );
 ?>
 <body>
-<?php zaito_remote_header(); ?>
+<?php zaito_remote_header( 'company' ); ?>
 
 <section class="hero">
   <div class="wrap">

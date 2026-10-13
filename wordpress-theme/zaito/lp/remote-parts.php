@@ -261,7 +261,11 @@ if ( ! function_exists( 'zaito_remote_head' ) ) {
 }
 
 if ( ! function_exists( 'zaito_remote_header' ) ) {
-    function zaito_remote_header() {
+    /**
+     * $for: 'user'（求人を探す人向け。右上は「無料登録」）か 'company'（企業向けページ。右上は「無料で求人掲載」）。
+     * 「無料登録」は登録済みのブラウザでは出さない（lp/fav.js が zaito_m Cookie を見て消す）。
+     */
+    function zaito_remote_header( $for = 'user' ) {
         ?>
 <header class="hd"><div class="wrap">
   <a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="zaito トップへ">za<span>i</span>to</a>
@@ -269,7 +273,11 @@ if ( ! function_exists( 'zaito_remote_header' ) ) {
     <a class="tx" href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a>
     <a class="tx my" href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>" aria-label="マイページ（保存した求人）"><span class="ms" aria-hidden="true">favorite</span><span class="lb">マイページ</span></a>
     <a class="tx" href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方</a>
-    <a class="btn btn-p" href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">無料で求人掲載</a>
+    <?php if ( 'company' === $for ) : ?>
+      <a class="btn btn-p" href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">無料で求人掲載</a>
+    <?php else : ?>
+      <a class="btn btn-p js-signup" href="<?php echo esc_url( home_url( '/#signup' ) ); ?>">無料登録</a>
+    <?php endif; ?>
   </nav>
 </div></header>
         <?php

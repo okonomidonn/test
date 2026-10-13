@@ -142,6 +142,12 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
   </div>
 </main>
 
+<?php if ( ! $zaito_closed ) : ?>
+<dialog class="sheet" id="zsheet" aria-label="無料登録して応募ページへ進む">
+  <div class="sheet-hd"><button type="button" class="sheet-x" id="zsheetx" aria-label="閉じる">×</button></div>
+</dialog>
+<?php endif; ?>
+
 <div class="spbar">
   <?php if ( $zaito_closed ) : ?>
     <a class="btn btn-g" href="<?php echo esc_url( zaito_remote_url() ); ?>">ほかの求人を見る</a>
@@ -163,12 +169,31 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
   var stu = profile.querySelector('.stu');
   function member() { return /(?:^|;\s*)zaito_m=1/.test(document.cookie); }
   function track(name, params) { if (typeof window.gtag === 'function') { window.gtag('event', name, params); } }
+  // 未登録の人が「応募ページへ進む」を押したら、登録フォームを画面の手前（スマホは下からのシート）に出す。
+  // フォームと、登録後の希望条件の質問をシートに移すだけなので、送信の処理はそのまま。
+  var sheet = document.getElementById('zsheet');
   function openForm() {
     form.classList.add('on');
     document.body.classList.add('form-open'); // スマホ下部の固定ボタンとフォームが重ならないようにする
-    document.getElementById('apply').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(function () { document.getElementById('zemail').focus({ preventScroll: true }); }, 350);
+    if (sheet && sheet.showModal) {
+      if (form.parentNode !== sheet) { sheet.appendChild(form); sheet.appendChild(profile); }
+      if (!sheet.open) sheet.showModal();
+      track('signup_sheet_open', { job: slug });
+    } else {
+      document.getElementById('apply').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setTimeout(function () { if (!form.hidden) document.getElementById('zemail').focus({ preventScroll: true }); }, 350);
   }
+  if (sheet) {
+    document.getElementById('zsheetx').addEventListener('click', function () { sheet.close(); });
+    // 背景（シートの外）を押したら閉じる。
+    sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.close(); });
+    sheet.addEventListener('close', function () { document.body.classList.remove('form-open'); });
+  }
+  // ヘッダーの「無料登録」も、このページではシートを開く。
+  document.querySelectorAll('.hd .js-signup').forEach(function (a) {
+    a.addEventListener('click', function (e) { if (member()) return; e.preventDefault(); openForm(); });
+  });
 
   // 流入経路（UTM・参照元）を登録データと一緒に保存する。
   var q = new URLSearchParams(location.search);
@@ -205,7 +230,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         form.hidden = true;
         profile.hidden = false;
         profile.dataset.go = res.data.go;
-        profile.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (sheet && sheet.open) { sheet.scrollTop = 0; } else { profile.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       })
       .catch(function (x) {
         btn.disabled = false;
