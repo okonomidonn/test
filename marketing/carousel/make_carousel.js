@@ -25,19 +25,19 @@ const CSS = `
 body{width:${W}px;height:${H}px;overflow:hidden;font-family:'Noto Sans JP',sans-serif;font-feature-settings:'palt';color:#0B1530;background:#F3F5FF}
 .s{position:absolute;inset:0;padding:80px 84px;display:flex;flex-direction:column}
 .dark{background:#0B1530;color:#fff}
-.blue{background:linear-gradient(150deg,#2A45D8,#3D5AFE 55%,#6F84FF);color:#fff}
+.blue{background:linear-gradient(150deg,#EEF1FF,#F6F3FF)}
 .top{display:flex;align-items:center;justify-content:space-between}
 .logo{font-family:'Outfit',sans-serif;font-weight:800;font-size:56px;letter-spacing:-.02em}.logo span{color:#3D5AFE}
-.dark .logo span,.blue .logo span{color:#A9B8FF}
+.dark .logo span{color:#3D5AFE}
 .pg{font-family:'Outfit',sans-serif;font-size:30px;font-weight:700;opacity:.5}
 .mid{flex:1;display:flex;flex-direction:column;justify-content:center}
 .k{font-size:34px;font-weight:900;color:#3D5AFE;letter-spacing:.02em}
-.dark .k,.blue .k{color:#A9B8FF}
+.dark .k{color:#A9B8FF}
 h1{font-size:92px;font-weight:900;line-height:1.28;letter-spacing:-.02em}
 h2{font-size:76px;font-weight:900;line-height:1.3;letter-spacing:-.02em}
 h1 em,h2 em{font-style:normal;color:#3D5AFE}
 .dark h1 em,.dark h2 em{color:#A9B8FF}
-.blue h1 em{color:#FFE27A}
+
 p.lead{margin-top:36px;font-size:40px;font-weight:700;line-height:1.6;opacity:.8}
 .list{margin-top:48px;display:flex;flex-direction:column;gap:22px}
 .row{display:flex;align-items:center;gap:28px;padding:32px 36px;border-radius:30px;background:#fff;box-shadow:0 30px 60px -45px rgba(11,21,48,.5)}
@@ -62,8 +62,9 @@ p.lead{margin-top:36px;font-size:40px;font-weight:700;line-height:1.6;opacity:.8
 .step b{display:block;font-size:46px;font-weight:900;line-height:1.3}
 .step span{display:block;margin-top:8px;font-size:32px;font-weight:700;opacity:.65;line-height:1.5}
 .bot{display:flex;align-items:center;justify-content:space-between;font-size:32px;font-weight:900;opacity:.55}
-.cta{margin-top:56px;align-self:flex-start;height:132px;padding:0 56px;border-radius:999px;background:#fff;color:#2A45D8;display:flex;align-items:center;font-size:48px;font-weight:900}
-.url{margin-top:30px;font-family:'Outfit',sans-serif;font-size:44px;font-weight:700;opacity:.85}
+.cta{margin-top:56px;align-self:flex-start;height:132px;padding:0 56px;border-radius:999px;background:#3D5AFE;color:#fff;box-shadow:0 30px 60px -30px rgba(61,90,254,.7);display:flex;align-items:center;font-size:48px;font-weight:900}
+.url{margin-top:30px;font-family:'Outfit',sans-serif;font-size:44px;font-weight:700;color:#3D5AFE}
+.wm{font-family:'Outfit',sans-serif;font-weight:800;letter-spacing:-.03em;color:#0B1530}.wm span{color:#3D5AFE}
 `;
 const page = (cls, i, body, last) => `<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
@@ -112,7 +113,7 @@ const SLIDES = [
 <div class="step"><div class="n">2</div><div><b>気になったら保存</b><span>しおりを押すと、マイページにまとまります</span></div></div>
 <div class="step"><div class="n">3</div><div><b>企業のページから応募</b><span>はじめての人はメールアドレスで無料登録</span></div></div>
 </div>`],
-  ['blue', `<h1>完全在宅の<br>仕事なら、<em>zaito</em></h1>
+  ['blue', `<h1>完全在宅の<br>仕事なら、<span class="wm">za<span>i</span>to</span></h1>
 <p class="lead">登録は無料・メールアドレスだけ。<br>希望に合う新しい求人もお知らせします。</p>
 <div class="cta">プロフィールのリンクから</div>
 <div class="url">zaito-work.com</div>`],
