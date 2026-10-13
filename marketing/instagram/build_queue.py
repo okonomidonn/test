@@ -1,6 +1,6 @@
 # 投稿の順番（queue.json）を作る。画像は wordpress-theme/zaito/sns/<id>/NN.jpg、キャプションは各カルーセルの キャプション.md から取る。
 # すでに投稿済みのもの（posted が入っているもの）は、作り直しても残す。
-import json, os, re, glob
+import json, os, re, glob, hashlib
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 SNS = os.path.join(ROOT, 'wordpress-theme', 'zaito', 'sns')
 CAR = os.path.join(ROOT, 'marketing', 'carousel')
@@ -31,7 +31,9 @@ for pid in ORDER:
     imgs = sorted(glob.glob(os.path.join(SNS, pid, '*.jpg')))
     assert 2 <= len(imgs) <= 10, (pid, len(imgs))
     assert pid in caps, pid
-    item = {'id': pid, 'images': [f'{BASE}/{pid}/{os.path.basename(i)}' for i in imgs], 'caption': caps[pid]}
+    # Instagramは同じURLの画像を前に取りに来たときのまま使うことがあるので、中身が変わればURLも変わるように ?v= を付ける
+    ver = lambda f: hashlib.md5(open(f, 'rb').read()).hexdigest()[:10]
+    item = {'id': pid, 'images': [f'{BASE}/{pid}/{os.path.basename(i)}?v={ver(i)}' for i in imgs], 'caption': caps[pid]}
     if pid in old and old[pid].get('posted'):
         item.update({k: old[pid][k] for k in ('posted', 'media_id', 'permalink') if k in old[pid]})
     queue.append(item)
