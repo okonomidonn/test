@@ -13,7 +13,7 @@
       copy.hidden = false;
       copy.addEventListener('click', function () {
         var url = copy.getAttribute('data-copy');
-        var done = function () { copy.textContent = 'コピーしました'; setTimeout(function () { copy.textContent = 'リンクをコピー'; }, 2000); track('copy'); };
+        var done = function () { var t = copy.querySelector('.sh-t'); t.textContent = 'コピーしました'; setTimeout(function () { t.textContent = 'リンクをコピー'; }, 2000); track('copy'); };
         if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () {});
       });
     }

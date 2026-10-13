@@ -98,12 +98,19 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .hd nav a.my .ms{font-size:20px}
 
 /* 友達に教える */
-.share{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--z-line)}
-.share-lb{width:100%;text-align:center;font-size:12px;font-weight:700;color:var(--z-text-4)}
-.share-b{height:36px;padding:0 14px;border:0;border-radius:999px;display:inline-flex;align-items:center;background:var(--z-surface);color:var(--z-navy);font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
-.share-b:hover{color:var(--z-navy);background:var(--z-chip)}
-.share-b.line{background:#06C755;color:#fff}
-.share-b.line:hover{color:#fff;background:#05B04B}
+.share{margin-top:16px;padding-top:14px;border-top:1px solid var(--z-line)}
+.share-lb{display:block;text-align:center;font-size:12px;font-weight:700;color:var(--z-text-4)}
+.share-row{margin-top:10px;display:flex;justify-content:center;gap:18px}
+.sh{width:72px;border:0;padding:0;background:none;display:flex;flex-direction:column;align-items:center;gap:6px;font:inherit;color:var(--z-text-3);cursor:pointer;text-decoration:none}
+.sh:hover{color:var(--z-navy)}
+.sh[hidden]{display:none}
+.sh-i{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--z-surface);color:var(--z-navy);box-shadow:inset 0 0 0 1px var(--z-border);transition:transform .15s}
+.sh:active .sh-i{transform:scale(.92)}
+.sh-i svg{width:22px;height:22px}
+.sh-i .ms{font-size:22px}
+.sh-i.line{background:#06C755;box-shadow:none}
+.sh-i.x{background:#0F1419;box-shadow:none}
+.sh-t{font-size:11px;font-weight:700;line-height:1.3;text-align:center;white-space:nowrap}
 .sb-done .share{border-top-color:rgba(11,21,48,.08)}
 
 /* マイページ */
