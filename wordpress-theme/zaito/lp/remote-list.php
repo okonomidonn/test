@@ -158,8 +158,8 @@ if ( ! $zaito_cond ) :
           <?php endforeach; ?>
         <?php else : ?>
         <span class="eb">REMOTE JOBS</span>
-        <h1>出社なしの仕事だけを、<br>集めました。</h1>
-        <p>「在宅OK」で探しても、研修や会議で出社がある求人が混ざる。zaitoは、自宅だけで働ける求人を運営が1件ずつ確認して載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
+        <h1>完全在宅の仕事だけを、<br>集めました。</h1>
+        <p><b>研修も会議も、出社なし。</b>「在宅OK」で探すと出社ありの求人が混ざるため、zaitoは運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
         <?php endif; ?>
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
       </div>
