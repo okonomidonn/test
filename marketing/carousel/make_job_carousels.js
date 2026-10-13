@@ -82,7 +82,7 @@ const frame = (cls, i, n, body, foot) => `${HEAD}<div class="s ${cls}"><div clas
 
 function cover(t, list, n) {
   return frame('dark', 1, n, `<div class="mid"><div class="k">${esc(t.kicker)}</div><h1>${esc(t.title).replace('\n', '<br>').replace('完全在宅', '<em>完全在宅</em>').replace('出社なし', '<em>出社なし</em>')}</h1>
-<div class="count"><b>${t.total}</b>件の中から${list.length}件を紹介</div><p class="sub">研修も会議も、出社なし。<br>自分の部屋だけで働ける求人です。</p></div>`);
+<div class="count"><b>${t.total}</b>件の中から${list.length}件を紹介</div><p class="sub">運営がチェックした、<br>完全在宅の求人です。</p></div>`);
 }
 function jobSlide(j, i, n) {
   const pp = payParts(j.pay);
@@ -127,7 +127,7 @@ function ctaSlide(t, n) {
     for (let i = 0; i < list.length; i++) await shot(jobSlide(list[i], i + 2, n), path.join(dir, String(i + 2).padStart(2, '0') + '.png'));
     await shot(ctaSlide(t, n), path.join(dir, String(n).padStart(2, '0') + '.png'));
     const rows = list.map((j, i) => `${i + 1}. ${j.title}（${j.company}）\n　${j.pay ? j.pay : '報酬は募集ページで確認'}${j.hours ? '／' + short(j.hours, 30) : ''}`).join('\n');
-    const caption = `${t.title.replace('\n', '')}、いま${t.total}件。その中から${list.length}件を紹介します。\n\n${rows}\n\nどれも研修・会議を含めて出社なし。募集ページの内容を確かめてから載せています。\n応募は、プロフィールのリンク（zaito-work.com）から各求人のページへ。\n\n※募集内容は変わることがあります。応募前に元の募集ページも確認してください。\n\n#在宅バイト #完全在宅 #在宅ワーク #リモートワーク ${t.tag}`;
+    const caption = `${t.title.replace('\n', '')}、いま${t.total}件。その中から${list.length}件を紹介します。\n\n${rows}\n\nどれも、運営が募集ページを読んでチェックした完全在宅の求人です。\n応募は、プロフィールのリンク（zaito-work.com）から各求人のページへ。\n\n※募集内容は変わることがあります。応募前に元の募集ページも確認してください。\n\n#在宅バイト #完全在宅 #在宅ワーク #リモートワーク ${t.tag}`;
     md += `---\n\n## ${t.title.replace('\n', '')}（jobs/${t.key}/・${n}枚）\nリンク先（プロフィールのリンクを一時的に変えるとき）: https://zaito-work.com${t.link}${t.link.includes('?') ? '&' : '?'}utm_source=instagram&utm_medium=social&utm_campaign=carousel_${t.key}\n\n\`\`\`\n${caption}\n\`\`\`\n\n`;
     console.log('wrote', t.key, n, 'slides', list.map(j => j.slug).join(','));
   }

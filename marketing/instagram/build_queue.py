@@ -23,7 +23,7 @@ intro = re.search(r'```\n(.*?)\n```', open(os.path.join(CAR, 'キャプション
 caps['intro'] = intro
 
 # 紹介系と求人紹介を交互に並べる
-ORDER = ['intro', 'jobs-gakusei', 'about-chigai', 'jobs-mikeiken', 'about-faq', 'jobs-pay1500', 'about-tsukaikata', 'jobs-tanjikan', 'jobs-jimu']
+ORDER = ['intro', 'jobs-gakusei', 'about-faq', 'jobs-mikeiken', 'about-tsukaikata', 'jobs-pay1500', 'jobs-tanjikan', 'jobs-jimu']
 qpath = os.path.join(os.path.dirname(__file__), 'queue.json')
 old = {p['id']: p for p in json.load(open(qpath, encoding='utf-8'))} if os.path.exists(qpath) else {}
 queue = []

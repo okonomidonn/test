@@ -65,6 +65,7 @@ p.lead{margin-top:36px;font-size:40px;font-weight:700;line-height:1.6;opacity:.8
 .cta{margin-top:56px;align-self:flex-start;height:132px;padding:0 56px;border-radius:999px;background:#3D5AFE;color:#fff;box-shadow:0 30px 60px -30px rgba(61,90,254,.7);display:flex;align-items:center;font-size:48px;font-weight:900}
 .url{margin-top:30px;font-family:'Outfit',sans-serif;font-size:44px;font-weight:700;color:#3D5AFE}
 .wm{font-family:'Outfit',sans-serif;font-weight:800;letter-spacing:-.03em;color:#0B1530}.wm span{color:#3D5AFE}
+.dark .wm{color:#fff}
 `;
 const page = (cls, i, body, last) => `<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
@@ -75,30 +76,33 @@ const page = (cls, i, body, last) => `<!doctype html><html lang="ja"><head><meta
 </div></body></html>`;
 
 const cats = Object.entries(groups).filter(([g]) => g !== 'その他').sort((a, b) => b[1] - a[1]);
+const WM = '<span class="wm">za<span>i</span>to</span>';
 const SLIDES = [
-  ['dark', `<div class="k">在宅バイトを探している人へ</div>
-<h1 style="margin-top:28px">「在宅OK」なのに、<br><em>研修は出社</em>って<br>言われたこと、<br>ありませんか？</h1>`],
-  ['', `<div class="k">よくある「在宅OK」</div>
-<h2 style="margin-top:24px">書いてあるのは在宅でも…</h2>
+  ['dark', `<div class="k">在宅で働きたい人へ</div>
+<h1 style="margin-top:28px"><em>完全在宅</em>の<br>仕事だけを<br>集めた求人サイト</h1>
+<p class="lead" style="margin-top:40px">${WM}（ザイト）</p>`],
+  ['', `<div class="k">zaitoの3つの特長</div>
 <div class="list">
-<div class="row"><div class="ic ng">×</div><div><b>最初の1か月は出社</b><small>研修だけ本社で</small></div></div>
-<div class="row"><div class="ic ng">×</div><div><b>月1回の定例会は出社</b><small>「基本は在宅」の“基本”</small></div></div>
-<div class="row"><div class="ic ng">×</div><div><b>お客様先への訪問あり</b><small>仕事の中に外出がある</small></div></div>
+<div class="row"><div class="ic">1</div><div><b>完全在宅の仕事だけ</b><small>働く場所がすべて自宅の求人を集めています</small></div></div>
+<div class="row"><div class="ic">2</div><div><b>運営がチェックして掲載</b><small>募集ページを読んで、確かめてから載せます</small></div></div>
+<div class="row"><div class="ic">3</div><div><b>見つけにくい求人も</b><small>大手求人サイトでは探しにくい求人も載せています</small></div></div>
 </div>`],
-  ['blue', `<div class="k">だから作りました</div>
-<h1 style="margin-top:28px"><em>完全在宅</em>の<br>仕事だけを、<br>集めました。</h1>
-<p class="lead">研修も、会議も、出社なし。<br>自分の部屋だけで働ける求人を<br>まとめたサイトです。</p>`],
-  ['', `<div class="k">載せる前に確かめていること</div>
+  ['', `<div class="k">特長 1</div>
+<h2 style="margin-top:24px"><em>完全在宅</em>の仕事だけ</h2>
+<p class="note" style="margin-top:24px">家から一歩も出ずに働ける仕事だけ。<br>いま <b style="color:#3D5AFE">${N}件</b> から選べます。</p>
+<div class="cats">${cats.map(([g, n]) => `<div class="cat">${esc(g)}<i>${n}</i></div>`).join('')}</div>`],
+  ['', `<div class="k">特長 2</div>
+<h2 style="margin-top:24px">運営が<em>チェック</em>して掲載</h2>
 <div class="list">
-<div class="row"><div class="ic ok">✓</div><div><b>研修・会議も含めて出社なし</b><small>初日だけ・月1回だけ、も載せません</small></div></div>
-<div class="row"><div class="ic ok">✓</div><div><b>「基本は」「原則」は外す</b><small>例外がありうる書き方の求人は載せません</small></div></div>
-<div class="row"><div class="ic ok">✓</div><div><b>働く前にお金がかからない</b><small>教材費・登録料が必要な求人は載せません</small></div></div>
+<div class="row"><div class="ic ok">✓</div><div><b>働く場所がすべて自宅か</b><small>募集ページを読んで確かめます</small></div></div>
+<div class="row"><div class="ic ok">✓</div><div><b>仕事内容・報酬・時間</b><small>分かりやすくまとめて載せます</small></div></div>
+<div class="row"><div class="ic ok">✓</div><div><b>働く前にお金がかからないか</b><small>教材費・登録料が必要な求人は載せません</small></div></div>
 <div class="row"><div class="ic ok">✓</div><div><b>2週間ごとに確認し直す</b><small>募集が終わった求人は外します</small></div></div>
 </div>`],
-  ['', `<div class="k">どんな仕事がある？</div>
-<h2 style="margin-top:24px">いま <em>${N}件</em></h2>
-<div class="cats">${cats.map(([g, n]) => `<div class="cat">${esc(g)}<i>${n}</i></div>`).join('')}</div>
-<p class="note">アルバイト・長期インターン・業務委託など。<br>報酬は求人ごとに、募集ページの内容をそのまま載せています。</p>`],
+  ['', `<div class="k">特長 3</div>
+<h2 style="margin-top:24px"><em>見つけにくい求人</em>も</h2>
+<p class="lead" style="margin-top:36px">企業の採用ページやSNSだけで<br>募集している求人も、<br>運営が探して載せています。</p>
+<p class="note">大手の求人サイトで探しても<br>出てこない仕事に出会えるかもしれません。</p>`],
   ['', `<div class="k">自分に合うものから探せる</div>
 <div class="grid">
 <div class="cell"><b>${stat.student}<small>件</small></b><span>学生OK</span></div>
@@ -106,14 +110,14 @@ const SLIDES = [
 <div class="cell"><b>${stat.pay1500}<small>件</small></b><span>時給1,500円〜</span></div>
 <div class="cell"><b>${stat.short}<small>件</small></b><span>週1〜2日でOK</span></div>
 </div>
-<p class="note">条件のボタンを押すだけで絞り込めます。<br>押す前に何件になるかも分かります。</p>`],
+<p class="note">条件のボタンを押すだけで絞り込めます。</p>`],
   ['', `<div class="k">使い方</div>
 <div class="steps">
 <div class="step"><div class="n">1</div><div><b>求人を探す</b><span>職種や時給、学生OKなどで絞り込み</span></div></div>
 <div class="step"><div class="n">2</div><div><b>気になったら保存</b><span>しおりを押すと、マイページにまとまります</span></div></div>
 <div class="step"><div class="n">3</div><div><b>企業のページから応募</b><span>はじめての人はメールアドレスで無料登録</span></div></div>
 </div>`],
-  ['blue', `<h1>完全在宅の<br>仕事なら、<span class="wm">za<span>i</span>to</span></h1>
+  ['blue', `<h1>完全在宅の<br>仕事なら、${WM}</h1>
 <p class="lead">登録は無料・メールアドレスだけ。<br>希望に合う新しい求人もお知らせします。</p>
 <div class="cta">プロフィールのリンクから</div>
 <div class="url">zaito-work.com</div>`],
@@ -135,10 +139,12 @@ const SLIDES = [
   }
   await b.close();
 
-  const caption = `「在宅OK」なのに、研修は出社。
-そんな求人をなくしたくて、完全在宅の仕事だけを集めたサイトを作りました。
+  const caption = `完全在宅の仕事だけを集めた求人サイト、zaito（ザイト）です。
 
-zaitoに載っているのは、研修も会議も含めて出社がない求人だけ。いま${N}件あります。
+zaitoの3つの特長
+1. 完全在宅の仕事だけ（いま${N}件）
+2. 運営が募集ページを読んで、チェックしてから掲載
+3. 企業の採用ページやSNSだけで募集している、大手求人サイトでは見つけにくい求人も
 
 ・学生OK ${stat.student}件
 ・未経験OK ${stat.newbie}件
