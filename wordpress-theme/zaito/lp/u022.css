@@ -43,6 +43,7 @@
 .fav.u022:focus-visible{outline:2px solid #FF4D6D;outline-offset:3px}
 /* 何人が保存しているか（求人ページ）。数字は1つずつ回って変わる */
 .u022-meta{margin:10px 0 0;display:flex;align-items:center;justify-content:center;gap:2px;font-size:13px;font-weight:700;color:var(--ux-ink-2)}
+.u022-meta[hidden]{display:none}
 .u022-roll{position:relative;display:inline-block;height:22px;overflow:hidden;font-variant-numeric:tabular-nums;color:var(--ux-ink)}
 .u022-roll span{display:block;line-height:22px;transition:transform .5s var(--ux-spring),opacity .3s var(--ux-ease)}
 .u022-roll span+span{position:absolute;left:0;top:0}

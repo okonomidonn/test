@@ -146,6 +146,28 @@ if ( ! function_exists( 'zaito_u022_heart' ) ) {
     }
 }
 
+if ( ! function_exists( 'zaito_share_box' ) ) {
+    /**
+     * 「友達に教える」。$text は共有するときの一言、$url は共有するページ。
+     * どこから共有されて来たか分かるよう、URLに utm_source（line / x / copy / native）を付ける。
+     */
+    function zaito_share_box( $text, $url, $label = '友達に教える' ) {
+        $u = function ( $src ) use ( $url ) {
+            return add_query_arg( array( 'utm_source' => $src, 'utm_medium' => 'share' ), $url );
+        };
+        ?>
+<div class="share">
+  <span class="share-lb"><?php echo esc_html( $label ); ?></span>
+  <button type="button" class="share-b" data-native="<?php echo esc_url( $u( 'native' ) ); ?>" data-title="zaito" data-text="<?php echo esc_attr( $text ); ?>" hidden>送る</button>
+  <a class="share-b line" data-how="line" href="<?php echo esc_url( 'https://social-plugins.line.me/lineit/share?url=' . rawurlencode( $u( 'line' ) ) . '&text=' . rawurlencode( $text ) ); ?>" target="_blank" rel="noopener">LINE</a>
+  <a class="share-b" data-how="x" href="<?php echo esc_url( 'https://x.com/intent/post?text=' . rawurlencode( $text ) . '&url=' . rawurlencode( $u( 'x' ) ) ); ?>" target="_blank" rel="noopener">X</a>
+  <button type="button" class="share-b" data-copy="<?php echo esc_url( $u( 'copy' ) ); ?>" hidden>リンクをコピー</button>
+</div>
+<script src="<?php echo esc_url( zaito_lp_asset( 'share.js' ) ); ?>" defer></script>
+        <?php
+    }
+}
+
 if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     /**
      * 登録直後に聞く任意の希望条件（立場・学年・学校名・やってみたい仕事・働ける日数・希望の時給）の入力欄。

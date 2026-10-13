@@ -97,6 +97,15 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .hd nav a.my{display:inline-flex;align-items:center;gap:4px}
 .hd nav a.my .ms{font-size:20px}
 
+/* 友達に教える */
+.share{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--z-line)}
+.share-lb{width:100%;text-align:center;font-size:12px;font-weight:700;color:var(--z-text-4)}
+.share-b{height:36px;padding:0 14px;border:0;border-radius:999px;display:inline-flex;align-items:center;background:var(--z-surface);color:var(--z-navy);font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
+.share-b:hover{color:var(--z-navy);background:var(--z-chip)}
+.share-b.line{background:#06C755;color:#fff}
+.share-b.line:hover{color:#fff;background:#05B04B}
+.sb-done .share{border-top-color:rgba(11,21,48,.08)}
+
 /* マイページ */
 .my-sec{margin:28px 0 0;padding:24px;border:1px solid var(--z-border);border-radius:18px;background:#fff}
 .doc .my-sec h2{margin:0 0 6px;padding:0;border:0;font-size:18px}

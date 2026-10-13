@@ -272,6 +272,7 @@ if ( ! $zaito_cond ) :
         <span class="ms" aria-hidden="true">check_circle</span>
         <b id="zdonetitle">登録が完了しました</b>
         <p id="zdonetext">確認メールを送りました。メールのリンクを押すと、新しい在宅求人のお知らせが届くようになります。気になる求人は「応募ページへ進む」からそのまま応募できます。</p>
+        <?php zaito_share_box( '出社なしの在宅バイト・インターンだけを集めたサイト。学生OKの求人もあるよ', home_url( '/' ), '在宅バイトを探している友達に教える' ); ?>
       </div>
     </div>
   </section>

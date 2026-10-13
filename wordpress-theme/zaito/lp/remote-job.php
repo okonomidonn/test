@@ -107,6 +107,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
           <button type="button" class="btn btn-g fav-wide u022" data-fav="<?php echo esc_attr( $zaito_j['slug'] ); ?>" aria-pressed="false"><span class="u022-ico"><?php echo zaito_u022_heart(); // 固定のSVGのみ ?></span><span class="lb">保存する</span></button>
           <?php $zaito_favn = function_exists( 'zaito_fav_count' ) ? zaito_fav_count( $zaito_j['slug'] ) : 0; ?>
           <p class="u022-meta" data-fav-count="<?php echo esc_attr( $zaito_j['slug'] ); ?>" data-n="<?php echo esc_attr( $zaito_favn ); ?>"<?php echo $zaito_favn ? '' : ' hidden'; ?>><span class="u022-roll" aria-live="polite"><span><?php echo esc_html( $zaito_favn ); ?></span><span></span></span>人が保存しています</p>
+          <?php zaito_share_box( '出社なしの在宅バイト：' . $zaito_j['title'] . ( $zaito_j['pay'] ? '（' . $zaito_j['pay'] . '）' : '' ), zaito_remote_url( $zaito_j['slug'] ) ); ?>
 
           <form class="signup<?php echo $zaito_error ? ' on' : ''; ?>" id="zsignup" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
             <b>無料登録して応募ページへ</b>
