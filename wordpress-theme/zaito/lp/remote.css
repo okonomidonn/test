@@ -5,6 +5,11 @@ body{margin:0;background:#fff;color:var(--z-navy);font-family:'Noto Sans JP',sys
 a{color:var(--z-blue);text-decoration:none}
 a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--z-blue);outline-offset:3px;border-radius:10px}
 .ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;white-space:nowrap;font-feature-settings:'liga';display:inline-block}
+/* アイコンのフォントが読み込まれる前は「emoji_people」などの文字で表示されるため、幅を1文字分に抑えて、ページが横にはみ出さないようにする */
+.ms{max-width:1em;overflow:hidden}
+.filters button .ms,.faq summary .ms,.sb-copy>.ms,.mc-copy>.ms{max-width:none}
+/* 念のため、ページ全体が横にスクロールしないようにする（clip は固定ヘッダーを壊さない） */
+html,body{overflow-x:clip}
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
 .logo{font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:-0.045em;color:var(--z-navy);line-height:1}
 .logo span{color:var(--z-blue)}
@@ -358,8 +363,8 @@ body.has-sbar{padding-bottom:96px}
 /* 条件で探す（一覧ページの下）・条件別ページ */
 .conds{margin-top:64px}
 .conds h2{margin:0 0 14px;font-size:20px;font-weight:700}
-.conds-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-.conds-list a{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;border:1px solid var(--z-border);color:var(--z-navy);font-size:15px;font-weight:700;transition:border-color .2s,box-shadow .2s}
+.conds-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:10px}
+.conds-list a{min-width:0;display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;border:1px solid var(--z-border);color:var(--z-navy);font-size:15px;font-weight:700;transition:border-color .2s,box-shadow .2s}
 .conds-list a:hover{border-color:var(--z-border-input);box-shadow:var(--z-shadow-sm)}
 .conds-list a[aria-current="page"]{background:var(--z-navy);color:#fff;border-color:var(--z-navy)}
 .conds-list .ms{font-size:22px;color:var(--z-blue)}
@@ -392,7 +397,7 @@ body.has-sbar{padding-bottom:96px}
  .biz{padding:20px}
  .co-sec{margin-top:56px}
  .conds{margin-top:48px}
- .conds-list{grid-template-columns:1fr 1fr}
+ .conds-list{grid-template-columns:repeat(2,minmax(0,1fr))}
  .conds-list a{padding:12px;font-size:14px;gap:6px}
  .signup-band{grid-template-columns:1fr;gap:24px;padding:24px 18px;margin-top:56px}
  .sb-form{padding:18px}
