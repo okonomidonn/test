@@ -78,7 +78,7 @@ const page = (cls, i, body, last) => `<!doctype html><html lang="ja"><head><meta
 const cats = Object.entries(groups).filter(([g]) => g !== 'その他').sort((a, b) => b[1] - a[1]);
 const WM = '<span class="wm">za<span>i</span>to</span>';
 const SLIDES = [
-  ['dark', `<div class="k">在宅で働きたい人へ</div>
+  ['', `<div class="k">在宅で働きたい人へ</div>
 <h1 style="margin-top:28px"><em>完全在宅</em>の<br>仕事だけを<br>集めた求人サイト</h1>
 <p class="lead" style="margin-top:40px">${WM}（ザイト）</p>`],
   ['', `<div class="k">zaitoの3つの特長</div>

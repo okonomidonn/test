@@ -81,7 +81,7 @@ const HEAD = `<!doctype html><html lang="ja"><head><meta charset="utf-8">
 const frame = (cls, i, n, body, foot) => `${HEAD}<div class="s ${cls}"><div class="top"><div class="logo">za<span>i</span>to</div><div class="pg">${i} / ${n}</div></div>${body}<div class="foot"><span>${foot || '完全在宅の仕事だけを集めたサイト'}</span><span>${i < n ? 'スワイプ →' : ''}</span></div></div></body></html>`;
 
 function cover(t, list, n) {
-  return frame('dark', 1, n, `<div class="mid"><div class="k">${esc(t.kicker)}</div><h1>${esc(t.title).replace('\n', '<br>').replace('完全在宅', '<em>完全在宅</em>').replace('出社なし', '<em>出社なし</em>')}</h1>
+  return frame('', 1, n, `<div class="mid"><div class="k">${esc(t.kicker)}</div><h1>${esc(t.title).replace('\n', '<br>').replace('完全在宅', '<em>完全在宅</em>').replace('出社なし', '<em>出社なし</em>')}</h1>
 <div class="count"><b>${t.total}</b>件の中から${list.length}件を紹介</div><p class="sub">運営がチェックした、<br>完全在宅の求人です。</p></div>`);
 }
 function jobSlide(j, i, n) {

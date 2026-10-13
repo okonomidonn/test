@@ -71,7 +71,7 @@ const SETS = {
   faq: {
     name: 'よくある質問',
     slides: [
-      ['dark', `<div class="mid"><div class="k">はじめての方へ</div><h1>${'zaito'}って<br>なに？<br><em>よくある質問</em></h1></div>`],
+      ['', `<div class="mid"><div class="k">はじめての方へ</div><h1>${'zaito'}って<br>なに？<br><em>よくある質問</em></h1></div>`],
       ['', qa('どんなサイト？', `<b>完全在宅の仕事だけ</b>を集めた求人サイトです。運営がチェックした求人を、いま${N}件載せています。`)],
       ['', qa('お金はかかる？', `<b>無料</b>です。登録も、求人を見るのも、応募するのも、お金はかかりません。`)],
       ['', qa('だれが使える？', `<b>学生・社会人・主婦（主夫）</b>など、だれでも。学生OK・未経験OK・週1〜2日でOKの求人も、ボタンで絞り込めます。`)],
@@ -103,7 +103,7 @@ Q. ほかの求人サイトとの違いは？
   chigai: {
     name: '「在宅OK」と「完全在宅」の違い',
     slides: [
-      ['dark', `<div class="mid"><div class="k">知っておきたい</div><h1>「在宅OK」と<br><em>「完全在宅」</em>の<br>ちがい</h1></div>`],
+      ['', `<div class="mid"><div class="k">知っておきたい</div><h1>「在宅OK」と<br><em>「完全在宅」</em>の<br>ちがい</h1></div>`],
       ['', `<div class="mid"><div class="k">求人でよく見るこの言葉</div><div class="words"><span>在宅OK</span><span>リモート可</span><span>基本在宅</span><span>原則リモート</span><span>リモート中心</span></div><p class="lead">どれも「出社がない」とは<br>かぎりません。</p></div>`],
       ['', `<div class="mid"><h2>よく見る例</h2><div class="vs">
 <div class="col ng"><h3>「在宅OK」</h3><ul><li><span>×</span>最初の1か月は出社</li><li><span>×</span>研修は本社で</li><li><span>×</span>月1回の定例会</li><li><span>×</span>お客様先へ訪問</li></ul></div>
@@ -176,7 +176,7 @@ async function captureShots(b) {
 function tsukaikataSlides(s) {
   const st = (no, title, sub, img) => ['', `<div class="mid"><div class="step"><b>${no}</b><h2>${title}</h2></div><p>${sub}</p><div class="shot"><img src="data:image/png;base64,${img}"></div></div>`];
   return [
-    ['dark', `<div class="mid"><div class="k">実際の画面で紹介</div><h1>${'zaito'}の<br><em>使い方</em></h1><p class="lead">完全在宅の仕事を、<br>4ステップで探して応募。</p></div>`],
+    ['', `<div class="mid"><div class="k">実際の画面で紹介</div><h1>${'zaito'}の<br><em>使い方</em></h1><p class="lead">完全在宅の仕事を、<br>4ステップで探して応募。</p></div>`],
     st(1, '条件で絞り込む', '学生OK・時給・週1〜2日など。押す前に件数が分かります', s.filter),
     st(2, '気になったら保存', 'しおりを押すと、マイページにまとまります', s.save),
     st(3, '求人をくわしく見る', '在宅の条件・報酬・働き方を、運営がチェックした日と一緒に', s.job),
