@@ -181,7 +181,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
         // 質問ごとの .pq は、登録直後のフォームで1問ずつ表示するときの区切り（lp/u063.js）。マイページではそのまま並べる。
         ?>
     <div class="pq" data-step="role" data-hint="あなたが応募できる求人だけをお送りします">
-    <fieldset><legend>いまは何をしていますか？</legend><div class="chips">
+    <fieldset><legend>現在の職業</legend><div class="chips">
       <?php foreach ( $opts['role'] as $o ) : ?>
         <label><input type="radio" name="role" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
       <?php endforeach; ?>
