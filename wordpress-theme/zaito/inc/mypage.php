@@ -69,6 +69,9 @@ add_action( 'zaito_remote_registered', 'zaito_my_on_register', 10, 2 );
  * 新着メールの本人専用リンクから来た人も本人とみなす（inc/newsletter.php）。
  */
 function zaito_my_on_newsletter_return( $member ) {
+    if ( ! get_post_meta( $member, 'verified', true ) ) {
+        update_post_meta( $member, 'verified', current_time( 'Y-m-d H:i' ) );
+    }
     if ( zaito_my_id() !== (int) $member ) {
         zaito_my_set_cookie( $member );
     }
@@ -81,8 +84,8 @@ function zaito_my_login_sig( $id, $exp ) {
     return hash_hmac( 'sha256', 'zaito_my_login|' . (int) $id . '|' . (int) $exp, wp_salt( 'auth' ) );
 }
 
-function zaito_my_login_url( $id ) {
-    $exp = time() + DAY_IN_SECONDS;
+function zaito_my_login_url( $id, $ttl = DAY_IN_SECONDS ) {
+    $exp = time() + $ttl;
     return add_query_arg( 'k', (int) $id . '.' . $exp . '.' . zaito_my_login_sig( $id, $exp ), zaito_mypage_url() );
 }
 
@@ -150,9 +153,18 @@ function zaito_mypage_template_redirect() {
                 && hash_equals( zaito_my_login_sig( $m[1], $m[2] ), $m[3] );
             if ( $ok ) {
                 zaito_my_set_cookie( (int) $m[1] );
+                // メールのリンクを開けた＝本人のアドレス。新着メールを送れるようにする。
+                if ( ! get_post_meta( (int) $m[1], 'verified', true ) ) {
+                    update_post_meta( (int) $m[1], 'verified', current_time( 'Y-m-d H:i' ) );
+                    $newly = (bool) get_post_meta( (int) $m[1], 'needs_verify', true );
+                }
             }
         }
-        wp_safe_redirect( $ok ? zaito_mypage_url() : add_query_arg( 'login', 'expired', zaito_mypage_url() ) );
+        $to = $ok ? zaito_mypage_url() : add_query_arg( 'login', 'expired', zaito_mypage_url() );
+        if ( ! empty( $newly ) ) {
+            $to = add_query_arg( 'verified', '1', $to );
+        }
+        wp_safe_redirect( $to );
         exit;
     }
     status_header( 200 );
@@ -300,6 +312,7 @@ function zaito_handle_my_data() {
         'prefs'        => $prefs,
         'favorites'    => array_values( array_filter( array_map( 'zaito_my_job_summary', $favs ) ) ),
         'unsubscribed' => (bool) get_post_meta( $id, 'unsubscribed', true ),
+        'verified'     => zaito_interest_verified( $id ),
     ) );
 }
 add_action( 'wp_ajax_zaito_my_data', 'zaito_handle_my_data' );

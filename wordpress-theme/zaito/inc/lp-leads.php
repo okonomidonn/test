@@ -104,7 +104,7 @@ function zaito_handle_lp_waitlist() {
     }
 
     // 登録済みのアドレスには送らない（第三者が同じアドレスで何度も送らせることを防ぐ）。
-    zaito_lp_send_waitlist_thanks( $email );
+    zaito_lp_send_waitlist_thanks( $email, 'lp', $interest_id );
 
     zaito_lp_respond( true, array( 'already' => false, 'token' => zaito_lp_issue_token( $interest_id ) ), 'waitlist' );
 }
@@ -139,6 +139,8 @@ function zaito_lp_find_or_create_interest( $email, $source ) {
 
     update_post_meta( $interest_id, 'email', $email );
     update_post_meta( $interest_id, 'source', $source );
+    // 本人のアドレスか確かめるまで、新着メールは送らない（確認メールのリンクで verified が付く）。
+    update_post_meta( $interest_id, 'needs_verify', 1 );
     foreach ( zaito_lp_tracking_fields() as $key => $value ) {
         update_post_meta( $interest_id, $key, $value );
     }
@@ -157,7 +159,14 @@ if ( ! defined( 'ZAITO_INFO_MAILBOX_READY' ) ) {
  * 先行登録した学生への自動返信メール。$context が remote のときは、
  * まとめ求人の詳細ページから登録した学生向けの文面にする。
  */
-function zaito_lp_send_waitlist_thanks( $email, $context = 'lp' ) {
+function zaito_lp_send_waitlist_thanks( $email, $context = 'lp', $interest_id = 0 ) {
+    // メールアドレスの確認リンク（マイページのログインリンクと同じ仕組みで、開くと確認済みになる。7日間有効）。
+    $verify = $interest_id && function_exists( 'zaito_my_login_url' )
+        ? "■ メールアドレスの確認（新着求人のお知らせを受け取るために必要です）\n"
+            . "下のリンクを押すと確認が完了します（7日間有効）。\n"
+            . zaito_my_login_url( $interest_id, 7 * DAY_IN_SECONDS ) . "\n\n"
+            . "期限が切れたときは、マイページ（" . home_url( '/mypage/' ) . "）から送り直せます。\n\n"
+        : '';
     $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
 
     if ( ZAITO_INFO_MAILBOX_READY ) {
@@ -172,14 +181,15 @@ function zaito_lp_send_waitlist_thanks( $email, $context = 'lp' ) {
     }
 
     if ( 'remote' === $context ) {
-        $subject = '【zaito】登録ありがとうございます';
+        $subject = $verify ? '【zaito】登録ありがとうございます（メールアドレスの確認）' : '【zaito】登録ありがとうございます';
         $intro   = "zaitoへの登録ありがとうございます。\n"
             . "以下のメールアドレスで登録を受け付けました。\n\n"
             . '登録メールアドレス: ' . $email . "\n\n"
+            . $verify
             . "zaitoは、出社なしで働ける完全在宅の求人を、運営が1件ずつ確認して集めたサイトです。\n"
             . "いま募集中の求人は、こちらから見られます。\n"
             . home_url( '/' ) . "\n\n"
-            . "新しい求人が入ったときや、zaitoの正式公開のときに、このメールアドレスにお知らせします。\n"
+            . "確認が済むと、新しい求人が入ったときに、このメールアドレスにお知らせします。\n"
             . "配信をやめたいときは、このメールに「配信停止」と返信してください。\n\n";
     } else {
         $subject = '【zaito】先行登録ありがとうございます';
@@ -189,6 +199,7 @@ function zaito_lp_send_waitlist_thanks( $email, $context = 'lp' ) {
             . "zaitoは、大学生・若手向けの完全在宅求人サービスです。\n"
             . "現在、正式ローンチに向けて掲載企業・求人を準備しています。\n"
             . "公開の準備ができましたら、このメールアドレスにいち早くお知らせします。\n\n"
+            . $verify
             . "いま募集中の完全在宅の求人は、こちらから見られます。\n"
             . home_url( '/' ) . "\n\n";
     }
@@ -351,6 +362,7 @@ function zaito_lead_export_columns( $post_type ) {
         'favorites'    => '保存した求人',
         'hours'        => '稼働可能時間',
         'source'       => '登録元',
+        'verified'     => 'メール確認日',
         'unsubscribed' => '配信停止日',
         'utm_source'   => 'utm_source',
         'utm_medium'   => 'utm_medium',
@@ -438,6 +450,14 @@ add_filter( 'views_edit-zaito_interest', 'zaito_lead_export_link' );
 add_filter( 'views_edit-zaito_company_lead', 'zaito_lead_export_link' );
 
 /**
+ * 新着メールを送ってよいか（本人のアドレスだと確かめたか）。
+ * メール確認を始める前の登録（needs_verify がない）は、これまでどおり送る。
+ */
+function zaito_interest_verified( $id ) {
+    return ! get_post_meta( $id, 'needs_verify', true ) || (bool) get_post_meta( $id, 'verified', true );
+}
+
+/**
  * 管理画面の一覧にメールアドレス・流入元の列を足し、一覧だけで状況が分かるようにする。
  */
 function zaito_lead_admin_columns( $columns ) {
@@ -464,6 +484,9 @@ add_filter( 'manage_zaito_company_lead_posts_columns', 'zaito_lead_admin_columns
 function zaito_lead_admin_column_value( $column, $post_id ) {
     if ( 'zaito_email' === $column ) {
         echo esc_html( get_post_meta( $post_id, 'email', true ) );
+        if ( 'zaito_interest' === get_post_type( $post_id ) && ! zaito_interest_verified( $post_id ) ) {
+            echo ' <span style="color:#996800">（メール未確認）</span>';
+        }
     } elseif ( 'zaito_source' === $column ) {
         $source = get_post_meta( $post_id, 'utm_source', true );
         echo esc_html( $source ? $source : '—' );

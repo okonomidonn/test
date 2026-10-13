@@ -16,6 +16,11 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
   <a class="back" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="ms" aria-hidden="true">arrow_back</span>求人一覧へ</a>
   <h1>マイページ</h1>
   <p class="lead" id="zmy-who">読み込んでいます…</p>
+  <div class="my-verify" id="zmy-verify" role="status" hidden>
+    <p><b>メールアドレスの確認がまだです</b>登録したときに届いた確認メールのリンクを押すと、新着求人のお知らせが届くようになります。</p>
+    <button type="button" class="btn btn-g" id="zmy-verify-send">確認メールを送り直す</button>
+    <span class="my-ok" id="zmy-verify-sent" hidden>送りました。メールのリンクを押してください。</span>
+  </div>
 
   <section class="my-sec" aria-labelledby="zmy-fav-t">
     <h2 id="zmy-fav-t">保存した求人</h2>
@@ -142,7 +147,19 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
       try { localStorage.setItem('zaito_favs_merged', '1'); } catch (e) {}
       F.save(d.favorites.map(function (j) { return j.slug; }));
       F.paint();
-      who.textContent = d.email + ' でログインしています。';
+      who.textContent = (/[?&]verified=1/.test(location.search) ? 'メールアドレスを確認しました。新着求人をお届けします。' : '') + d.email + ' でログインしています。';
+      if (!d.verified) {
+        document.getElementById('zmy-verify').hidden = false;
+        // 確認メールの代わりに、開くと確認済みになるログインリンクを送る（同じアドレスへは60秒に1回まで）。
+        document.getElementById('zmy-verify-send').addEventListener('click', function () {
+          var btn = this;
+          btn.disabled = true;
+          post({ action: 'zaito_my_login', email: d.email }).then(function (r) {
+            if (r && r.success) { document.getElementById('zmy-verify-sent').hidden = false; }
+            else { btn.disabled = false; }
+          }, function () { btn.disabled = false; });
+        });
+      }
       fillPrefs(d.prefs);
       document.getElementById('zmy-mail').checked = !d.unsubscribed;
       member.hidden = false;

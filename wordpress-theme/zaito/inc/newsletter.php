@@ -2,7 +2,7 @@
 /**
  * 新着求人メールの一斉配信（管理画面「求人 > 新着メール配信」）。
  *
- * - 送り先: 「興味あり登録」(zaito_interest) のメールアドレス全員。配信停止した人は除く。
+ * - 送り先: 「興味あり登録」(zaito_interest) のメールアドレス全員。配信停止した人と、メール確認がまだの人は除く。
  * - 希望条件に合わせる: 選んだ求人のうち、その人の希望（立場・やってみたい仕事・働ける日数・時給の下限）に
  *   合うものだけを一人ずつ選んで送る。合う求人が1件もない人には送らない。
  * - 計測: 求人へのリンクに配信ID・登録ID・署名を付け、配信ごとに「メールから戻った人」
@@ -32,7 +32,7 @@ function zaito_nl_recipients() {
     $seen = array();
     $out  = array();
     foreach ( $ids as $id ) {
-        if ( get_post_meta( $id, 'unsubscribed', true ) ) {
+        if ( get_post_meta( $id, 'unsubscribed', true ) || ! zaito_interest_verified( $id ) ) {
             continue;
         }
         $email = strtolower( trim( (string) get_post_meta( $id, 'email', true ) ) );
@@ -336,6 +336,9 @@ function zaito_nl_render_admin() {
         return empty( $j['closed'] );
     } );
     $recipients = count( zaito_nl_recipients() );
+    $unverified = count( array_filter( get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids' ) ), function ( $id ) {
+        return ! get_post_meta( $id, 'unsubscribed', true ) && ! zaito_interest_verified( $id );
+    } ) );
     $history    = get_option( 'zaito_nl_history', array() );
     $campaign   = get_option( 'zaito_nl_campaign' );
     $pending    = is_array( $campaign ) && $campaign['next'] < count( $campaign['to'] );
@@ -377,7 +380,7 @@ function zaito_nl_render_admin() {
           <button type="button" class="button" id="znl-test">このアドレスにテスト送信</button>
         </p>
         <pre id="znl-body" style="display:none;max-width:960px;white-space:pre-wrap;background:#fff;border:1px solid #c3c4c7;padding:16px;font-size:13px"></pre>
-        <p><button type="button" class="button button-primary button-large" id="znl-send">登録者 <?php echo esc_html( $recipients ); ?>人に送信する</button></p>
+        <p><button type="button" class="button button-primary button-large" id="znl-send">登録者 <?php echo esc_html( $recipients ); ?>人に送信する</button><?php if ( $unverified ) : ?>　<span style="color:#646970">メール確認がまだの <?php echo esc_html( $unverified ); ?>人には送りません（登録時の確認メールのリンクを押すと、送り先に入ります）</span><?php endif; ?></p>
         <p id="znl-status" style="font-size:14px;font-weight:600"></p>
       </form>
 

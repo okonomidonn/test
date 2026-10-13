@@ -271,7 +271,7 @@ if ( ! $zaito_cond ) :
       <div class="sb-done" id="zdone" hidden>
         <span class="ms" aria-hidden="true">check_circle</span>
         <b id="zdonetitle">登録が完了しました</b>
-        <p id="zdonetext">新しい在宅求人が入ったら、メールでお知らせします。気になる求人は「応募ページへ進む」からそのまま応募できます。</p>
+        <p id="zdonetext">確認メールを送りました。メールのリンクを押すと、新しい在宅求人のお知らせが届くようになります。気になる求人は「応募ページへ進む」からそのまま応募できます。</p>
       </div>
     </div>
   </section>
@@ -473,7 +473,7 @@ if ( ! $zaito_cond ) :
       if (!isEmail(v)) { merr.textContent = '正しいメールアドレスを入力してください'; return; }
       top.elements.email.value = v;
       register(mform.querySelector('button'), merr, 'inline', function (created) {
-        mini.innerHTML = '<div class="mc-copy"><span class="ms" aria-hidden="true">check_circle</span><p><b>' + (created ? '登録できました' : '登録済みです') + '</b>新しい完全在宅の求人が入ったら、メールでお知らせします。</p></div>';
+        mini.innerHTML = '<div class="mc-copy"><span class="ms" aria-hidden="true">check_circle</span><p><b>' + (created ? '登録できました' : '登録済みです') + '</b>' + (created ? '確認メールのリンクを押すと、新着のお知らせが届くようになります。' : '新しい完全在宅の求人が入ったら、メールでお知らせします。') + '</p></div>';
         if (created) { document.getElementById('signup').scrollIntoView({ behavior: 'smooth' }); }
       });
     });

@@ -1581,7 +1581,7 @@ function zaito_handle_remote_register() {
     }
     list( $interest_id, $created ) = $result;
     if ( $created ) {
-        zaito_lp_send_waitlist_thanks( $email, 'remote' );
+        zaito_lp_send_waitlist_thanks( $email, 'remote', $interest_id );
     }
     zaito_remote_set_member_cookie( $interest_id );
     // 新しく登録したブラウザは本人とみなし、マイページを使えるようにする（inc/mypage.php）。
