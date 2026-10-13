@@ -24,7 +24,7 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
 
   <section class="my-sec" aria-labelledby="zmy-fav-t">
     <h2 id="zmy-fav-t">保存した求人</h2>
-    <p>求人の <span class="ms" aria-hidden="true" style="font-size:16px;vertical-align:-3px">favorite</span> を押すと、ここに保存されます。</p>
+    <p>求人の <span class="ms" aria-hidden="true" style="font-size:16px;vertical-align:-3px">bookmark</span> を押すと、ここに保存されます。</p>
     <ul class="my-favs" id="zmy-favs"></ul>
     <p class="my-empty" id="zmy-empty" hidden>保存した求人はまだありません。<a href="<?php echo esc_url( home_url( '/' ) ); ?>">求人を探す</a></p>
   </section>

@@ -1688,9 +1688,9 @@ function zaito_render_remote_admin_page() {
       <h1>まとめ求人</h1>
       <p>公開ページ: <a href="<?php echo esc_url( zaito_remote_url() ); ?>" target="_blank" rel="noopener"><?php echo esc_html( zaito_remote_url() ); ?></a>　｜　登録している学生（先行登録を含む）: <strong><?php echo esc_html( $members ); ?>人</strong></p>
       <p>「進んだ学生」は、登録して元の応募ページへ進んだ学生の人数です（同じ学生が何度押しても1人）。企業への営業では、この人数を伝えます。求人の追加・修正は <code>inc/remote-jobs.php</code> で行います。</p>
-      <p>「♡保存中」は、いまその求人を保存しているブラウザの数です（登録していない人も含む。同じブラウザは1回）。「♡された回数」は保存ボタンが押された回数の合計で、外した分は引いていません。いま保存されている♡の合計: <strong><?php echo esc_html( $fav_now ); ?></strong></p>
+      <p>「保存中」は、いまその求人を保存しているブラウザの数です（登録していない人も含む。同じブラウザは1回）。「保存された回数」は保存ボタンが押された回数の合計で、外した分は引いていません。いま保存されている数の合計: <strong><?php echo esc_html( $fav_now ); ?></strong></p>
       <table class="widefat striped">
-        <thead><tr><th>企業・求人</th><th style="width:110px">進んだ学生</th><th style="width:90px">♡保存中</th><th style="width:100px">♡された回数</th><th style="width:110px">クリック数</th><th style="width:150px">最後のクリック</th><th style="width:110px">確認日</th><th>元のページ</th></tr></thead>
+        <thead><tr><th>企業・求人</th><th style="width:110px">進んだ学生</th><th style="width:90px">保存中</th><th style="width:100px">保存された回数</th><th style="width:110px">クリック数</th><th style="width:150px">最後のクリック</th><th style="width:110px">確認日</th><th>元のページ</th></tr></thead>
         <tbody>
         <?php foreach ( zaito_remote_jobs() as $job ) :
             $s = isset( $stats[ $job['slug'] ] ) ? $stats[ $job['slug'] ] : array( 'clicks' => 0, 'members' => array(), 'last' => '' );

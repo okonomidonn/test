@@ -126,7 +126,7 @@ if ( ! $zaito_cond ) :
     if ( strtotime( $zaito_last ) >= strtotime( current_time( 'Y-m-d' ) . ' -14 days' ) ) {
         $zaito_news[] = array( '求人を' . $zaito_new_n . '件追加しました', date_i18n( 'n月j日', strtotime( $zaito_last ) ) . '・全' . count( $zaito_open ) . '件', home_url( '/?sort=new#zcards' ) );
     }
-    $zaito_news[] = array( '♡で求人を保存できます', 'マイページでいつでも見られます', home_url( '/mypage/' ) );
+    $zaito_news[] = array( '気になる求人を保存できます', 'マイページでいつでも見られます', home_url( '/mypage/' ) );
     $zaito_news[] = array( '時給や学生OKで絞り込み', '押す前に件数が分かります', '#zrefine' );
     $zaito_news[] = array( '出社なしの求人だけを掲載', '運営が確かめていること', home_url( '/kijun/' ) );
     $zaito_news_json = wp_json_encode( $zaito_news, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
@@ -183,7 +183,7 @@ if ( ! $zaito_cond ) :
         <button type="button" data-k="pay" data-v="1200" aria-pressed="false">時給1,200円〜<small></small></button>
         <button type="button" data-k="pay" data-v="1500" aria-pressed="false">時給1,500円〜<small></small></button>
         <button type="button" data-k="pay" data-v="2000" aria-pressed="false">時給2,000円〜<small></small></button>
-        <button type="button" class="qfav" data-k="fav" data-v="1" aria-pressed="false"><span class="ms" aria-hidden="true">favorite</span>保存した求人<small></small></button>
+        <button type="button" class="qfav" data-k="fav" data-v="1" aria-pressed="false"><span class="ms" aria-hidden="true">bookmark</span>保存した求人<small></small></button>
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 /* Lucian UX/UI Prompt #022 · MIT License (c) 2026 Seokwoooo · https://lucianlabs.dev/uxui-prompt/#022 */
 /*
- * 保存（♡）ボタン（[data-fav].u022）の見た目。保存そのものは lp/fav.js が行い、aria-pressed を切り替える。
- * ここでは aria-pressed に合わせてハートを塗り、押して保存したときだけはじける動きを出す。
+ * 保存（しおり）ボタン（[data-fav].u022）の見た目。保存そのものは lp/fav.js が行い、aria-pressed を切り替える。
+ * ここでは aria-pressed に合わせてしおりを塗り、押して保存したときだけはじける動きを出す。
  * 求人ページの「◯人が保存しています」（.u022-meta）は、押すたびに数字を1つ回して増減させる。
  */
 (function () {
