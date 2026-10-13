@@ -106,13 +106,44 @@ $zaito_card = function ( $j ) {
         </div>
       </a>
       <?php if ( empty( $j['closed'] ) ) : ?>
-        <button type="button" class="fav" data-fav="<?php echo esc_attr( $j['slug'] ); ?>" aria-pressed="false" aria-label="<?php echo esc_attr( $j['title'] ); ?>を保存"><span class="ms" aria-hidden="true">favorite</span></button>
+        <button type="button" class="fav u022" data-fav="<?php echo esc_attr( $j['slug'] ); ?>" aria-pressed="false" aria-label="<?php echo esc_attr( $j['title'] ); ?>を保存"><?php echo zaito_u022_heart(); // 固定のSVGのみ ?></button>
       <?php endif; ?>
     </li>
     <?php
 };
 ?>
 <body>
+<?php
+if ( ! $zaito_cond ) :
+    // トップページのお知らせの帯（lp/u073.*）。新着は、最後に追加した日から2週間だけ出す。
+    $zaito_last  = max( array_map( function ( $j ) {
+        return ! empty( $j['listed'] ) ? $j['listed'] : $j['checked'];
+    }, $zaito_open ) );
+    $zaito_new_n = count( array_filter( $zaito_open, function ( $j ) use ( $zaito_last ) {
+        return ( ! empty( $j['listed'] ) ? $j['listed'] : $j['checked'] ) === $zaito_last;
+    } ) );
+    $zaito_news  = array();
+    if ( strtotime( $zaito_last ) >= strtotime( current_time( 'Y-m-d' ) . ' -14 days' ) ) {
+        $zaito_news[] = array( '求人を' . $zaito_new_n . '件追加しました', date_i18n( 'n月j日', strtotime( $zaito_last ) ) . '・全' . count( $zaito_open ) . '件', home_url( '/?sort=new#zcards' ) );
+    }
+    $zaito_news[] = array( '♡で求人を保存できます', 'マイページでいつでも見られます', home_url( '/mypage/' ) );
+    $zaito_news[] = array( '時給や学生OKで絞り込み', '押す前に件数が分かります', '#zrefine' );
+    $zaito_news[] = array( '出社なしの求人だけを掲載', '運営が確かめていること', home_url( '/kijun/' ) );
+    $zaito_news_json = wp_json_encode( $zaito_news, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+    ?>
+<link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u073.css' ) ); ?>">
+<div class="u073" data-items="<?php echo esc_attr( $zaito_news_json ); ?>" data-ver="<?php echo esc_attr( substr( md5( $zaito_news_json ), 0, 10 ) ); ?>"><div>
+  <div class="u073-bar" role="region" aria-label="お知らせ" aria-roledescription="切り替わるお知らせ">
+    <div class="u073-in">
+      <span class="u073-tag">お知らせ</span>
+      <div class="u073-msgs" aria-live="polite"></div>
+      <span class="u073-segs" aria-hidden="true"></span>
+      <button class="u073-b u073-nx" type="button" aria-label="次のお知らせ"><svg viewBox="0 0 14 14"><path d="M5 3l4 4-4 4"/></svg></button>
+      <button class="u073-b u073-x" type="button" aria-label="お知らせを閉じる"><svg viewBox="0 0 14 14"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7"/></svg></button>
+    </div>
+  </div>
+</div></div>
+<?php endif; ?>
 <?php zaito_remote_header(); ?>
 
 <section class="hero">
@@ -142,7 +173,7 @@ $zaito_card = function ( $j ) {
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
-    <div class="refine" role="group" aria-label="条件で絞り込む">
+    <div class="refine" id="zrefine" role="group" aria-label="条件で絞り込む">
       <span class="rl">条件</span>
       <div class="qchips">
         <button type="button" data-k="who" data-v="student" aria-pressed="false">学生OK<small></small></button>
@@ -266,6 +297,9 @@ $zaito_card = function ( $j ) {
 </main>
 
 <?php zaito_remote_footer(); ?>
+<link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u022.css' ) ); ?>">
+<script src="<?php echo esc_url( zaito_lp_asset( 'u022.js' ) ); ?>"></script>
+<?php if ( ! $zaito_cond ) : ?><script src="<?php echo esc_url( zaito_lp_asset( 'u073.js' ) ); ?>"></script><?php endif; ?>
 <div class="sbar" id="zbar" hidden>
   <p><b>新着の在宅求人をメールで</b>登録無料・メールアドレスだけ</p>
   <a class="btn btn-p" href="#signup" id="zbargo">登録する</a>

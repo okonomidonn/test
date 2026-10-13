@@ -104,7 +104,9 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         <?php else : ?>
           <a class="btn btn-p btn-lg" id="zgo" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow">応募ページへ進む<span class="ms" aria-hidden="true">open_in_new</span></a>
           <p class="cap"><?php echo esc_html( $zaito_j['company'] ); ?>の募集ページに移動します</p>
-          <button type="button" class="btn btn-g fav-wide" data-fav="<?php echo esc_attr( $zaito_j['slug'] ); ?>" aria-pressed="false"><span class="ms" aria-hidden="true">favorite</span><span class="lb">保存する</span></button>
+          <button type="button" class="btn btn-g fav-wide u022" data-fav="<?php echo esc_attr( $zaito_j['slug'] ); ?>" aria-pressed="false"><span class="u022-ico"><?php echo zaito_u022_heart(); // 固定のSVGのみ ?></span><span class="lb">保存する</span></button>
+          <?php $zaito_favn = function_exists( 'zaito_fav_count' ) ? zaito_fav_count( $zaito_j['slug'] ) : 0; ?>
+          <p class="u022-meta" data-fav-count="<?php echo esc_attr( $zaito_j['slug'] ); ?>" data-n="<?php echo esc_attr( $zaito_favn ); ?>"<?php echo $zaito_favn ? '' : ' hidden'; ?>><span class="u022-roll" aria-live="polite"><span><?php echo esc_html( $zaito_favn ); ?></span><span></span></span>人が保存しています</p>
 
           <form class="signup<?php echo $zaito_error ? ' on' : ''; ?>" id="zsignup" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
             <b>無料登録して応募ページへ</b>
@@ -148,6 +150,8 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 </div>
 
 <?php zaito_remote_footer(); ?>
+<link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u022.css' ) ); ?>">
+<script src="<?php echo esc_url( zaito_lp_asset( 'u022.js' ) ); ?>"></script>
 <?php if ( ! $zaito_closed ) : ?>
 <script>
 (function () {

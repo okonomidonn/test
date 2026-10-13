@@ -207,6 +207,14 @@ function zaito_fav_record( $slug, $on, $bid ) {
 }
 
 /**
+ * いまその求人を保存しているブラウザの数（求人ページの「◯人が保存」）。
+ */
+function zaito_fav_count( $slug ) {
+    $stats = get_option( 'zaito_fav_stats', array() );
+    return is_array( $stats ) && isset( $stats[ $slug ]['saved'] ) ? count( $stats[ $slug ]['saved'] ) : 0;
+}
+
+/**
  * 同じIPからの♡は10分に60回まで数える（連打やボットで数字がふくらまないように）。
  */
 function zaito_fav_rate_limited() {

@@ -123,6 +123,29 @@ if ( ! function_exists( 'zaito_remote_card_attrs' ) ) {
     }
 }
 
+if ( ! function_exists( 'zaito_u022_heart' ) ) {
+    /**
+     * 保存（♡）ボタンの中身。押すとハートがはねて、輪と小さな点がはじける（lp/u022.css・u022.js）。
+     */
+    function zaito_u022_heart() {
+        static $n = 0;
+        $n++;
+        $dots = array(
+            array( 0, '#FF4D6D', '#FFB26B' ), array( 51, '#8B6CFF', '#FF7A93' ), array( 103, '#FFB547', '#22C3A6' ),
+            array( 154, '#FF4D6D', '#8B6CFF' ), array( 206, '#22C3A6', '#FFB547' ), array( 257, '#FF7A93', '#3D8BFF' ),
+            array( 309, '#3D8BFF', '#FF4D6D' ),
+        );
+        $d   = 'M26 45S5 33 5 18.5C5 11.6 10.4 7 16.4 7c4.3 0 7.6 2.3 9.6 5.6C28 9.3 31.3 7 35.6 7 41.6 7 47 11.6 47 18.5 47 33 26 45 26 45z';
+        $out = '<span class="u022-fx" aria-hidden="true"><span class="u022-ring"></span>';
+        foreach ( $dots as $dot ) {
+            $out .= '<span class="u022-dot" style="--a:' . (int) $dot[0] . 'deg;--c:' . $dot[1] . ';--c2:' . $dot[2] . '"><i></i><i></i></span>';
+        }
+        $out .= '<span class="u022-heart"><svg viewBox="0 0 52 52"><defs><linearGradient id="u022-g' . $n . '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF7A93"/><stop offset="1" stop-color="#F0264D"/></linearGradient></defs>'
+            . '<path class="u022-f" fill="url(#u022-g' . $n . ')" d="' . $d . '"/><path class="u022-o" d="' . $d . '"/></svg></span></span>';
+        return $out;
+    }
+}
+
 if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     /**
      * 登録直後に聞く任意の希望条件（立場・学年・学校名・やってみたい仕事・働ける日数・希望の時給）の入力欄。
