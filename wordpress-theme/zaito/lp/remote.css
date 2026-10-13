@@ -412,15 +412,17 @@ body.has-sbar{padding-bottom:96px}
  .band .ms{font-size:22px}
  .card .body{padding:14px 16px 16px;gap:8px}
  .how{margin-top:56px}
- .how ol{grid-template-columns:1fr}
+ .how ol{grid-template-columns:minmax(0,1fr)}
  .biz{padding:20px}
  .co-sec{margin-top:56px}
  .conds{margin-top:48px}
  .conds-list{grid-template-columns:repeat(2,minmax(0,1fr))}
  .conds-list a{padding:12px;font-size:14px;gap:6px}
- .signup-band{grid-template-columns:1fr;gap:24px;padding:24px 18px;margin-top:56px}
+ .signup-band{grid-template-columns:minmax(0,1fr);gap:24px;padding:24px 18px;margin-top:56px}
+ .signup-band>*,.sb-form>*{min-width:0}
  .sb-form{padding:18px}
  .sb-row{flex-direction:column}
+ .sb-row input{flex:none;width:100%;height:56px}
  .sb-row .btn{width:100%}
  .mini-cta{padding:18px 16px}
  .refine{display:block;margin:-6px -20px 0;padding:0 0 18px}
@@ -434,12 +436,12 @@ body.has-sbar{padding-bottom:96px}
  #zminiform input{flex:none;height:52px}
  #zminiform .btn{width:100%}
  .sbar{bottom:calc(10px + env(safe-area-inset-bottom))}
- .why,.flow4,.rules,.row2{grid-template-columns:1fr}
- .contact-in{grid-template-columns:1fr;gap:24px;padding:24px 18px;margin:0 -4px}
+ .why,.flow4,.rules,.row2{grid-template-columns:minmax(0,1fr)}
+ .contact-in{grid-template-columns:minmax(0,1fr);gap:24px;padding:24px 18px;margin:0 -4px}
  .cta-row .btn{flex:1 1 100%}
  .dg{grid-template-columns:minmax(0,1fr);gap:0}
  .dg>*{min-width:0}
- .facts div{grid-template-columns:1fr;gap:2px}
+ .facts div{grid-template-columns:minmax(0,1fr);gap:2px}
  .lead,.blk p,.steps li{font-size:16px}
  .side{position:static;margin-top:40px}
  .spbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--z-line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
