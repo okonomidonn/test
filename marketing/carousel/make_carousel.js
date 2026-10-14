@@ -156,7 +156,7 @@ zaitoの3つの特長
 
 求人はプロフィールのリンク（zaito-work.com）から
 
-#在宅バイト #在宅ワーク #完全在宅 #リモートワーク #フルリモート #大学生バイト #長期インターン #主婦の在宅ワーク #未経験OK #求人`;
+#在宅ワーク #完全在宅 #在宅バイト #主婦の在宅ワーク #大学生バイト`;
   fs.writeFileSync(path.join(__dirname, 'キャプション.md'), `# Instagram 紹介カルーセル（${new Date().toISOString().slice(0, 10)}・求人${N}件の時点）\n\n画像: slides/01.png 〜 08.png を順番に選んで、1つの投稿にする。\n\n## キャプション\n\n\`\`\`\n${caption}\n\`\`\`\n\n## 投稿のコツ\n- 投稿したら、プロフィールの一番上に固定する（はじめて来た人が最初に見る投稿にする）\n- プロフィールのリンクは https://zaito-work.com/?utm_source=instagram&utm_medium=social\n- 求人の数が大きく変わったら、Claudeに「カルーセルを作り直して」と頼む\n`);
   console.log('slides', SLIDES.length, 'jobs', N, stat);
 })();

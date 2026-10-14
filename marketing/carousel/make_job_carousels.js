@@ -27,7 +27,7 @@ const pick = (list, n, maxPer = 2) => {
 const THEMES = [
   { key: 'gakusei', kicker: '大学生・院生へ', title: '学生OKの\n完全在宅バイト', link: '/zaitaku/gakusei/', filter: j => j.student, tag: '#大学生バイト #長期インターン #リモートインターン' },
   { key: 'mikeiken', kicker: 'はじめての在宅ワークに', title: '未経験OKの\n完全在宅の仕事', link: '/zaitaku/mikeiken/', filter: j => j.newbie, tag: '#未経験OK #在宅ワーク初心者 #主婦の在宅ワーク' },
-  { key: 'pay1500', kicker: 'しっかり稼ぎたい人へ', title: '時給1,500円以上の\n完全在宅の仕事', link: '/?pay=1500', filter: j => payNum(j) >= 1500, tag: '#高時給バイト #在宅ワーク #副業' },
+  { key: 'pay1500', kicker: 'しっかり稼ぎたい人へ', title: '時給1,500円以上の\n完全在宅の仕事', link: '/?pay=1500', filter: j => payNum(j) >= 1500, tag: '#在宅バイト #高時給バイト #副業' },
   { key: 'tanjikan', kicker: '授業や家事と両立したい人へ', title: '週1〜2日でOKの\n完全在宅の仕事', link: '/?days=2', filter: j => j.days > 0 && j.days <= 2, tag: '#短時間バイト #扶養内 #スキマ時間' },
   { key: 'jimu', kicker: '事務・サポートの仕事を探している人へ', title: '出社なしの\n事務・サポート', link: '/zaitaku/jimu/', filter: j => j.group === '事務・サポート', maxPer: 5, tag: '#在宅事務 #オンライン秘書 #カスタマーサポート' },
 ];
@@ -127,7 +127,7 @@ function ctaSlide(t, n) {
     for (let i = 0; i < list.length; i++) await shot(jobSlide(list[i], i + 2, n), path.join(dir, String(i + 2).padStart(2, '0') + '.png'));
     await shot(ctaSlide(t, n), path.join(dir, String(n).padStart(2, '0') + '.png'));
     const rows = list.map((j, i) => `${i + 1}. ${j.title}（${j.company}）\n　${j.pay ? j.pay : '報酬は募集ページで確認'}${j.hours ? '／' + short(j.hours, 30) : ''}`).join('\n');
-    const caption = `${t.title.replace('\n', '')}、いま${t.total}件。その中から${list.length}件を紹介します。\n\n${rows}\n\nどれも、運営が募集ページを読んでチェックした完全在宅の求人です。\n応募は、プロフィールのリンク（zaito-work.com）から各求人のページへ。\n\n※募集内容は変わることがあります。応募前に元の募集ページも確認してください。\n\n#在宅バイト #完全在宅 #在宅ワーク #リモートワーク ${t.tag}`;
+    const caption = `${t.title.replace('\n', '')}、いま${t.total}件。その中から${list.length}件を紹介します。\n\n${rows}\n\nどれも、運営が募集ページを読んでチェックした完全在宅の求人です。\n応募は、プロフィールのリンク（zaito-work.com）から各求人のページへ。\n\n※募集内容は変わることがあります。応募前に元の募集ページも確認してください。\n\n#在宅ワーク #完全在宅 ${t.tag}`;
     md += `---\n\n## ${t.title.replace('\n', '')}（jobs/${t.key}/・${n}枚）\nリンク先（プロフィールのリンクを一時的に変えるとき）: https://zaito-work.com${t.link}${t.link.includes('?') ? '&' : '?'}utm_source=instagram&utm_medium=social&utm_campaign=carousel_${t.key}\n\n\`\`\`\n${caption}\n\`\`\`\n\n`;
     console.log('wrote', t.key, n, 'slides', list.map(j => j.slug).join(','));
   }

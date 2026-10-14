@@ -26,6 +26,8 @@ const sleep = ms => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0,
 const queue = JSON.parse(fs.readFileSync(QPATH, 'utf8'));
 const item = queue.find(q => !q.posted);
 if (!item) { console.log('投稿するものがありません（全部投稿済み）'); process.exit(0); }
+const tagCount = (item.caption.match(/#[^\s#]+/g) || []).length;
+if (tagCount > 5) throw new Error('ハッシュタグは5個までです（' + item.id + ' は' + tagCount + '個）');
 console.log((DRY ? '[確認だけ] ' : '') + '投稿するもの: ' + item.id + '（' + item.images.length + '枚）');
 
 // 1. 画像がサイトから見えるか（Instagramが取りに来られるか）
