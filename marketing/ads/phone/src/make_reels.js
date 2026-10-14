@@ -70,12 +70,12 @@ body{width:${W}px;height:${H}px;overflow:hidden;font-family:'Noto Sans JP',sans-
 .phone .notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:130px;height:34px;border-radius:20px;background:#1b1b22;z-index:2}
 .badges{display:flex;justify-content:center;gap:22px;margin-top:34px}
 .badge{font-size:36px;font-weight:900;color:#1A1650;background:#FFE600;padding:12px 26px;border-radius:14px;border:5px solid #1A1650;box-shadow:6px 6px 0 #1A1650}
-.end{position:absolute;left:0;right:0;top:540px;display:flex;flex-direction:column;align-items:center;gap:22px}
-.logo{font-family:'Outfit';font-weight:800;font-size:200px;letter-spacing:-.05em;color:#fff;line-height:1;text-shadow:0 8px 0 #1A1650}
-.logo span{color:#FFE600}
-.lead{font-size:64px;font-weight:900;color:#fff;text-shadow:0 4px 0 #1A1650;text-align:center;line-height:1.45}
-.free{margin-top:26px;font-size:44px;font-weight:900;color:#3D5AFE;background:#fff;box-shadow:6px 6px 0 #1A1650;padding:16px 44px;border-radius:999px}
-.note{margin-top:36px;font-size:26px;font-weight:700;color:rgba(255,255,255,.85)}
+.end{position:absolute;left:90px;right:90px;top:480px;display:flex;flex-direction:column;align-items:center;gap:22px;background:#fff;border-radius:56px;padding:80px 40px 70px;box-shadow:14px 14px 0 #1A1650}
+.logo{font-family:'Outfit';font-weight:800;font-size:200px;letter-spacing:-.05em;color:#0B1530;line-height:1}
+.logo span{color:#3D5AFE}
+.lead{font-size:64px;font-weight:900;color:#0B1530;text-align:center;line-height:1.45}
+.free{margin-top:26px;font-size:44px;font-weight:900;color:#fff;background:#3D5AFE;padding:16px 44px;border-radius:999px}
+.note{margin-top:36px;font-size:26px;font-weight:700;color:#5A6380}
 </style></head><body><div class="wrap"><div class="dots"></div>
 <div class="ring" style="width:620px;height:620px;right:-200px;top:-200px"></div><div class="ring" style="width:360px;height:360px;left:-140px;top:900px"></div>
 <div class="copy"><div class="tag">${esc(ad.tag)}</div>${ln}<div class="badges">${ad.badges.map(b=>`<span class="badge">${esc(b)}</span>`).join('')}</div></div>
