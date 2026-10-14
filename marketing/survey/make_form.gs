@@ -10,10 +10,7 @@ function makeSurvey() {
     '回答は、在宅の仕事を探しやすくするための参考にだけ使います。'
   );
   form.setProgressBar(true);
-  form.setConfirmationMessage(
-    'ご回答ありがとうございました。\n' +
-    '完全在宅の仕事だけを集めた求人サイト zaito もよければ見てみてください。\nhttps://zaito-work.com/'
-  );
+  form.setConfirmationMessage('ご回答ありがとうございました。');
 
   // 1ページ目: 職業（学生だけ学校の質問へ進む）
   const job = form.addMultipleChoiceItem().setTitle('現在の職業を教えてください').setRequired(true);
