@@ -5,6 +5,7 @@
 ## 結論
 
 - **最初の営業先は「串と〆シ エソラ」**。AIにすでに推薦され始めている（参考値15%）一方、看板の「国立野菜」「〆」では未推薦。定休日・L.O.・席数の不一致、メニューがJS描画でAIに読めない、店名の読みが伝わらない、など**具体的で直しやすい課題**が揃っている
+- **最初の10店は無料モニター（3か月・条件付き）で実績づくり**（07に条件と自分側の費用目安）
 - 次点は「むろ」（推薦0%、ランチ・定休日の矛盾）。えにし家は既に整っており優先度低
 - ChatGPT（OpenAI API・gpt-5.5・検索あり）で22回答を測定（08）：えにし家32%、エソラ14%、むろ9%。**ChatGPTは店の公式サイトを引用して推薦する**ことを確認。Geminiは未測定（API残高0）
 
@@ -25,6 +26,7 @@
 | [06_無料GEO診断レポート_エソラ.md](./06_無料GEO診断レポート_エソラ.md) | 店主に渡す無料診断レポート |
 | [print/esola_diagnosis_report.pdf](./print/esola_diagnosis_report.pdf) | 診断レポートの印刷用PDF（A4・5ページ、費用対効果の試算つき）。連絡先を入れて作り直す: `node print/build_pdf.js 担当 電話 メール` |
 | [measure_api.py](./measure_api.py) | ChatGPT（OpenAI API）・Gemini APIでの自動測定（Web検索あり・10問×3回）。`OPENAI_API_KEY` / `GEMINI_API_KEY` が必要 |
+| [print/hearing_sheet.pdf](./print/hearing_sheet.pdf) | 印刷用ヒアリングシート（A4・2ページ、店名空欄の汎用版、無料モニター条件の確認欄つき）。再出力: `node print/render_pdf.js print/hearing_sheet.html` |
 | [07_営業資料_エソラ.md](./07_営業資料_エソラ.md) | DM文面、説明の流れ、ヒアリング、料金案、反論対応、契約後スケジュール |
 
 ## 未確認のまま残っている項目
