@@ -68,7 +68,7 @@ def post_json(url, body, headers):
 
 
 def ask_openai(question):
-    model = os.environ.get("OPENAI_MODEL", "gpt-5")
+    model = os.environ.get("OPENAI_MODEL", "gpt-5.5")
     body = {"model": model, "input": question, "tools": [{"type": "web_search"}]}
     key = os.environ.get("OPENAI_API_KEY")
     data = post_json("https://api.openai.com/v1/responses", body,
@@ -104,6 +104,7 @@ def extract_shops(text):
     names = []
     for m in re.finditer(r"\*\*([^*\n]{2,40})\*\*|^\s*(?:#+|\d+[.)．]|[-・*])\s*([^\n:：（(|]{2,30})", text, re.M):
         name = (m.group(1) or m.group(2) or "").replace("*", "").strip(" 「」『』:：")
+        name = re.sub(r"^\d+[.)．]\s*", "", name)
         if name and name not in names:
             names.append(name)
     return names
