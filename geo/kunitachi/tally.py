@@ -20,7 +20,8 @@ def normalize(name):
 
 
 def main(path):
-    rows = list(csv.DictReader(open(path, encoding="utf-8")))
+    # API測定でエラーになった行は回答数に含めない
+    rows = [r for r in csv.DictReader(open(path, encoding="utf-8")) if not r["notes"].startswith("ERROR")]
     groups = {"全体": rows}
     for row in rows:
         groups.setdefault(f"{row['ai_service']} / {row['mode']}", []).append(row)
@@ -29,9 +30,10 @@ def main(path):
         n = len(group)
         print(f"== {label}（{n}回答）")
         for col, shop in TARGETS.items():
-            ranks = [int(r[col]) for r in group if r[col].strip()]
+            hits = [r[col].strip() for r in group if r[col].strip()]
+            ranks = [int(h) for h in hits if h.isdigit()]
             avg = f"平均順位 {sum(ranks) / len(ranks):.1f}" if ranks else "-"
-            print(f"  {shop}: {len(ranks)}/{n} = {len(ranks) / n * 100:.0f}%  {avg}")
+            print(f"  {shop}: {len(hits)}/{n} = {len(hits) / n * 100:.0f}%  {avg}")
 
     counts = Counter()
     for row in rows:

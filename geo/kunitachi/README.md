@@ -21,6 +21,8 @@
 | [05_改善施策_優先順位.md](./05_改善施策_優先順位.md) | 優先順位付き施策、FAQ・Googleビジネスプロフィール説明文の文案 |
 | [esola_restaurant_jsonld_draft.json](./esola_restaurant_jsonld_draft.json) | 構造化データの下書き（店主確認後に確定） |
 | [06_無料GEO診断レポート_エソラ.md](./06_無料GEO診断レポート_エソラ.md) | 店主に渡す無料診断レポート |
+| [print/esola_diagnosis_report.pdf](./print/esola_diagnosis_report.pdf) | 診断レポートの印刷用PDF（A4・3ページ）。連絡先を入れて作り直す: `node print/build_pdf.js 担当 電話 メール` |
+| [measure_api.py](./measure_api.py) | ChatGPT（OpenAI API）・Gemini APIでの自動測定（Web検索あり・10問×3回）。`OPENAI_API_KEY` / `GEMINI_API_KEY` が必要 |
 | [07_営業資料_エソラ.md](./07_営業資料_エソラ.md) | DM文面、説明の流れ、ヒアリング、料金案、反論対応、契約後スケジュール |
 
 ## 未確認のまま残っている項目

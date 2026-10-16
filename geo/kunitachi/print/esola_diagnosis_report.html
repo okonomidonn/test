@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>AI検索 診断レポート｜串と〆シ エソラ様</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 16mm 16mm 18mm; }
+  :root { --ink: #1f2328; --sub: #57606a; --line: #d0d7de; --accent: #9a3412; --accent-bg: #fff7ed; --ok: #166534; --ok-bg: #f0fdf4; --ng-bg: #f6f8fa; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); background: #fff; font-family: "Noto Sans JP", "WenQuanYi Zen Hei", sans-serif; font-size: 10pt; line-height: 1.6; }
+  h1 { font-size: 20pt; margin: 0 0 2mm; line-height: 1.3; }
+  h2 { font-size: 13pt; margin: 6mm 0 2.5mm; padding-bottom: 1.5mm; border-bottom: 2px solid var(--ink); }
+  h3 { font-size: 11pt; margin: 5mm 0 2mm; }
+  p { margin: 0 0 2.5mm; }
+  .meta { color: var(--sub); font-size: 9.5pt; }
+  .cover { border-left: 4px solid var(--accent); padding: 1mm 0 1mm 5mm; margin-bottom: 4mm; }
+  .lead { background: var(--accent-bg); border-radius: 2mm; padding: 4mm 5mm; margin: 4mm 0; }
+  .lead strong { color: var(--accent); }
+  .kpi { display: flex; gap: 4mm; margin: 4mm 0; }
+  .kpi div { flex: 1; border: 1px solid var(--line); border-radius: 2mm; padding: 3mm 4mm; }
+  .kpi b { display: block; font-size: 18pt; line-height: 1.2; }
+  .kpi span { color: var(--sub); font-size: 9pt; }
+  table { width: 100%; border-collapse: collapse; margin: 2mm 0 3mm; font-size: 9.5pt; page-break-inside: avoid; }
+  th, td { border: 1px solid var(--line); padding: 1.2mm 2.2mm; text-align: left; vertical-align: top; }
+  th { background: var(--ng-bg); font-weight: 700; }
+  td.hit { background: var(--ok-bg); color: var(--ok); font-weight: 700; white-space: nowrap; }
+  td.miss { color: var(--sub); white-space: nowrap; }
+  .note { color: var(--sub); font-size: 8.5pt; }
+  ul, ol { margin: 0 0 2.5mm; padding-left: 6mm; }
+  li { margin-bottom: 1mm; }
+  .issue { page-break-inside: avoid; }
+  .page-break { page-break-before: always; }
+  .contact { margin-top: 8mm; border: 1px solid var(--ink); border-radius: 2mm; padding: 4mm 5mm; page-break-inside: avoid; }
+  .contact .row { display: flex; gap: 3mm; margin: 2.5mm 0; }
+  .contact .label { width: 22mm; color: var(--sub); }
+  .contact .fill { flex: 1; border-bottom: 1px solid var(--line); min-height: 6mm; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="meta">無料診断レポート</div>
+  <h1>串と〆シ エソラ様<br>AI検索 診断レポート</h1>
+  <div class="meta">調査日：2026年10月16日</div>
+</div>
+
+<h2>はじめに：お客様の店探しが変わっています</h2>
+<p>「国立で焼き鳥がおいしい店は？」——最近はこうした質問を、Googleや食べログだけでなく、ChatGPTやGeminiなどのAIに直接たずねる方が増えています。AIはインターネット上の情報を読み、条件に合いそうなお店を数店だけ選んで答えます。<strong>そこで名前が挙がらないお店は、比較の候補にすら入りません。</strong></p>
+<p>本レポートでは、エソラ様がAIの回答でどの程度名前を挙げられているかを調べ、改善できる点をまとめました。</p>
+
+<h2>1. 調査結果のまとめ</h2>
+<div class="kpi">
+  <div><b>20回中 3回</b><span>エソラ様の名前が挙がった回数（15%）</span></div>
+  <div><b>1位</b><span>「一人飲み」の質問での紹介順</span></div>
+  <div><b>0回</b><span>「地元野菜」「デート」「隠れ家」での紹介</span></div>
+</div>
+<div class="lead">開業から約1年の新しいお店としては、良いスタートです。ただし、<strong>お店の一番の強みに関する質問では、一度も名前が挙がっていません。</strong></div>
+
+<table>
+  <tr><th style="width:44%">お客様の質問</th><th style="width:18%">エソラ様</th><th>名前が挙がった主なお店</th></tr>
+  <tr><td>国立で焼き鳥がおいしいお店は？</td><td class="hit">3番目に紹介</td><td>焼鳥ことのは、えにし家</td></tr>
+  <tr><td>国立駅近くで一人飲みにおすすめの店は？</td><td class="hit">1番目に紹介</td><td>大衆酒場しんさく、小樽食堂</td></tr>
+  <tr><td>国立で落ち着いて飲める居酒屋は？</td><td class="hit">3番目に紹介</td><td>居酒屋とむ、共和国</td></tr>
+  <tr><td>国立で地元野菜を使った料理が食べられる店は？</td><td class="miss">紹介なし</td><td>くにたち村酒場、クラフト酒場クニタチカ</td></tr>
+  <tr><td>国立でデートにおすすめの居酒屋は？</td><td class="miss">紹介なし</td><td>萬月、居酒屋とむ、肴や</td></tr>
+  <tr><td>国立で料理がおいしい隠れ家的な居酒屋は？</td><td class="miss">紹介なし</td><td>肴や、萬月、小料理なごみ</td></tr>
+  <tr><td>国立で少人数の飲み会におすすめの店は？</td><td class="miss">紹介なし</td><td>とりいちず、居酒屋とむ</td></tr>
+  <tr><td>国立駅周辺でおすすめの居酒屋を5店教えて</td><td class="miss">紹介なし</td><td>居酒屋とむ、小樽食堂、えにし家</td></tr>
+</table>
+<p class="note">測定方法：店名を含まない10の質問を、Web検索とAI要約を組み合わせた検索ツールで2通りの設定で実行（計20回答）。ChatGPT・Geminiの一般向けアプリでの測定は、ご希望があれば別途実施します。AIの回答は毎回変わるため、数値は目安です。</p>
+
+<h2 class="page-break">2. 見つかった課題</h2>
+
+<div class="issue">
+<h3>課題① お店の情報がサイトによって違う</h3>
+<table>
+  <tr><th style="width:22%">項目</th><th style="width:28%">公式サイト</th><th>他のサイト</th></tr>
+  <tr><td>定休日</td><td>日曜日</td><td>「不定休」と書かれているサイトあり（地域情報サイト「いいね！国立」）</td></tr>
+  <tr><td>ラストオーダー</td><td>料理 22:00</td><td>22:30 と書かれているサイトあり</td></tr>
+  <tr><td>席数</td><td>18席</td><td>17席（カウンター9席＋4名テーブル2卓）と書かれているサイトあり</td></tr>
+</table>
+<p>AIは複数のサイトを読んで答えるため、情報が食い違っていると<strong>「日曜も営業している」と誤って案内したり、信頼性が低いと判断して紹介を控えたりする</strong>恐れがあります。</p>
+</div>
+
+<div class="issue">
+<h3>課題② メニューがAIに読まれていない</h3>
+<p>公式サイトのお品書きは、ページを開いた後にプログラムで表示する仕組みになっています。人が見ると問題なく表示されますが、<strong>AIがサイトを読み取る際にはメニュー名も価格も見えていない状態</strong>です。つくね・〆の鶏スープ・SORACHI 1984 など、魅力的なメニューが伝わっていません。</p>
+</div>
+
+<div class="issue">
+<h3>課題③ お店の魅力が公式サイトに書かれていない</h3>
+<p>地域メディア「くにたちNAVI」の取材記事には、次のような魅力が書かれています。</p>
+<ul>
+  <li>吉祥寺で12年修業した店主が、カウンター越しに会話できる店として開業</li>
+  <li>数種類の部位をブレンドしたつくねに、青梅産の卵</li>
+  <li>国立界隈の野菜を積極的に使用、季節料理は約2週間ごとに入れ替え</li>
+  <li>「串を頼まなくても、一品と一杯だけでも気軽に」</li>
+</ul>
+<p><strong>これらは公式サイトにはほとんど載っていません。</strong>AIは「一人飲み」「デート」「〆がおいしい」「地元野菜」といった質問に答えるとき、お店がそれに当てはまると<strong>文章で書かれているか</strong>を手がかりにします。</p>
+</div>
+
+<div class="issue">
+<h3>課題④ 店名がAIに伝わりにくい</h3>
+<ul>
+  <li>公式サイトの店舗情報欄は「エソラ」のみ</li>
+  <li>「〆」を「メ」と読む（くしとメシ）ことが、どこにも書かれていない</li>
+  <li>食べログの英語ページでは "Kushi to Me Shiesora" と表記</li>
+  <li>「エソラ」で検索すると、ワインビュッフェの「ESOLA」や「エソラ池袋」が先に表示される</li>
+</ul>
+</div>
+
+<div class="issue">
+<h3>課題⑤ 中身のない「ランチ」ページがある</h3>
+<p>ランチ営業はされていませんが、公式サイトに中身が空のランチページがあり、検索エンジン向けの一覧にも登録されています。</p>
+</div>
+
+<h2 class="page-break">3. 改善のご提案</h2>
+<table>
+  <tr><th style="width:8%">順番</th><th style="width:52%">やること</th><th>期待できること</th></tr>
+  <tr><td>1</td><td>定休日・営業時間・席数を確認し、公式サイト・食べログ・Googleマップ・Instagramで統一</td><td>誤案内の防止</td></tr>
+  <tr><td>2</td><td>店名を「串と〆シ（くしとメシ）エソラ」に統一し、英語表記も整える</td><td>AIや検索で、他の「エソラ」と区別される</td></tr>
+  <tr><td>3</td><td>Googleマップのお店情報（説明文・メニュー・写真・特徴）を整備</td><td>地図検索やAIアシスタントでの紹介につながる</td></tr>
+  <tr><td>4</td><td>公式サイトに、文字で読めるメニューと「こんな方におすすめ」「よくある質問」を追加</td><td>一人飲み・デート・〆・地元野菜の質問で紹介される材料が増える</td></tr>
+  <tr><td>5</td><td>店主のこだわり（つくね・卵・国立野菜・季節料理）を公式サイトに掲載</td><td>お店ならではの特徴がAIの回答に使われやすくなる</td></tr>
+  <tr><td>6</td><td>グルメサイト・地域メディアでの紹介を増やす</td><td>AIがよく参考にする情報源に載る</td></tr>
+</table>
+<p class="note">※ AIでの紹介や来店数の増加をお約束するものではありません。改善前後で同じ質問を測定し、変化をご報告します。</p>
+
+<h2>4. 今すぐできること（無料）</h2>
+<ol>
+  <li>Googleマップでお店を検索し、定休日と営業時間が正しいか確認する</li>
+  <li>Instagramのプロフィール欄に「定休日：日曜」「串と〆シ（くしとメシ）」と書く</li>
+  <li>「いいね！国立」の記事の定休日（不定休と記載）について、訂正を依頼する</li>
+</ol>
+
+<div class="contact">
+  <p><strong>ご質問・ご相談はお気軽にどうぞ</strong></p>
+  <div class="row"><span class="label">担当</span><span class="fill">{{担当}}</span></div>
+  <div class="row"><span class="label">電話</span><span class="fill">{{電話}}</span></div>
+  <div class="row"><span class="label">メール</span><span class="fill">{{メール}}</span></div>
+</div>
+
+</body>
+</html>
