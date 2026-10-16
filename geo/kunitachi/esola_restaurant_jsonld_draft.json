@@ -1,0 +1,33 @@
+{
+  "_note": "下書き。openingHours・servesCuisine・priceRange は店主確認後に確定し、この _note キーは削除してから設置する。",
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "串と〆シ エソラ",
+  "alternateName": ["くしとメシ エソラ", "エソラ 国立", "Kushi to Meshi ESOLA"],
+  "url": "https://esola-kunitachi.com/",
+  "telephone": "+81-42-505-4200",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "東1-7-11 森田ビルB1F",
+    "addressLocality": "国立市",
+    "addressRegion": "東京都",
+    "addressCountry": "JP"
+  },
+  "servesCuisine": ["焼き鳥", "串焼き", "鶏料理", "居酒屋"],
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "17:00",
+      "closes": "23:00"
+    }
+  ],
+  "acceptsReservations": "https://yoyaku.tabelog.com/yoyaku/net_booking_form/index?rcd=13312891",
+  "hasMenu": "https://esola-kunitachi.com/food.html",
+  "sameAs": [
+    "https://www.instagram.com/esola1711/",
+    "https://tabelog.com/tokyo/A1325/A132503/13312891/"
+  ],
+  "foundingDate": "2025-08-26",
+  "description": "国立駅南口徒歩1分、炭火串焼きの居酒屋。山梨県産・健味どりの焼き鳥、国立野菜の串焼き、〆のご飯・麺料理。カウンター9席とテーブル席。"
+}
