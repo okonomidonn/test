@@ -27,6 +27,7 @@
 | [print/esola_diagnosis_report.pdf](./print/esola_diagnosis_report.pdf) | 診断レポートの印刷用PDF（A4・5ページ、費用対効果の試算つき）。連絡先を入れて作り直す: `node print/build_pdf.js 担当 電話 メール` |
 | [measure_api.py](./measure_api.py) | ChatGPT（OpenAI API）・Gemini APIでの自動測定（Web検索あり・10問×3回）。`OPENAI_API_KEY` / `GEMINI_API_KEY` が必要 |
 | [print/hearing_sheet.pdf](./print/hearing_sheet.pdf) | 印刷用ヒアリングシート（A4・2ページ、店名空欄の汎用版、無料モニター条件の確認欄つき）。再出力: `node print/render_pdf.js print/hearing_sheet.html` |
+| [09_競合調査と料金設計.md](./09_競合調査と料金設計.md) | 競合の料金・強み、サブスク要否、買い切り中心の料金案 |
 | [07_営業資料_エソラ.md](./07_営業資料_エソラ.md) | DM文面、説明の流れ、ヒアリング、料金案、反論対応、契約後スケジュール |
 
 ## 未確認のまま残っている項目
