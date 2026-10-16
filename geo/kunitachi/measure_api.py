@@ -87,7 +87,7 @@ def ask_openai(question):
 
 
 def ask_gemini(question):
-    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+    model = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
     body = {"contents": [{"role": "user", "parts": [{"text": question}]}], "tools": [{"google_search": {}}]}
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     key = os.environ.get("GEMINI_API_KEY")
