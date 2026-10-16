@@ -7,6 +7,9 @@ APIの回答は一般向けアプリの回答と一致するとは限らない�
   OPENAI_API_KEY=... GEMINI_API_KEY=... python3 geo/kunitachi/measure_api.py --runs 3
   （片方のキーだけでも実行可。モデルは OPENAI_MODEL / GEMINI_MODEL で変更）
 
+  キーを環境の「Network secrets」で登録した場合（プロキシが認証ヘッダーを付ける）:
+    python3 geo/kunitachi/measure_api.py --runs 3 --services gemini
+
 出力:
   measurement_log_<日付>_api.csv  … tally.py で集計できる形式
   raw_answers_<日付>_api.jsonl   … 回答全文と出典（推薦店舗の目視確認用）
@@ -67,8 +70,9 @@ def post_json(url, body, headers):
 def ask_openai(question):
     model = os.environ.get("OPENAI_MODEL", "gpt-5")
     body = {"model": model, "input": question, "tools": [{"type": "web_search"}]}
+    key = os.environ.get("OPENAI_API_KEY")
     data = post_json("https://api.openai.com/v1/responses", body,
-                     {"Authorization": f"Bearer {os.environ['OPENAI_API_KEY']}"})
+                     {"Authorization": f"Bearer {key}"} if key else {})
     text, sources, searched = [], [], False
     for item in data.get("output", []):
         if item.get("type") == "web_search_call":
@@ -86,7 +90,8 @@ def ask_gemini(question):
     model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
     body = {"contents": [{"role": "user", "parts": [{"text": question}]}], "tools": [{"google_search": {}}]}
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    data = post_json(url, body, {"x-goog-api-key": os.environ["GEMINI_API_KEY"]})
+    key = os.environ.get("GEMINI_API_KEY")
+    data = post_json(url, body, {"x-goog-api-key": key} if key else {})
     cand = (data.get("candidates") or [{}])[0]
     text = "\n".join(p.get("text", "") for p in cand.get("content", {}).get("parts", []))
     meta = cand.get("groundingMetadata", {}) or {}
@@ -115,15 +120,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=int, default=3)
     ap.add_argument("--outdir", default=str(Path(__file__).parent))
+    ap.add_argument("--services", help="openai,gemini のように指定。キーをNetwork secretsで登録した場合に使う")
     args = ap.parse_args()
 
+    if args.services:
+        wanted = set(args.services.split(","))
+    else:
+        wanted = {name for name, env in (("openai", "OPENAI_API_KEY"), ("gemini", "GEMINI_API_KEY")) if os.environ.get(env)}
     services = []
-    if os.environ.get("OPENAI_API_KEY"):
+    if "openai" in wanted:
         services.append(("ChatGPT(OpenAI API)", "C", ask_openai))
-    if os.environ.get("GEMINI_API_KEY"):
+    if "gemini" in wanted:
         services.append(("Gemini(Gemini API)", "G", ask_gemini))
     if not services:
-        sys.exit("OPENAI_API_KEY か GEMINI_API_KEY を設定してください")
+        sys.exit("OPENAI_API_KEY / GEMINI_API_KEY を設定するか、--services openai,gemini を指定してください")
 
     day = datetime.datetime.now(JST).strftime("%Y-%m-%d")
     csv_path = Path(args.outdir) / f"measurement_log_{day}_api.csv"
