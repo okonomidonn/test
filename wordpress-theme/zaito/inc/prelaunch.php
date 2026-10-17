@@ -231,12 +231,17 @@ if ( class_exists( 'WP_Sitemaps_Provider' ) && ! class_exists( 'Zaito_Prelaunch_
                 array( 'loc' => home_url( '/for-companies/' ) ),
                 array( 'loc' => home_url( '/kijun/' ) ),
                 array( 'loc' => home_url( '/faq/' ) ),
+                array( 'loc' => home_url( '/guide/' ) ),
                 array( 'loc' => home_url( '/terms/' ) ),
                 array( 'loc' => home_url( '/privacy/' ) ),
             );
             // 条件別の一覧
             foreach ( array_keys( zaito_remote_active_conditions() ) as $cond ) {
                 $urls[] = array( 'loc' => zaito_remote_condition_url( $cond ) );
+            }
+            // 在宅バイトの記事
+            foreach ( zaito_guides() as $slug => $guide ) {
+                $urls[] = array( 'loc' => zaito_guide_url( $slug ), 'lastmod' => $guide['updated'] );
             }
             // まとめ求人の詳細（募集中のもの）
             foreach ( zaito_remote_jobs() as $job ) {
@@ -487,6 +492,11 @@ function zaito_llms_txt() {
     $lines[] = '- [完全在宅の求人一覧](' . home_url( '/' ) . '): 掲載中のすべての求人。職種・時給・学生OK・未経験OK・週の日数で絞り込める';
     $lines[] = '- [掲載基準](' . home_url( '/kijun/' ) . '): 載せる求人・載せない求人の基準と、確認のしかた（2週間ごとに確認し直す）';
     $lines[] = '- [よくある質問](' . home_url( '/faq/' ) . '): 「在宅OK」と「完全在宅」の違い、在宅ワークの詐欺の見分け方、未経験・学生・主婦向けの在宅の仕事など';
+    $lines[] = '';
+    $lines[] = '## 記事';
+    foreach ( zaito_guides() as $slug => $guide ) {
+        $lines[] = '- [' . $guide['h1'] . '](' . zaito_guide_url( $slug ) . '): ' . $guide['description'];
+    }
     $lines[] = '';
     $lines[] = '## 条件別の求人一覧';
     $conds = zaito_remote_conditions();

@@ -455,3 +455,29 @@ body.has-sbar{padding-bottom:96px}
  body.form-open .spbar{display:none}
  body.form-open{padding-bottom:0}
 }
+
+/* 在宅バイトの記事（/guide/） */
+.guide .g-meta{margin:10px 0 0;font-size:13px;color:var(--z-text-3)}
+.guide .g-toc{margin:28px 0 0;padding:18px 22px;border-radius:16px;background:var(--z-surface)}
+.guide .g-toc p{margin:0}
+.guide .g-toc ol{margin:8px 0 0;padding-left:1.4em}
+.guide .g-toc li{font-size:14px}
+.guide .g-facts{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:6px}
+.guide .g-facts li{margin:0;display:flex;gap:12px;font-size:14px}
+.guide .g-facts li b{flex:none;width:7em;color:var(--z-navy)}
+.guide .g-sub{margin:20px 0 0;font-size:13px;font-weight:700;color:var(--z-text-3)}
+.guide .g-jobs{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
+.guide .g-jobs li{margin:0}
+.guide .g-jobs a{display:flex;flex-direction:column;gap:2px;padding:12px 16px;border:1px solid var(--z-line);border-radius:14px;text-decoration:none;color:inherit}
+.guide .g-jobs a:hover{border-color:var(--z-blue)}
+.guide .g-jobs b{font-size:15px;color:var(--z-navy);line-height:1.5}
+.guide .g-jobs span{font-size:13px;color:var(--z-text-3)}
+.guide .g-jobs .gp{font-weight:700;color:var(--z-blue)}
+.guide .g-cta{margin:44px 0 0;padding:24px;border-radius:20px;background:var(--z-surface);text-align:center}
+.guide .g-cta p{margin:0 0 16px}
+.guide .g-cta p b{display:block;font-size:17px;color:var(--z-navy)}
+.guide .g-index{list-style:none;padding:0;margin:28px 0 0;display:flex;flex-direction:column;gap:12px}
+.guide .g-index li{margin:0}
+.guide .g-index a{display:flex;flex-direction:column;gap:6px;padding:18px 20px;border:1px solid var(--z-line);border-radius:16px;text-decoration:none;color:inherit}
+.guide .g-index b{font-size:17px;color:var(--z-navy)}
+.guide .g-index span{font-size:14px;line-height:1.7;color:var(--z-text-2)}

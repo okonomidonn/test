@@ -280,7 +280,7 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '15';
+    $version = '16';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -2434,6 +2434,8 @@ require_once get_template_directory() . '/inc/sales-preview.php';
 require_once get_template_directory() . '/inc/remote-jobs.php';
 // 条件別の求人一覧（/zaitaku/{slug}/）
 require_once get_template_directory() . '/inc/remote-conditions.php';
+
+require_once get_template_directory() . '/inc/guides.php';
 // 新着求人メールの一斉配信（管理画面「求人 > 新着メール配信」）と配信停止リンク
 require_once get_template_directory() . '/inc/newsletter.php';
 
