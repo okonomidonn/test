@@ -6,8 +6,8 @@ function makeSurvey() {
   const form = FormApp.create('在宅ワークについてのアンケート');
   form.setDescription(
     'アルバイトや在宅ワークについてのアンケートです。\n' +
-    '3分ほどで終わります。名前やメールアドレスの入力はありません。\n' +
-    '回答はまとめて集計し、個人が分かる形で公開することはありません。ご協力よろしくお願いします。'
+    '3分ほどで終わり、匿名で回答できます。\n' +
+    'ご協力よろしくお願いします。'
   );
   form.setProgressBar(true);
   form.setConfirmationMessage('ご回答ありがとうございました。');
