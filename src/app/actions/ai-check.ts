@@ -11,6 +11,7 @@ import { findStoreFor } from "@/lib/ai-check/access";
 import { auditSite } from "@/lib/ai-check/audit";
 import { createRun } from "@/lib/ai-check/runner";
 import { OWNER_LIMITS, TEAM_MAX_REPEATS, defaultQuestions } from "@/lib/ai-check/questions";
+import { ownerPlan, ownerRunQuota } from "@/lib/billing/limits";
 
 export type FormState = { error?: string; ok?: string };
 
@@ -75,8 +76,11 @@ export async function createStore(_prev: FormState, formData: FormData): Promise
   const parsed = parseStore(formData);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "入力内容を確認してください" };
 
-  if (user.role === "OWNER" && (await prisma.store.count({ where: { ownerId: user.id } })) >= 3) {
-    return { error: "登録できる店舗は3店舗までです" };
+  if (user.role === "OWNER") {
+    const plan = await ownerPlan(user.id);
+    if ((await prisma.store.count({ where: { ownerId: user.id } })) >= plan.stores) {
+      return { error: `${plan.name}プランで登録できるのは${plan.stores}店舗までです。「料金プラン」からプランを変更できます` };
+    }
   }
   const d = parsed.data;
   const store = await prisma.store.create({
@@ -125,7 +129,7 @@ export async function updateQuestions(storeId: string, _prev: FormState, formDat
     .map((s) => s.trim())
     .filter(Boolean);
   if (texts.length === 0) return { error: "質問を1つ以上入力してください" };
-  const max = user.role === "OWNER" ? OWNER_LIMITS.maxQuestions : 50;
+  const max = user.role === "OWNER" ? (await ownerPlan(user.id)).maxQuestions : 50;
   if (texts.length > max) return { error: `質問は${max}個までです` };
   if (texts.some((t) => t.length > 120)) return { error: "質問は1つ120文字までです" };
 
@@ -146,13 +150,8 @@ export async function startRun(storeId: string, _prev: FormState, formData: Form
   }
   let repeats = OWNER_LIMITS.repeats;
   if (user.role === "OWNER") {
-    const since = new Date(Date.now() - OWNER_LIMITS.runIntervalHours * 3600_000);
-    const recent = await prisma.measurementRun.findFirst({ where: { storeId, createdAt: { gt: since } } });
-    if (recent) return { error: `計測は${OWNER_LIMITS.runIntervalHours}時間に1回までです` };
-    const monthAgo = new Date(Date.now() - 30 * 24 * 3600_000);
-    if ((await prisma.measurementRun.count({ where: { storeId, createdAt: { gt: monthAgo } } })) >= OWNER_LIMITS.runsPerMonth) {
-      return { error: `計測は1店舗につき30日間で${OWNER_LIMITS.runsPerMonth}回までです` };
-    }
+    const quota = await ownerRunQuota(user.id, storeId);
+    if (!quota.allowed) return { error: quota.reason };
   } else {
     repeats = Math.min(Math.max(Number(formData.get("repeats")) || 1, 1), TEAM_MAX_REPEATS);
   }

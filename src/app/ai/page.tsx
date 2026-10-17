@@ -87,7 +87,7 @@ export default function AiLandingPage() {
               ログイン
             </Link>
           </div>
-          <p className="mt-3 text-xs text-slate-500">カード登録不要・自動課金なし（β版）</p>
+          <p className="mt-3 text-xs text-slate-500">フリープランはカード登録不要。有料プランは月4,980円から、いつでも解約できます。</p>
         </div>
         <Preview />
       </section>

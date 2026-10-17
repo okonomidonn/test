@@ -24,6 +24,11 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
               <Link href="/ai/app" className="rounded-md px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">
                 店舗一覧
               </Link>
+              {user.role === "OWNER" && (
+                <Link href="/ai/app/billing" className="rounded-md px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">
+                  料金プラン
+                </Link>
+              )}
               {user.role === "TEAM" && (
                 <Link href="/dashboard" className="rounded-md px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">
                   SocialDesk
@@ -42,6 +47,9 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
             </div>
           ) : (
             <div className="flex items-center gap-2 text-sm">
+              <Link href="/ai/pricing" className="rounded-md px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">
+                料金
+              </Link>
               <Link href="/ai/login" className="rounded-md px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">
                 ログイン
               </Link>
@@ -53,6 +61,16 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
         </div>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">{children}</main>
+      <footer className="border-t border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-6xl flex-wrap gap-4 px-4 py-6 text-xs text-slate-500 sm:px-6">
+          <Link href="/ai/pricing" className="hover:underline">
+            料金プラン
+          </Link>
+          <Link href="/ai/legal" className="hover:underline">
+            特定商取引法に基づく表記
+          </Link>
+        </div>
+      </footer>
     </>
   );
 }

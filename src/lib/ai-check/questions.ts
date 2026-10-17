@@ -1,11 +1,10 @@
 // 店名を含まない「お客さんが実際にAIに聞きそうな質問」を、エリアと業態から作る。
 
+// 店舗の数・月の計測回数・質問数の上限はプランごとに決まる（src/lib/billing/plans.ts）
 export const OWNER_LIMITS = {
-  maxQuestions: 15,
   repeats: 1,
-  // 店舗オーナーが計測を始められる間隔と、1店舗あたりの月の上限（API費用の上限を守るため）
+  // 店舗オーナーが続けて計測できる間隔（API費用の上限を守るため）
   runIntervalHours: 20,
-  runsPerMonth: 4,
 };
 
 // サービス全体で1日に取得する回答数の上限（1回答あたり数十円かかるため）。GEO_DAILY_ANSWER_LIMIT で変更できる。

@@ -5,7 +5,7 @@ import { requireAccount } from "@/lib/session";
 import { findStoreFor } from "@/lib/ai-check/access";
 import { storeStats } from "@/lib/ai-check/stats";
 import { ENGINE_LABELS, enabledEngines, type EngineKey } from "@/lib/ai-check/engines";
-import { OWNER_LIMITS, ownerCooldownMs } from "@/lib/ai-check/questions";
+import { ownerPlan, ownerRunQuota } from "@/lib/billing/limits";
 import type { AuditCheck } from "@/lib/ai-check/audit";
 import { deleteStore, runAudit, startRun, updateQuestions, updateStore } from "@/app/actions/ai-check";
 import { AuditForm, QuestionsForm, StartRunForm, StoreForm } from "@/components/ai/forms";
@@ -60,23 +60,21 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
         ))}
       </nav>
 
-      {tab === "check" && <CheckTab storeId={id} isTeam={user.role === "TEAM"} />}
+      {tab === "check" && <CheckTab storeId={id} userId={user.id} isTeam={user.role === "TEAM"} />}
       {tab === "sources" && <SourcesTab storeId={id} />}
       {tab === "improve" && <ImproveTab storeId={id} hasUrl={!!store.websiteUrl} />}
-      {tab === "settings" && <SettingsTab storeId={id} isTeam={user.role === "TEAM"} />}
+      {tab === "settings" && <SettingsTab storeId={id} userId={user.id} isTeam={user.role === "TEAM"} />}
     </div>
   );
 }
 
-async function CheckTab({ storeId, isTeam }: { storeId: string; isTeam: boolean }) {
+async function CheckTab({ storeId, userId, isTeam }: { storeId: string; userId: string; isTeam: boolean }) {
   const stats = await storeStats(storeId);
   const running = stats.runs.find((r) => r.status === "RUNNING");
-  const lastRun = stats.runs.at(-1);
+  const quota = isTeam ? null : await ownerRunQuota(userId, storeId);
   let disabledReason: string | undefined;
   if (enabledEngines().length === 0) disabledReason = "計測に使うAIのAPIキーが未設定です";
-  else if (!isTeam && ownerCooldownMs(lastRun?.createdAt) > 0) {
-    disabledReason = `次の計測は前回から${OWNER_LIMITS.runIntervalHours}時間後にできます`;
-  }
+  else if (quota && !quota.allowed) disabledReason = quota.reason;
 
   const engines = [...new Set(stats.trend.flatMap((t) => Object.keys(t.byEngine)))] as EngineKey[];
   const latestByEngine = stats.trend.at(-1)?.byEngine ?? {};
@@ -100,7 +98,17 @@ async function CheckTab({ storeId, isTeam }: { storeId: string; isTeam: boolean 
             計測中（{running.done}/{running.total}）→ 進み具合を見る
           </Link>
         ) : (
-          <StartRunForm action={startRun.bind(null, storeId)} isTeam={isTeam} disabledReason={disabledReason} />
+          <div className="space-y-1 text-right">
+            <StartRunForm action={startRun.bind(null, storeId)} isTeam={isTeam} disabledReason={disabledReason} />
+            {quota && (
+              <p className="text-xs text-slate-500">
+                {quota.plan.name}プラン：30日間で{quota.usedThisMonth} / {quota.plan.runsPerMonth}回使用・
+                <Link href="/ai/app/billing" className="font-semibold text-brand hover:underline">
+                  プランを見る
+                </Link>
+              </p>
+            )}
+          </div>
         )}
       </section>
 
@@ -356,7 +364,7 @@ async function ImproveTab({ storeId, hasUrl }: { storeId: string; hasUrl: boolea
   );
 }
 
-async function SettingsTab({ storeId, isTeam }: { storeId: string; isTeam: boolean }) {
+async function SettingsTab({ storeId, userId, isTeam }: { storeId: string; userId: string; isTeam: boolean }) {
   const store = await prisma.store.findUniqueOrThrow({
     where: { id: storeId },
     include: { questions: { orderBy: { sort: "asc" } } },
@@ -370,7 +378,7 @@ async function SettingsTab({ storeId, isTeam }: { storeId: string; isTeam: boole
       <div className="space-y-6">
         <section className={cardClass}>
           <h2 className="mb-1 font-bold">AIに聞く質問</h2>
-          <QuestionsForm action={updateQuestions.bind(null, storeId)} questions={store.questions.map((q) => q.text)} max={isTeam ? 50 : OWNER_LIMITS.maxQuestions} />
+          <QuestionsForm action={updateQuestions.bind(null, storeId)} questions={store.questions.map((q) => q.text)} max={isTeam ? 50 : (await ownerPlan(userId)).maxQuestions} />
         </section>
         <section className={cardClass}>
           <h2 className="mb-1 font-bold">店舗の削除</h2>

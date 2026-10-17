@@ -30,6 +30,13 @@ enum UserRole {
   OWNER
 }
 
+// AI検索チェックの料金プラン（店舗オーナー）
+enum Plan {
+  FREE
+  STARTER
+  PRO
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -37,6 +44,17 @@ model User {
   name         String
   // TEAM = 運用代行チーム（招待制・全店舗を閲覧可）、OWNER = AI検索チェックに自分で登録した店舗オーナー
   role         UserRole @default(TEAM)
+
+  // Stripeの契約情報（AI検索チェックの店舗オーナーのみ）。Webhookで同期する
+  plan                 Plan      @default(FREE)
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?   @unique
+  subscriptionStatus   String?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  // 最後に反映したStripeイベントの発生時刻（順不同で届いた古いイベントを無視するため）
+  stripeSyncedAt       DateTime?
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
