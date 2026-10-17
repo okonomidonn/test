@@ -230,6 +230,7 @@ if ( class_exists( 'WP_Sitemaps_Provider' ) && ! class_exists( 'Zaito_Prelaunch_
                 array( 'loc' => home_url( '/' ) ),
                 array( 'loc' => home_url( '/for-companies/' ) ),
                 array( 'loc' => home_url( '/kijun/' ) ),
+                array( 'loc' => home_url( '/faq/' ) ),
                 array( 'loc' => home_url( '/terms/' ) ),
                 array( 'loc' => home_url( '/privacy/' ) ),
             );
@@ -314,6 +315,22 @@ function zaito_prelaunch_template_redirect() {
         status_header( 200 );
         header( 'Content-Type: text/html; charset=UTF-8' );
         include get_template_directory() . '/lp/kijun.php';
+        exit;
+    }
+
+    // よくある質問。
+    if ( 'faq' === $page ) {
+        status_header( 200 );
+        header( 'Content-Type: text/html; charset=UTF-8' );
+        include get_template_directory() . '/lp/faq.php';
+        exit;
+    }
+
+    // AI検索・AIアシスタント向けのサイト案内（/llms.txt）。
+    if ( 'llms' === $page ) {
+        status_header( 200 );
+        header( 'Content-Type: text/plain; charset=UTF-8' );
+        echo zaito_llms_txt(); // プレーンテキスト
         exit;
     }
 
@@ -448,4 +465,38 @@ function zaito_render_lp( $canonical = '' ) {
     status_header( 200 );
     header( 'Content-Type: text/html; charset=UTF-8' );
     echo $html; // LPは運営が用意した固定のHTML
+}
+
+/**
+ * /llms.txt の本文。AI検索やAIアシスタントが、zaitoが何のサイトで、どのページを読めばよいかを把握できるようにする。
+ * 件数は掲載中の求人から毎回数える。
+ */
+function zaito_llms_txt() {
+    $total = 0;
+    foreach ( zaito_remote_jobs() as $job ) {
+        if ( empty( $job['closed'] ) ) {
+            $total++;
+        }
+    }
+    $lines   = array();
+    $lines[] = '# zaito（ザイト）';
+    $lines[] = '';
+    $lines[] = '> 完全在宅の仕事だけを集めた日本の求人サイト。運営が企業の募集ページを読み、入社初日・研修・会議を含めて出社がないことを確かめた求人だけを掲載している（掲載中 ' . $total . ' 件）。大手求人サイトでは見つけにくい、企業の採用ページやSNSだけで募集している求人も載せている。登録・利用は無料で、応募は各企業の募集ページで行う。';
+    $lines[] = '';
+    $lines[] = '## 主なページ';
+    $lines[] = '- [完全在宅の求人一覧](' . home_url( '/' ) . '): 掲載中のすべての求人。職種・時給・学生OK・未経験OK・週の日数で絞り込める';
+    $lines[] = '- [掲載基準](' . home_url( '/kijun/' ) . '): 載せる求人・載せない求人の基準と、確認のしかた（2週間ごとに確認し直す）';
+    $lines[] = '- [よくある質問](' . home_url( '/faq/' ) . '): 「在宅OK」と「完全在宅」の違い、在宅ワークの詐欺の見分け方、未経験・学生・主婦向けの在宅の仕事など';
+    $lines[] = '';
+    $lines[] = '## 条件別の求人一覧';
+    $conds = zaito_remote_conditions();
+    foreach ( zaito_remote_active_conditions() as $slug => $n ) {
+        $lines[] = '- [' . $conds[ $slug ]['h1'] . '](' . zaito_remote_condition_url( $slug ) . '): ' . $n . '件';
+    }
+    $lines[] = '';
+    $lines[] = '## 補足';
+    $lines[] = '- 各求人ページに、仕事内容・報酬・稼働条件・応募できる人・在宅の条件・契約の形（アルバイト／インターン／業務委託など）と、運営が確認した日を載せている';
+    $lines[] = '- 働く人が教材費・登録料などを払う仕組みのある求人は載せていない';
+    $lines[] = '- 企業向け: [求人掲載のご案内](' . home_url( '/for-companies/' ) . ')';
+    return implode( "\n", $lines ) . "\n";
 }
