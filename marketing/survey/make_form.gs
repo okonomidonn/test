@@ -43,6 +43,15 @@ function makeSurvey() {
     .showOtherOption(true);
   form.addMultipleChoiceItem().setTitle('在宅ワーク（家でできる仕事）に興味はありますか').setRequired(true)
     .setChoiceValues(['とてもある', '少しある', 'あまりない', 'まったくない', 'すでに在宅ワークをしている']);
+  const services = ['クラウドワークス', 'ランサーズ', 'ココナラ', 'シュフティ', 'ママワークス', 'Wantedly',
+    'Indeed', 'タウンワーク', 'バイトル', 'マイナビバイト', 'タイミー', 'コトナル', 'zaito'];
+  form.addCheckboxItem().setTitle('知っているサービスはありますか（いくつでも）')
+    .setHelpText('名前を聞いたことがあれば選んでください')
+    .setChoiceValues(services.concat(['どれも知らない']))
+    .showOtherOption(true);
+  form.addCheckboxItem().setTitle('使ったことがあるサービスはありますか（いくつでも）')
+    .setChoiceValues(services.concat(['どれも使ったことがない']))
+    .showOtherOption(true);
   form.addCheckboxItem().setTitle('在宅ワークをしていない理由に近いものを選んでください（いくつでも）')
     .setHelpText('すでに在宅ワークをしている人は、とばして大丈夫です')
     .setChoiceValues(['どこで探せばいいかわからない', '怪しい・詐欺が心配', 'スキルや経験が足りない気がする',
