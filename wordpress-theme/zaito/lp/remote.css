@@ -7,7 +7,7 @@ a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outl
 .ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;white-space:nowrap;font-feature-settings:'liga';display:inline-block}
 /* アイコンのフォントが読み込まれる前は「emoji_people」などの文字で表示されるため、幅を1文字分に抑えて、ページが横にはみ出さないようにする */
 .ms{max-width:1em;overflow:hidden}
-.filters button .ms,.faq summary .ms,.sb-copy>.ms,.mc-copy>.ms{max-width:none}
+.filters button .ms,.faq summary .ms,.sb-copy>.ms,.mc-copy>.ms,.why .ic{max-width:none}
 /* 念のため、ページ全体が横にスクロールしないようにする（clip は固定ヘッダーを壊さない） */
 html,body{overflow-x:clip}
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
