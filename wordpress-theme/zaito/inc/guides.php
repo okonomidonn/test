@@ -20,6 +20,20 @@ function zaito_guides() {
             'published'   => '2026-10-17',
             'updated'     => '2026-10-17',
         ),
+        'zaitaku-chouki-intern' => array(
+            'title'       => '在宅でできる長期インターン｜大学生向けの職種・時給・探し方と選考の流れ',
+            'h1'          => '在宅でできる長期インターン',
+            'description' => '出社なしで参加できる長期インターンを、職種ごとの仕事内容・時給・求められる稼働時間で紹介します。探し方や選考の流れ、就活での活かし方もまとめました。',
+            'published'   => '2026-10-17',
+            'updated'     => '2026-10-17',
+        ),
+        'mikeiken-zaitaku-baito' => array(
+            'title'       => '未経験OKの在宅バイト｜経験がなくても始めやすい仕事と、採用されやすい応募のコツ',
+            'h1'          => '未経験OKの在宅バイト',
+            'description' => '経験がなくても始めやすい在宅バイトを、職種ごとの仕事内容・時給・契約の形で紹介します。未経験から採用されやすい応募のコツもまとめました。',
+            'published'   => '2026-10-17',
+            'updated'     => '2026-10-17',
+        ),
         'zaitaku-baito-sagi' => array(
             'title'       => '在宅バイトの詐欺の見分け方｜応募前に確かめる7つのポイントと相談先',
             'h1'          => '在宅バイトの詐欺の見分け方',
@@ -90,4 +104,38 @@ function zaito_guide_job_list( $jobs, $max = 3 ) {
         echo '</a></li>';
     }
     echo '</ul>';
+}
+
+/**
+ * 記事の中で使う：求人を分類（zaito_remote_group）ごとにまとめ、各分類の中は時給（下限）の高い順に並べる。
+ * 戻り値は 分類名 => 求人の配列（求人の多い分類から）。
+ */
+function zaito_guide_by_group( $jobs ) {
+    $by = array();
+    foreach ( $jobs as $j ) {
+        $by[ zaito_remote_group( $j['category'] )[0] ][] = $j;
+    }
+    foreach ( $by as $g => $list ) {
+        usort( $list, function ( $a, $b ) {
+            return zaito_remote_hourly_min( $b['pay'] ) - zaito_remote_hourly_min( $a['pay'] );
+        } );
+        $by[ $g ] = $list;
+    }
+    uasort( $by, function ( $a, $b ) {
+        return count( $b ) - count( $a );
+    } );
+    return $by;
+}
+
+/**
+ * 記事の中で使う：求人の時給（下限）の範囲を「1,200円〜2,000円」の形で返す。時給の分かる求人がなければ空文字。
+ */
+function zaito_guide_pay_range( $jobs ) {
+    $pays = array_values( array_filter( array_map( function ( $j ) {
+        return zaito_remote_hourly_min( $j['pay'] );
+    }, $jobs ) ) );
+    if ( ! $pays ) {
+        return '';
+    }
+    return min( $pays ) === max( $pays ) ? number_format( min( $pays ) ) . '円〜' : number_format( min( $pays ) ) . '円〜' . number_format( max( $pays ) ) . '円';
 }

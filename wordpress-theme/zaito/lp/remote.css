@@ -481,3 +481,4 @@ body.has-sbar{padding-bottom:96px}
 .guide .g-index a{display:flex;flex-direction:column;gap:6px;padding:18px 20px;border:1px solid var(--z-line);border-radius:16px;text-decoration:none;color:inherit}
 .guide .g-index b{font-size:17px;color:var(--z-navy)}
 .guide .g-index span{font-size:14px;line-height:1.7;color:var(--z-text-2)}
+.guide h3{margin:30px 0 0;font-size:17px;font-weight:900;line-height:1.5;color:var(--z-navy)}
