@@ -69,7 +69,7 @@ a:hover{color:var(--z-blue-hover)}
     <a class="logo" href="<?php echo esc_url( $zaito_lp_url ); ?>" aria-label="zaito トップへ">za<span>i</span>to</a>
     <div class="hd-nav">
       <a class="hd-early" href="<?php echo esc_url( $zaito_lp_url ); ?>">求人を探す</a>
-      <a class="hd-cta" href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">無料で求人掲載</a>
+      <a class="hd-cta" href="<?php echo esc_url( home_url( '/#signup' ) ); ?>">無料登録</a>
     </div>
   </div>
 </header>

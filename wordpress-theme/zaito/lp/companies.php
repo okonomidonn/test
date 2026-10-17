@@ -48,7 +48,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
       </div>
       <dl class="stats">
         <div><dt>掲載中の求人</dt><dd><b><?php echo esc_html( count( $zaito_jobs ) ); ?></b>件</dd></div>
-        <div><dt>掲載費</dt><dd><b>0</b>円</dd></div>
+        <div><dt>掲載費</dt><dd><b>無料</b></dd></div>
         <div><dt>原稿作成</dt><dd><b>無料</b></dd></div>
       </dl>
     </div>

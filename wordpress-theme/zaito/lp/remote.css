@@ -482,3 +482,16 @@ body.has-sbar{padding-bottom:96px}
 .guide .g-index b{font-size:17px;color:var(--z-navy)}
 .guide .g-index span{font-size:14px;line-height:1.7;color:var(--z-text-2)}
 .guide h3{margin:30px 0 0;font-size:17px;font-weight:900;line-height:1.5;color:var(--z-navy)}
+
+/* 企業向けページの数字（掲載中の求人・掲載費・原稿作成） */
+.stats{display:flex;gap:12px;margin:0}
+.stats>div{min-width:132px;padding:16px 20px;border:1px solid var(--z-line);border-radius:16px;background:#fff;box-shadow:var(--z-shadow-sm)}
+.stats dt{font-size:12px;font-weight:700;color:var(--z-text-3)}
+.stats dd{margin:6px 0 0;font-size:14px;font-weight:700;color:var(--z-navy);white-space:nowrap}
+.stats dd b{font-size:28px;font-weight:900;line-height:1.1;margin-right:2px}
+@media (max-width:640px){
+ .stats{width:100%;gap:8px}
+ .stats>div{flex:1;min-width:0;padding:12px 12px}
+ .stats dt{font-size:11px}
+ .stats dd b{font-size:22px}
+}
