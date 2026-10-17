@@ -15,12 +15,18 @@ function makeSurvey() {
   // 1ページ目: 職業（学生だけ学校の質問へ進む）
   const job = form.addMultipleChoiceItem().setTitle('現在の職業を教えてください').setRequired(true);
 
-  // 2ページ目: 学生だけ
-  const pSchool = form.addPageBreakItem().setTitle('学校について');
-  form.addMultipleChoiceItem().setTitle('学年').setRequired(true)
-    .setChoiceValues(['1年生', '2年生', '3年生', '4年生', '5年生以上', '修士課程', '博士課程']);
-  form.addMultipleChoiceItem().setTitle('文系・理系').setRequired(true)
-    .setChoiceValues(['文系', '理系', 'どちらともいえない']);
+  // 2ページ目: 学生だけ（学校の種類ごとに、学年の選択肢を分ける）
+  const schoolPage = (kind, grades) => {
+    const page = form.addPageBreakItem().setTitle('学校について（' + kind + '）');
+    form.addMultipleChoiceItem().setTitle('学年').setRequired(true).setChoiceValues(grades);
+    form.addMultipleChoiceItem().setTitle('文系・理系').setRequired(true)
+      .setChoiceValues(['文系', '理系', 'どちらともいえない・まだ決まっていない']);
+    return page;
+  };
+  const pUniv = schoolPage('大学生', ['1年生', '2年生', '3年生', '4年生', '5年生以上']);
+  const pGrad = schoolPage('大学院生', ['修士1年', '修士2年', '博士課程']);
+  const pSenmon = schoolPage('短大・専門学校生', ['1年生', '2年生', '3年生以上']);
+  const pHigh = schoolPage('高校生', ['1年生', '2年生', '3年生']);
 
   // 3ページ目: いま働いているか（していない人はバイトの中身を飛ばす）
   const pWork = form.addPageBreakItem().setTitle('アルバイト・お仕事について');
@@ -67,10 +73,17 @@ function makeSurvey() {
   form.addParagraphTextItem().setTitle('在宅ワークについて、思っていることがあれば自由に書いてください');
 
   // 分かれ道の設定（ページを作ったあとでないと設定できない）
-  const toSchool = ['大学生', '大学院生', '短大・専門学校生', '高校生'];
   const others = ['会社員・公務員', '契約社員・派遣社員', 'パート・アルバイト（学生以外）', 'フリーランス・自営業',
     '主婦・主夫', '求職中', 'その他'];
-  job.setChoices(toSchool.map(v => job.createChoice(v, pSchool)).concat(others.map(v => job.createChoice(v, pWork))));
+  job.setChoices([
+    job.createChoice('大学生', pUniv),
+    job.createChoice('大学院生', pGrad),
+    job.createChoice('短大・専門学校生', pSenmon),
+    job.createChoice('高校生', pHigh),
+  ].concat(others.map(v => job.createChoice(v, pWork))));
+  // 学校のページを答えたら、次の学校のページへは進まずアルバイトの質問へ飛ぶ。
+  // setGoToPage は「その区切りの1つ前のページ」の行き先を決めるので、次の学校の区切りに設定する。
+  [pGrad, pSenmon, pHigh].forEach(p => p.setGoToPage(pWork));
   working.setChoices([working.createChoice('している', pNow), working.createChoice('していない', pAll)]);
 
   // 回答をスプレッドシートにも貯める
