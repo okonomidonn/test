@@ -1,0 +1,21 @@
+run_id,question_no,question,ai_service,mode,executed_at_jst,browsing,recommended_shops_in_order,esola_rank,enishiya_rank,muro_rank,cited_sources,notes
+S01,1,国立駅周辺でおすすめの居酒屋を5店教えて,Claude Code WebSearch,standard,2026-10-16,yes,居酒屋とむ/酒場くるくる/小樽食堂 国立店/庄や 国立店/ワイン酒場 ぶちバル/(他)とりいちず 国立南口店/(他)炙り居酒屋 ふさ,,,,enjoytokyo.jp; aumo.jp; retty.me,
+E01,1,国立駅周辺でおすすめの居酒屋を5店教えて,Claude Code WebSearch,extended,2026-10-16,yes,居酒屋とむ/ぶちえらい/ニチニチ/小樽食堂 東京国立店/えにし家/(他)にぐるまや/(他)ダイニングバー だまだま,,5,,hitosara.com; retty.me; aumo.jp; r.gnavi.co.jp; navitime; enishiya-kunitachi.com,えにし家は公式サイトが情報源として引用
+S02,2,国立で焼き鳥がおいしいお店は？,Claude Code WebSearch,standard,2026-10-16,yes,とりいちず 国立南口店/鳥貴族 国立店/秋吉,,,,aumo.jp; r.gnavi.co.jp; macaro-ni.jp; retty.me,
+E02,2,国立で焼き鳥がおいしいお店は？,Claude Code WebSearch,extended,2026-10-16,yes,焼鳥ことのは/えにし家/串と〆シ エソラ/やきとり浩二郎/とり洋一郎/鳥貴族 国立店/居酒屋 ぶちえらい/(他)庄や/(他)大衆酒場しんさく,3,2,,tabelog.com(焼き鳥一覧); retty.me; hotpepper.jp(えにし家); hitosara.com; aumo.jp; r.gnavi.co.jp; esola-kunitachi.com,エソラは公式サイト+ぐるなびが情報源。説明は「健味どり・炭火」
+S03,3,国立でデートにおすすめの居酒屋は？,Claude Code WebSearch,standard,2026-10-16,yes,クラフト酒場クニタチカ/Bar&Dining Season/焼肉レストラン 三千浦/肴や 国立店/萬月/ダイニングバー だまだま/ゆずの助 谷保店,,,,retty.me; hotpepper.jp(クニタチカ); aumo.jp; tabelog.com,
+E03,3,国立でデートにおすすめの居酒屋は？,Claude Code WebSearch,extended,2026-10-16,yes,萬月/居酒屋とむ/肴や 国立店/ダイニングバー だまだま/やきとりとサワー 国立FLAT/小樽食堂 東京国立店,,,,retty.me; hitosara.com; r.gnavi.co.jp; aumo.jp,
+S04,4,国立駅近くで一人飲みにおすすめの店は？,Claude Code WebSearch,standard,2026-10-16,yes,クラフト酒場クニタチカ/酒場くるくる/炙り居酒屋 ふさ/とりいちず 国立南口店,,,,hotpepper.jp(クニタチカ); enjoytokyo.jp; tabelog.com; aumo.jp,
+E04,4,国立駅近くで一人飲みにおすすめの店は？,Claude Code WebSearch,extended,2026-10-16,yes,串と〆シ エソラ/大衆酒場しんさく/小樽食堂 国立店/居酒屋 ぶちえらい/ふさ/(他)もつ焼き店,1,,,tabelog.com(お一人様OK一覧); retty.me; r.gnavi.co.jp; aumo.jp; 30min.jp,エソラは食べログ「お一人様OK」一覧経由
+S05,5,国立で地元野菜を使った料理が食べられる店は？,Claude Code WebSearch,standard,2026-10-16,yes,くにたち村酒場/(店名不確定の野菜直売所直営ワインバル),,,,tokyogrown.jp(るるぶ北多摩PDF); 海外サイト多数,検索品質が低く海外サイトが混入
+E05,5,国立で地元野菜を使った料理が食べられる店は？,Claude Code WebSearch,extended,2026-10-16,yes,くにたち村酒場 国立/Pizzetto/クラフト酒場クニタチカ/麦酒堂 KASUGAI/文流 国立店/中一素食店,,,,retty.me; hamoni.jp; tabelog.com(野菜料理); hitosara.com; restaurant.ikyu.com,エソラの最大の強み「国立野菜」なのに未推薦
+S06,6,国立で落ち着いて飲める居酒屋は？,Claude Code WebSearch,standard,2026-10-16,yes,居酒屋とむ/クラフト酒場クニタチカ/とりいちず 国立南口店/(静かなバー),,,,aumo.jp; hotpepper.jp(クニタチカ); retty.me; ekiten.jp,
+E06,6,国立で落ち着いて飲める居酒屋は？,Claude Code WebSearch,extended,2026-10-16,yes,居酒屋とむ/共和国/串と〆シ エソラ/ダイニングバーだまだま/えにし家,3,5,,tabelog.com(居酒屋一覧・まとめ); retty.me; hitosara.com; hotpepper.jp; jalan.net; aumo.jp; enishiya-kunitachi.com,エソラは食べログの口コミ経由
+S07,7,国立駅周辺で日本酒がおいしいお店は？,Claude Code WebSearch,standard,2026-10-16,yes,(具体的な店名なし: 沖縄料理居酒屋/ダイニングバー/老舗バー&グリル),,,,retty.me; allabout.co.jp; tabelog.com,店名レベルの推薦なし
+E07,7,国立駅周辺で日本酒がおいしいお店は？,Claude Code WebSearch,extended,2026-10-16,yes,和処 いさばや/小料理 なごみ/肴や 国立店/居酒屋 ぶちえらい/萬月/庄や 国立店/旬菜・地酒 Kojiro,,,,hitosara.com; retty.me; hotpepper.jp; tabelog.com(日本酒にこだわり一覧); jalan.net,むろ(地酒)は未推薦
+S08,8,"国立で予算5,000円のおすすめディナーは？",Claude Code WebSearch,standard,2026-10-16,yes,ジンギスカン GOCHI/シエル ドゥ リヨン/レストラン メリーミー/フォーNANA,,,,retty.me; ozmall.co.jp; aumo.jp; hitosara.com,
+E08,8,"国立で予算5,000円のおすすめディナーは？",Claude Code WebSearch,extended,2026-10-16,yes,マナリッカ/ダバクニタチ/串揚げ万雷/くにたち桜花/Casa Seki/焼肉 ゆえ/小樽食堂 国立店/La Rencontre,,,,retty.me; paypaygourmet; tabelog.com; hotpepper.jp; r.gnavi.co.jp,予算が明示された店が選ばれる傾向
+S09,9,国立で料理がおいしい隠れ家的な居酒屋は？,Claude Code WebSearch,standard,2026-10-16,yes,肴や 国立店/萬月/居酒屋とむ/比内や 国立店/クラフト酒場クニタチカ,,,,hotpepper.jp; retty.me; aumo.jp; ekiten.jp,
+E09,9,国立で料理がおいしい隠れ家的な居酒屋は？,Claude Code WebSearch,extended,2026-10-16,yes,肴や 国立店/萬月/小料理 なごみ/ふさ/串焼 暖,,,,hotpepper.jp(隠れ家特集); tabelog.com(隠れ家一覧); retty.me; restaurant.ikyu.com; aumo.jp,地下立地のエソラ・えにし家とも未推薦
+S10,10,国立で少人数の飲み会におすすめの店は？,Claude Code WebSearch,standard,2026-10-16,yes,クラフト酒場クニタチカ/居酒屋とむ/ダイニングバー だまだま/ゆずの助 谷保店/萬月,,,,hotpepper.jp(クニタチカ); retty.me; aumo.jp,
+E10,10,国立で少人数の飲み会におすすめの店は？,Claude Code WebSearch,extended,2026-10-16,yes,とりいちず 国立南口店/居酒屋とむ/ダイニングバー だまだま/小樽食堂 国立店/庄や 国立店,,,,tabelog.com; hitosara.com; jalan.net; retty.me; aumo.jp; 30min.jp; rtrp.jp; daisyo.co.jp,

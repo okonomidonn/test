@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       request,
       onBeforeGenerateToken: async () => {
         const session = await auth();
-        if (!session?.user?.id) throw new Error("ログインが必要です");
+        if (!session?.user?.id || session.user.role === "OWNER") throw new Error("ログインが必要です");
         return {
           allowedContentTypes: ["video/mp4", "video/quicktime"],
           maximumSizeInBytes: MAX_VIDEO_BYTES,

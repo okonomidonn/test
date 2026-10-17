@@ -8,7 +8,7 @@ import { formatDateTime } from "@/lib/constants";
 export default async function TeamPage() {
   const now = new Date();
   const [members, invites, h] = await Promise.all([
-    prisma.user.findMany({ orderBy: { createdAt: "asc" }, select: { id: true, name: true, email: true, createdAt: true } }),
+    prisma.user.findMany({ where: { role: "TEAM" }, orderBy: { createdAt: "asc" }, select: { id: true, name: true, email: true, createdAt: true } }),
     prisma.invite.findMany({
       where: { usedAt: null, expiresAt: { gt: now } },
       orderBy: { createdAt: "desc" },

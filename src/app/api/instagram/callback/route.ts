@@ -6,7 +6,7 @@ import { OAUTH_COOKIE, exchangeCode, getProfile, redirectUri } from "@/lib/insta
 
 export async function GET(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.redirect(new URL("/login", req.url));
+  if (!session?.user?.id || session.user.role === "OWNER") return NextResponse.redirect(new URL("/login", req.url));
 
   const [expectedState, accountId] = (req.cookies.get(OAUTH_COOKIE)?.value ?? "").split(".");
   const account = accountId ? await prisma.socialAccount.findUnique({ where: { id: accountId } }) : null;

@@ -6,7 +6,7 @@ import { OAUTH_COOKIE, authorizeUrl, instagramConfig, redirectUri } from "@/lib/
 
 export async function GET(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.redirect(new URL("/login", req.url));
+  if (!session?.user?.id || session.user.role === "OWNER") return NextResponse.redirect(new URL("/login", req.url));
 
   const accountId = req.nextUrl.searchParams.get("accountId") ?? "";
   const account = await prisma.socialAccount.findUnique({ where: { id: accountId } });
