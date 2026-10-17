@@ -70,6 +70,7 @@ html,body{overflow-x:clip}
 .band{height:64px;padding:0 20px;display:flex;align-items:center;gap:10px;background:linear-gradient(120deg,var(--tone-bg),var(--tone-bg2));color:var(--tone)}
 .band .ms{font-size:26px}
 .band .bcat{font-size:13px;font-weight:700}
+.band .pickb{margin-right:44px;padding:3px 9px;border-radius:999px;background:#3D5AFE;color:#fff;font-size:11px;font-weight:800;white-space:nowrap}
 .card .body{flex:1;display:flex;flex-direction:column;gap:10px;padding:18px 20px 20px}
 .card h2{margin:0;font-size:17px;font-weight:700;line-height:1.55}
 .card .co{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--z-text-3)}

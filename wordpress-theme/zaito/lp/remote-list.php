@@ -30,6 +30,38 @@ usort( $zaito_open, function ( $a, $b ) use ( $zaito_rank ) {
     return $d ? $d : $a['_order'] - $b['_order'];
 } );
 
+// トップページでは、未経験OKで時給の高い求人を最初の3件に置く（エンジニア・営業などの「その他」と、時給が書かれていない求人は除く。1社1件まで）。
+if ( ! $zaito_cond ) {
+    $zaito_cands = array_filter( $zaito_open, function ( $j ) {
+        $g = zaito_remote_group( $j['category'] );
+        return false !== strpos( zaito_remote_card_attrs( $j ), 'data-newbie="1"' )
+            && zaito_remote_hourly_min( $j['pay'] ) > 0
+            && ! in_array( $g[0], array( 'エンジニア', 'その他' ), true );
+    } );
+    usort( $zaito_cands, function ( $a, $b ) {
+        $d = zaito_remote_hourly_min( $b['pay'] ) - zaito_remote_hourly_min( $a['pay'] );
+        return $d ? $d : $a['_order'] - $b['_order'];
+    } );
+    $zaito_picks = array();
+    foreach ( $zaito_cands as $zaito_j ) {
+        if ( count( $zaito_picks ) < 3 && ! isset( $zaito_picks[ $zaito_j['company'] ] ) ) {
+            $zaito_picks[ $zaito_j['company'] ] = $zaito_j['slug'];
+        }
+    }
+    $zaito_front = array();
+    $zaito_rest  = array();
+    foreach ( $zaito_open as $zaito_j ) {
+        if ( in_array( $zaito_j['slug'], $zaito_picks, true ) ) {
+            $zaito_j['_pick'] = true;
+            $zaito_front[ array_search( $zaito_j['slug'], array_values( $zaito_picks ), true ) ] = $zaito_j;
+        } else {
+            $zaito_rest[] = $zaito_j;
+        }
+    }
+    ksort( $zaito_front );
+    $zaito_open = array_merge( array_values( $zaito_front ), $zaito_rest );
+}
+
 // 分類ごとの件数（絞り込みボタンに表示）。
 $zaito_groups = array();
 foreach ( $zaito_open as $zaito_j ) {
@@ -76,7 +108,7 @@ $zaito_card = function ( $j ) {
     ?>
     <li class="card t-<?php echo esc_attr( $g[2] ); ?><?php echo ! empty( $j['closed'] ) ? ' closed' : ''; ?>" data-group="<?php echo esc_attr( $g[0] ); ?>" data-slug="<?php echo esc_attr( $j['slug'] ); ?>"<?php echo zaito_remote_card_attrs( $j ); // 数値と0/1だけ ?>>
       <a href="<?php echo esc_url( zaito_remote_url( $j['slug'] ) ); ?>">
-        <div class="band"><span class="ms" aria-hidden="true"><?php echo esc_html( $g[1] ); ?></span><span class="bcat"><?php echo esc_html( $j['category'] ); ?></span></div>
+        <div class="band"><span class="ms" aria-hidden="true"><?php echo esc_html( $g[1] ); ?></span><span class="bcat"><?php echo esc_html( $j['category'] ); ?></span><?php if ( ! empty( $j['_pick'] ) ) : ?><span class="pickb">未経験OK・高時給</span><?php endif; ?></div>
         <div class="body">
           <h2><?php echo esc_html( $j['title'] ); ?></h2>
           <span class="co"><span class="av" aria-hidden="true"><?php echo esc_html( $initial ); ?></span><?php echo esc_html( $j['company'] ); ?></span>
