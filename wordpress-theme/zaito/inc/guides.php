@@ -52,10 +52,12 @@ function zaito_guide_template_redirect() {
     }
     $slug   = (string) get_query_var( 'zaito_guide' );
     $guides = zaito_guides();
-    if ( '' !== $slug && ! isset( $guides[ $slug ] ) ) {
-        return; // 存在しない記事は通常の404へ。
+    // 存在しない記事は、404を返して記事一覧を見せる（テーマの古いトップが200で出ないように）。
+    $found = '' === $slug || isset( $guides[ $slug ] );
+    if ( ! $found ) {
+        $slug = '';
     }
-    status_header( 200 );
+    status_header( $found ? 200 : 404 );
     header( 'Content-Type: text/html; charset=UTF-8' );
     $zaito_guide_slug = $slug;
     include get_template_directory() . '/lp/guide.php';
