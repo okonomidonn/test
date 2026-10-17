@@ -168,7 +168,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
   var profile = document.getElementById('zprofile');
   var stu = profile.querySelector('.stu');
   function member() { return /(?:^|;\s*)zaito_m=1/.test(document.cookie); }
-  function track(name, params) { if (typeof window.gtag === 'function') { window.gtag('event', name, params); } }
+  function track(name, params) { if (window.zaitoFb) { window.zaitoFb(name); } if (typeof window.gtag === 'function') { window.gtag('event', name, params); } }
   // 未登録の人が「応募ページへ進む」を押したら、登録フォームを画面の手前（スマホは下からのシート）に出す。
   // フォームと、登録後の希望条件の質問をシートに移すだけなので、送信の処理はそのまま。
   var sheet = document.getElementById('zsheet');

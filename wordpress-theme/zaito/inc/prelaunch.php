@@ -129,13 +129,39 @@ function zaito_gsc_meta() {
     return preg_match( '/^[A-Za-z0-9_-]{10,100}$/', $code ) ? '<meta name="google-site-verification" content="' . esc_attr( $code ) . '">' : '';
 }
 
-function zaito_ga4_snippet() {
-    $id = zaito_ga4_id();
+/**
+ * Metaピクセル（Instagram・Facebook広告の成果計測）。管理画面「設定 > 一般」の「MetaピクセルID」で変更でき、空欄で保存すると止まる。
+ * ページのJSが送るイベントのうち、登録・応募ページへ進む・企業の問い合わせだけをMetaの標準イベントにして送る（window.zaitoFb）。
+ */
+if ( ! defined( 'ZAITO_META_PIXEL_DEFAULT_ID' ) ) {
+    define( 'ZAITO_META_PIXEL_DEFAULT_ID', '988833143495905' );
+}
+
+function zaito_meta_pixel_id() {
+    $id = trim( (string) get_option( 'zaito_meta_pixel_id', ZAITO_META_PIXEL_DEFAULT_ID ) );
+    return preg_match( '/^\d{10,20}$/', $id ) ? $id : '';
+}
+
+function zaito_meta_pixel_snippet() {
+    $id = zaito_meta_pixel_id();
     if ( ! $id ) {
-        return zaito_gsc_meta();
+        return '';
+    }
+    return '<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");'
+        . 'fbq("init",' . wp_json_encode( $id ) . ');fbq("track","PageView");'
+        . 'window.zaitoFb=function(n){var m={sign_up:"CompleteRegistration",remote_apply_click:"SubmitApplication",generate_lead:"Lead"};try{if(m[n])fbq("track",m[n]);}catch(e){}};</script>'
+        . '<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=' . esc_attr( $id ) . '&amp;ev=PageView&amp;noscript=1"></noscript>';
+}
+
+function zaito_ga4_snippet() {
+    $id    = zaito_ga4_id();
+    $extra = zaito_meta_pixel_snippet();
+    if ( ! $id ) {
+        return zaito_gsc_meta() . $extra;
     }
     return zaito_gsc_meta() . '<script async src="https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $id ) . '"></script>'
-        . '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config",' . wp_json_encode( $id ) . ');</script>';
+        . '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config",' . wp_json_encode( $id ) . ');</script>'
+        . $extra;
 }
 
 function zaito_ga4_register_setting() {
@@ -151,6 +177,15 @@ function zaito_ga4_register_setting() {
         echo '<input type="text" name="zaito_ga4_id" id="zaito_ga4_id" class="regular-text" placeholder="G-XXXXXXXXXX" value="' . esc_attr( get_option( 'zaito_ga4_id', ZAITO_GA4_DEFAULT_ID ) ) . '">';
         echo '<p class="description">Googleアナリティクスの測定ID（G-から始まる文字列）を入れると、LPと利用規約・プライバシーポリシーのページで計測を始めます。空欄にすると計測しません。</p>';
     }, 'general', 'default', array( 'label_for' => 'zaito_ga4_id' ) );
+    register_setting( 'general', 'zaito_meta_pixel_id', array(
+        'type'              => 'string',
+        'sanitize_callback' => function ( $v ) { return preg_replace( '/\D/', '', (string) $v ); },
+        'default'           => ZAITO_META_PIXEL_DEFAULT_ID,
+    ) );
+    add_settings_field( 'zaito_meta_pixel_id', 'MetaピクセルID（zaito）', function () {
+        echo '<input type="text" name="zaito_meta_pixel_id" id="zaito_meta_pixel_id" class="regular-text" inputmode="numeric" value="' . esc_attr( get_option( 'zaito_meta_pixel_id', ZAITO_META_PIXEL_DEFAULT_ID ) ) . '">';
+        echo '<p class="description">空欄で保存するとMetaピクセルを止めます。</p>';
+    }, 'general', 'default', array( 'label_for' => 'zaito_meta_pixel_id' ) );
 
     register_setting( 'general', 'zaito_gsc_verify', array(
         'type'              => 'string',

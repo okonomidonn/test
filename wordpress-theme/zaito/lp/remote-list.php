@@ -424,7 +424,7 @@ if ( ! $zaito_cond ) :
   var stu = profile.querySelector('.stu');
   var done = document.getElementById('zdone');
   var terr = document.getElementById('ztoperr');
-  function track(name, params) { if (typeof window.gtag === 'function') { window.gtag('event', name, params); } }
+  function track(name, params) { if (window.zaitoFb) { window.zaitoFb(name); } if (typeof window.gtag === 'function') { window.gtag('event', name, params); } }
   function showDone(title, text) {
     top.hidden = true; profile.hidden = true; done.hidden = false;
     if (title) document.getElementById('zdonetitle').textContent = title;

@@ -568,6 +568,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const JOBS = ['SNS運用','動画編集','Webマーケティング','ライティング','オンライン事務','リサーチ','データ入力','AI関連','その他'];
 // GA4（測定IDが設定されているときだけ gtag が存在する）にイベントを送る。
 function track(name, params) {
+  try { if (typeof window !== 'undefined' && window.zaitoFb) window.zaitoFb(name); } catch (e) {}
   try { if (typeof window !== 'undefined' && window.gtag) window.gtag('event', name, params || {}); } catch (e) {}
 }
 
