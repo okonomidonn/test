@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 営業資料・測定用の作業スクリプト（アプリ本体ではない）
+    "geo/**",
   ]),
 ]);
 

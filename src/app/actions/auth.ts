@@ -31,8 +31,9 @@ export async function registerUser(
   const passwordHash = await hash(password, 10);
 
   const error = await prisma.$transaction(async (tx) => {
-    // The very first account bootstraps the workspace; everyone after needs an invite.
-    if ((await tx.user.count()) > 0) {
+    // The very first team account bootstraps the workspace; everyone after needs an invite.
+    // (Shop owners who signed up for the AI search check do not count.)
+    if ((await tx.user.count({ where: { role: "TEAM" } })) > 0) {
       if (typeof token !== "string" || !token) {
         return "新規登録には招待リンクが必要です";
       }

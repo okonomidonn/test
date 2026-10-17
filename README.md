@@ -23,6 +23,24 @@ Instagram API（Instagram ログイン）を使い、リールの予約投稿と
 
 必要な環境変数は `.env.example` を参照してください（`INSTAGRAM_APP_ID` / `INSTAGRAM_APP_SECRET` / `CRON_SECRET` / `BLOB_READ_WRITE_TOKEN`）。Meta のアプリには OAuth リダイレクト URI として `https://<ドメイン>/api/instagram/callback` を登録します。
 
+## AI検索チェック（飲食店向け・`/ai`）
+
+飲食店が ChatGPT・Gemini でどう紹介されているかを計測し、改善点を提案する店舗オーナー向けのツールです。SocialDesk と同じアプリ・データベースで動きます。
+
+- **公開ページ** `/ai`（紹介ページ）、`/ai/signup`（店舗オーナーの無料登録・招待不要）、`/ai/login`
+- **店舗オーナー**（`role = OWNER`）は `/ai/app` 以下だけを使えます。SocialDesk の画面には入れません。登録できる店舗は3店舗まで
+- **運用チーム**（`role = TEAM`、従来のメンバー）は全店舗を閲覧・計測でき、各質問の繰り返し回数（1〜3回）も選べます
+- 店舗ごとのタブ
+  - **AIでの表示チェック**：登録した質問（エリア・業態から自動生成、編集可）を各AIに聞き、推薦率・順位・競合との比較・推移を表示。回答全文も確認できます
+  - **参考にされたページ**：AIが参照したサイトを、公式サイト／グルメサイト・地図／その他に分けて集計
+  - **改善の提案**：公式サイトを読み取り、メニューや価格が文字で読めるか、営業情報、構造化データ、「一人飲み」「デート」などの利用シーンの記述、robots.txt を診断
+  - **設定**：店舗情報・比べたい店・質問の編集、店舗の削除
+- 計測は「AIに聞いて計測する」で開始。計測画面を開いている間は `POST /api/ai/runs/[id]/step` で順に処理され、閉じた後に残った分は `GET /api/cron/ai-check`（`Authorization: Bearer $CRON_SECRET`、`vercel.json` で1日1回）が進めます
+- **費用の上限**：APIは1回答あたり数十円かかります。オーナーは1店舗につき20時間に1回・30日で4回まで、サービス全体で24時間に `GEO_DAILY_ANSWER_LIMIT`（既定300）回答まで
+- 必要な環境変数は `.env.example` の「AI検索チェック」欄（`OPENAI_API_KEY` / `GEMINI_API_KEY` ほか）。開発環境では `GEO_ENGINES=mock` で固定回答のテスト用エンジンを使えます（本番では無効）
+
+> AIの回答は毎回変わります。推薦率は決まった質問で測った目安で、APIの回答はアプリの回答と完全には一致しない場合があります。
+
 ## 技術スタック
 
 - Next.js (App Router, Server Actions) / TypeScript / Tailwind CSS
@@ -49,12 +67,11 @@ npm run dev
 ## ディレクトリ構成（抜粋）
 
 ```
-prisma/schema.prisma      データモデル（User / Invite / Client / SocialAccount / Post）
+prisma/schema.prisma      データモデル（User / Invite / Client / SocialAccount / Post / Store / Question / MeasurementRun / Answer / SiteAudit）
 prisma/seed.ts            デモデータ投入
-src/app/dashboard/        エンゲージメント分析
-src/app/posts/            投稿一覧・作成・編集
-src/app/clients/          クライアント・SNSアカウント管理
-src/app/team/             メンバー一覧・招待リンク発行
+src/app/(team)/           SocialDesk（運用チーム）の画面：dashboard / posts / clients / team / login / register
+src/app/ai/               AI検索チェック（紹介ページ・オーナー登録・店舗画面）
+src/lib/ai-check/         計測（AIへの質問・回答の解析・集計）とサイト診断
 src/app/actions/          Server Actions
 src/app/api/instagram/    Instagram OAuth（連携・コールバック）
 src/app/api/cron/tick/    予約投稿の実行・実績取得（定期実行）

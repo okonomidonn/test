@@ -6,7 +6,7 @@ import { cardClass } from "@/components/ui";
 export default async function RegisterPage({ searchParams }: PageProps<"/register">) {
   const { invite } = await searchParams;
   const token = typeof invite === "string" ? invite : undefined;
-  const isFirstUser = (await prisma.user.count()) === 0;
+  const isFirstUser = (await prisma.user.count({ where: { role: "TEAM" } })) === 0;
   const canRegister = isFirstUser || !!token;
 
   return (

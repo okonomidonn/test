@@ -25,16 +25,24 @@ enum PostStatus {
   FAILED
 }
 
+enum UserRole {
+  TEAM
+  OWNER
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
   passwordHash String
   name         String
+  // TEAM = 運用代行チーム（招待制・全店舗を閲覧可）、OWNER = AI検索チェックに自分で登録した店舗オーナー
+  role         UserRole @default(TEAM)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   posts   Post[]
   invites Invite[]
+  stores  Store[]
 }
 
 model Invite {
@@ -116,4 +124,105 @@ model Post {
   @@index([accountId])
   @@index([status, scheduledAt])
   @@index([publishedAt])
+}
+
+// ---- AI検索チェック（店舗がChatGPT・Geminiでどう紹介されているかの計測） ----
+
+enum RunStatus {
+  RUNNING
+  DONE
+  FAILED
+}
+
+enum AnswerStatus {
+  PENDING
+  DONE
+  ERROR
+}
+
+model Store {
+  id          String   @id @default(cuid())
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name        String
+  // 回答内で店舗を見つけるための別表記（読み仮名・英語表記・略称など）
+  aliases     String[]
+  area        String
+  station     String?
+  genre       String
+  websiteUrl  String?
+  competitors String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questions Question[]
+  runs      MeasurementRun[]
+  audits    SiteAudit[]
+
+  @@index([ownerId])
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  text      String
+  sort      Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([storeId])
+}
+
+model MeasurementRun {
+  id         String    @id @default(cuid())
+  storeId    String
+  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  status     RunStatus @default(RUNNING)
+  engines    String[]
+  repeats    Int       @default(1)
+  createdAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  answers Answer[]
+
+  @@index([storeId, createdAt])
+}
+
+model Answer {
+  id           String         @id @default(cuid())
+  runId        String
+  run          MeasurementRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  questionText String
+  questionNo   Int
+  engine       String
+  repeat       Int
+  status       AnswerStatus   @default(PENDING)
+  model        String?
+  answerText   String?
+  // 回答本文から拾った推薦店舗名（出現順）
+  shops        String[]
+  // 対象店舗の推薦順位（0 = 本文では触れているが一覧には無い、null = 推薦なし）
+  targetRank   Int?
+  // 推薦された競合店（Store.competitors のうち回答に出たもの）
+  competitorHits String[]
+  sources      String[]
+  error        String?
+  lockedAt     DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime       @default(now())
+
+  @@index([runId])
+  @@index([status, lockedAt])
+}
+
+model SiteAudit {
+  id        String   @id @default(cuid())
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  url       String
+  score     Int
+  checks    Json
+  createdAt DateTime @default(now())
+
+  @@index([storeId, createdAt])
 }
