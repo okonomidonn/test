@@ -329,6 +329,10 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .doc p{margin:14px 0 0}
 .doc ul{margin:14px 0 0;padding-left:1.3em}
 .doc li+li{margin-top:6px}
+.cond-faq{max-width:none;margin:48px 0 0;padding:0}
+.cond-faq h2{margin:0;padding-top:0;border:0;font-size:clamp(20px,2.4vw,24px)}
+.cond-faq h3{margin:28px 0 0;font-size:16px;font-weight:900;line-height:1.6;color:var(--z-navy)}
+.cond-faq p{max-width:760px}
 .refine{display:flex;align-items:center;gap:12px;padding:0 0 28px;margin-top:-14px}
 .refine .rl{flex:none;font-size:13px;font-weight:700;color:var(--z-text-3)}
 .qchips{display:flex;flex-wrap:wrap;gap:8px}

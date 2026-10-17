@@ -294,7 +294,7 @@ if ( ! function_exists( 'zaito_remote_footer' ) ) {
         ?>
 <footer class="ft"><div class="wrap">
   <div class="ft-top"><div class="ft-brand"><p>出社なしの仕事だけを<br>集めた求人サイト</p><?php echo zaito_sns_links_html(); // SVGと固定URLのみ ?></div>
-    <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a><a href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>">マイページ</a><a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a><a href="<?php echo esc_url( home_url( '/faq/' ) ); ?>">よくある質問</a><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方へ</a><a href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">掲載・削除のご依頼</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
+    <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( zaito_remote_url() ); ?>">求人を探す</a><a href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>">マイページ</a><a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a><a href="<?php echo esc_url( home_url( '/faq/' ) ); ?>">よくある質問</a><a href="<?php echo esc_url( home_url( '/zaitaku/gakusei/' ) ); ?>">大学生の在宅バイト</a><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">企業の方へ</a><a href="<?php echo esc_url( home_url( '/for-companies/#contact' ) ); ?>">掲載・削除のご依頼</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
   <div class="ft-b"><span>運営：zaito 運営事務局</span><small>Copyright © zaito</small></div>
   <div class="logo ft-big" aria-hidden="true">za<span>i</span>to</div>
 </div></footer>

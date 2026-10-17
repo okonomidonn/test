@@ -94,12 +94,33 @@ foreach ( $zaito_open as $zaito_i => $zaito_j ) {
         'name'     => $zaito_j['title'] . '（' . $zaito_j['company'] . '）',
     );
 }
-zaito_remote_head( $zaito_title, $zaito_desc, $zaito_canon, array(
-    '@context'        => 'https://schema.org',
+$zaito_faq    = $zaito_cond && function_exists( 'zaito_remote_condition_faq' ) ? zaito_remote_condition_faq( $zaito_list_cond, $zaito_jobs ) : array();
+$zaito_ld     = array(
     '@type'           => 'ItemList',
     'name'            => $zaito_cond ? $zaito_cond['h1'] : '完全在宅の求人',
     'itemListElement' => $zaito_items,
-) );
+);
+if ( $zaito_faq ) {
+    $zaito_ld = array(
+        '@context' => 'https://schema.org',
+        '@graph'   => array(
+            $zaito_ld,
+            array(
+                '@type'      => 'FAQPage',
+                'mainEntity' => array_map( function ( $qa ) {
+                    return array(
+                        '@type'          => 'Question',
+                        'name'           => $qa[0],
+                        'acceptedAnswer' => array( '@type' => 'Answer', 'text' => trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( str_replace( '</p>', "</p>\n", $qa[1] ) ) ) ) ),
+                    );
+                }, $zaito_faq ),
+            ),
+        ),
+    );
+} else {
+    $zaito_ld = array( '@context' => 'https://schema.org' ) + $zaito_ld;
+}
+zaito_remote_head( $zaito_title, $zaito_desc, $zaito_canon, $zaito_ld );
 
 $zaito_card = function ( $j ) {
     $g       = zaito_remote_group( $j['category'] );
@@ -257,6 +278,17 @@ if ( ! $zaito_cond ) :
     <ul class="cards">
       <?php foreach ( $zaito_closed as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
     </ul>
+  <?php endif; ?>
+
+  <?php if ( $zaito_faq ) : ?>
+    <section class="cond-faq doc" aria-labelledby="cond-faq-title">
+      <h2 id="cond-faq-title">大学生の在宅バイト よくある質問</h2>
+      <?php foreach ( $zaito_faq as $zaito_qa ) : ?>
+        <h3><?php echo esc_html( $zaito_qa[0] ); ?></h3>
+        <?php echo wp_kses_post( $zaito_qa[1] ); ?>
+      <?php endforeach; ?>
+      <p>ほかの質問は<a href="<?php echo esc_url( home_url( '/faq/' ) ); ?>">よくある質問</a>をご覧ください。</p>
+    </section>
   <?php endif; ?>
 
   <?php if ( $zaito_actives ) : ?>
