@@ -41,13 +41,13 @@ function zaito_lp_tracking_fields() {
 }
 
 /**
- * 同じIPから短時間に大量送信されるのを防ぐ（10分間に5回まで）。
+ * 同じIPから短時間に大量送信されるのを防ぐ（10分間に $max 回まで。ふだんは5回）。
  */
-function zaito_lp_rate_limited( $bucket ) {
+function zaito_lp_rate_limited( $bucket, $max = 5 ) {
     $ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
     $key = 'zaito_lp_rl_' . md5( $bucket . '|' . $ip );
     $count = (int) get_transient( $key );
-    if ( $count >= 5 ) {
+    if ( $count >= $max ) {
         return true;
     }
     set_transient( $key, $count + 1, 10 * MINUTE_IN_SECONDS );

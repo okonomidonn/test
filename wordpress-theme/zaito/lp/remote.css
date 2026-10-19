@@ -211,6 +211,8 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .apply .cap{margin:10px 0 0;font-size:13px;color:var(--z-text-4);text-align:center;line-height:1.6}
 .signup{display:none;margin-top:18px;padding-top:18px;border-top:1px solid var(--z-line)}
 .signup.on{display:block}
+/* 登録が済んだら入力欄を隠す（.signup.on や .sheet .signup の display より優先する） */
+.signup[hidden]{display:none!important}
 .signup b{display:block;font-size:16px}
 .signup p{margin:6px 0 14px;font-size:14px;color:var(--z-text-2);line-height:1.7}
 .signup label{display:block;font-size:13px;font-weight:700;color:var(--z-text-2);margin-bottom:6px}
@@ -361,6 +363,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .mc-copy>.ms{flex:none;width:44px;height:44px;border-radius:12px;background:#fff;color:var(--z-blue);display:flex;align-items:center;justify-content:center;font-size:24px}
 .mc-copy p{margin:0;font-size:14px;color:var(--z-text-2);line-height:1.6}
 .mc-copy b{display:block;font-size:16px;color:var(--z-navy);font-weight:900}
+.mc-copy .mc-more{margin-top:6px;padding:0;border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--z-blue);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 #zminiform{flex:1 1 320px;display:flex;gap:8px}
 #zminiform input{flex:1;min-width:0;height:50px;padding:0 14px;border-radius:12px;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font-family:inherit;font-size:16px;color:var(--z-navy)}
 #zminiform input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--z-blue)}

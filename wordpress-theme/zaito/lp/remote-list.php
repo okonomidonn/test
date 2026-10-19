@@ -547,8 +547,16 @@ if ( ! $zaito_cond ) :
       if (!isEmail(v)) { merr.textContent = '正しいメールアドレスを入力してください'; return; }
       top.elements.email.value = v;
       register(mform.querySelector('button'), merr, 'inline', function (created) {
-        mini.innerHTML = '<div class="mc-copy"><span class="ms" aria-hidden="true">check_circle</span><p><b>' + (created ? '登録できました' : '登録済みです') + '</b>' + (created ? '確認メールのリンクを押すと、新着のお知らせが届くようになります。' : '新しい完全在宅の求人が入ったら、メールでお知らせします。') + '</p></div>';
-        if (created) { document.getElementById('signup').scrollIntoView({ behavior: 'smooth' }); }
+        // 一覧を読んでいる途中なので、ページ下の登録欄へは自動で移らない（長い距離を一気にスクロールしてしまうため）。
+        // 希望条件の質問は、押した人だけ下の登録欄へ案内する。
+        mini.innerHTML = '<div class="mc-copy"><span class="ms" aria-hidden="true">check_circle</span><p><b>' + (created ? '登録できました' : '登録済みです') + '</b>' + (created ? '確認メールのリンクを押すと、新着のお知らせが届くようになります。' : '新しい完全在宅の求人が入ったら、メールでお知らせします。') + (created ? '<br><button type="button" class="mc-more">希望の条件を教える（任意）</button>' : '') + '</p></div>';
+        var more = mini.querySelector('.mc-more');
+        if (more) {
+          more.addEventListener('click', function () {
+            document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+            track('profile_open', { from: 'inline' });
+          });
+        }
       });
     });
   }

@@ -1830,7 +1830,8 @@ function zaito_handle_remote_register() {
     if ( ! $email || ! is_email( $email ) ) {
         $fail( '正しいメールアドレスを入力してください' );
     }
-    if ( zaito_lp_rate_limited( 'remote' ) ) {
+    // 大学のWi-Fiやスマホ回線では大勢が同じIPを使うため、ふつうの登録が止まらないよう多めに許す。
+    if ( zaito_lp_rate_limited( 'remote', 30 ) ) {
         $fail( '送信回数が多すぎます。しばらくしてからお試しください' );
     }
 
@@ -1879,7 +1880,7 @@ function zaito_handle_remote_profile() {
     if ( ! $member ) {
         wp_send_json_error( array( 'message' => '登録情報が確認できませんでした' ), 400 );
     }
-    if ( zaito_lp_rate_limited( 'remote_profile' ) ) {
+    if ( zaito_lp_rate_limited( 'remote_profile', 30 ) ) {
         wp_send_json_error( array( 'message' => '送信回数が多すぎます。しばらくしてからお試しください' ), 400 );
     }
     $opts = zaito_remote_profile_options();
