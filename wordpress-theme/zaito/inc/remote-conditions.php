@@ -59,6 +59,9 @@ function zaito_remote_job_tags() {
         'kumono-media-intern'      => array( 'mikeiken' ),
         'itmedia-nlab-writer'      => array( 'mikeiken' ),
         'prointern-intern'         => array( 'mikeiken' ),
+        'gorlem-estimate-sorting'  => array( 'tanjikan' ),
+        'merrybiz-remote-accounting' => array( 'tanjikan' ),
+        'shiftai-counter-sales'    => array( 'mikeiken' ),
     );
 }
 
