@@ -567,7 +567,8 @@ function zaito_remote_jobs() {
             'contract' => 'アルバイト',
             'url'      => 'https://herp.careers/careers/companies/cosoji/jobs/IMNt43jKHj2T',
             'listed'   => '2026-10-08',
-            'checked'  => '2026-10-08',
+            'checked'  => '2026-10-19',
+            'closed'   => true, // 2026-10-19 募集ページが削除されていた
         ),
         array(
             'slug'     => 'vividgarden-marketing-support',
@@ -657,7 +658,8 @@ function zaito_remote_jobs() {
             'contract' => '業務委託',
             'url'      => 'https://herp.careers/careers/companies/hackazouk30/jobs/ssnJpNZDy3co',
             'listed'   => '2026-10-08',
-            'checked'  => '2026-10-08',
+            'checked'  => '2026-10-19',
+            'closed'   => true, // 2026-10-19 募集ページが削除されていた
         ),
         array(
             'slug'     => 'luche-web-designer',
