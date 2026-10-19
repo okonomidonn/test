@@ -199,7 +199,8 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
         <?php endforeach; ?>
       </div></fieldset>
       <label class="lb" for="zschool">学校名</label>
-      <input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" placeholder="例：〇〇大学">
+      <input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" placeholder="例：〇〇大学" data-schools="<?php echo esc_url( zaito_lp_asset( 'schools.json' ) ); ?>">
+      <script src="<?php echo esc_url( zaito_lp_asset( 'school-suggest.js' ) ); ?>" defer></script>
     </div>
     <div class="pq" data-step="interests" data-hint="いくつ選んでもかまいません">
     <fieldset><legend>やってみたい仕事（いくつでも）</legend><div class="chips">

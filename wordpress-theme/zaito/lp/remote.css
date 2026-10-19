@@ -498,3 +498,10 @@ body.has-sbar{padding-bottom:96px}
  .stats dt{font-size:11px}
  .stats dd b{font-size:22px}
 }
+
+/* 学校名の候補（lp/school-suggest.js） */
+.school-wrap{position:relative;display:block}
+.school-sg{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:20;margin:0;padding:6px;list-style:none;background:#fff;border-radius:12px;box-shadow:0 0 0 1px var(--z-line),0 12px 28px rgba(11,21,48,.14);max-height:264px;overflow-y:auto}
+.school-sg[hidden]{display:none}
+.school-sg li{padding:11px 12px;border-radius:8px;font-size:15px;color:var(--z-navy);cursor:pointer}
+.school-sg li:hover,.school-sg li[aria-selected=true]{background:var(--z-blue-light)}
