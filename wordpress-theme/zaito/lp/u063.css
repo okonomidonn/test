@@ -43,7 +43,7 @@
 .u063-chip:hover{background:var(--ux-surface-3)}
 .u063-chip:focus-visible{outline:2px solid var(--ux-accent);outline-offset:2px}
 .u063-chip i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--ux-mint);color:var(--ux-accent-ink);flex:none}
-.u063-chip.skip i{background:var(--ux-line-2)}
+.u063-chip.is-skip i{background:var(--ux-line-2)}
 .u063-chip i svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .u063-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @keyframes u063-chip{from{opacity:0;transform:translateY(60px) scale(.8)}}

@@ -115,7 +115,8 @@
         if (!v || i >= cur) return;
         var c = document.createElement('button');
         c.type = 'button';
-        c.className = 'u063-chip' + (v.skip ? ' skip' : '');
+        // .skip は remote.css の「答えずに閉じる」リンクと名前がぶつかるため is-skip にする。
+        c.className = 'u063-chip' + (v.skip ? ' is-skip' : '');
         c.style.animationDelay = (i === cur - 1 ? 0 : -1) + 's';
         c.innerHTML = CHECK;
         c.querySelector('span').textContent = v.text;
@@ -154,7 +155,7 @@
         return;
       }
       ok(q);
-      vals[q.getAttribute('data-step')] = { text: t || 'とばした', skip: !t };
+      vals[q.getAttribute('data-step')] = { text: t || title(q) + '：未回答', skip: !t };
       go(cur + 1);
     }
     function skip(q) {
@@ -166,7 +167,7 @@
         if (stu) stu.hidden = true;
       }
       ok(q);
-      vals[q.getAttribute('data-step')] = { text: 'とばした', skip: true };
+      vals[q.getAttribute('data-step')] = { text: title(q) + '：未回答', skip: true };
       go(cur + 1);
     }
     function finish() {
