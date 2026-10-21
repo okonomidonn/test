@@ -57,7 +57,7 @@ jobs:
           echo "== プラグイン一覧"
           wp plugin list --fields=name,status,version,update 2>&1
           echo "== ユーザー（メールは出さない）"
-          wp user list --fields=ID,user_login,roles,user_registered --format=table 2>&1
+          wp user list --fields=ID,roles,user_registered --format=table 2>&1
           echo "== 管理者の数"
           wp user list --role=administrator --format=count 2>&1
           echo "== 不審な cron / オプション"
