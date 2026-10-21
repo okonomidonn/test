@@ -1,0 +1,74 @@
+name: Security check (read-only)
+
+# サーバー上のファイルを一切書き換えずに、改ざんや不正アクセスの跡がないかを調べる。
+# 個人情報（IPアドレス・メールアドレス）はログに出さず、件数や日時だけを出す。
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Theme files differ from GitHub? (dry run, nothing is copied)
+        run: |
+          rsync -n -rci --delete \
+            -e "ssh -p ${{ secrets.XSERVER_PORT }}" \
+            wordpress-theme/zaito/ \
+            ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:zaito-work.com/public_html/wp-content/themes/zaito/ \
+            | sed 's/^/DIFF /' || true
+          echo "(DIFF の行がなければ、テーマのファイルはGitHubと完全に同じ)"
+
+      - name: Server-side checks
+        run: |
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} 'bash -s' <<'EOF'
+          cd ~/zaito-work.com/public_html || exit 1
+          echo "== PHP (CLI)"; php -v 2>/dev/null | head -1
+          echo "== 3日以内に変更された .php / .htaccess / .ini（テーマ以外）"
+          find . -mtime -3 -type f \( -name '*.php' -o -name '.htaccess' -o -name '*.ini' -o -name '.user.ini' \) \
+            ! -path './wp-content/themes/zaito/*' ! -path './wp-content/cache/*' -printf '%TY-%Tm-%Td %TH:%TM  %p\n' 2>/dev/null | sort | head -50
+          echo "== uploads の中の PHP ファイル（本来は0件）"
+          find wp-content/uploads -type f -iname '*.php*' 2>/dev/null | head -20
+          echo "== 見慣れない場所の PHP（public_html 直下）"
+          ls -la --time-style=long-iso *.php 2>/dev/null
+          echo "== WordPress 本体のファイル検証"
+          wp core verify-checksums 2>&1 | tail -5
+          echo "== プラグインのファイル検証"
+          wp plugin verify-checksums --all 2>&1 | tail -15
+          echo "== プラグイン一覧"
+          wp plugin list --fields=name,status,version,update 2>&1
+          echo "== ユーザー（メールは出さない）"
+          wp user list --fields=ID,user_login,roles,user_registered --format=table 2>&1
+          echo "== 管理者の数"
+          wp user list --role=administrator --format=count 2>&1
+          echo "== 不審な cron / オプション"
+          wp option get siteurl 2>&1; wp option get home 2>&1
+          wp option get users_can_register 2>&1; wp option get default_role 2>&1
+          echo "== アクセスログ"
+          ls -la --time-style=long-iso ~/zaito-work.com/log/ 2>/dev/null | head
+          for f in ~/zaito-work.com/log/*access_log*; do
+            [ -f "$f" ] || continue
+            case "$f" in *.gz) CAT=zcat;; *) CAT=cat;; esac
+            echo "-- $f"
+            echo "total: $($CAT "$f" | wc -l)"
+            echo "POST の宛先（上位）:"; $CAT "$f" | awk '$6=="\"POST"{print $7}' | sed 's/?.*//' | sort | uniq -c | sort -rn | head -10
+            echo "wp-login.php への POST: $($CAT "$f" | grep -c '"POST /wp-login.php')"
+            echo "xmlrpc.php へのアクセス: $($CAT "$f" | grep -c 'xmlrpc.php')"
+            echo "uploads 内の .php へのアクセス: $($CAT "$f" | grep -cE 'wp-content/uploads/[^ ]*\.php')"
+            echo "500 エラー: $($CAT "$f" | awk '$9==500' | wc -l)"
+            echo "巨大なリクエスト本文や不審なパス（件数）: $($CAT "$f" | grep -ciE 'php://|base64_|eval\(|/\.env|\.git/|phpinfo|shell')"
+          done
+          EOF
