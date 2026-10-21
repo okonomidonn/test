@@ -4,6 +4,12 @@ name: Security check (read-only)
 # 個人情報（IPアドレス・メールアドレス）はログに出さず、件数や日時だけを出す。
 on:
   workflow_dispatch:
+  # 既定ブランチ以外では手動実行できないため、このファイルを更新したときにも動かす。
+  push:
+    branches:
+      - claude/zaito-job-site-uqgb9o
+    paths:
+      - ".github/workflows/security-check.yml"
 
 jobs:
   check:
