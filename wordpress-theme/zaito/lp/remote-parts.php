@@ -217,7 +217,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
       <?php endforeach; ?>
     </div></fieldset>
     </div>
-    <div class="pq" data-step="min_pay" data-hint="選んだ時給より低い求人は送りません">
+    <div class="pq" data-step="min_pay">
     <fieldset><legend>希望の時給</legend><div class="chips">
       <?php foreach ( $opts['min_pay'] as $o ) : ?>
         <label><input type="radio" name="min_pay" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
