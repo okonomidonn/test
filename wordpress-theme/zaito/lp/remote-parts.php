@@ -192,7 +192,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
       <?php endforeach; ?>
     </div></fieldset>
     </div>
-    <div class="stu pq" data-step="stu" data-hint="どちらも空欄のままで大丈夫です" data-optional="1" hidden>
+    <div class="stu pq" data-step="stu" data-optional="1" hidden>
       <fieldset><legend>学年</legend><div class="chips">
         <?php foreach ( $opts['grade'] as $o ) : ?>
           <label><input type="radio" name="grade" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
