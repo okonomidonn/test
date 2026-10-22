@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>事例：求人サイトzaito｜ChatGPT経由の人が成果の半分</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 11mm 12mm 10mm; }
+  :root { --ink: #1f2328; --sub: #57606a; --line: #d0d7de; --bg: #f6f8fa; --accent: #10a37f; --accent-bg: #e7f6f1; --gray: #afb8c1; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); background: #fff; font-family: "Noto Sans JP", sans-serif; font-size: 9.4pt; line-height: 1.55; }
+  .eyebrow { color: var(--accent); font-weight: 700; font-size: 8.5pt; letter-spacing: .05em; }
+  h1 { font-size: 19pt; line-height: 1.3; margin: 1mm 0 1.5mm; font-weight: 900; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .lead { color: var(--sub); margin: 0 0 3mm; }
+  h2 { font-size: 10.5pt; margin: 4mm 0 1.5mm; padding-left: 2mm; border-left: 3px solid var(--accent); }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5mm; }
+  .kpi { background: var(--bg); border-radius: 2mm; padding: 2.5mm 3mm; }
+  .kpi .k { font-size: 8pt; color: var(--sub); }
+  .kpi .v { font-size: 20pt; font-weight: 900; line-height: 1.15; }
+  .kpi .v small { font-size: 9pt; font-weight: 500; }
+  .kpi.hl { background: var(--accent-bg); }
+  .kpi.hl .v { color: var(--accent); }
+  .bars { margin-top: 2.5mm; }
+  .bar { display: grid; grid-template-columns: 38mm 1fr 14mm; align-items: center; gap: 2mm; margin: 1.2mm 0; }
+  .track { height: 5mm; background: var(--bg); border-radius: 1mm; overflow: hidden; }
+  .fill { height: 100%; background: var(--gray); }
+  .fill.a { background: var(--accent); }
+  .bar .n { font-weight: 700; text-align: right; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+  th, td { border-bottom: 1px solid var(--line); padding: 1mm 1.5mm; text-align: left; vertical-align: top; }
+  th { color: var(--sub); font-weight: 500; }
+  td.r, th.r { text-align: right; white-space: nowrap; }
+  tr.hl td { font-weight: 700; color: var(--accent); }
+  ol, ul { margin: 0; padding-left: 4.5mm; }
+  li { margin: .6mm 0; }
+  .tl td:first-child { white-space: nowrap; font-weight: 700; width: 13mm; }
+  .play td:first-child { width: 42%; color: var(--sub); }
+  .cta { margin-top: 4mm; background: var(--ink); color: #fff; border-radius: 2mm; padding: 3mm 4mm; display: grid; grid-template-columns: 1fr auto; gap: 4mm; align-items: center; }
+  .cta b { font-size: 11pt; }
+  .cta .c { font-size: 8.5pt; color: #d0d7de; white-space: nowrap; }
+  .note { color: var(--sub); font-size: 7.3pt; margin-top: 2.5mm; line-height: 1.45; }
+</style>
+</head>
+<body>
+
+<div class="eyebrow">AI検索対策（GEO）事例｜Webサービス</div>
+<h1>ChatGPT経由の人は、ユーザーの<em>15%</em>。<br>なのに、成果の<em>52%</em>を生んでいました。</h1>
+<p class="lead">完全在宅の求人だけを集めたサイト「zaito」（自社運営・2026年8月開設）。Google検索ではほとんど出てこない新しいサイトですが、ChatGPTから人が来て、そのまま求人に反応しています。</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="k">ChatGPT経由のユーザー</div><div class="v">68<small>人 / 469人</small></div></div>
+  <div class="kpi hl"><div class="k">ChatGPT経由のキーイベント（興味あり・応募など）</div><div class="v">49<small>件 / 95件</small></div></div>
+  <div class="kpi hl"><div class="k">1人あたりの成果（全体平均との比較）</div><div class="v">約3.6<small>倍</small></div></div>
+</div>
+
+<div class="bars">
+  <div class="bar"><span>ユーザー数に占める割合</span><div class="track"><div class="fill" style="width:14.5%"></div></div><span class="n">14.5%</span></div>
+  <div class="bar"><span>成果に占める割合</span><div class="track"><div class="fill a" style="width:51.6%"></div></div><span class="n">51.6%</span></div>
+</div>
+
+<div class="cols">
+  <div>
+    <h2>ChatGPTは「個別のページ」を紹介していた</h2>
+    <table>
+      <tr><th>ChatGPT経由で見られたページ</th><th class="r">ページ数</th><th class="r">表示</th><th class="r">成果</th></tr>
+      <tr class="hl"><td>求人ページ（1件1ページ）</td><td class="r">46</td><td class="r">140</td><td class="r">46件</td></tr>
+      <tr><td>トップページ</td><td class="r">1</td><td class="r">45</td><td class="r">2件</td></tr>
+      <tr><td>条件別の一覧</td><td class="r">2</td><td class="r">10</td><td class="r">1件</td></tr>
+      <tr><td>FAQ・解説記事</td><td class="r">0</td><td class="r">0</td><td class="r">0件</td></tr>
+    </table>
+    <p class="note" style="margin-top:1mm">1ページあたり1〜10人ずつ、46件に散らばっています。「〇〇の完全在宅の仕事」のような細かい質問に、答えを持っているのがzaitoのページだけだったため紹介された、と考えています。成果の94%が求人ページで起きています。</p>
+
+    <h2>やったこと</h2>
+    <table class="tl">
+      <tr><td>10/8</td><td>「完全在宅だけ」に絞り、一文で言える立ち位置に</td></tr>
+      <tr><td>10/12</td><td>求人を1件1ページにし、構造化データ（JobPosting）を追加</td></tr>
+      <tr><td>10/14頃</td><td><b>ChatGPT経由の流入が始まる</b></td></tr>
+      <tr><td>10/17</td><td>AI向け案内ファイル（llms.txt）・FAQを追加 → さらに増加</td></tr>
+    </table>
+  </div>
+  <div>
+    <h2>なぜ紹介されたのか</h2>
+    <ol>
+      <li><b>ほかに答えがない情報を持っていた</b><br>大手に載っていない企業の求人を、仕事内容・条件・確認日つきで1件ずつ掲載。</li>
+      <li><b>一文で説明できた</b><br>「出社が一切ない仕事だけ」を全ページで同じ言葉で書いた。</li>
+      <li><b>AIが読み取りやすい作り</b><br>本文をHTMLで書き、構造化データとllms.txtで中身を明示。</li>
+    </ol>
+
+    <h2>御社のサービスに当てはめると</h2>
+    <table class="play">
+      <tr><th>zaito</th><th>御社でやること</th></tr>
+      <tr><td>求人を1件1ページ</td><td>事例・対応範囲・料金・機能・比較を、それぞれ独立したページに</td></tr>
+      <tr><td>「完全在宅だけ」の一文</td><td>「誰の・何を・他と何が違うか」の一文を決め、全ページで統一</td></tr>
+      <tr><td>JobPosting・llms.txt</td><td>サービスに合う構造化データ（SoftwareApplication・Product・FAQPage等）とllms.txt</td></tr>
+      <tr><td>アクセス解析で確認</td><td>ChatGPT経由の人数・着地ページ・成果を毎月計測</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="cta">
+  <div><b>無料診断：御社のサービスは、AIに紹介されていますか？</b><br>
+  利用者がAIに聞きそうな質問で、御社が紹介されるかを実際に計測し、直すべきページをお伝えします。</div>
+  <div class="c">担当：<br>連絡先：</div>
+</div>
+
+<p class="note">数値の出典：Googleアナリティクス4（2026年9月24日〜10月21日の28日間）。ChatGPT経由＝セッションの参照元が chatgpt.com。キーイベントは「興味あり」登録・応募など、サイトで設定した成果。ページ別の数は閲覧ページで集計（着地ページではありません）。開設まもないサイトの短期間・少数のデータで、広告の開始時期とも重なるため、施策と流入増の因果は確定していません。AIの回答は毎回変わるため、同じ結果をお約束するものではありません。</p>
+
+</body>
+</html>
