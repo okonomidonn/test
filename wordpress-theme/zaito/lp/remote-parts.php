@@ -200,7 +200,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
       </div></fieldset>
       <label class="lb" for="zschool">学校名</label>
       <input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" placeholder="例：〇〇大学" aria-describedby="zschool-note" data-schools="<?php echo esc_url( zaito_lp_asset( 'schools.json' ) ); ?>">
-      <p class="school-note" id="zschool-note">学校名を入れておくと、あなたの学校の学生を探している企業の求人が届きやすくなります。名前やメールアドレスが企業に伝わることはありません。</p>
+      <p class="school-note" id="zschool-note">あなたの学校向けの求人が届きやすくなります</p>
       <script src="<?php echo esc_url( zaito_lp_asset( 'school-suggest.js' ) ); ?>" defer></script>
     </div>
     <div class="pq" data-step="interests" data-hint="いくつ選んでもかまいません">
