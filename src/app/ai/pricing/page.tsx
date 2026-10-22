@@ -34,13 +34,13 @@ export default function PricingPage() {
     <div className="space-y-12">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-slate-900">料金プラン</h1>
-        <p className="mt-2 text-base text-slate-600">自分で計測する「ツール」と、計測から改善まで任せる「おまかせ」があります。</p>
+        <p className="mt-2 text-base text-slate-700">自分で計測する「ツール」と、計測から改善まで任せる「おまかせ」があります。</p>
       </div>
 
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900">ツール（自分で使う）</h2>
-          <p className="mt-1 text-sm text-slate-600">お店・Webサービス共通。いつでも解約でき、契約期間の縛りはありません。</p>
+          <p className="mt-1 text-sm text-slate-700">お店・Webサービス共通。いつでも解約でき、契約期間の縛りはありません。</p>
         </div>
         <PlanTable
           action={(p) => (
@@ -57,7 +57,7 @@ export default function PricingPage() {
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900">おまかせ（代行）</h2>
-          <p className="mt-1 text-sm text-slate-600">計測・改善の作業をまとめてお任せいただけます。内容を伺ってからお見積もりします（税別）。</p>
+          <p className="mt-1 text-sm text-slate-700">計測・改善の作業をまとめてお任せいただけます。内容を伺ってからお見積もりします（税別）。</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {SERVICES.map((s) => (
@@ -72,7 +72,7 @@ export default function PricingPage() {
                   </div>
                 ))}
               </dl>
-              <p className="mt-3 text-sm text-slate-600">{s.note}</p>
+              <p className="mt-3 text-sm text-slate-700">{s.note}</p>
             </div>
           ))}
         </div>
@@ -82,12 +82,12 @@ export default function PricingPage() {
               おまかせについて相談する
             </a>
           ) : (
-            <p className="text-sm text-slate-600">ご相談は担当者までご連絡ください。</p>
+            <p className="text-sm text-slate-700">ご相談は担当者までご連絡ください。</p>
           )}
         </div>
       </section>
 
-      <ul className="mx-auto max-w-2xl list-disc space-y-1 pl-5 text-sm text-slate-600">
+      <ul className="mx-auto max-w-2xl list-disc space-y-1 pl-5 text-sm text-slate-700">
         <li>ツールのお支払いはクレジットカード（Stripe）です。毎月、申し込み日と同じ日に自動で更新されます。</li>
         <li>ツールの解約は契約管理画面からいつでもでき、その月の終わりまでご利用いただけます。日割りでの返金はありません。</li>
         <li>AIの回答は毎回変わります。計測結果は目安で、紹介や来店・問い合わせの増加をお約束するものではありません。</li>

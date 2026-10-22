@@ -20,3 +20,11 @@ body {
   color: var(--foreground);
   font-family: var(--font-noto-sans-jp), "Hiragino Sans", "Yu Gothic", sans-serif;
 }
+
+/* AI検索チェックの画面は、文字を一回り大きくして読みやすくする（SocialDeskの画面には影響しない） */
+.ai-scope {
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  line-height: 1.7;
+}

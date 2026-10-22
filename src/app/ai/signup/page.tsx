@@ -7,11 +7,11 @@ export default async function AiSignupPage({ searchParams }: PageProps<"/ai/sign
   return (
     <div className="mx-auto max-w-md py-8">
       <h1 className="text-2xl font-bold text-slate-900">無料で登録</h1>
-      <p className="mt-2 text-sm text-slate-500">登録後、{isWeb ? "サービス" : "お店"}の情報を入力すると計測を始められます。カード登録は不要です。</p>
+      <p className="mt-2 text-sm text-slate-600">登録後、{isWeb ? "サービス" : "お店やサービス"}の情報を入力すると計測を始められます。カード登録は不要です。</p>
       <div className={`mt-6 ${cardClass}`}>
         <SignupForm kind={isWeb ? "web" : undefined} />
       </div>
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-slate-600">
         登録済みの方は{" "}
         <Link href="/ai/login" className="font-semibold text-brand hover:underline">
           ログイン

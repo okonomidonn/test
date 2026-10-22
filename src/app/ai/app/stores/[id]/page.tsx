@@ -37,11 +37,11 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/ai/app" className="text-sm text-slate-500 hover:underline">
+        <Link href="/ai/app" className="text-sm text-slate-600 hover:underline">
           ← 登録一覧
         </Link>
         <h1 className="mt-1 text-2xl font-bold">{store.name}</h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-600">
           {store.kind === "WEB" ? (
             <>
               Webサービス・{store.genre}
@@ -56,13 +56,15 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
         </p>
       </div>
 
+      <NextStep storeId={id} hasUrl={!!store.websiteUrl} />
+
       <nav className="flex gap-1 overflow-x-auto border-b border-slate-200 text-sm">
         {TABS.map((t) => (
           <Link
             key={t.key}
             href={`/ai/app/stores/${id}?tab=${t.key}`}
             className={`whitespace-nowrap border-b-2 px-4 py-2.5 font-semibold ${
-              tab === t.key ? "border-brand text-brand" : "border-transparent text-slate-500 hover:text-slate-800"
+              tab === t.key ? "border-brand text-brand" : "border-transparent text-slate-600 hover:text-slate-800"
             }`}
           >
             {t.label}
@@ -75,6 +77,39 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
       {tab === "improve" && <ImproveTab storeId={id} hasUrl={!!store.websiteUrl} kind={store.kind} />}
       {tab === "settings" && <SettingsTab storeId={id} userId={user.id} isTeam={user.role === "TEAM"} />}
     </div>
+  );
+}
+
+// 画面を開いたときに「次に何をすればいいか」を1つだけ大きく示す
+async function NextStep({ storeId, hasUrl }: { storeId: string; hasUrl: boolean }) {
+  const [stats, audit] = await Promise.all([
+    storeStats(storeId),
+    prisma.siteAudit.findFirst({ where: { storeId }, orderBy: { createdAt: "desc" } }),
+  ]);
+  const running = stats.runs.find((r) => r.status === "RUNNING");
+  const base = `/ai/app/stores/${storeId}`;
+  const issues = ((audit?.checks ?? []) as AuditCheck[]).filter((c) => c.status !== "ok").length;
+  const missed = stats.questions.filter((q) => q.hits === 0).length;
+
+  let step: { text: string; href: string; label: string };
+  if (running) step = { text: `AIに聞いて計測しています（${running.done}/${running.total}）。終わるまで数分かかります。`, href: `${base}/runs/${running.id}`, label: "進み具合を見る" };
+  else if (!hasUrl) step = { text: "公式サイトのURLを登録しましょう。サイト診断と、AIが公式サイトを参考にしたかの判定に使います。", href: `${base}?tab=settings`, label: "設定を開く" };
+  else if (!audit) step = { text: "まず公式サイトを診断しましょう。無料で、30秒ほどで終わります。", href: `${base}?tab=improve`, label: "サイトを診断する" };
+  else if (!stats.latest && enabledEngines().length > 0) step = { text: "AIに質問して、紹介されているかを計測しましょう。", href: `${base}?tab=check`, label: "計測を始める" };
+  else if (issues > 0) step = { text: `サイト診断で直すとよい点が${issues}個あります。上から順に直しましょう。`, href: `${base}?tab=improve`, label: "直す点を見る" };
+  else if (missed > 0) step = { text: `紹介されなかった質問が${missed}問あります。答えになる内容をサイトに書き足しましょう。`, href: `${base}?tab=improve`, label: "改善の提案を見る" };
+  else step = { text: "よい状態です。週に1回計測して、紹介され続けているかを確かめましょう。", href: `${base}?tab=check`, label: "計測結果を見る" };
+
+  return (
+    <section className="flex flex-col gap-4 rounded-xl border border-indigo-200 bg-indigo-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-bold text-brand">次にやること</p>
+        <p className="mt-1 text-base font-semibold text-slate-900">{step.text}</p>
+      </div>
+      <Link href={step.href} className="shrink-0 rounded-lg bg-brand px-5 py-3 text-center font-semibold text-white hover:bg-brand-dark">
+        {step.label}
+      </Link>
+    </section>
   );
 }
 
@@ -100,7 +135,7 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
       <section className={`${cardClass} flex flex-wrap items-center justify-between gap-4`}>
         <div>
           <h2 className="font-bold">AIに聞いて計測</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-600">
             登録した質問を{engines.length ? engines.map((e) => ENGINE_LABELS[e]).join("・") : "AI"}に聞き、{t.target}が紹介されたかを記録します。1問30秒〜2分ほどかかります。
           </p>
         </div>
@@ -112,7 +147,7 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
           <div className="space-y-1 text-right">
             <StartRunForm action={startRun.bind(null, storeId)} isTeam={isTeam} disabledReason={disabledReason} />
             {quota && (
-              <p className="text-xs text-slate-500">
+              <p className="text-sm text-slate-600">
                 {quota.plan.name}プラン：30日間で{quota.usedThisMonth} / {quota.plan.runsPerMonth}回使用・
                 <Link href="/ai/app/billing" className="font-semibold text-brand hover:underline">
                   プランを見る
@@ -124,14 +159,14 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
       </section>
 
       {!stats.latest ? (
-        <p className={`${cardClass} text-center text-sm text-slate-500`}>まだ計測結果がありません。上のボタンから計測を始めてください。</p>
+        <p className={`${cardClass} text-center text-sm text-slate-600`}>まだ計測結果がありません。上のボタンから計測を始めてください。</p>
       ) : (
         <>
           <section className="grid gap-4 sm:grid-cols-3">
             <div className={cardClass}>
-              <p className="text-sm text-slate-500">最新の推薦率</p>
+              <p className="text-sm text-slate-600">最新の推薦率</p>
               <p className="mt-1 text-3xl font-bold text-slate-900">{pct(stats.latest.targetHits, stats.latest.answers)}%</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm text-slate-600">
                 {stats.latest.answers}回答中 {stats.latest.targetHits}回（{fmtDate(stats.latest.createdAt)}）
               </p>
             </div>
@@ -139,9 +174,9 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
               const v = latestByEngine[e];
               return (
                 <div key={e} className={cardClass}>
-                  <p className="text-sm text-slate-500">{ENGINE_LABELS[e]}</p>
+                  <p className="text-sm text-slate-600">{ENGINE_LABELS[e]}</p>
                   <p className="mt-1 text-3xl font-bold text-slate-900">{v ? `${pct(v.hits, v.total)}%` : "—"}</p>
-                  <p className="text-xs text-slate-500">{v ? `${v.total}回答中 ${v.hits}回` : "最新の計測なし"}</p>
+                  <p className="text-sm text-slate-600">{v ? `${v.total}回答中 ${v.hits}回` : "最新の計測なし"}</p>
                 </div>
               );
             })}
@@ -162,10 +197,10 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
 
           <section className={cardClass}>
             <h2 className="font-bold">質問ごとの結果（最新の計測）</h2>
-            <p className="mt-1 text-xs text-slate-500">紹介されなかった質問が、改善のねらい目です。</p>
+            <p className="mt-1 text-sm text-slate-600">紹介されなかった質問が、改善のねらい目です。</p>
             <table className="mt-3 w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-left text-xs text-slate-500">
+                <tr className="border-b border-slate-200 text-left text-sm text-slate-600">
                   <th className="py-2 font-medium">質問</th>
                   <th className="py-2 text-right font-medium">紹介された回数</th>
                   <th className="py-2 text-right font-medium">順位</th>
@@ -176,11 +211,11 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
                   <tr key={q.no} className="border-b border-slate-100">
                     <td className="py-2 pr-3 text-slate-700">{q.text}</td>
                     <td className="py-2 text-right">
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${q.hits ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+                      <span className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${q.hits ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
                         {q.hits ? `${q.hits} / ${q.total}` : "紹介なし"}
                       </span>
                     </td>
-                    <td className="py-2 text-right text-xs text-slate-600">{q.ranks.length ? q.ranks.map((r) => `${r}位`).join("・") : q.hits ? "本文で言及" : "—"}</td>
+                    <td className="py-2 text-right text-sm text-slate-700">{q.ranks.length ? q.ranks.map((r) => `${r}位`).join("・") : q.hits ? "本文で言及" : "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -193,23 +228,23 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
           <div className="grid gap-6 lg:grid-cols-2">
             <section className={cardClass}>
               <h2 className="font-bold">競合との比較（最新の計測）</h2>
-              <p className="mt-1 text-xs text-slate-500">何回の回答で紹介されたか</p>
+              <p className="mt-1 text-sm text-slate-600">何回の回答で紹介されたか</p>
               <div className="mt-4">
                 {stats.competitors.length ? (
                   <BarList rows={competitorRows} max={shopMax} />
                 ) : (
-                  <p className="text-sm text-slate-500">「設定」で{t.competitor}を登録すると表示されます。</p>
+                  <p className="text-sm text-slate-600">「設定」で{t.competitor}を登録すると表示されます。</p>
                 )}
               </div>
             </section>
             <section className={cardClass}>
               <h2 className="font-bold">{t.frequent}</h2>
-              <p className="mt-1 text-xs text-slate-500">最新の計測で2回以上名前が出たもの（自動抽出のため、名前以外が混ざることがあります）</p>
+              <p className="mt-1 text-sm text-slate-600">最新の計測で2回以上名前が出たもの（自動抽出のため、名前以外が混ざることがあります）</p>
               <div className="mt-4">
                 {stats.frequentShops.length ? (
                   <BarList rows={stats.frequentShops.map((s) => ({ label: s.label, value: s.count }))} max={shopMax} />
                 ) : (
-                  <p className="text-sm text-slate-500">まだありません。</p>
+                  <p className="text-sm text-slate-600">まだありません。</p>
                 )}
               </div>
             </section>
@@ -217,20 +252,20 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
         </>
       )}
 
-      <p className="text-xs text-slate-400">
+      <p className="text-sm text-slate-500">
         ※ AIの回答は毎回変わります。推薦率は決まった質問で測った目安で、すべての利用者への表示確率ではありません。APIでの回答はアプリの回答と完全には一致しない場合があります。
       </p>
     </div>
   );
 }
 
-const KIND_STYLE = { official: "bg-indigo-50 text-indigo-700", platform: "bg-amber-50 text-amber-800", other: "bg-slate-100 text-slate-600" } as const;
+const KIND_STYLE = { official: "bg-indigo-50 text-indigo-700", platform: "bg-amber-50 text-amber-800", other: "bg-slate-100 text-slate-700" } as const;
 
 async function SourcesTab({ storeId, kind }: { storeId: string; kind: TargetKind }) {
   const stats = await storeStats(storeId);
   const KIND_LABEL = { official: "公式サイト", platform: TERMS[kind].platform, other: "その他（まとめ記事など）" } as const;
   if (stats.sources.length === 0) {
-    return <p className={`${cardClass} text-center text-sm text-slate-500`}>計測すると、AIが参考にしたページがここに表示されます。</p>;
+    return <p className={`${cardClass} text-center text-sm text-slate-600`}>計測すると、AIが参考にしたページがここに表示されます。</p>;
   }
   const kinds = (["official", "platform", "other"] as const).map((k) => ({
     kind: k,
@@ -242,21 +277,21 @@ async function SourcesTab({ storeId, kind }: { storeId: string; kind: TargetKind
     <div className="space-y-6">
       <section className="grid gap-4 sm:grid-cols-4">
         <div className={cardClass}>
-          <p className="text-sm text-slate-500">参照の総数</p>
+          <p className="text-sm text-slate-600">参照の総数</p>
           <p className="mt-1 text-3xl font-bold">{stats.totalSources}</p>
         </div>
         {kinds.map((k) => (
           <div key={k.kind} className={cardClass}>
-            <p className="text-sm text-slate-500">{KIND_LABEL[k.kind]}</p>
+            <p className="text-sm text-slate-600">{KIND_LABEL[k.kind]}</p>
             <p className="mt-1 text-3xl font-bold">{stats.totalSources ? Math.round((k.count / stats.totalSources) * 100) : 0}%</p>
-            <p className="text-xs text-slate-500">{k.count}件</p>
+            <p className="text-sm text-slate-600">{k.count}件</p>
           </div>
         ))}
       </section>
 
       <section className={cardClass}>
         <h2 className="font-bold">よく参考にされたサイト</h2>
-        <p className="mt-1 text-xs text-slate-500">{TERMS[kind].sourcesHint}</p>
+        <p className="mt-1 text-sm text-slate-600">{TERMS[kind].sourcesHint}</p>
         <div className="mt-4">
           <BarList rows={stats.sources.slice(0, 15).map((s) => ({ label: s.domain, value: s.count, highlight: s.kind === "official", note: KIND_LABEL[s.kind] }))} max={max} />
         </div>
@@ -266,7 +301,7 @@ async function SourcesTab({ storeId, kind }: { storeId: string; kind: TargetKind
         <h2 className="font-bold">ページ一覧</h2>
         <table className="mt-3 w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 text-left text-xs text-slate-500">
+            <tr className="border-b border-slate-200 text-left text-sm text-slate-600">
               <th className="py-2 font-medium">ページ</th>
               <th className="py-2 font-medium">種類</th>
               <th className="py-2 text-right font-medium">回数</th>
@@ -286,9 +321,9 @@ async function SourcesTab({ storeId, kind }: { storeId: string; kind: TargetKind
                     )}
                   </td>
                   <td className="py-2">
-                    <span className={`rounded-full px-2 py-0.5 text-xs ${KIND_STYLE[s.kind]}`}>{KIND_LABEL[s.kind]}</span>
+                    <span className={`rounded-full px-2 py-0.5 text-sm ${KIND_STYLE[s.kind]}`}>{KIND_LABEL[s.kind]}</span>
                   </td>
-                  <td className="py-2 text-right text-slate-600">{n}</td>
+                  <td className="py-2 text-right text-slate-700">{n}</td>
                 </tr>
               )),
             )}
@@ -316,7 +351,7 @@ async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: 
       <section className={`${cardClass} flex flex-wrap items-center justify-between gap-4`}>
         <div>
           <h2 className="font-bold">公式サイトの診断</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-600">
             {kind === "WEB"
               ? "AIが読む公式サイトに、一文の立ち位置・強み・1件1ページの情報・構造化データ・llms.txtがそろっているかを確認します。"
               : "AIが読む公式サイトに、紹介に必要な情報が文字で書かれているかを確認します。"}
@@ -329,23 +364,23 @@ async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: 
         <section className={cardClass}>
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
-              <p className="text-sm text-slate-500">サイト診断スコア</p>
+              <p className="text-sm text-slate-600">サイト診断スコア</p>
               <p className="text-4xl font-bold text-slate-900">
                 {audit.score}
-                <span className="text-base font-medium text-slate-400"> / 100</span>
+                <span className="text-base font-medium text-slate-500"> / 100</span>
               </p>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm text-slate-600">
               {fmtDate(audit.createdAt)}に診断・{audit.url}
             </p>
           </div>
           <ul className="mt-5 divide-y divide-slate-100">
             {[...checks].sort((a, b) => order[a.status] - order[b.status]).map((c) => (
               <li key={c.key} className="grid gap-1 py-3 sm:grid-cols-[6rem_1fr]">
-                <span className={`h-fit w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[c.status]}`}>{STATUS_LABEL[c.status]}</span>
+                <span className={`h-fit w-fit rounded-full px-2.5 py-0.5 text-sm font-semibold ${STATUS_STYLE[c.status]}`}>{STATUS_LABEL[c.status]}</span>
                 <div>
                   <p className="font-semibold text-slate-900">{c.title}</p>
-                  <p className="text-sm text-slate-600">{c.detail}</p>
+                  <p className="text-sm text-slate-700">{c.detail}</p>
                   {c.fix && <p className="mt-1 text-sm text-slate-800">→ {c.fix}</p>}
                 </div>
               </li>
@@ -359,7 +394,7 @@ async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: 
         {stats.latest ? (
           missed.length ? (
             <>
-              <p className="mt-1 text-sm text-slate-500">{TERMS[kind].missedHint}</p>
+              <p className="mt-1 text-sm text-slate-600">{TERMS[kind].missedHint}</p>
               <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">
                 {missed.map((q) => (
                   <li key={q.no}>{q.text}</li>
@@ -367,10 +402,10 @@ async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: 
               </ul>
             </>
           ) : (
-            <p className="mt-1 text-sm text-slate-600">最新の計測では、すべての質問で紹介されました。</p>
+            <p className="mt-1 text-sm text-slate-700">最新の計測では、すべての質問で紹介されました。</p>
           )
         ) : (
-          <p className="mt-1 text-sm text-slate-500">計測するとここに表示されます。</p>
+          <p className="mt-1 text-sm text-slate-600">計測するとここに表示されます。</p>
         )}
       </section>
     </div>
@@ -399,7 +434,7 @@ async function SettingsTab({ storeId, userId, isTeam }: { storeId: string; userI
         </section>
         <section className={cardClass}>
           <h2 className="mb-1 font-bold">登録の削除</h2>
-          <p className="mb-3 text-sm text-slate-500">計測結果もすべて削除されます。</p>
+          <p className="mb-3 text-sm text-slate-600">計測結果もすべて削除されます。</p>
           <form action={deleteStore.bind(null, storeId)}>
             <ConfirmButton message="この登録と計測結果をすべて削除します。よろしいですか？" className={dangerButtonClass}>
               削除する

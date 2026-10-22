@@ -4,27 +4,36 @@ import { StoreForm, WebServiceForm } from "@/components/ai/forms";
 import { cardClass } from "@/components/ui";
 import { requireAccount } from "@/lib/session";
 
+const KINDS = [
+  { key: "restaurant", href: "/ai/app/new", title: "お店", body: "飲食店など、場所のあるお店" },
+  { key: "web", href: "/ai/app/new?kind=web", title: "Webサービス", body: "求人サイト・SaaS・予約サイトなど" },
+] as const;
+
 export default async function NewStorePage({ searchParams }: PageProps<"/ai/app/new">) {
   await requireAccount();
   const isWeb = (await searchParams).kind === "web";
-  const tab = (active: boolean) =>
-    `rounded-lg px-4 py-2 text-sm font-semibold ${active ? "bg-brand text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"}`;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">{isWeb ? "Webサービスを登録" : "お店を登録"}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          {isWeb ? "カテゴリ・対象・強みから" : "エリアと業態から"}、AIに聞く質問を自動で作ります（あとで変更できます）。
-        </p>
+        <h1 className="text-2xl font-bold">登録する</h1>
+        <p className="mt-1 text-slate-700">何を登録するかを選んでください。入力した内容から、AIに聞く質問を自動で作ります（あとで変更できます）。</p>
       </div>
-      <div className="flex gap-2">
-        <Link href="/ai/app/new" className={tab(!isWeb)}>
-          飲食店
-        </Link>
-        <Link href="/ai/app/new?kind=web" className={tab(isWeb)}>
-          Webサービス
-        </Link>
+      <div className="grid grid-cols-2 gap-3">
+        {KINDS.map((k) => {
+          const active = (k.key === "web") === isWeb;
+          return (
+            <Link
+              key={k.key}
+              href={k.href}
+              aria-current={active ? "page" : undefined}
+              className={`rounded-xl border-2 p-4 ${active ? "border-brand bg-indigo-50" : "border-slate-200 bg-white hover:border-slate-300"}`}
+            >
+              <span className={`block text-lg font-bold ${active ? "text-brand" : "text-slate-900"}`}>{k.title}</span>
+              <span className="mt-0.5 block text-sm text-slate-700">{k.body}</span>
+            </Link>
+          );
+        })}
       </div>
       <div className={cardClass}>
         {isWeb ? <WebServiceForm action={createStore} submitLabel="登録して質問を作る" /> : <StoreForm action={createStore} submitLabel="登録して質問を作る" />}

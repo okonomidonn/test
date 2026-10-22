@@ -23,7 +23,7 @@ export default async function StoresPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">登録一覧</h1>
-          <p className="mt-1 text-sm text-slate-500">お店・Webサービスごとに、AIでの紹介状況と改善点を確認できます。</p>
+          <p className="mt-1 text-sm text-slate-600">お店・Webサービスごとに、AIでの紹介状況と改善点を確認できます。</p>
         </div>
         <Link href="/ai/app/new" className={primaryButtonClass}>
           追加する
@@ -32,7 +32,7 @@ export default async function StoresPage() {
 
       {stores.length === 0 ? (
         <div className={`${cardClass} text-center`}>
-          <p className="text-sm text-slate-600">まだ登録がありません。</p>
+          <p className="text-sm text-slate-700">まだ登録がありません。</p>
           <div className="mt-4 flex justify-center gap-3">
             <Link href="/ai/app/new" className={primaryButtonClass}>
               お店を登録する
@@ -50,14 +50,14 @@ export default async function StoresPage() {
             return (
               <Link key={s.id} href={`/ai/app/stores/${s.id}`} className={`${cardClass} block hover:ring-2 hover:ring-indigo-100`}>
                 <p className="font-bold text-slate-900">{s.name}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-sm text-slate-600">
                   {s.kind === "WEB" ? `Webサービス・${s.genre}` : `${s.area}・${s.genre}`}
                 </p>
-                <p className="mt-4 text-xs text-slate-500">最新の推薦率</p>
+                <p className="mt-4 text-sm text-slate-600">最新の推薦率</p>
                 <p className="text-2xl font-bold text-slate-900">
                   {answers.length ? `${Math.round((hits / answers.length) * 100)}%` : "未計測"}
                 </p>
-                {answers.length > 0 && <p className="text-xs text-slate-500">{answers.length}回答中 {hits}回</p>}
+                {answers.length > 0 && <p className="text-sm text-slate-600">{answers.length}回答中 {hits}回</p>}
               </Link>
             );
           })}

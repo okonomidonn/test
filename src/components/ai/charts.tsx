@@ -25,7 +25,7 @@ export function TrendChart({ points, series }: { points: TrendPoint[]; series: {
   return (
     <div className="relative">
       {series.length > 1 && (
-        <div className="mb-2 flex flex-wrap gap-4 text-xs text-slate-600">
+        <div className="mb-2 flex flex-wrap gap-4 text-sm text-slate-700">
           {series.map((s, i) => (
             <span key={s.key} className="inline-flex items-center gap-1.5">
               <svg width="16" height="4" aria-hidden>
@@ -89,17 +89,17 @@ export function TrendChart({ points, series }: { points: TrendPoint[]; series: {
       </svg>
       {hover !== null && (
         <div
-          className="pointer-events-none absolute top-6 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs shadow-md"
+          className="pointer-events-none absolute top-6 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-md"
           style={{ left: `${(x(hover) / W) * 100}%`, transform: "translateX(-50%)" }}
         >
-          <p className="mb-1 text-slate-500">{points[hover].label}</p>
+          <p className="mb-1 text-slate-600">{points[hover].label}</p>
           {series.map((s, i) => (
             <p key={s.key} className="flex items-center gap-2">
               <svg width="12" height="4" aria-hidden>
                 <line x1="0" y1="2" x2="12" y2="2" stroke={SERIES_COLORS[i]} strokeWidth="2" />
               </svg>
               <strong className="text-slate-900">{points[hover].values[s.key] == null ? "—" : `${points[hover].values[s.key]}%`}</strong>
-              <span className="text-slate-500">{s.label}</span>
+              <span className="text-slate-600">{s.label}</span>
             </p>
           ))}
         </div>
@@ -136,8 +136,8 @@ export function BarList({ rows, max }: { rows: { label: string; value: number; h
               }}
             />
           </span>
-          <span className="w-16 text-right text-xs text-slate-600">
-            {r.value}回{hover === i && r.note ? <span className="block text-slate-400">{r.note}</span> : null}
+          <span className="w-16 text-right text-sm text-slate-700">
+            {r.value}回{hover === i && r.note ? <span className="block text-slate-500">{r.note}</span> : null}
           </span>
         </li>
       ))}
