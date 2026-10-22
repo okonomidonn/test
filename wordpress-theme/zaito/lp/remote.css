@@ -643,3 +643,4 @@ body.has-sbar{padding-bottom:96px}
  .guide .g-table th:first-child{width:26%}
  .guide .g-table td:has(.g-level){width:20%}
 }
+.school-note{margin:8px 0 0;font-size:13px;line-height:1.7;color:var(--z-text-3)}
