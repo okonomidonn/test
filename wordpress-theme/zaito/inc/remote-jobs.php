@@ -643,7 +643,8 @@ function zaito_remote_jobs() {
             'contract' => 'アルバイト',
             'url'      => 'https://herp.careers/careers/companies/zeals/jobs/1qibks78X2Q0',
             'listed'   => '2026-10-08',
-            'checked'  => '2026-10-08',
+            'checked'  => '2026-10-22',
+            'closed'   => true, // 2026-10-22 募集ページが削除されていた
         ),
         array(
             'slug'     => 'hackazouk-web-designer',
@@ -947,7 +948,8 @@ function zaito_remote_jobs() {
             'contract' => 'アルバイト',
             'url'      => 'https://renew-career.com/companies/512/joboffers/1556',
             'listed'   => '2026-10-13',
-            'checked'  => '2026-10-13',
+            'checked'  => '2026-10-22',
+            'closed'   => true, // 2026-10-22 募集ページに「募集を終了しました」と表示
         ),
         array(
             'slug'     => 'timers-school-sales',
@@ -1376,7 +1378,8 @@ function zaito_remote_jobs() {
             'contract' => 'アルバイト',
             'url'      => 'https://herp.careers/careers/companies/jmty/jobs/udPBHkavP7o4',
             'listed'   => '2026-10-13',
-            'checked'  => '2026-10-13',
+            'checked'  => '2026-10-22',
+            'closed'   => true, // 2026-10-22 募集ページが削除されていた
             'caution'  => '個室で働けることと、自宅の固定回線（ポケットWi-Fiは不可）が必要です。',
         ),
         array(
@@ -1482,7 +1485,8 @@ function zaito_remote_jobs() {
             'contract' => 'アルバイト（業務委託も相談可）',
             'url'      => 'https://hrmos.co/pages/uzabase/jobs/MIMIR_008',
             'listed'   => '2026-10-16',
-            'checked'  => '2026-10-16',
+            'checked'  => '2026-10-22',
+            'closed'   => true, // 2026-10-22 募集ページが削除されていた
         ),
         array(
             'slug'     => 'mimir-office-assistant',
@@ -1497,7 +1501,8 @@ function zaito_remote_jobs() {
             'contract' => 'アルバイト',
             'url'      => 'https://hrmos.co/pages/uzabase/jobs/MIMIR_002',
             'listed'   => '2026-10-16',
-            'checked'  => '2026-10-16',
+            'checked'  => '2026-10-22',
+            'closed'   => true, // 2026-10-22 募集ページが削除されていた
         ),
         array(
             'slug'     => 'upforward-assistant',
@@ -1557,7 +1562,8 @@ function zaito_remote_jobs() {
             'contract' => '業務委託',
             'url'      => 'https://herp.careers/careers/companies/mimosa/jobs/cpFRsnXp7bn6',
             'listed'   => '2026-10-19',
-            'checked'  => '2026-10-19',
+            'checked'  => '2026-10-22',
+            'closed'   => true, // 2026-10-22 募集ページが削除されていた
             'caution'  => '業務委託・1本ごとの報酬のため、時給の保証はありません。',
         ),
         array(
