@@ -62,6 +62,10 @@ function zaito_remote_job_tags() {
         'gorlem-estimate-sorting'  => array( 'tanjikan' ),
         'merrybiz-remote-accounting' => array( 'tanjikan' ),
         'shiftai-counter-sales'    => array( 'mikeiken' ),
+        'tential-cs-shortterm'     => array( 'mikeiken' ),
+        'fermelanta-ceo-office-intern' => array( 'tanjikan' ),
+        'replus-ai-automation-intern'  => array( 'tanjikan' ),
+        'andgo-software-engineer-intern' => array( 'tanjikan' ),
     );
 }
 
