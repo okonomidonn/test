@@ -158,16 +158,29 @@ enum AnswerStatus {
   ERROR
 }
 
+// 計測する対象の種類（飲食店か、Webサービスか）。質問の作り方とサイト診断の項目が変わる。
+enum StoreKind {
+  RESTAURANT
+  WEB
+}
+
 model Store {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   ownerId     String
-  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  kind        StoreKind @default(RESTAURANT)
   name        String
   // 回答内で店舗を見つけるための別表記（読み仮名・英語表記・略称など）
   aliases     String[]
+  // 飲食店のみ。Webサービスは空文字
   area        String
   station     String?
+  // 飲食店は業態、Webサービスはカテゴリ（例：求人サイト）
   genre       String
+  // Webサービスのみ：誰向けか・強み・一文の立ち位置
+  audience    String?
+  features    String[]  @default([])
+  pitch       String?
   websiteUrl  String?
   competitors String[]
   createdAt   DateTime @default(now())

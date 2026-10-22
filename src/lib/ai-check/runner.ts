@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ask, enabledEngines, type EngineKey } from "./engines";
-import { competitorHits, extractShops, rankOf } from "./extract";
+import { competitorHits, domainOf, extractShops, rankOf } from "./extract";
 import { dailyAnswerLimit } from "./questions";
 
 // 処理中のまま止まった回答（関数のタイムアウト等）を再取得するまでの時間
@@ -62,6 +62,17 @@ async function claimNext(runId?: string) {
   return null;
 }
 
+type Target = { kind: "RESTAURANT" | "WEB"; name: string; aliases: string[]; websiteUrl: string | null };
+
+// Webサービスは、名前ではなくURL（ドメイン）だけで紹介されることがあるため、
+// ドメインも名前として扱い、参考ページに公式サイトがあれば「本文で言及」（0）とみなす。
+function targetRank(store: Target, shops: string[], text: string, sources: string[]): number | null {
+  const domain = store.kind === "WEB" && store.websiteUrl ? domainOf(store.websiteUrl) : null;
+  const rank = rankOf([store.name, ...store.aliases, ...(domain ? [domain] : [])], shops, text);
+  if (rank !== null || !domain) return rank;
+  return sources.some((s) => domainOf(s) === domain) ? 0 : null;
+}
+
 async function finishRunIfComplete(runId: string) {
   const pending = await prisma.answer.count({ where: { runId, status: "PENDING" } });
   if (pending > 0) return;
@@ -82,6 +93,7 @@ export async function processAnswers({ runId, deadline }: { runId?: string; dead
     try {
       const res = await ask(answer.engine as EngineKey, answer.questionText);
       const shops = extractShops(res.text);
+      const sources = [...new Set(res.sources)];
       await prisma.answer.update({
         where: { id: answer.id },
         data: {
@@ -89,9 +101,9 @@ export async function processAnswers({ runId, deadline }: { runId?: string; dead
           model: res.model,
           answerText: res.text,
           shops,
-          targetRank: rankOf([store.name, ...store.aliases], shops, res.text),
+          targetRank: targetRank(store, shops, res.text, sources),
           competitorHits: competitorHits(store.competitors, shops, res.text),
-          sources: [...new Set(res.sources)],
+          sources,
           completedAt: new Date(),
           lockedAt: null,
         },

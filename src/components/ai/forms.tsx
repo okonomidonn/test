@@ -20,6 +20,9 @@ export type StoreDefaults = {
   websiteUrl?: string | null;
   aliases?: string[];
   competitors?: string[];
+  audience?: string | null;
+  features?: string[];
+  pitch?: string | null;
 };
 
 export function StoreForm({ action, defaults = {}, submitLabel }: { action: Action; defaults?: StoreDefaults; submitLabel: string }) {
@@ -27,6 +30,7 @@ export function StoreForm({ action, defaults = {}, submitLabel }: { action: Acti
   return (
     <form action={formAction} className="space-y-4">
       <Message state={state} />
+      <input type="hidden" name="kind" value="RESTAURANT" />
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>店名 *</label>
@@ -65,13 +69,64 @@ export function StoreForm({ action, defaults = {}, submitLabel }: { action: Acti
   );
 }
 
+export function WebServiceForm({ action, defaults = {}, submitLabel }: { action: Action; defaults?: StoreDefaults; submitLabel: string }) {
+  const [state, formAction, isPending] = useActionState(action, {});
+  return (
+    <form action={formAction} className="space-y-4">
+      <Message state={state} />
+      <input type="hidden" name="kind" value="WEB" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className={labelClass}>サービス名 *</label>
+          <input name="name" required defaultValue={defaults.name} placeholder="例：zaito" className={inputClass} />
+        </div>
+        <div>
+          <label className={labelClass}>カテゴリ *</label>
+          <input name="genre" required defaultValue={defaults.genre} placeholder="例：求人サイト" className={inputClass} />
+        </div>
+      </div>
+      <div>
+        <label className={labelClass}>誰向けのサービスか</label>
+        <input name="audience" defaultValue={defaults.audience ?? ""} placeholder="例：大学生・主婦" className={inputClass} />
+      </div>
+      <div>
+        <label className={labelClass}>強み・特徴の言葉（1行に1つ・5つまで）</label>
+        <textarea name="features" rows={3} defaultValue={defaults.features?.join("\n")} placeholder={"例：完全在宅のバイト\n未経験OK\n週1日から"} className={inputClass} />
+        <p className="mt-1 text-xs text-slate-500">利用者がAIに聞くときに使いそうな言葉で。ここから「未経験OKの求人サイトを教えて」のような細かい質問を作ります。</p>
+      </div>
+      <div>
+        <label className={labelClass}>一文の立ち位置</label>
+        <input name="pitch" defaultValue={defaults.pitch ?? ""} placeholder="例：完全在宅の仕事だけを集めた求人サイト" className={inputClass} />
+        <p className="mt-1 text-xs text-slate-500">「誰の・何を・他と何が違うか」。サイト診断で、トップページに書かれているかを確認します。</p>
+      </div>
+      <div>
+        <label className={labelClass}>公式サイトのURL</label>
+        <input name="websiteUrl" type="url" defaultValue={defaults.websiteUrl ?? ""} placeholder="https://..." className={inputClass} />
+        <p className="mt-1 text-xs text-slate-500">AIが名前を出さずにURLだけで紹介した場合も、紹介されたと数えます。</p>
+      </div>
+      <div>
+        <label className={labelClass}>サービス名の別の書き方（1行に1つ）</label>
+        <textarea name="aliases" rows={2} defaultValue={defaults.aliases?.join("\n")} placeholder={"例：ザイト\nZAITO"} className={inputClass} />
+        <p className="mt-1 text-xs text-slate-500">AIの回答からサービスを見つけるのに使います。読み方・英語表記・運営会社名など。</p>
+      </div>
+      <div>
+        <label className={labelClass}>比べたい競合サービス（1行に1つ・10件まで）</label>
+        <textarea name="competitors" rows={3} defaultValue={defaults.competitors?.join("\n")} className={inputClass} />
+      </div>
+      <button type="submit" disabled={isPending} className={primaryButtonClass}>
+        {isPending ? "保存中..." : submitLabel}
+      </button>
+    </form>
+  );
+}
+
 export function QuestionsForm({ action, questions, max }: { action: Action; questions: string[]; max: number }) {
   const [state, formAction, isPending] = useActionState(action, {});
   return (
     <form action={formAction} className="space-y-3">
       <Message state={state} />
       <textarea name="questions" rows={Math.max(questions.length + 1, 6)} defaultValue={questions.join("\n")} className={`${inputClass} font-mono text-xs`} />
-      <p className="text-xs text-slate-500">1行に1つ、{max}個まで。店名は入れないでください（お客さんが店を知らずに聞く質問にするため）。</p>
+      <p className="text-xs text-slate-500">1行に1つ、{max}個まで。店名・サービス名は入れないでください（利用者が名前を知らずに聞く質問にするため）。</p>
       <button type="submit" disabled={isPending} className={secondaryButtonClass}>
         {isPending ? "保存中..." : "質問を保存"}
       </button>

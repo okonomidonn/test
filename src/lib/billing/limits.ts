@@ -17,7 +17,7 @@ export async function ownerRunQuota(userId: string, storeId: string): Promise<Ru
 
   const base = { plan, usedThisMonth };
   if (!stores.slice(0, plan.stores).some((s) => s.id === storeId)) {
-    return { ...base, allowed: false, reason: `${plan.name}プランで計測できるのは${plan.stores}店舗までです` };
+    return { ...base, allowed: false, reason: `${plan.name}プランで計測できるのは${plan.stores}件までです` };
   }
   if (usedThisMonth >= plan.runsPerMonth) {
     return { ...base, allowed: false, reason: `${plan.name}プランの計測は30日間で${plan.runsPerMonth}回までです` };

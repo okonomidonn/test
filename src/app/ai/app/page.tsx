@@ -22,20 +22,25 @@ export default async function StoresPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">店舗一覧</h1>
-          <p className="mt-1 text-sm text-slate-500">お店ごとに、AIでの紹介状況と改善点を確認できます。</p>
+          <h1 className="text-2xl font-bold">登録一覧</h1>
+          <p className="mt-1 text-sm text-slate-500">お店・Webサービスごとに、AIでの紹介状況と改善点を確認できます。</p>
         </div>
         <Link href="/ai/app/new" className={primaryButtonClass}>
-          店舗を追加
+          追加する
         </Link>
       </div>
 
       {stores.length === 0 ? (
         <div className={`${cardClass} text-center`}>
-          <p className="text-sm text-slate-600">まだお店が登録されていません。</p>
-          <Link href="/ai/app/new" className={`${primaryButtonClass} mt-4`}>
-            お店を登録する
-          </Link>
+          <p className="text-sm text-slate-600">まだ登録がありません。</p>
+          <div className="mt-4 flex justify-center gap-3">
+            <Link href="/ai/app/new" className={primaryButtonClass}>
+              お店を登録する
+            </Link>
+            <Link href="/ai/app/new?kind=web" className={primaryButtonClass}>
+              Webサービスを登録する
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -46,7 +51,7 @@ export default async function StoresPage() {
               <Link key={s.id} href={`/ai/app/stores/${s.id}`} className={`${cardClass} block hover:ring-2 hover:ring-indigo-100`}>
                 <p className="font-bold text-slate-900">{s.name}</p>
                 <p className="text-xs text-slate-500">
-                  {s.area}・{s.genre}
+                  {s.kind === "WEB" ? `Webサービス・${s.genre}` : `${s.area}・${s.genre}`}
                 </p>
                 <p className="mt-4 text-xs text-slate-500">最新の推薦率</p>
                 <p className="text-2xl font-bold text-slate-900">
