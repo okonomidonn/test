@@ -48,8 +48,12 @@ if ( $zaito_g ) {
 <main class="wrap doc guide">
 <?php if ( $zaito_g ) : ?>
   <a class="back" href="<?php echo esc_url( zaito_guide_url() ); ?>"><span class="ms" aria-hidden="true">arrow_back</span>記事一覧へ</a>
+  <p class="g-kicker"><span class="ms" aria-hidden="true"><?php echo esc_html( $zaito_g['icon'] ); ?></span><?php echo esc_html( $zaito_g['kicker'] ); ?></p>
   <h1><?php echo esc_html( $zaito_g['h1'] ); ?></h1>
-  <p class="g-meta">更新日：<?php echo esc_html( date_i18n( 'Y年n月j日', strtotime( $zaito_g['updated'] ) ) ); ?>　zaito運営事務局</p>
+  <p class="g-meta">
+    <span><span class="ms" aria-hidden="true">schedule</span>更新日 <?php echo esc_html( date_i18n( 'Y年n月j日', strtotime( $zaito_g['updated'] ) ) ); ?></span>
+    <span><span class="ms" aria-hidden="true">verified</span>zaito運営事務局（<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">掲載基準</a>）</span>
+  </p>
   <?php include __DIR__ . '/guides/' . $zaito_guide_slug . '.php'; ?>
 
   <?php
@@ -57,9 +61,9 @@ if ( $zaito_g ) {
   if ( $zaito_others ) :
       ?>
     <h2>あわせて読みたい</h2>
-    <ul>
+    <ul class="g-related">
       <?php foreach ( $zaito_others as $zaito_os => $zaito_og ) : ?>
-        <li><a href="<?php echo esc_url( zaito_guide_url( $zaito_os ) ); ?>"><?php echo esc_html( $zaito_og['h1'] ); ?></a></li>
+        <li><a href="<?php echo esc_url( zaito_guide_url( $zaito_os ) ); ?>"><span class="gr-k"><?php echo esc_html( $zaito_og['kicker'] ); ?></span><b><?php echo esc_html( $zaito_og['h1'] ); ?></b></a></li>
       <?php endforeach; ?>
     </ul>
   <?php endif; ?>
@@ -67,9 +71,9 @@ if ( $zaito_g ) {
   <a class="back" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="ms" aria-hidden="true">arrow_back</span>求人一覧へ</a>
   <h1>在宅バイトの記事</h1>
   <p class="lead">在宅バイトの探し方や、おすすめの仕事、注意点をまとめています。</p>
-  <ul class="g-index">
+  <ul class="g-related g-index">
     <?php foreach ( $zaito_guides as $zaito_os => $zaito_og ) : ?>
-      <li><a href="<?php echo esc_url( zaito_guide_url( $zaito_os ) ); ?>"><b><?php echo esc_html( $zaito_og['h1'] ); ?></b><span><?php echo esc_html( $zaito_og['description'] ); ?></span></a></li>
+      <li><a href="<?php echo esc_url( zaito_guide_url( $zaito_os ) ); ?>"><span class="gr-k"><?php echo esc_html( $zaito_og['kicker'] ); ?></span><b><?php echo esc_html( $zaito_og['h1'] ); ?></b><span><?php echo esc_html( $zaito_og['description'] ); ?></span></a></li>
     <?php endforeach; ?>
   </ul>
 <?php endif; ?>
