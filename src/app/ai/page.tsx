@@ -88,6 +88,11 @@ export default function AiLandingPage() {
             </Link>
           </div>
           <p className="mt-3 text-xs text-slate-500">フリープランはカード登録不要。有料プランは月4,980円から、いつでも解約できます。</p>
+          <p className="mt-2 text-sm">
+            <Link href="/ai/web" className="font-semibold text-brand hover:underline">
+              Webサービスの方はこちら →
+            </Link>
+          </p>
         </div>
         <Preview />
       </section>

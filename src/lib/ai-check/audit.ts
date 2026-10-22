@@ -1,7 +1,7 @@
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
 
-// 店舗の公式サイトを読み、AIに伝わりにくい点を洗い出す。
+// 店舗・サービスの公式サイトを読み、AIに伝わりにくい点を洗い出す。
 // URLは利用者が入力するため、社内ネットワーク等へのアクセスに使われないよう宛先を検査する。
 
 export type CheckStatus = "ok" | "warn" | "ng";
@@ -204,9 +204,16 @@ export async function auditSite(input: { websiteUrl: string; area: string; genre
     });
   }
 
+  await checkRobots(page.url, checks);
+  return { url: page.url, score: scoreOf(checks), checks };
+}
+
+// robots.txt を確認して checks に追加し、本文を返す（無い・読めない場合は空文字）
+async function checkRobots(pageUrl: string, checks: AuditCheck[]): Promise<string> {
   try {
-    const robots = await safeFetch(new URL("/robots.txt", page.url).toString());
-    const blocked = robots.status < 400 ? blockedCrawlers(robots.body) : [];
+    const robots = await safeFetch(new URL("/robots.txt", pageUrl).toString());
+    const body = robots.status < 400 ? robots.body : "";
+    const blocked = blockedCrawlers(body);
     checks.push({
       key: "robots",
       title: "AIの読み取りを拒否していないか（robots.txt）",
@@ -214,11 +221,186 @@ export async function auditSite(input: { websiteUrl: string; area: string; genre
       detail: blocked.length ? `拒否されているAI：${blocked.join("、")}` : "拒否していません",
       fix: blocked.length ? "robots.txt でAIの読み取りを拒否していると、AIの回答で紹介されにくくなります。" : undefined,
     });
+    return body;
   } catch {
     // robots.txt が無い・読めないのは「拒否していない」と同じ扱い
+    return "";
+  }
+}
+
+function scoreOf(checks: AuditCheck[]): number {
+  const points = { ok: 2, warn: 1, ng: 0 } as const;
+  return Math.round((checks.reduce((s, c) => s + points[c.status], 0) / (checks.length * 2)) * 100);
+}
+
+async function fetchOk(url: string): Promise<{ ok: boolean; body: string }> {
+  try {
+    const res = await safeFetch(url);
+    return { ok: res.status < 400, body: res.body };
+  } catch {
+    return { ok: false, body: "" };
+  }
+}
+
+// 同じサイト内へのリンク（ページ数の目安）。固有の情報を1件1ページで持っているかを見る。
+function internalLinks(html: string, pageUrl: string): string[] {
+  const base = new URL(pageUrl);
+  const urls = new Set<string>();
+  for (const m of html.matchAll(/<a\s[^>]*href=["']([^"'#]+)["']/gi)) {
+    try {
+      const u = new URL(m[1], base);
+      if (u.hostname !== base.hostname || !/^https?:$/.test(u.protocol)) continue;
+      if (/\.(png|jpe?g|gif|svg|webp|pdf|zip)$/i.test(u.pathname)) continue;
+      urls.add(u.pathname.replace(/\/$/, "") || "/");
+    } catch {
+      // 不正なURLは無視する
+    }
+  }
+  urls.delete("/");
+  return [...urls];
+}
+
+const squash = (s: string) => s.normalize("NFKC").replace(/[\s　、。,.!！?？「」]/g, "");
+
+// Webサービス向けの診断。zaitoの事例で効いた作り（一文の立ち位置・1件1ページ・構造化データ・llms.txt）を確認する。
+export async function auditWebSite(input: { websiteUrl: string; genre: string; pitch?: string | null; features?: string[] }) {
+  const checks: AuditCheck[] = [];
+  let page: Awaited<ReturnType<typeof safeFetch>>;
+  try {
+    page = await safeFetch(input.websiteUrl);
+  } catch (e) {
+    checks.push({
+      key: "fetch",
+      title: "公式サイトを読み込めるか",
+      status: "ng",
+      detail: `読み込めませんでした（${e instanceof Error ? e.message : String(e)}）`,
+      fix: "URLが正しいか確認してください。AIもこのサイトを読めていない可能性があります。",
+    });
+    return { url: input.websiteUrl, score: 0, checks };
   }
 
-  const points = { ok: 2, warn: 1, ng: 0 } as const;
-  const score = Math.round((checks.reduce((s, c) => s + points[c.status], 0) / (checks.length * 2)) * 100);
-  return { url: page.url, score, checks };
+  const html = page.body;
+  const text = visibleText(html);
+  const title = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? "";
+  const description = html.match(/<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i)?.[1] ?? "";
+  const category = input.genre.trim();
+
+  checks.push({
+    key: "fetch",
+    title: "公式サイトを読み込めるか",
+    status: page.status < 400 ? "ok" : "ng",
+    detail: page.status < 400 ? `読み込めました（${page.url}）` : `エラー（HTTP ${page.status}）`,
+  });
+
+  const head = squash(title + description);
+  // 「求人サイト」なら「求人」があれば十分とみなす（題名では「サイト」「サービス」を省くことが多いため）
+  const core = squash(category).replace(/(サイト|サービス|アプリ|ツール|ソフト)$/, "") || squash(category);
+  const hasCategory = head.includes(core);
+  checks.push({
+    key: "title",
+    title: "題名・説明文で、何のサービスかがわかるか",
+    status: hasCategory && description ? "ok" : "warn",
+    detail: `題名：「${title || "なし"}」／説明文：${description ? `「${description.slice(0, 80)}」` : "なし"}`,
+    fix: hasCategory && description ? undefined : `題名か説明文（meta description）に「${category}」と、誰向けの何のサービスかを一文で入れましょう。`,
+  });
+
+  const pitch = input.pitch?.trim();
+  const pitchFound = pitch ? squash(text).includes(squash(pitch)) : false;
+  checks.push({
+    key: "pitch",
+    title: "一文の立ち位置がトップページに書かれているか",
+    status: pitchFound ? "ok" : "warn",
+    detail: pitch ? (pitchFound ? `「${pitch}」が書かれています` : `「${pitch}」がトップページに見つかりません`) : "「設定」で一文の立ち位置が登録されていません",
+    fix: pitchFound
+      ? "FAQ・会社概要・llms.txtでも同じ言葉を使いましょう。"
+      : "「誰の・何を・他と何が違うか」を一文で決め、トップ・FAQ・会社概要・llms.txtに同じ言葉で書きましょう。AIが紹介文にそのまま使えます。",
+  });
+
+  const features = (input.features ?? []).filter(Boolean);
+  if (features.length) {
+    const missing = features.filter((f) => !squash(text).includes(squash(f)));
+    checks.push({
+      key: "features",
+      title: "強み（特徴の言葉）がトップページに文字で書かれているか",
+      status: missing.length === 0 ? "ok" : missing.length < features.length ? "warn" : "ng",
+      detail: missing.length === 0 ? "すべて書かれています" : `見つからない言葉：${missing.join("、")}`,
+      fix: missing.length === 0 ? undefined : "利用者がAIに聞くときの言葉で書きましょう。言葉が違うと、AIは当てはまるサービスだと判断できません。",
+    });
+  }
+
+  checks.push({
+    key: "text",
+    title: "AIが読める文章の量",
+    status: text.length >= 1500 ? "ok" : text.length >= 500 ? "warn" : "ng",
+    detail: `トップページの文章は約${text.length.toLocaleString()}文字`,
+    fix: text.length >= 1500 ? undefined : "文章が少ないか、画像やプログラム（JavaScript）で後から表示されているため、AIに内容が伝わりにくい状態です。説明を文字で書き足しましょう。",
+  });
+
+  const links = internalLinks(html, page.url);
+  checks.push({
+    key: "pages",
+    title: "固有の情報が1件1ページになっているか",
+    status: links.length >= 30 ? "ok" : links.length >= 10 ? "warn" : "ng",
+    detail: `トップページからリンクされたサイト内ページ：${links.length}件`,
+    fix:
+      links.length >= 30
+        ? undefined
+        : "事例・機能・料金・対応範囲・比較などを、それぞれ独立したページにしましょう。AIは細かい質問ほど、答えがぴったり書かれた1ページを紹介します。",
+  });
+
+  const types = [...new Set(jsonLdTypes(html))];
+  const hasOrg = types.some((t) => /Organization|Corporation|WebSite/.test(t));
+  const hasContent = types.some((t) => /SoftwareApplication|WebApplication|Product|Service|JobPosting|ItemList|Course|Offer|Article/.test(t));
+  checks.push({
+    key: "jsonld",
+    title: "AI向けのサービスデータ（構造化データ）",
+    status: hasOrg && hasContent ? "ok" : hasOrg || hasContent ? "warn" : "ng",
+    detail: types.length ? `見つかった種類：${types.join("、")}` : "設置されていません",
+    fix:
+      hasOrg && hasContent
+        ? undefined
+        : "運営者（Organization・WebSite）と、サービスの中身（SoftwareApplication・Product・Service・JobPostingなど）を決まった形式でページに埋め込むと、AIが内容を取り違えにくくなります。",
+  });
+
+  const hasFaq = types.some((t) => t === "FAQPage") || /よくある質問|よくあるご質問|FAQ|Q&A/i.test(text);
+  checks.push({
+    key: "faq",
+    title: "よくある質問（FAQ）があるか",
+    status: hasFaq ? "ok" : "warn",
+    detail: hasFaq ? "見つかりました" : "トップページから見つかりません",
+    fix: hasFaq ? undefined : "「〇〇と△△の違いは？」「安全？」「料金は？」など、利用者がAIに聞きそうな質問と答えをまとめたページを作りましょう。",
+  });
+
+  const updated = /最終更新|更新日|確認日|20\d{2}[年/.-]\s?\d{1,2}[月/.-]/.test(text);
+  checks.push({
+    key: "fresh",
+    title: "更新日・確認日が書かれているか",
+    status: updated ? "ok" : "warn",
+    detail: updated ? "日付の記載があります" : "日付の記載が見つかりません",
+    fix: updated ? undefined : "「最終更新日」「〇件掲載（〇月〇日時点）」などを書くと、情報が新しいことがAIに伝わります。",
+  });
+
+  const llms = await fetchOk(new URL("/llms.txt", page.url).toString());
+  const llmsValid = llms.ok && !/<html/i.test(llms.body.slice(0, 500)) && llms.body.trim().length > 50;
+  checks.push({
+    key: "llms",
+    title: "AI向けの案内ファイル（llms.txt）",
+    status: llmsValid ? "ok" : "warn",
+    detail: llmsValid ? "設置されています" : "見つかりません",
+    fix: llmsValid ? undefined : "サイトの説明（一文の立ち位置）と主なページの一覧を書いた /llms.txt を置きましょう。",
+  });
+
+  const robots = await checkRobots(page.url, checks);
+  const hasSitemap = /^\s*sitemap\s*:/im.test(robots) || (await fetchOk(new URL("/sitemap.xml", page.url).toString())).ok;
+  checks.push({
+    key: "sitemap",
+    title: "サイトマップがあるか",
+    status: hasSitemap ? "ok" : "warn",
+    detail: hasSitemap ? "見つかりました" : "robots.txt にも /sitemap.xml にも見つかりません",
+    fix: hasSitemap
+      ? "Bing Webmaster Tools にも登録しましょう（ChatGPTの検索はBingの情報も使います）。"
+      : "サイトマップを作り、Google Search Console と Bing Webmaster Tools に登録しましょう。",
+  });
+
+  return { url: page.url, score: scoreOf(checks), checks };
 }

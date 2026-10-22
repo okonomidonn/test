@@ -73,7 +73,7 @@ export default async function RunPage({ params }: PageProps<"/ai/app/stores/[id]
                 <p className="text-rose-700">{a.error}</p>
               ) : (
                 <>
-                  {a.shops.length > 0 && <p className="text-xs text-slate-500">回答に出たお店（自動抽出）：{a.shops.join("、")}</p>}
+                  {a.shops.length > 0 && <p className="text-xs text-slate-500">回答に出た名前（自動抽出）：{a.shops.join("、")}</p>}
                   <p className="whitespace-pre-wrap leading-relaxed text-slate-700">{a.answerText}</p>
                   {a.sources.length > 0 && <p className="break-all text-xs text-slate-400">参考：{a.sources.join("  ")}</p>}
                 </>

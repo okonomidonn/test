@@ -8,7 +8,8 @@ import { ENGINE_LABELS, enabledEngines, type EngineKey } from "@/lib/ai-check/en
 import { ownerPlan, ownerRunQuota } from "@/lib/billing/limits";
 import type { AuditCheck } from "@/lib/ai-check/audit";
 import { deleteStore, runAudit, startRun, updateQuestions, updateStore } from "@/app/actions/ai-check";
-import { AuditForm, QuestionsForm, StartRunForm, StoreForm } from "@/components/ai/forms";
+import { AuditForm, QuestionsForm, StartRunForm, StoreForm, WebServiceForm } from "@/components/ai/forms";
+import { TERMS, type TargetKind } from "@/lib/ai-check/terms";
 import { BarList, TrendChart } from "@/components/ai/charts";
 import { ConfirmButton } from "@/components/confirm-button";
 import { cardClass, dangerButtonClass } from "@/components/ui";
@@ -37,12 +38,21 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
     <div className="space-y-6">
       <div>
         <Link href="/ai/app" className="text-sm text-slate-500 hover:underline">
-          ← 店舗一覧
+          ← 登録一覧
         </Link>
         <h1 className="mt-1 text-2xl font-bold">{store.name}</h1>
         <p className="text-sm text-slate-500">
-          {store.area}
-          {store.station ? `（${store.station}）` : ""}・{store.genre}
+          {store.kind === "WEB" ? (
+            <>
+              Webサービス・{store.genre}
+              {store.audience ? `（${store.audience}向け）` : ""}
+            </>
+          ) : (
+            <>
+              {store.area}
+              {store.station ? `（${store.station}）` : ""}・{store.genre}
+            </>
+          )}
         </p>
       </div>
 
@@ -60,15 +70,16 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
         ))}
       </nav>
 
-      {tab === "check" && <CheckTab storeId={id} userId={user.id} isTeam={user.role === "TEAM"} />}
-      {tab === "sources" && <SourcesTab storeId={id} />}
-      {tab === "improve" && <ImproveTab storeId={id} hasUrl={!!store.websiteUrl} />}
+      {tab === "check" && <CheckTab storeId={id} userId={user.id} isTeam={user.role === "TEAM"} kind={store.kind} />}
+      {tab === "sources" && <SourcesTab storeId={id} kind={store.kind} />}
+      {tab === "improve" && <ImproveTab storeId={id} hasUrl={!!store.websiteUrl} kind={store.kind} />}
       {tab === "settings" && <SettingsTab storeId={id} userId={user.id} isTeam={user.role === "TEAM"} />}
     </div>
   );
 }
 
-async function CheckTab({ storeId, userId, isTeam }: { storeId: string; userId: string; isTeam: boolean }) {
+async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; userId: string; isTeam: boolean; kind: TargetKind }) {
+  const t = TERMS[kind];
   const stats = await storeStats(storeId);
   const running = stats.runs.find((r) => r.status === "RUNNING");
   const quota = isTeam ? null : await ownerRunQuota(userId, storeId);
@@ -80,7 +91,7 @@ async function CheckTab({ storeId, userId, isTeam }: { storeId: string; userId: 
   const latestByEngine = stats.trend.at(-1)?.byEngine ?? {};
   const shopMax = Math.max(stats.latest?.targetHits ?? 0, ...stats.competitors.map((c) => c.hits), ...stats.frequentShops.map((s) => s.count), 1);
   const competitorRows = [
-    { label: `${stats.store.name}（自店）`, value: stats.latest?.targetHits ?? 0, highlight: true },
+    { label: `${stats.store.name}（${t.self}）`, value: stats.latest?.targetHits ?? 0, highlight: true },
     ...stats.competitors.map((c) => ({ label: c.name, value: c.hits })),
   ];
 
@@ -90,7 +101,7 @@ async function CheckTab({ storeId, userId, isTeam }: { storeId: string; userId: 
         <div>
           <h2 className="font-bold">AIに聞いて計測</h2>
           <p className="mt-1 text-sm text-slate-500">
-            登録した質問を{engines.length ? engines.map((e) => ENGINE_LABELS[e]).join("・") : "AI"}に聞き、お店が紹介されたかを記録します。1問30秒〜2分ほどかかります。
+            登録した質問を{engines.length ? engines.map((e) => ENGINE_LABELS[e]).join("・") : "AI"}に聞き、{t.target}が紹介されたかを記録します。1問30秒〜2分ほどかかります。
           </p>
         </div>
         {running ? (
@@ -187,13 +198,13 @@ async function CheckTab({ storeId, userId, isTeam }: { storeId: string; userId: 
                 {stats.competitors.length ? (
                   <BarList rows={competitorRows} max={shopMax} />
                 ) : (
-                  <p className="text-sm text-slate-500">「設定」で比べたいお店を登録すると表示されます。</p>
+                  <p className="text-sm text-slate-500">「設定」で{t.competitor}を登録すると表示されます。</p>
                 )}
               </div>
             </section>
             <section className={cardClass}>
-              <h2 className="font-bold">AIがよく紹介しているお店</h2>
-              <p className="mt-1 text-xs text-slate-500">最新の計測で2回以上名前が出たお店（自動抽出のため、店名以外が混ざることがあります）</p>
+              <h2 className="font-bold">{t.frequent}</h2>
+              <p className="mt-1 text-xs text-slate-500">最新の計測で2回以上名前が出たもの（自動抽出のため、名前以外が混ざることがあります）</p>
               <div className="mt-4">
                 {stats.frequentShops.length ? (
                   <BarList rows={stats.frequentShops.map((s) => ({ label: s.label, value: s.count }))} max={shopMax} />
@@ -213,15 +224,15 @@ async function CheckTab({ storeId, userId, isTeam }: { storeId: string; userId: 
   );
 }
 
-const KIND_LABEL = { official: "公式サイト", gourmet: "グルメサイト・地図", other: "その他（まとめ記事など）" } as const;
-const KIND_STYLE = { official: "bg-indigo-50 text-indigo-700", gourmet: "bg-amber-50 text-amber-800", other: "bg-slate-100 text-slate-600" } as const;
+const KIND_STYLE = { official: "bg-indigo-50 text-indigo-700", platform: "bg-amber-50 text-amber-800", other: "bg-slate-100 text-slate-600" } as const;
 
-async function SourcesTab({ storeId }: { storeId: string }) {
+async function SourcesTab({ storeId, kind }: { storeId: string; kind: TargetKind }) {
   const stats = await storeStats(storeId);
+  const KIND_LABEL = { official: "公式サイト", platform: TERMS[kind].platform, other: "その他（まとめ記事など）" } as const;
   if (stats.sources.length === 0) {
     return <p className={`${cardClass} text-center text-sm text-slate-500`}>計測すると、AIが参考にしたページがここに表示されます。</p>;
   }
-  const kinds = (["official", "gourmet", "other"] as const).map((k) => ({
+  const kinds = (["official", "platform", "other"] as const).map((k) => ({
     kind: k,
     count: stats.sources.filter((s) => s.kind === k).reduce((n, s) => n + s.count, 0),
   }));
@@ -245,7 +256,7 @@ async function SourcesTab({ storeId }: { storeId: string }) {
 
       <section className={cardClass}>
         <h2 className="font-bold">よく参考にされたサイト</h2>
-        <p className="mt-1 text-xs text-slate-500">ここに載っている情報が、AIの紹介文の材料になっています。自店の情報が正しいか確認しましょう。</p>
+        <p className="mt-1 text-xs text-slate-500">{TERMS[kind].sourcesHint}</p>
         <div className="mt-4">
           <BarList rows={stats.sources.slice(0, 15).map((s) => ({ label: s.domain, value: s.count, highlight: s.kind === "official", note: KIND_LABEL[s.kind] }))} max={max} />
         </div>
@@ -291,7 +302,7 @@ async function SourcesTab({ storeId }: { storeId: string }) {
 const STATUS_STYLE = { ok: "bg-emerald-50 text-emerald-700", warn: "bg-amber-50 text-amber-800", ng: "bg-rose-50 text-rose-700" } as const;
 const STATUS_LABEL = { ok: "OK", warn: "要改善", ng: "問題あり" } as const;
 
-async function ImproveTab({ storeId, hasUrl }: { storeId: string; hasUrl: boolean }) {
+async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: boolean; kind: TargetKind }) {
   const [audit, stats] = await Promise.all([
     prisma.siteAudit.findFirst({ where: { storeId }, orderBy: { createdAt: "desc" } }),
     storeStats(storeId),
@@ -305,7 +316,11 @@ async function ImproveTab({ storeId, hasUrl }: { storeId: string; hasUrl: boolea
       <section className={`${cardClass} flex flex-wrap items-center justify-between gap-4`}>
         <div>
           <h2 className="font-bold">公式サイトの診断</h2>
-          <p className="mt-1 text-sm text-slate-500">AIが読む公式サイトに、紹介に必要な情報が文字で書かれているかを確認します。</p>
+          <p className="mt-1 text-sm text-slate-500">
+            {kind === "WEB"
+              ? "AIが読む公式サイトに、一文の立ち位置・強み・1件1ページの情報・構造化データ・llms.txtがそろっているかを確認します。"
+              : "AIが読む公式サイトに、紹介に必要な情報が文字で書かれているかを確認します。"}
+          </p>
         </div>
         <AuditForm action={runAudit.bind(null, storeId)} hasUrl={hasUrl} />
       </section>
@@ -344,9 +359,7 @@ async function ImproveTab({ storeId, hasUrl }: { storeId: string; hasUrl: boolea
         {stats.latest ? (
           missed.length ? (
             <>
-              <p className="mt-1 text-sm text-slate-500">
-                これらの質問に当てはまるお店なら、公式サイトやGoogleマップに「当てはまる」と文章で書くことで、紹介されやすくなる可能性があります。
-              </p>
+              <p className="mt-1 text-sm text-slate-500">{TERMS[kind].missedHint}</p>
               <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">
                 {missed.map((q) => (
                   <li key={q.no}>{q.text}</li>
@@ -372,8 +385,12 @@ async function SettingsTab({ storeId, userId, isTeam }: { storeId: string; userI
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <section className={cardClass}>
-        <h2 className="mb-4 font-bold">店舗情報</h2>
-        <StoreForm action={updateStore.bind(null, storeId)} defaults={store} submitLabel="保存する" />
+        <h2 className="mb-4 font-bold">{store.kind === "WEB" ? "サービス情報" : "店舗情報"}</h2>
+        {store.kind === "WEB" ? (
+          <WebServiceForm action={updateStore.bind(null, storeId)} defaults={store} submitLabel="保存する" />
+        ) : (
+          <StoreForm action={updateStore.bind(null, storeId)} defaults={store} submitLabel="保存する" />
+        )}
       </section>
       <div className="space-y-6">
         <section className={cardClass}>
@@ -381,11 +398,11 @@ async function SettingsTab({ storeId, userId, isTeam }: { storeId: string; userI
           <QuestionsForm action={updateQuestions.bind(null, storeId)} questions={store.questions.map((q) => q.text)} max={isTeam ? 50 : (await ownerPlan(userId)).maxQuestions} />
         </section>
         <section className={cardClass}>
-          <h2 className="mb-1 font-bold">店舗の削除</h2>
+          <h2 className="mb-1 font-bold">登録の削除</h2>
           <p className="mb-3 text-sm text-slate-500">計測結果もすべて削除されます。</p>
           <form action={deleteStore.bind(null, storeId)}>
-            <ConfirmButton message="この店舗と計測結果をすべて削除します。よろしいですか？" className={dangerButtonClass}>
-              店舗を削除
+            <ConfirmButton message="この登録と計測結果をすべて削除します。よろしいですか？" className={dangerButtonClass}>
+              削除する
             </ConfirmButton>
           </form>
         </section>

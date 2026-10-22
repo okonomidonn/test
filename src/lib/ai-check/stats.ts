@@ -7,11 +7,20 @@ const GOURMET_SITES = [
   "google.com", "maps.google.com", "instagram.com", "tripadvisor.jp", "hamoni.jp", "30min.jp",
 ];
 
-export type SourceKind = "official" | "gourmet" | "other";
+// Webサービスがよく比較・紹介される場所（レビューサイト・技術ブログ・SNS・プレスリリースなど）
+const WEB_PLATFORMS = [
+  "itreview.jp", "boxil.jp", "aspicjapan.org", "capterra.com", "g2.com", "producthunt.com", "prtimes.jp",
+  "note.com", "qiita.com", "zenn.dev", "x.com", "twitter.com", "youtube.com", "reddit.com", "wikipedia.org",
+  "github.com", "appstore.apple.com", "apps.apple.com", "play.google.com", "chiebukuro.yahoo.co.jp", "linkedin.com",
+];
 
-export function sourceKind(domain: string, officialUrl: string | null): SourceKind {
+// official：公式サイト、platform：グルメサイト・地図（飲食店）／比較・レビュー・SNS（Webサービス）、other：その他
+export type SourceKind = "official" | "platform" | "other";
+
+export function sourceKind(domain: string, officialUrl: string | null, storeKind: "RESTAURANT" | "WEB" = "RESTAURANT"): SourceKind {
   if (officialUrl && domain === domainOf(officialUrl)) return "official";
-  if (GOURMET_SITES.some((g) => domain === g || domain.endsWith(`.${g}`))) return "gourmet";
+  const list = storeKind === "WEB" ? WEB_PLATFORMS : GOURMET_SITES;
+  if (list.some((g) => domain === g || domain.endsWith(`.${g}`))) return "platform";
   return "other";
 }
 
@@ -103,7 +112,7 @@ export async function storeStats(storeId: string) {
     .map((d) => ({
       domain: d.domain,
       count: d.count,
-      kind: sourceKind(d.domain, store.websiteUrl),
+      kind: sourceKind(d.domain, store.websiteUrl, store.kind),
       urls: [...d.urls.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5),
     }));
 

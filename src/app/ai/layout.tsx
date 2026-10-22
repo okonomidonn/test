@@ -3,8 +3,8 @@ import Link from "next/link";
 import { auth, signOut } from "@/auth";
 
 export const metadata: Metadata = {
-  title: "AI検索チェック | 飲食店のAI集客",
-  description: "ChatGPT・Geminiでお店がどう紹介されているかを計測し、改善点を提案する飲食店向けツール",
+  title: "AI検索チェック | 飲食店・WebサービスのAI集客",
+  description: "ChatGPT・Geminiでお店やWebサービスがどう紹介されているかを計測し、改善点を提案するツール",
 };
 
 export default async function AiLayout({ children }: LayoutProps<"/ai">) {
@@ -22,7 +22,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
           {user ? (
             <div className="flex items-center gap-3 text-sm">
               <Link href="/ai/app" className="rounded-md px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">
-                店舗一覧
+                登録一覧
               </Link>
               {user.role === "OWNER" && (
                 <Link href="/ai/app/billing" className="rounded-md px-3 py-1.5 font-medium text-slate-600 hover:bg-slate-100">

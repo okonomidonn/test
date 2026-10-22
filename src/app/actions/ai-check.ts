@@ -8,9 +8,9 @@ import { prisma } from "@/lib/prisma";
 import { signIn } from "@/auth";
 import { requireAccount } from "@/lib/session";
 import { findStoreFor } from "@/lib/ai-check/access";
-import { auditSite } from "@/lib/ai-check/audit";
+import { auditSite, auditWebSite } from "@/lib/ai-check/audit";
 import { createRun } from "@/lib/ai-check/runner";
-import { OWNER_LIMITS, TEAM_MAX_REPEATS, defaultQuestions } from "@/lib/ai-check/questions";
+import { OWNER_LIMITS, TEAM_MAX_REPEATS, defaultQuestions, webQuestions } from "@/lib/ai-check/questions";
 import { ownerPlan, ownerRunQuota } from "@/lib/billing/limits";
 
 export type FormState = { error?: string; ok?: string };
@@ -34,7 +34,8 @@ export async function signupOwner(_prev: FormState, formData: FormData): Promise
     return { error: "このメールアドレスは既に登録されています" };
   }
   await prisma.user.create({ data: { name, email, role: "OWNER", passwordHash: await hash(password, 10) } });
-  await signIn("credentials", { email, password, redirectTo: "/ai/app/new" });
+  const kind = formData.get("kind") === "web" ? "?kind=web" : "";
+  await signIn("credentials", { email, password, redirectTo: `/ai/app/new${kind}` });
   return {};
 }
 
@@ -44,56 +45,87 @@ const lines = (v: FormDataEntryValue | null) =>
     .map((s) => s.trim())
     .filter(Boolean);
 
-const storeSchema = z.object({
+const websiteUrlSchema = z
+  .string()
+  .trim()
+  .max(300)
+  .refine((v) => v === "" || /^https?:\/\//.test(v), "公式サイトは http:// または https:// から入力してください")
+  .optional();
+
+const restaurantSchema = z.object({
+  kind: z.literal("RESTAURANT"),
   name: z.string().trim().min(1, "店名を入力してください").max(80),
   area: z.string().trim().min(1, "エリア（市区町村や街の名前）を入力してください").max(30),
   station: z.string().trim().max(30).optional(),
   genre: z.string().trim().min(1, "業態を入力してください").max(40),
-  websiteUrl: z
-    .string()
-    .trim()
-    .max(300)
-    .refine((v) => v === "" || /^https?:\/\//.test(v), "公式サイトは http:// または https:// から入力してください")
-    .optional(),
+  websiteUrl: websiteUrlSchema,
   aliases: z.array(z.string().max(60)).max(10, "別の表記は10件までです"),
   competitors: z.array(z.string().max(60)).max(10, "競合店は10件までです"),
 });
 
-function parseStore(formData: FormData) {
-  return storeSchema.safeParse({
+const webSchema = z.object({
+  kind: z.literal("WEB"),
+  name: z.string().trim().min(1, "サービス名を入力してください").max(80),
+  genre: z.string().trim().min(1, "カテゴリ（例：求人サイト）を入力してください").max(40),
+  audience: z.string().trim().max(40).optional(),
+  pitch: z.string().trim().max(120, "一文の立ち位置は120文字までです").optional(),
+  features: z.array(z.string().max(30)).max(5, "強みは5つまでです"),
+  websiteUrl: websiteUrlSchema,
+  aliases: z.array(z.string().max(60)).max(10, "別の表記は10件までです"),
+  competitors: z.array(z.string().max(60)).max(10, "競合サービスは10件までです"),
+});
+
+function parseStore(formData: FormData, kind: "RESTAURANT" | "WEB") {
+  const common = {
     name: formData.get("name"),
-    area: formData.get("area"),
-    station: formData.get("station") || undefined,
     genre: formData.get("genre"),
     websiteUrl: formData.get("websiteUrl") || undefined,
     aliases: lines(formData.get("aliases")),
     competitors: lines(formData.get("competitors")),
-  });
+  };
+  if (kind === "WEB") {
+    return webSchema.safeParse({
+      ...common,
+      kind,
+      audience: formData.get("audience") || undefined,
+      pitch: formData.get("pitch") || undefined,
+      features: lines(formData.get("features")),
+    });
+  }
+  return restaurantSchema.safeParse({ ...common, kind, area: formData.get("area"), station: formData.get("station") || undefined });
+}
+
+type ParsedStore = z.infer<typeof restaurantSchema> | z.infer<typeof webSchema>;
+
+// 種類ごとの入力を、Storeの列にそろえる
+function storeData(d: ParsedStore) {
+  const base = { name: d.name, genre: d.genre, websiteUrl: d.websiteUrl || null, aliases: d.aliases, competitors: d.competitors };
+  if (d.kind === "WEB") {
+    return { ...base, area: "", station: null, audience: d.audience || null, pitch: d.pitch || null, features: d.features };
+  }
+  return { ...base, area: d.area, station: d.station || null };
 }
 
 export async function createStore(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireAccount();
-  const parsed = parseStore(formData);
+  const kind = formData.get("kind") === "WEB" ? "WEB" : "RESTAURANT";
+  const parsed = parseStore(formData, kind);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "入力内容を確認してください" };
 
   if (user.role === "OWNER") {
     const plan = await ownerPlan(user.id);
     if ((await prisma.store.count({ where: { ownerId: user.id } })) >= plan.stores) {
-      return { error: `${plan.name}プランで登録できるのは${plan.stores}店舗までです。「料金プラン」からプランを変更できます` };
+      return { error: `${plan.name}プランで登録できるのは${plan.stores}件までです。「料金プラン」からプランを変更できます` };
     }
   }
   const d = parsed.data;
+  const questions = d.kind === "WEB" ? webQuestions(d) : defaultQuestions(d);
   const store = await prisma.store.create({
     data: {
       ownerId: user.id,
-      name: d.name,
-      area: d.area,
-      station: d.station || null,
-      genre: d.genre,
-      websiteUrl: d.websiteUrl || null,
-      aliases: d.aliases,
-      competitors: d.competitors,
-      questions: { create: defaultQuestions(d).map((text, sort) => ({ text, sort })) },
+      kind: d.kind,
+      ...storeData(d),
+      questions: { create: questions.map((text, sort) => ({ text, sort })) },
     },
   });
   redirect(`/ai/app/stores/${store.id}`);
@@ -101,29 +133,19 @@ export async function createStore(_prev: FormState, formData: FormData): Promise
 
 export async function updateStore(storeId: string, _prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireAccount();
-  if (!(await findStoreFor(user, storeId))) return { error: "店舗が見つかりません" };
-  const parsed = parseStore(formData);
+  const store = await findStoreFor(user, storeId);
+  if (!store) return { error: "登録が見つかりません" };
+  // 種類は登録時に決まり、あとから変えない
+  const parsed = parseStore(formData, store.kind);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "入力内容を確認してください" };
-  const d = parsed.data;
-  await prisma.store.update({
-    where: { id: storeId },
-    data: {
-      name: d.name,
-      area: d.area,
-      station: d.station || null,
-      genre: d.genre,
-      websiteUrl: d.websiteUrl || null,
-      aliases: d.aliases,
-      competitors: d.competitors,
-    },
-  });
+  await prisma.store.update({ where: { id: storeId }, data: storeData(parsed.data) });
   revalidatePath(`/ai/app/stores/${storeId}`);
   return { ok: "保存しました" };
 }
 
 export async function updateQuestions(storeId: string, _prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireAccount();
-  if (!(await findStoreFor(user, storeId))) return { error: "店舗が見つかりません" };
+  if (!(await findStoreFor(user, storeId))) return { error: "登録が見つかりません" };
   const texts = String(formData.get("questions") ?? "")
     .split("\n")
     .map((s) => s.trim())
@@ -143,7 +165,7 @@ export async function updateQuestions(storeId: string, _prev: FormState, formDat
 
 export async function startRun(storeId: string, _prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireAccount();
-  if (!(await findStoreFor(user, storeId))) return { error: "店舗が見つかりません" };
+  if (!(await findStoreFor(user, storeId))) return { error: "登録が見つかりません" };
 
   if (await prisma.measurementRun.findFirst({ where: { storeId, status: "RUNNING" } })) {
     return { error: "計測中です。終わるまでお待ちください" };
@@ -168,8 +190,8 @@ export async function startRun(storeId: string, _prev: FormState, formData: Form
 export async function runAudit(storeId: string): Promise<FormState> {
   const user = await requireAccount();
   const store = await findStoreFor(user, storeId);
-  if (!store) return { error: "店舗が見つかりません" };
-  if (!store.websiteUrl) return { error: "店舗情報に公式サイトのURLを登録してください" };
+  if (!store) return { error: "登録が見つかりません" };
+  if (!store.websiteUrl) return { error: "「設定」で公式サイトのURLを登録してください" };
 
   if (user.role === "OWNER") {
     const since = new Date(Date.now() - 10 * 60_000);
@@ -177,7 +199,10 @@ export async function runAudit(storeId: string): Promise<FormState> {
       return { error: "サイト診断は10分に1回までです" };
     }
   }
-  const result = await auditSite({ websiteUrl: store.websiteUrl, area: store.area, genre: store.genre });
+  const result =
+    store.kind === "WEB"
+      ? await auditWebSite({ websiteUrl: store.websiteUrl, genre: store.genre, pitch: store.pitch, features: store.features })
+      : await auditSite({ websiteUrl: store.websiteUrl, area: store.area, genre: store.genre });
   await prisma.siteAudit.create({
     data: { storeId, url: result.url, score: result.score, checks: result.checks },
   });
