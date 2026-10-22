@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>料金表｜Webサービス向け AI検索対策</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 12mm 13mm 11mm; }
+  :root { --ink: #1f2328; --sub: #57606a; --line: #d0d7de; --bg: #f6f8fa; --accent: #10a37f; --accent-bg: #e7f6f1; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); background: #fff; font-family: "Noto Sans JP", sans-serif; font-size: 9.6pt; line-height: 1.55; }
+  .eyebrow { color: var(--accent); font-weight: 700; font-size: 8.5pt; letter-spacing: .05em; }
+  h1 { font-size: 19pt; margin: 1mm 0 1mm; font-weight: 900; }
+  .lead { color: var(--sub); margin: 0 0 4mm; }
+  h2 { font-size: 11pt; margin: 5mm 0 2mm; padding-left: 2mm; border-left: 3px solid var(--accent); }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5mm; }
+  .step { background: var(--bg); border-radius: 2mm; padding: 3mm; }
+  .step .no { font-size: 8pt; color: var(--accent); font-weight: 700; }
+  .step .t { font-weight: 700; margin-top: .5mm; }
+  .step .p { font-size: 15pt; font-weight: 900; margin: 1mm 0; }
+  .step .p small { font-size: 8.5pt; font-weight: 500; color: var(--sub); }
+  .step .d { font-size: 8.3pt; color: var(--sub); }
+  .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .plan { border: 1px solid var(--line); border-radius: 2mm; padding: 3.5mm 4mm; }
+  .plan.hl { border: 2px solid var(--accent); }
+  .plan .badge { display: inline-block; font-size: 7.5pt; font-weight: 700; color: var(--accent); background: var(--accent-bg); border-radius: 1mm; padding: .3mm 1.5mm; }
+  .plan .name { font-size: 12pt; font-weight: 700; margin-top: 1mm; }
+  .plan .price { font-size: 20pt; font-weight: 900; line-height: 1.2; }
+  .plan .price small { font-size: 9pt; font-weight: 500; color: var(--sub); }
+  .plan ul { margin: 2mm 0 0; padding-left: 4.5mm; }
+  .plan li { margin: .5mm 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  th, td { border-bottom: 1px solid var(--line); padding: 1.4mm 2mm; text-align: left; vertical-align: top; }
+  td.r { text-align: right; white-space: nowrap; font-weight: 700; }
+  .monitor { margin-top: 4mm; background: var(--accent-bg); border-radius: 2mm; padding: 3mm 4mm; }
+  .monitor b { color: var(--accent); }
+  .cta { margin-top: 4mm; background: var(--ink); color: #fff; border-radius: 2mm; padding: 3mm 4mm; display: grid; grid-template-columns: 1fr auto; gap: 4mm; align-items: center; }
+  .cta b { font-size: 11pt; }
+  .cta .c { font-size: 8.5pt; color: #d0d7de; white-space: nowrap; }
+  .note { color: var(--sub); font-size: 7.6pt; margin-top: 2.5mm; }
+</style>
+</head>
+<body>
+
+<div class="eyebrow">AI検索対策（GEO）｜Webサービス向け</div>
+<h1>料金表</h1>
+<p class="lead">ChatGPT・Geminiに「〇〇できるサービスは？」と聞かれたとき、御社が紹介されるようにします。毎月実際にAIに聞いて測り、紹介されなかった質問に答えるページを作ります。</p>
+
+<h2>はじめ方</h2>
+<div class="steps">
+  <div class="step"><div class="no">STEP 1</div><div class="t">簡易診断</div><div class="p">無料</div><div class="d">主な質問でAIに紹介されているかを計測し、サイトの作りを自動で診断します。</div></div>
+  <div class="step"><div class="no">STEP 2</div><div class="t">詳しい診断＋報告会</div><div class="p">98,000<small>円</small></div><div class="d">30問×2つのAIで計測、競合が引用されているページとAI流入（GA4）を分析し、直す順番を1時間でご説明。<b>おまかせを申し込むと初期整備から全額差し引き。</b></div></div>
+  <div class="step"><div class="no">STEP 3</div><div class="t">初期整備</div><div class="p">198,000<small>円〜</small></div><div class="d">一文の立ち位置、1件1ページの設計、構造化データ、llms.txt、サイトマップ・Bing登録、AI流入の計測設定。ページ数で見積もり。</div></div>
+</div>
+
+<h2>毎月のおまかせ</h2>
+<div class="plans">
+  <div class="plan hl">
+    <span class="badge">おすすめ</span>
+    <div class="name">おまかせ 月4ページ</div>
+    <div class="price">98,000<small>円／月</small></div>
+    <ul>
+      <li>毎月の計測（ChatGPT・Gemini）と1枚レポート</li>
+      <li>ページの作成・書き換え <b>月4ページ</b></li>
+      <li>構造化データ・llms.txtの更新</li>
+      <li>月1回の打ち合わせ（30分）</li>
+    </ul>
+  </div>
+  <div class="plan">
+    <span class="badge">本格的に</span>
+    <div class="name">おまかせ 月8ページ</div>
+    <div class="price">198,000<small>円／月</small></div>
+    <ul>
+      <li>月4ページの内容すべて</li>
+      <li>ページの作成・書き換え <b>月8ページ</b></li>
+      <li>外部での紹介集め（比較記事・プレスリリース・業界メディア）</li>
+      <li>月2回の打ち合わせ</li>
+    </ul>
+  </div>
+</div>
+
+<h2>オプション</h2>
+<table>
+  <tr><td>追加のページ作成</td><td class="r">1ページ 30,000〜50,000円</td></tr>
+  <tr><td>実装代行（WordPressなどに直接反映）</td><td class="r">100,000円〜</td></tr>
+  <tr><td>年払い（12か月分の先払い）</td><td class="r">2か月分割引</td></tr>
+  <tr><td>自分で計測したい方：AI検索チェック（ツール）</td><td class="r">無料〜月14,800円</td></tr>
+</table>
+
+<div class="monitor"><b>モニター募集（先着3社）</b>：初期整備を無料、おまかせ 月4ページを<b>3か月間 月29,800円</b>で実施します。条件は、社名と結果の数字を事例として紹介させていただくこと、Googleアナリティクスを一緒に見られることです。</div>
+
+<div class="cta">
+  <div><b>まずは無料の簡易診断から</b><br>御社のサービスがAIに紹介されているか、計測結果をお送りします。</div>
+  <div class="c">担当：<br>連絡先：</div>
+</div>
+
+<p class="note">表示はすべて税別です。おまかせは最低3か月、以降は1か月ごとの更新です。AIの回答は毎回変わるため、紹介や問い合わせの増加をお約束するものではありません。実績：自社運営の求人サイトで、ChatGPT経由のユーザーが全体の14.5%、成果の51.6%（2026年9月24日〜10月21日、GA4）。</p>
+
+</body>
+</html>
