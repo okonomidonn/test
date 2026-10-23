@@ -40,7 +40,7 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
         <Link href="/ai/app" className="text-sm text-slate-600 hover:underline">
           ← 登録一覧
         </Link>
-        <h1 className="mt-1 text-2xl font-bold">{store.name}</h1>
+        <h1 className="mt-1 text-3xl font-black text-slate-900">{store.name}</h1>
         <p className="text-sm text-slate-600">
           {store.kind === "WEB" ? (
             <>
@@ -101,12 +101,12 @@ async function NextStep({ storeId, hasUrl }: { storeId: string; hasUrl: boolean 
   else step = { text: "よい状態です。週に1回計測して、紹介され続けているかを確かめましょう。", href: `${base}?tab=check`, label: "計測結果を見る" };
 
   return (
-    <section className="flex flex-col gap-4 rounded-xl border border-indigo-200 bg-indigo-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <section className="flex flex-col gap-4 rounded-xl bg-slate-900 p-5 text-white sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold text-brand">次にやること</p>
-        <p className="mt-1 text-base font-semibold text-slate-900">{step.text}</p>
+        <p className="text-sm font-bold text-mark">次にやること</p>
+        <p className="mt-1 text-base font-semibold">{step.text}</p>
       </div>
-      <Link href={step.href} className="shrink-0 rounded-lg bg-brand px-5 py-3 text-center font-semibold text-white hover:bg-brand-dark">
+      <Link href={step.href} className="shrink-0 rounded-lg bg-mark px-5 py-3 text-center font-bold text-slate-900 hover:brightness-95">
         {step.label}
       </Link>
     </section>
@@ -162,24 +162,42 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
         <p className={`${cardClass} text-center text-sm text-slate-600`}>まだ計測結果がありません。上のボタンから計測を始めてください。</p>
       ) : (
         <>
-          <section className="grid gap-4 sm:grid-cols-3">
-            <div className={cardClass}>
-              <p className="text-sm text-slate-600">最新の推薦率</p>
-              <p className="mt-1 text-3xl font-bold text-slate-900">{pct(stats.latest.targetHits, stats.latest.answers)}%</p>
-              <p className="text-sm text-slate-600">
-                {stats.latest.answers}回答中 {stats.latest.targetHits}回（{fmtDate(stats.latest.createdAt)}）
+          <section className={`${cardClass} grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-10`}>
+            <div>
+              <p className="text-sm font-semibold text-slate-600">最新の推薦率</p>
+              <p className="font-num text-6xl font-semibold leading-none text-slate-900">
+                {pct(stats.latest.targetHits, stats.latest.answers)}
+                <span className="text-3xl text-slate-500">%</span>
+              </p>
+              <p className="mt-2 text-sm text-slate-600">
+                {stats.latest.answers}回答中 <span className="font-num font-semibold text-slate-900">{stats.latest.targetHits}</span>回 紹介・{fmtDate(stats.latest.createdAt)}
               </p>
             </div>
-            {engines.slice(0, 2).map((e) => {
-              const v = latestByEngine[e];
-              return (
-                <div key={e} className={cardClass}>
-                  <p className="text-sm text-slate-600">{ENGINE_LABELS[e]}</p>
-                  <p className="mt-1 text-3xl font-bold text-slate-900">{v ? `${pct(v.hits, v.total)}%` : "—"}</p>
-                  <p className="text-sm text-slate-600">{v ? `${v.total}回答中 ${v.hits}回` : "最新の計測なし"}</p>
-                </div>
-              );
-            })}
+            <dl className="space-y-3 sm:border-l sm:border-slate-200 sm:pl-10">
+              {engines.slice(0, 2).map((e) => {
+                const v = latestByEngine[e];
+                const value = v ? pct(v.hits, v.total) : 0;
+                return (
+                  <div key={e} title={v ? `${ENGINE_LABELS[e]}：${v.total}回答中 ${v.hits}回` : undefined}>
+                    <div className="flex items-baseline justify-between gap-3 text-sm">
+                      <dt className="font-semibold text-slate-800">{ENGINE_LABELS[e]}</dt>
+                      <dd className="text-slate-600">
+                        {v ? (
+                          <>
+                            <span className="font-num text-lg font-semibold text-slate-900">{value}%</span>（{v.total}回答中 {v.hits}回）
+                          </>
+                        ) : (
+                          "最新の計測なし"
+                        )}
+                      </dd>
+                    </div>
+                    <div className="mt-1 h-2.5 rounded-full bg-slate-100">
+                      <div className="h-2.5 rounded-full bg-brand" style={{ width: `${value}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </dl>
           </section>
 
           {stats.trend.length > 1 && (
@@ -211,11 +229,18 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
                   <tr key={q.no} className="border-b border-slate-100">
                     <td className="py-2 pr-3 text-slate-700">{q.text}</td>
                     <td className="py-2 text-right">
-                      <span className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${q.hits ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>
-                        {q.hits ? `${q.hits} / ${q.total}` : "紹介なし"}
+                      <span className="inline-flex items-center gap-2" title={`${q.total}回答中 ${q.hits}回 紹介`}>
+                        <span className="flex gap-1" aria-hidden>
+                          {Array.from({ length: q.total }, (_, i) => (
+                            <span key={i} className={`h-3 w-3 rounded-full ${i < q.hits ? "bg-brand" : "border-2 border-slate-300"}`} />
+                          ))}
+                        </span>
+                        <span className={`font-num text-sm font-semibold ${q.hits ? "text-slate-900" : "text-slate-500"}`}>{q.hits ? `${q.hits}/${q.total}` : "なし"}</span>
                       </span>
                     </td>
-                    <td className="py-2 text-right text-sm text-slate-700">{q.ranks.length ? q.ranks.map((r) => `${r}位`).join("・") : q.hits ? "本文で言及" : "—"}</td>
+                    <td className="py-2 text-right text-sm text-slate-700">
+                      {q.ranks.length ? <span className="font-num font-semibold text-slate-900">{q.ranks.map((r) => `${r}位`).join("・")}</span> : q.hits ? "本文で言及" : "—"}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -334,8 +359,9 @@ async function SourcesTab({ storeId, kind }: { storeId: string; kind: TargetKind
   );
 }
 
-const STATUS_STYLE = { ok: "bg-emerald-50 text-emerald-700", warn: "bg-amber-50 text-amber-800", ng: "bg-rose-50 text-rose-700" } as const;
-const STATUS_LABEL = { ok: "OK", warn: "要改善", ng: "問題あり" } as const;
+const STATUS_STYLE = { ok: "bg-emerald-50 text-emerald-800", warn: "bg-amber-50 text-amber-900", ng: "bg-rose-50 text-rose-800" } as const;
+const STATUS_LABEL = { ok: "✓ OK", warn: "! 要改善", ng: "✕ 問題あり" } as const;
+const STATUS_BAR = { ng: "bg-rose-600", warn: "bg-amber-500", ok: "bg-emerald-600" } as const;
 
 async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: boolean; kind: TargetKind }) {
   const [audit, stats] = await Promise.all([
@@ -364,20 +390,34 @@ async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: 
         <section className={cardClass}>
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
-              <p className="text-sm text-slate-600">サイト診断スコア</p>
-              <p className="text-4xl font-bold text-slate-900">
+              <p className="text-sm font-semibold text-slate-600">サイト診断スコア</p>
+              <p className="font-num text-6xl font-semibold leading-none text-slate-900">
                 {audit.score}
-                <span className="text-base font-medium text-slate-500"> / 100</span>
+                <span className="text-2xl text-slate-500"> / 100</span>
               </p>
             </div>
-            <p className="text-sm text-slate-600">
+            <p className="min-w-0 break-all text-sm text-slate-600">
               {fmtDate(audit.createdAt)}に診断・{audit.url}
             </p>
           </div>
+          {/* 問題あり・要改善・OKの数を、1本の帯で見せる */}
+          <div className="mt-5 flex h-3 gap-0.5 overflow-hidden rounded-full" aria-hidden>
+            {(["ng", "warn", "ok"] as const).map((st) => {
+              const n = checks.filter((c) => c.status === st).length;
+              return n ? <span key={st} className={STATUS_BAR[st]} style={{ flexGrow: n }} /> : null;
+            })}
+          </div>
+          <p className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-700">
+            {(["ng", "warn", "ok"] as const).map((st) => (
+              <span key={st}>
+                {STATUS_LABEL[st]} <span className="font-num font-semibold text-slate-900">{checks.filter((c) => c.status === st).length}</span>
+              </span>
+            ))}
+          </p>
           <ul className="mt-5 divide-y divide-slate-100">
             {[...checks].sort((a, b) => order[a.status] - order[b.status]).map((c) => (
-              <li key={c.key} className="grid gap-1 py-3 sm:grid-cols-[6rem_1fr]">
-                <span className={`h-fit w-fit rounded-full px-2.5 py-0.5 text-sm font-semibold ${STATUS_STYLE[c.status]}`}>{STATUS_LABEL[c.status]}</span>
+              <li key={c.key} className="grid gap-1.5 py-4 sm:grid-cols-[7.5rem_1fr]">
+                <span className={`h-fit w-fit whitespace-nowrap rounded-full px-2.5 py-0.5 text-sm font-semibold ${STATUS_STYLE[c.status]}`}>{STATUS_LABEL[c.status]}</span>
                 <div>
                   <p className="font-semibold text-slate-900">{c.title}</p>
                   <p className="text-sm text-slate-700">{c.detail}</p>

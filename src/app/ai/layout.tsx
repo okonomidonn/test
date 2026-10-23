@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BIZ_UDPGothic, IBM_Plex_Mono, Zen_Kaku_Gothic_New } from "next/font/google";
 import { auth, signOut } from "@/auth";
+
+// 本文：UD書体（読みやすさ優先）、見出し：角ゴシックの太字、数字：等幅
+const body = BIZ_UDPGothic({ variable: "--font-ai-body", weight: ["400", "700"], subsets: ["latin"], display: "swap" });
+const display = Zen_Kaku_Gothic_New({ variable: "--font-ai-display", weight: ["700", "900"], subsets: ["latin"], display: "swap" });
+const num = IBM_Plex_Mono({ variable: "--font-ai-num", weight: ["500", "600"], subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "AI検索チェック | 飲食店・WebサービスのAI集客",
@@ -12,11 +18,14 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
   const user = session?.user;
 
   return (
-    <div className="ai-scope flex flex-1 flex-col">
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div className={`${body.variable} ${display.variable} ${num.variable} ai-scope flex flex-1 flex-col`}>
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-4 sm:px-6">
-          <Link href={user ? "/ai/app" : "/ai"} className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight text-slate-900">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand text-sm text-white">AI</span>
+          <Link href={user ? "/ai/app" : "/ai"} className="flex shrink-0 items-center gap-2.5 font-display text-lg font-black tracking-tight text-slate-900">
+            <span className="relative grid h-8 w-8 place-items-center overflow-hidden rounded-md bg-slate-900 text-sm text-white" aria-hidden>
+              AI
+              <span className="absolute inset-x-1.5 bottom-1.5 h-1 rounded-full bg-mark" />
+            </span>
             {/* スマホでは右側のメニューを優先し、名前を隠す */}
             <span className={user ? "hidden sm:inline" : "hidden min-[400px]:inline"}>AI検索チェック</span>
           </Link>
@@ -63,7 +72,8 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">{children}</main>
       <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap gap-4 px-4 py-6 text-sm text-slate-600 sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-sm text-slate-600 sm:px-6">
+          <span className="font-display font-bold text-slate-800">AI検索チェック</span>
           <Link href="/ai/pricing" className="hover:underline">
             料金プラン
           </Link>
