@@ -9,7 +9,7 @@ export default function AiLoginPage() {
       <div className={`mt-6 ${cardClass}`}>
         <LoginForm callbackUrl="/ai/app" />
       </div>
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-slate-600">
         はじめての方は{" "}
         <Link href="/ai/signup" className="font-semibold text-brand hover:underline">
           無料で登録

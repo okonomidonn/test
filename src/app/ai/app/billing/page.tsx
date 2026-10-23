@@ -44,7 +44,7 @@ export default async function BillingPage({ searchParams }: PageProps<"/ai/app/b
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold">料金プラン・契約</h1>
-        <p className="mt-1 text-sm text-slate-500">有料プランはいつでも解約でき、契約期間の縛りはありません。</p>
+        <p className="mt-1 text-sm text-slate-600">有料プランはいつでも解約でき、契約期間の縛りはありません。</p>
       </div>
 
       {message && (
@@ -53,11 +53,11 @@ export default async function BillingPage({ searchParams }: PageProps<"/ai/app/b
 
       <section className={`${cardClass} flex flex-wrap items-center justify-between gap-4`}>
         <div>
-          <p className="text-sm text-slate-500">現在のプラン</p>
+          <p className="text-sm text-slate-600">現在のプラン</p>
           <p className="text-2xl font-bold text-slate-900">{plan.name}</p>
-          {user.subscriptionStatus && <p className="text-sm text-slate-600">状態：{STATUS_LABEL[user.subscriptionStatus] ?? user.subscriptionStatus}</p>}
+          {user.subscriptionStatus && <p className="text-sm text-slate-700">状態：{STATUS_LABEL[user.subscriptionStatus] ?? user.subscriptionStatus}</p>}
           {user.currentPeriodEnd && hasSubscription && (
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-700">
               {user.cancelAtPeriodEnd ? `${fmtDate(user.currentPeriodEnd)}で解約されます` : `次回の更新日：${fmtDate(user.currentPeriodEnd)}`}
             </p>
           )}
@@ -79,7 +79,7 @@ export default async function BillingPage({ searchParams }: PageProps<"/ai/app/b
         action={(p) => {
           if (p.key === "FREE" || p.key === plan.key) return null;
           if (hasSubscription) {
-            return <p className="text-center text-xs text-slate-500">プランの変更は「契約を管理する」から</p>;
+            return <p className="text-center text-sm text-slate-600">プランの変更は「契約を管理する」から</p>;
           }
           return (
             <form action={startCheckout.bind(null, p.key)}>
@@ -91,7 +91,7 @@ export default async function BillingPage({ searchParams }: PageProps<"/ai/app/b
         }}
       />
 
-      <p className="text-xs text-slate-500">
+      <p className="text-sm text-slate-600">
         お支払いはStripe（クレジットカード）で安全に処理されます。カード情報は当サービスには保存されません。{" "}
         <Link href="/ai/legal" className="underline">
           特定商取引法に基づく表記

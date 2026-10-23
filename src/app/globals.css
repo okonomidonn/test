@@ -5,6 +5,8 @@
   --foreground: #0f172a;
   --brand: #4f46e5;
   --brand-dark: #4338ca;
+  --brand-soft: #eef2ff;
+  --mark: #fde68a;
 }
 
 @theme inline {
@@ -12,6 +14,10 @@
   --color-foreground: var(--foreground);
   --color-brand: var(--brand);
   --color-brand-dark: var(--brand-dark);
+  --color-brand-soft: var(--brand-soft);
+  --color-mark: var(--mark);
+  --font-display: var(--font-ai-display), var(--font-noto-sans-jp), sans-serif;
+  --font-num: var(--font-ai-num), ui-monospace, monospace;
   --font-sans: var(--font-noto-sans-jp);
 }
 
@@ -19,4 +25,73 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-noto-sans-jp), "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+
+/*
+ * AI検索チェックの見た目（SocialDeskの画面には影響しない）
+ * 方向性：AIの回答の中で「自分の名前」に蛍光ペンを引く。石油色（ペトロール）の差し色に、同じ色味を少し含んだグレー。
+ * 書体：本文はUD書体（読みやすさ優先）、見出しは角ゴシックの太字、数字は等幅。
+ */
+.ai-scope {
+  --brand: #0e6b73;
+  --brand-dark: #0a5259;
+  --brand-soft: #e3f1f1;
+  --mark: #ffe46b;
+
+  /* グレーをペトロール寄りに（Tailwindのslateを上書き） */
+  --color-slate-50: #f3f6f6;
+  --color-slate-100: #e7eeee;
+  --color-slate-200: #d6e0e0;
+  --color-slate-300: #b6c5c5;
+  --color-slate-400: #8a9e9f;
+  --color-slate-500: #637879;
+  --color-slate-600: #4b5f60;
+  --color-slate-700: #334647;
+  --color-slate-800: #1f3234;
+  --color-slate-900: #0f2224;
+
+  /* 以前の紫（indigo）の指定も差し色にそろえる */
+  --color-indigo-50: var(--brand-soft);
+  --color-indigo-100: var(--brand-soft);
+  --color-indigo-200: #b3d3d5;
+  --color-indigo-700: var(--brand-dark);
+
+  /* 角は小さく、影は使わない（枠線で区切る） */
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 12px;
+
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+
+  background: var(--color-slate-50);
+  color: var(--color-slate-900);
+  font-family: var(--font-ai-body), var(--font-noto-sans-jp), sans-serif;
+  line-height: 1.75;
+}
+
+.ai-scope h1,
+.ai-scope h2,
+.ai-scope h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+  letter-spacing: 0.01em;
+}
+
+/* 蛍光ペン：AIの回答の中で、自分の名前が出たところ */
+.ai-scope .marker {
+  background: linear-gradient(transparent 55%, var(--mark) 55%, var(--mark) 92%, transparent 92%);
+  padding: 0 0.1em;
+}
+
+/* 共通部品（カード・ボタン）の影を消す。区切りは枠線で十分 */
+.ai-scope .shadow-sm {
+  box-shadow: none;
+}
+
+.ai-scope :focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
 }

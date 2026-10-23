@@ -25,11 +25,11 @@ export default async function RunPage({ params }: PageProps<"/ai/app/stores/[id]
   return (
     <div className="space-y-6">
       <div>
-        <Link href={`/ai/app/stores/${id}`} className="text-sm text-slate-500 hover:underline">
+        <Link href={`/ai/app/stores/${id}`} className="text-sm text-slate-600 hover:underline">
           ← {store.name}
         </Link>
         <h1 className="mt-1 text-2xl font-bold">計測結果の詳細</h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-600">
           {new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", dateStyle: "medium", timeStyle: "short" }).format(run.createdAt)}・
           {run.engines.map((e) => ENGINE_LABELS[e as EngineKey] ?? e).join("・")}・各質問{run.repeats}回
         </p>
@@ -53,19 +53,19 @@ export default async function RunPage({ params }: PageProps<"/ai/app/stores/[id]
             <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-semibold text-slate-800">
                 Q{a.questionNo}. {a.questionText}
-                <span className="ml-2 text-xs font-normal text-slate-500">
+                <span className="ml-2 text-sm font-normal text-slate-600">
                   {ENGINE_LABELS[a.engine as EngineKey] ?? a.engine}
                   {run.repeats > 1 ? `・${a.repeat}回目` : ""}
                 </span>
               </span>
               {a.status === "ERROR" ? (
-                <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700">取得失敗</span>
+                <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-sm font-semibold text-rose-700">取得失敗</span>
               ) : a.targetRank !== null ? (
-                <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-sm font-semibold text-emerald-700">
                   {a.targetRank > 0 ? `${a.targetRank}番目に紹介` : "本文で言及"}
                 </span>
               ) : (
-                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500">紹介なし</span>
+                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-sm font-semibold text-slate-600">紹介なし</span>
               )}
             </summary>
             <div className="mt-4 space-y-3 border-t border-slate-100 pt-4 text-sm">
@@ -73,9 +73,9 @@ export default async function RunPage({ params }: PageProps<"/ai/app/stores/[id]
                 <p className="text-rose-700">{a.error}</p>
               ) : (
                 <>
-                  {a.shops.length > 0 && <p className="text-xs text-slate-500">回答に出た名前（自動抽出）：{a.shops.join("、")}</p>}
+                  {a.shops.length > 0 && <p className="text-sm text-slate-600">回答に出た名前（自動抽出）：{a.shops.join("、")}</p>}
                   <p className="whitespace-pre-wrap leading-relaxed text-slate-700">{a.answerText}</p>
-                  {a.sources.length > 0 && <p className="break-all text-xs text-slate-400">参考：{a.sources.join("  ")}</p>}
+                  {a.sources.length > 0 && <p className="break-all text-sm text-slate-500">参考：{a.sources.join("  ")}</p>}
                 </>
               )}
             </div>

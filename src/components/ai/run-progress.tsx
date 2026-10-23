@@ -38,13 +38,13 @@ export function RunProgress({ runId, initialDone, total }: { runId: string; init
     <div className="space-y-2">
       <div className="flex items-center justify-between text-sm">
         <span className="font-semibold text-slate-800">AIに質問中… {done} / {total}</span>
-        <span className="text-slate-500">{Math.round(ratio * 100)}%</span>
+        <span className="text-slate-600">{Math.round(ratio * 100)}%</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-slate-100">
         <div className="h-2 rounded-full bg-brand transition-all" style={{ width: `${ratio * 100}%` }} />
       </div>
-      <p className="text-xs text-slate-500">このページを開いたままにすると早く終わります。閉じても、残りは自動で続きます（時間がかかる場合があります）。</p>
-      {error && <p className="text-xs text-amber-700">{error}</p>}
+      <p className="text-sm text-slate-600">このページを開いたままにすると早く終わります。閉じても、残りは自動で続きます（時間がかかる場合があります）。</p>
+      {error && <p className="text-sm text-amber-700">{error}</p>}
     </div>
   );
 }

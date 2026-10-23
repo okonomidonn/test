@@ -56,7 +56,7 @@ export function StoreForm({ action, defaults = {}, submitLabel }: { action: Acti
       <div>
         <label className={labelClass}>店名の別の書き方（1行に1つ）</label>
         <textarea name="aliases" rows={2} defaultValue={defaults.aliases?.join("\n")} placeholder={"例：エソラ\nくしとメシ エソラ"} className={inputClass} />
-        <p className="mt-1 text-xs text-slate-500">AIの回答からお店を見つけるのに使います。読み仮名や略称、英語表記など。</p>
+        <p className="mt-1 text-sm text-slate-600">AIの回答からお店を見つけるのに使います。読み仮名や略称、英語表記など。</p>
       </div>
       <div>
         <label className={labelClass}>比べたい近くのお店（1行に1つ・10店まで）</label>
@@ -87,27 +87,27 @@ export function WebServiceForm({ action, defaults = {}, submitLabel }: { action:
       </div>
       <div>
         <label className={labelClass}>誰向けのサービスか</label>
-        <input name="audience" defaultValue={defaults.audience ?? ""} placeholder="例：大学生・主婦" className={inputClass} />
+        <input name="audience" defaultValue={defaults.audience ?? ""} placeholder="例：大学生や主婦" className={inputClass} />
       </div>
       <div>
         <label className={labelClass}>強み・特徴の言葉（1行に1つ・5つまで）</label>
         <textarea name="features" rows={3} defaultValue={defaults.features?.join("\n")} placeholder={"例：完全在宅のバイト\n未経験OK\n週1日から"} className={inputClass} />
-        <p className="mt-1 text-xs text-slate-500">利用者がAIに聞くときに使いそうな言葉で。ここから「未経験OKの求人サイトを教えて」のような細かい質問を作ります。</p>
+        <p className="mt-1 text-sm text-slate-600">利用者がAIに聞くときに使いそうな言葉で。ここから「未経験OKの求人サイトを教えて」のような細かい質問を作ります。</p>
       </div>
       <div>
         <label className={labelClass}>一文の立ち位置</label>
         <input name="pitch" defaultValue={defaults.pitch ?? ""} placeholder="例：完全在宅の仕事だけを集めた求人サイト" className={inputClass} />
-        <p className="mt-1 text-xs text-slate-500">「誰の・何を・他と何が違うか」。サイト診断で、トップページに書かれているかを確認します。</p>
+        <p className="mt-1 text-sm text-slate-600">「誰の・何を・他と何が違うか」。サイト診断で、トップページに書かれているかを確認します。</p>
       </div>
       <div>
         <label className={labelClass}>公式サイトのURL</label>
         <input name="websiteUrl" type="url" defaultValue={defaults.websiteUrl ?? ""} placeholder="https://..." className={inputClass} />
-        <p className="mt-1 text-xs text-slate-500">AIが名前を出さずにURLだけで紹介した場合も、紹介されたと数えます。</p>
+        <p className="mt-1 text-sm text-slate-600">AIが名前を出さずにURLだけで紹介した場合も、紹介されたと数えます。</p>
       </div>
       <div>
         <label className={labelClass}>サービス名の別の書き方（1行に1つ）</label>
         <textarea name="aliases" rows={2} defaultValue={defaults.aliases?.join("\n")} placeholder={"例：ザイト\nZAITO"} className={inputClass} />
-        <p className="mt-1 text-xs text-slate-500">AIの回答からサービスを見つけるのに使います。読み方・英語表記・運営会社名など。</p>
+        <p className="mt-1 text-sm text-slate-600">AIの回答からサービスを見つけるのに使います。読み方・英語表記・運営会社名など。</p>
       </div>
       <div>
         <label className={labelClass}>比べたい競合サービス（1行に1つ・10件まで）</label>
@@ -125,8 +125,8 @@ export function QuestionsForm({ action, questions, max }: { action: Action; ques
   return (
     <form action={formAction} className="space-y-3">
       <Message state={state} />
-      <textarea name="questions" rows={Math.max(questions.length + 1, 6)} defaultValue={questions.join("\n")} className={`${inputClass} font-mono text-xs`} />
-      <p className="text-xs text-slate-500">1行に1つ、{max}個まで。店名・サービス名は入れないでください（利用者が名前を知らずに聞く質問にするため）。</p>
+      <textarea name="questions" rows={Math.max(questions.length + 1, 6)} defaultValue={questions.join("\n")} className={`${inputClass} font-mono text-sm`} />
+      <p className="text-sm text-slate-600">1行に1つ、{max}個まで。店名・サービス名は入れないでください（利用者が名前を知らずに聞く質問にするため）。</p>
       <button type="submit" disabled={isPending} className={secondaryButtonClass}>
         {isPending ? "保存中..." : "質問を保存"}
       </button>
@@ -148,7 +148,7 @@ export function StartRunForm({ action, isTeam, disabledReason }: { action: Actio
       <button type="submit" disabled={isPending || !!disabledReason} className={primaryButtonClass}>
         {isPending ? "準備中..." : "AIに聞いて計測する"}
       </button>
-      {disabledReason && <span className="text-xs text-slate-500">{disabledReason}</span>}
+      {disabledReason && <span className="text-sm text-slate-600">{disabledReason}</span>}
       {state.error && <span className="text-sm text-red-600">{state.error}</span>}
     </form>
   );
@@ -161,7 +161,7 @@ export function AuditForm({ action, hasUrl }: { action: Action; hasUrl: boolean 
       <button type="submit" disabled={isPending || !hasUrl} className={primaryButtonClass}>
         {isPending ? "診断中..." : "公式サイトを診断する"}
       </button>
-      {!hasUrl && <span className="text-xs text-slate-500">「設定」で公式サイトのURLを登録すると診断できます</span>}
+      {!hasUrl && <span className="text-sm text-slate-600">「設定」で公式サイトのURLを登録すると診断できます</span>}
       {state.error && <span className="text-sm text-red-600">{state.error}</span>}
     </form>
   );
