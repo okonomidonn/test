@@ -1870,7 +1870,25 @@ function zaito_remote_go( $job ) {
         zaito_remote_record_click( $job['slug'], $member );
     }
     // 転送先は zaito_remote_jobs() に運営が書いたURLだけ（利用者の入力は使わない）。
-    wp_redirect( esc_url_raw( $job['url'] ), 302 );
+    wp_redirect( esc_url_raw( zaito_remote_out_url( $job ) ), 302 );
+}
+
+/**
+ * 応募ページへのURLに、zaitoから来たことが分かる印（utm）を付ける。
+ * 掲載先の会社がアクセス解析で「zaito経由の応募」を数えられるようにするため。
+ * もとのURLにすでに utm_source があるときは、会社が決めた印を優先してそのままにする。
+ */
+function zaito_remote_out_url( $job ) {
+    $url = $job['url'];
+    if ( false !== strpos( $url, 'utm_source=' ) ) {
+        return $url;
+    }
+    return add_query_arg( array(
+        'utm_source'   => 'zaito',
+        'utm_medium'   => 'referral',
+        'utm_campaign' => 'zaito_job',
+        'utm_content'  => $job['slug'],
+    ), $url );
 }
 
 /**
