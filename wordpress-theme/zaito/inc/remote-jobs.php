@@ -2057,6 +2057,7 @@ function zaito_render_remote_admin_page() {
     $members = (int) wp_count_posts( 'zaito_interest' )->private;
     $favs    = get_option( 'zaito_fav_stats', array() );
     $favs    = is_array( $favs ) ? $favs : array();
+    $applies = function_exists( 'zaito_ac_counts' ) ? zaito_ac_counts() : array();
     $fav_now = 0;
     foreach ( $favs as $f ) {
         $fav_now += count( $f['saved'] );
@@ -2067,8 +2068,41 @@ function zaito_render_remote_admin_page() {
       <p>公開ページ: <a href="<?php echo esc_url( zaito_remote_url() ); ?>" target="_blank" rel="noopener"><?php echo esc_html( zaito_remote_url() ); ?></a>　｜　登録している学生（先行登録を含む）: <strong><?php echo esc_html( $members ); ?>人</strong></p>
       <p>「進んだ学生」は、登録して元の応募ページへ進んだ学生の人数です（同じ学生が何度押しても1人）。企業への営業では、この人数を伝えます。求人の追加・修正は <code>inc/remote-jobs.php</code> で行います。</p>
       <p>「保存中」は、いまその求人を保存しているブラウザの数です（登録していない人も含む。同じブラウザは1回）。「保存された回数」は保存ボタンが押された回数の合計で、外した分は引いていません。いま保存されている数の合計: <strong><?php echo esc_html( $fav_now ); ?></strong></p>
+      <p>「応募した」「採用」は、応募ページへ進んだ学生に、2日後と21日後にメールで聞いた答えの人数です（inc/apply-track.php）。答えた人だけを数えるので、実際より少なめに出ます。</p>
+      <?php
+      // 企業ごとの合計（営業・報告用）
+      $by_co = array();
+      foreach ( zaito_remote_jobs() as $job ) {
+          $co = $job['company'];
+          $s  = isset( $stats[ $job['slug'] ] ) ? $stats[ $job['slug'] ] : array( 'members' => array() );
+          $a  = isset( $applies[ $job['slug'] ] ) ? $applies[ $job['slug'] ] : array( 'applied' => 0, 'hired' => 0 );
+          if ( ! isset( $by_co[ $co ] ) ) {
+              $by_co[ $co ] = array( 'go' => 0, 'applied' => 0, 'hired' => 0 );
+          }
+          $by_co[ $co ]['go']      += count( $s['members'] );
+          $by_co[ $co ]['applied'] += $a['applied'];
+          $by_co[ $co ]['hired']   += $a['hired'];
+      }
+      $by_co = array_filter( $by_co, function ( $c ) {
+          return $c['go'] || $c['applied'];
+      } );
+      uasort( $by_co, function ( $x, $y ) {
+          return ( $y['applied'] - $x['applied'] ) ?: ( $y['go'] - $x['go'] );
+      } );
+      ?>
+      <?php if ( $by_co ) : ?>
+        <h2>企業ごとの合計（報告用）</h2>
+        <table class="widefat striped" style="max-width:720px;margin-bottom:24px">
+          <thead><tr><th>企業</th><th>応募ページへ進んだ学生</th><th>応募したと答えた学生</th><th>採用されたと答えた学生</th></tr></thead>
+          <tbody>
+          <?php foreach ( $by_co as $co => $c ) : ?>
+            <tr><td><?php echo esc_html( $co ); ?></td><td><?php echo esc_html( $c['go'] ); ?>人</td><td><strong><?php echo esc_html( $c['applied'] ); ?></strong>人</td><td><strong><?php echo esc_html( $c['hired'] ); ?></strong>人</td></tr>
+          <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
       <table class="widefat striped">
-        <thead><tr><th>企業・求人</th><th style="width:110px">進んだ学生</th><th style="width:90px">保存中</th><th style="width:100px">保存された回数</th><th style="width:110px">クリック数</th><th style="width:150px">最後のクリック</th><th style="width:110px">確認日</th><th>元のページ</th></tr></thead>
+        <thead><tr><th>企業・求人</th><th style="width:110px">進んだ学生</th><th style="width:90px">応募した</th><th style="width:70px">採用</th><th style="width:90px">保存中</th><th style="width:100px">保存された回数</th><th style="width:110px">クリック数</th><th style="width:150px">最後のクリック</th><th style="width:110px">確認日</th><th>元のページ</th></tr></thead>
         <tbody>
         <?php foreach ( zaito_remote_jobs() as $job ) :
             $s = isset( $stats[ $job['slug'] ] ) ? $stats[ $job['slug'] ] : array( 'clicks' => 0, 'members' => array(), 'last' => '' );
@@ -2076,6 +2110,9 @@ function zaito_render_remote_admin_page() {
           <tr>
             <td><strong><?php echo esc_html( $job['company'] ); ?></strong><br><a href="<?php echo esc_url( zaito_remote_url( $job['slug'] ) ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $job['title'] ); ?></a><?php echo ! empty( $job['closed'] ) ? '（募集終了）' : ''; ?></td>
             <td><strong style="font-size:16px"><?php echo esc_html( count( $s['members'] ) ); ?></strong>人</td>
+            <?php $a = isset( $applies[ $job['slug'] ] ) ? $applies[ $job['slug'] ] : array( 'applied' => 0, 'hired' => 0 ); ?>
+            <td><?php echo esc_html( $a['applied'] ); ?>人</td>
+            <td><?php echo esc_html( $a['hired'] ); ?>人</td>
             <td><?php echo esc_html( isset( $favs[ $job['slug'] ] ) ? count( $favs[ $job['slug'] ]['saved'] ) : 0 ); ?></td>
             <td><?php echo esc_html( isset( $favs[ $job['slug'] ] ) ? (int) $favs[ $job['slug'] ]['adds'] : 0 ); ?>回</td>
             <td><?php echo esc_html( (int) $s['clicks'] ); ?>回</td>

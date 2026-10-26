@@ -280,7 +280,7 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '16';
+    $version = '17';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -2443,3 +2443,5 @@ require_once get_template_directory() . '/inc/mypage.php';
 // トップページの「今日のおすすめ」（5件）
 require_once get_template_directory() . '/inc/reco.php';
 require_once get_template_directory() . '/inc/reco-ai.php';
+// zaito経由の応募・採用を、本人にあとで聞いて数える
+require_once get_template_directory() . '/inc/apply-track.php';

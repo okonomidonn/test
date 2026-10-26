@@ -209,7 +209,7 @@ function zaito_mail_button( $email, $subject, $title, $lead, $button, $url, $not
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#FFFFFF;border-radius:16px;font-family:\'Hiragino Sans\',\'Noto Sans JP\',Meiryo,sans-serif;color:#0B1530;">'
         . '<tr><td style="padding:28px 28px 0;font-size:22px;font-weight:800;letter-spacing:.02em;">za<span style="color:#3D5AFE;">i</span>to</td></tr>'
         . '<tr><td style="padding:20px 28px 0;font-size:20px;font-weight:800;line-height:1.5;">' . $e( $title ) . '</td></tr>'
-        . '<tr><td style="padding:12px 28px 0;font-size:15px;line-height:1.8;color:#3A4563;">' . $e( $lead ) . '</td></tr>'
+        . '<tr><td style="padding:12px 28px 0;font-size:15px;line-height:1.8;color:#3A4563;">' . nl2br( $e( $lead ) ) . '</td></tr>'
         . '<tr><td align="center" style="padding:28px 28px 8px;">'
         . '<a href="' . esc_url( $url ) . '" style="display:inline-block;padding:16px 36px;border-radius:12px;background:#3D5AFE;color:#FFFFFF;font-size:17px;font-weight:800;text-decoration:none;">' . $e( $button ) . '</a>'
         . '</td></tr>'
