@@ -720,3 +720,10 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 .reco-skel span:nth-child(1){width:40%}.reco-skel span:nth-child(2){width:85%;height:22px}.reco-skel span:nth-child(3){width:60%}
 @keyframes reco-shine{to{background-position:-200% 0}}
 .reco-modal-in:focus{outline:none}
+
+/* メールのボタンから来たときの「登録が完了しました」 */
+.my-done{display:flex;gap:14px;margin:0 0 24px;padding:20px 22px;border-radius:16px;background:var(--z-blue-light)}
+.my-done[hidden]{display:none}
+.my-done>.ms{flex:none;font-size:30px;color:var(--z-blue);font-variation-settings:'FILL' 1}
+.my-done b{display:block;font-size:18px;color:var(--z-navy)}
+.my-done p{margin:4px 0 14px;font-size:14px;line-height:1.7;color:var(--z-text-2)}

@@ -116,14 +116,18 @@ function zaito_handle_my_login() {
         if ( ! get_transient( $key ) ) {
             set_transient( $key, 1, MINUTE_IN_SECONDS );
             $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
-            $body = "zaitoのマイページを開くリンクです。\n\n"
-                . zaito_my_login_url( $ids[0] ) . "\n\n"
-                . "リンクは24時間有効です。開いたブラウザでは、次回からそのままマイページを使えます。\n"
-                . "※お心当たりのない場合は、このメールを破棄してください。\n\n"
-                . "──────────\n"
-                . "zaito（ザイト）出社なしの仕事だけを集めた求人サイト\n"
-                . home_url( '/' ) . "\n";
-            wp_mail( $email, '【zaito】マイページのログインリンク', $body, array( 'From: zaito <info@' . $host . '>' ) );
+            $done = zaito_interest_verified( $ids[0] );
+            zaito_mail_button(
+                $email,
+                $done ? '【zaito】マイページを開くリンク' : '【zaito】ボタンを押して登録を完了してください',
+                $done ? 'マイページを開く' : 'あと1ステップで登録が完了します',
+                $done ? '下のボタンを押すと、zaitoのマイページが開きます。開いたブラウザでは、次回からそのまま使えます。' : '下のボタンを押すと、メールアドレスの確認が終わり、あなたに合う完全在宅の新着求人が届くようになります。',
+                $done ? 'マイページを開く' : '登録を完了する',
+                zaito_my_login_url( $ids[0] ),
+                'ボタンは24時間有効です。',
+                'お心当たりがない場合は、このメールを破棄してください。',
+                'zaito <info@' . $host . '>'
+            );
         }
     }
     wp_send_json_success( array() );

@@ -14,6 +14,11 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
 <?php zaito_remote_header(); ?>
 <main class="wrap doc">
   <a class="back" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="ms" aria-hidden="true">arrow_back</span>求人一覧へ</a>
+  <div class="my-done" id="zmy-done" role="status" hidden>
+    <span class="ms" aria-hidden="true">check_circle</span>
+    <div><b>登録が完了しました</b><p>あなたに合う完全在宅の新着求人を、メールでお届けします。</p>
+    <a class="btn btn-p" href="<?php echo esc_url( home_url( '/' ) ); ?>">今日のおすすめを見る</a></div>
+  </div>
   <h1>マイページ</h1>
   <p class="lead" id="zmy-who">読み込んでいます…</p>
   <div class="my-verify" id="zmy-verify" role="status" hidden>
@@ -147,7 +152,11 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
       try { localStorage.setItem('zaito_favs_merged', '1'); } catch (e) {}
       F.save(d.favorites.map(function (j) { return j.slug; }));
       F.paint();
-      who.textContent = (/[?&]verified=1/.test(location.search) ? 'メールアドレスを確認しました。新着求人をお届けします。' : '') + d.email + ' でログインしています。';
+      who.textContent = d.email + ' でログインしています。';
+      if (/[?&]verified=1/.test(location.search)) {
+        document.getElementById('zmy-done').hidden = false;
+        if (typeof window.gtag === 'function') window.gtag('event', 'email_verified', {});
+      }
       if (!d.verified) {
         document.getElementById('zmy-verify').hidden = false;
         // 確認メールの代わりに、開くと確認済みになるログインリンクを送る（同じアドレスへは60秒に1回まで）。

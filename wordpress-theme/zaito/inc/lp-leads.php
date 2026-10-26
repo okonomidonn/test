@@ -156,62 +156,84 @@ if ( ! defined( 'ZAITO_INFO_MAILBOX_READY' ) ) {
 }
 
 /**
- * 先行登録した学生への自動返信メール。$context が remote のときは、
- * まとめ求人の詳細ページから登録した学生向けの文面にする。
+ * 登録した人への確認メール。$context が remote のときは求人サイト（トップ・求人詳細）から、lp のときは先行登録から。
+ *
+ * 確認率を上げるため、やることを1つ（ボタンを押す）に絞った短いHTMLメールにする。
+ * HTMLを表示できないメールソフト向けに、同じ内容のテキスト版も付ける。
  */
 function zaito_lp_send_waitlist_thanks( $email, $context = 'lp', $interest_id = 0 ) {
-    // メールアドレスの確認リンク（マイページのログインリンクと同じ仕組みで、開くと確認済みになる。7日間有効）。
-    $verify = $interest_id && function_exists( 'zaito_my_login_url' )
-        ? "■ メールアドレスの確認（新着求人のお知らせを受け取るために必要です）\n"
-            . "下のリンクを押すと確認が完了します（7日間有効）。\n"
-            . zaito_my_login_url( $interest_id, 7 * DAY_IN_SECONDS ) . "\n\n"
-            . "期限が切れたときは、マイページ（" . home_url( '/mypage/' ) . "）から送り直せます。\n\n"
-        : '';
     $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+    $from = ( ZAITO_INFO_MAILBOX_READY ? 'info@' : 'noreply@' ) . $host;
+    // 確認リンク（マイページのログインリンクと同じ仕組みで、開くと確認済みになる。7日間有効）。
+    $url  = $interest_id && function_exists( 'zaito_my_login_url' ) ? zaito_my_login_url( $interest_id, 7 * DAY_IN_SECONDS ) : '';
+    $what = 'remote' === $context ? '登録' : '先行登録';
 
-    if ( ZAITO_INFO_MAILBOX_READY ) {
-        $from    = 'info@' . $host;
-        $reply   = "ご質問があれば、このメールにそのまま返信してください。\n\n"
-            . "※このメールは自動でお送りしています。\n";
-        $contact = 'お問い合わせ: info@' . $host . "\n";
+    if ( $url ) {
+        $subject = '【zaito】ボタンを押して' . $what . 'を完了してください';
+        $title   = 'あと1ステップで' . $what . 'が完了します';
+        $lead    = '下のボタンを押すと、メールアドレスの確認が終わり、あなたに合う完全在宅の新着求人が届くようになります。';
+        $button  = $what . 'を完了する';
     } else {
-        $from    = 'noreply@' . $host;
-        $reply   = "※このメールは送信専用のアドレスから自動でお送りしています。返信いただいてもお答えできません。\n";
-        $contact = '';
+        $subject = '【zaito】' . $what . 'ありがとうございます';
+        $title   = $what . 'ありがとうございます';
+        $lead    = '新しい完全在宅の求人が入ったら、このメールアドレスにお知らせします。';
+        $button  = '求人を見る';
+        $url     = home_url( '/' );
     }
+    $note = $interest_id ? 'ボタンは7日間有効です。' : '';
+    $foot = 'お心当たりがない場合は、このメールを破棄してください' . ( $interest_id ? '（登録は完了しません）' : '' ) . '。';
 
-    if ( 'remote' === $context ) {
-        $subject = $verify ? '【zaito】登録ありがとうございます（メールアドレスの確認）' : '【zaito】登録ありがとうございます';
-        $intro   = "zaitoへの登録ありがとうございます。\n"
-            . "以下のメールアドレスで登録を受け付けました。\n\n"
-            . '登録メールアドレス: ' . $email . "\n\n"
-            . $verify
-            . "zaitoは、出社なしで働ける完全在宅の求人を、運営が1件ずつ確認して集めたサイトです。\n"
-            . "いま募集中の求人は、こちらから見られます。\n"
-            . home_url( '/' ) . "\n\n"
-            . "確認が済むと、新しい求人が入ったときに、このメールアドレスにお知らせします。\n"
-            . "配信をやめたいときは、このメールに「配信停止」と返信してください。\n\n";
-    } else {
-        $subject = '【zaito】先行登録ありがとうございます';
-        $intro   = "zaitoへの先行登録ありがとうございます。\n"
-            . "以下のメールアドレスで登録を受け付けました。\n\n"
-            . '登録メールアドレス: ' . $email . "\n\n"
-            . "zaitoは、大学生・若手向けの完全在宅求人サービスです。\n"
-            . "現在、正式ローンチに向けて掲載企業・求人を準備しています。\n"
-            . "公開の準備ができましたら、このメールアドレスにいち早くお知らせします。\n\n"
-            . $verify
-            . "いま募集中の完全在宅の求人は、こちらから見られます。\n"
-            . home_url( '/' ) . "\n\n";
-    }
-    $body = $intro
-        . $reply
-        . "※お心当たりのない場合は、お手数ですがこのメールを破棄してください。\n\n"
+    zaito_mail_button( $email, $subject, $title, $lead, $button, $url, $note, $foot, 'zaito <' . $from . '>' );
+}
+
+/**
+ * ボタンが1つだけの短いHTMLメール（確認メール・ログインリンク）。テキスト版も付ける。
+ */
+function zaito_mail_button( $email, $subject, $title, $lead, $button, $url, $note, $foot, $from ) {
+    $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+    $text = $title . "\n\n"
+        . $lead . "\n\n"
+        . '▼ ' . $button . "\n" . $url . "\n\n"
+        . ( $note ? $note . "\n\n" : '' )
+        . $foot . "\n\n"
         . "──────────\n"
-        . "zaito（ザイト）\n"
+        . "zaito（ザイト）出社なしの仕事だけを集めた求人サイト\n"
         . home_url( '/' ) . "\n"
-        . $contact;
+        . ( ZAITO_INFO_MAILBOX_READY ? 'お問い合わせ: info@' . $host . "\n" : '' );
 
-    wp_mail( $email, $subject, $body, array( 'From: zaito <' . $from . '>' ) );
+    $e    = 'esc_html';
+    $html = '<!doctype html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . $e( $subject ) . '</title></head>'
+        . '<body style="margin:0;padding:0;background:#F6F7FA;">'
+        . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;">' . $e( $lead ) . '</div>'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F6F7FA;"><tr><td align="center" style="padding:32px 16px;">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#FFFFFF;border-radius:16px;font-family:\'Hiragino Sans\',\'Noto Sans JP\',Meiryo,sans-serif;color:#0B1530;">'
+        . '<tr><td style="padding:28px 28px 0;font-size:22px;font-weight:800;letter-spacing:.02em;">za<span style="color:#3D5AFE;">i</span>to</td></tr>'
+        . '<tr><td style="padding:20px 28px 0;font-size:20px;font-weight:800;line-height:1.5;">' . $e( $title ) . '</td></tr>'
+        . '<tr><td style="padding:12px 28px 0;font-size:15px;line-height:1.8;color:#3A4563;">' . $e( $lead ) . '</td></tr>'
+        . '<tr><td align="center" style="padding:28px 28px 8px;">'
+        . '<a href="' . esc_url( $url ) . '" style="display:inline-block;padding:16px 36px;border-radius:12px;background:#3D5AFE;color:#FFFFFF;font-size:17px;font-weight:800;text-decoration:none;">' . $e( $button ) . '</a>'
+        . '</td></tr>'
+        . ( $note ? '<tr><td align="center" style="padding:0 28px;font-size:13px;color:#6B7590;">' . $e( $note ) . '</td></tr>' : '' )
+        . '<tr><td style="padding:24px 28px 0;font-size:12px;line-height:1.7;color:#6B7590;">ボタンが押せないときは、このURLをブラウザに貼り付けてください。<br><a href="' . esc_url( $url ) . '" style="color:#3D5AFE;word-break:break-all;">' . $e( $url ) . '</a></td></tr>'
+        . '<tr><td style="padding:20px 28px 28px;font-size:12px;line-height:1.7;color:#6B7590;border-top:0;">' . $e( $foot ) . '</td></tr>'
+        . '</table>'
+        . '<p style="margin:16px 0 0;font-family:sans-serif;font-size:12px;line-height:1.7;color:#6B7590;">zaito（ザイト）出社なしの仕事だけを集めた求人サイト<br><a href="' . esc_url( home_url( '/' ) ) . '" style="color:#6B7590;">' . $e( home_url( '/' ) ) . '</a></p>'
+        . '</td></tr></table></body></html>';
+
+    return zaito_mail_html( $email, $subject, $html, $text, $from );
+}
+
+/**
+ * HTMLメールを送る。HTMLを表示できないメールソフト向けに、テキスト版も付ける（multipart/alternative）。
+ */
+function zaito_mail_html( $to, $subject, $html, $text, $from ) {
+    $alt = function ( $mailer ) use ( $text ) {
+        $mailer->AltBody = $text;
+    };
+    add_action( 'phpmailer_init', $alt );
+    $sent = wp_mail( $to, $subject, $html, array( 'From: ' . $from, 'Content-Type: text/html; charset=UTF-8' ) );
+    remove_action( 'phpmailer_init', $alt );
+    return $sent;
 }
 add_action( 'wp_ajax_zaito_lp_waitlist', 'zaito_handle_lp_waitlist' );
 add_action( 'wp_ajax_nopriv_zaito_lp_waitlist', 'zaito_handle_lp_waitlist' );
