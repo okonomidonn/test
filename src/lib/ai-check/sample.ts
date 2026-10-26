@@ -1,6 +1,6 @@
 import { addWebFixes, type AuditCheck } from "./audit";
 import { pagePlansFor } from "./suggest";
-import type { ReportData } from "@/components/ai/report-view";
+import type { ReportData } from "@/components/ai/report-dashboard";
 
 // 紹介ページとサンプルの報告書に使う、架空の求人サイトのデータ（実在のサービスではない）
 const SAMPLE = {
@@ -12,17 +12,21 @@ const SAMPLE = {
   url: "https://remo-kyujin.example/",
 };
 
-const QUESTIONS: { text: string; hits: number; ranks: number[] }[] = [
-  { text: "おすすめの求人サイトを5つ教えて", hits: 0, ranks: [] },
-  { text: "子育て中の人におすすめの求人サイトは？", hits: 1, ranks: [3] },
-  { text: "求人サイトを選ぶときのポイントと、おすすめのサービスは？", hits: 0, ranks: [] },
-  { text: "フルリモートの求人サイトを教えて", hits: 1, ranks: [2] },
-  { text: "子育て中の人向けで、フルリモートの求人サイトはある？", hits: 1, ranks: [1] },
-  { text: "未経験OKの求人サイトを教えて", hits: 0, ranks: [] },
-  { text: "子育て中の人向けで、未経験OKの求人サイトはある？", hits: 1, ranks: [2] },
-  { text: "週3日からの求人サイトを教えて", hits: 0, ranks: [] },
-  { text: "子育て中の人向けで、週3日からの求人サイトはある？", hits: 0, ranks: [] },
-  { text: "求人サイトを比較して、それぞれの特徴を教えて", hits: 0, ranks: [] },
+const A = "求人サイトA（大手）";
+const B = "在宅ワーク専門サイトB";
+const C = "副業マッチングC";
+
+const QUESTIONS: { text: string; hits: number; ranks: number[]; others: string[] }[] = [
+  { text: "おすすめの求人サイトを5つ教えて", hits: 0, ranks: [], others: [A, C] },
+  { text: "子育て中の人におすすめの求人サイトは？", hits: 1, ranks: [3], others: [A, B] },
+  { text: "求人サイトを選ぶときのポイントと、おすすめのサービスは？", hits: 0, ranks: [], others: [A, B, C] },
+  { text: "フルリモートの求人サイトを教えて", hits: 1, ranks: [2], others: [B] },
+  { text: "子育て中の人向けで、フルリモートの求人サイトはある？", hits: 1, ranks: [1], others: [B] },
+  { text: "未経験OKの求人サイトを教えて", hits: 0, ranks: [], others: [A, C] },
+  { text: "子育て中の人向けで、未経験OKの求人サイトはある？", hits: 1, ranks: [2], others: [A] },
+  { text: "週3日からの求人サイトを教えて", hits: 0, ranks: [], others: [A, B] },
+  { text: "子育て中の人向けで、週3日からの求人サイトはある？", hits: 0, ranks: [], others: [B, C] },
+  { text: "求人サイトを比較して、それぞれの特徴を教えて", hits: 0, ranks: [], others: [A, B] },
 ];
 
 function sampleChecks(): AuditCheck[] {
@@ -55,26 +59,36 @@ function sampleChecks(): AuditCheck[] {
 }
 
 export function sampleReport(): ReportData {
-  const questions = QUESTIONS.map((q, i) => ({ no: i + 1, text: q.text, hits: q.hits, total: 1, ranks: q.ranks }));
+  const questions = QUESTIONS.map((q, i) => ({ no: i + 1, text: q.text, hits: q.hits, total: 1, ranks: q.ranks, others: q.others }));
   const hits = questions.reduce((n, q) => n + q.hits, 0);
+  const count = (name: string) => questions.filter((q) => q.others.includes(name)).length;
   const at = new Date("2026-10-20T10:00:00+09:00");
   return {
     name: `${SAMPLE.name}（サンプル）`,
     url: SAMPLE.url,
     createdAt: at,
+    description: "架空の求人サイトのデモです。ChatGPTとGeminiに、見込み客が聞きそうな質問10問を聞き、紹介されたか・何番目か・どのサイトを根拠にしたかを記録しました。",
     measured: { hits, total: questions.length, at },
     score: 79,
     questions,
-    others: [
-      { label: "求人サイトA（大手）", count: 8, registered: true },
-      { label: "在宅ワーク専門サイトB", count: 6, registered: true },
-      { label: "副業マッチングC", count: 4, registered: false },
+    ranking: [
+      { label: SAMPLE.name, hits, self: true, registered: false },
+      { label: A, hits: count(A), self: false, registered: true },
+      { label: B, hits: count(B), self: false, registered: true },
+      { label: C, hits: count(C), self: false, registered: false },
     ],
     sources: [
-      { domain: "compare-media.example", count: 7, official: false },
-      { domain: "kyujin-a.example", count: 6, official: false },
-      { domain: "remo-kyujin.example", count: 3, official: true },
-      { domain: "note.com", count: 2, official: false },
+      { domain: "compare-media.example", count: 7, kind: "other" },
+      { domain: "kyujin-a.example", count: 6, kind: "other" },
+      { domain: "remo-kyujin.example", count: 3, kind: "official" },
+      { domain: "note.com", count: 2, kind: "platform" },
+    ],
+    trend: [
+      { label: "9/22", rate: 20 },
+      { label: "9/29", rate: 20 },
+      { label: "10/6", rate: 30 },
+      { label: "10/13", rate: 30 },
+      { label: "10/20", rate: Math.round((hits / questions.length) * 100) },
     ],
     checks: sampleChecks(),
     plans: pagePlansFor(

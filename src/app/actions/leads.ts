@@ -4,7 +4,14 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export type LeadState = { error?: string; done?: boolean };
+export type LeadField = "company" | "name" | "email" | "websiteUrl" | "message";
+export type LeadState = {
+  error?: string;
+  fieldErrors?: Partial<Record<LeadField, string>>;
+  // 入力エラーのとき、入力した内容を戻すため
+  values?: Partial<Record<LeadField, string>>;
+  done?: boolean;
+};
 
 const leadSchema = z.object({
   kind: z.enum(["CHECK", "TRIAL"]),
@@ -32,7 +39,17 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
     websiteUrl: formData.get("websiteUrl"),
     message: formData.get("message") || undefined,
   });
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "入力内容を確認してください" };
+  if (!parsed.success) {
+    const fieldErrors: LeadState["fieldErrors"] = {};
+    for (const issue of parsed.error.issues) {
+      const key = issue.path[0] as LeadField;
+      if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+    }
+    const values = Object.fromEntries(
+      (["company", "name", "email", "websiteUrl", "message"] as const).map((k) => [k, String(formData.get(k) ?? "")]),
+    ) as LeadState["values"];
+    return { error: "入力内容を確認してください", fieldErrors, values };
+  }
 
   // 同じメールアドレスから10分以内の重複は保存しない
   const since = new Date(Date.now() - 10 * 60_000);
