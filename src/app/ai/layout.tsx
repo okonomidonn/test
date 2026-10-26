@@ -9,8 +9,8 @@ const display = Zen_Kaku_Gothic_New({ variable: "--font-ai-display", weight: ["7
 const num = IBM_Plex_Mono({ variable: "--font-ai-num", weight: ["500", "600"], subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "AI検索チェック | 飲食店・WebサービスのAI集客",
-  description: "ChatGPT・Geminiでお店やWebサービスがどう紹介されているかを計測し、改善点を提案するツール",
+  title: "AI検索チェック | WebサービスのAI検索対策",
+  description: "ChatGPT・GeminiでWebサービスがどう紹介されているかを計測し、改善点を提案するツール",
 };
 
 export default async function AiLayout({ children }: LayoutProps<"/ai">) {

@@ -4,22 +4,22 @@ const FEATURES = [
   {
     verb: "測る",
     title: "AIでの表示チェック",
-    body: "お客さんがAIに聞きそうな質問をChatGPT・Geminiに投げ、あなたのお店やサービスが何回・何番目に紹介されたかを記録します。",
+    body: "見込み客がAIに聞きそうな質問をChatGPT・Geminiに投げ、あなたのサービスが紹介されたか、何番目か、どのページが引用されたかを記録します。",
   },
   {
     verb: "知る",
     title: "参考にされたページ",
-    body: "AIが紹介の根拠にしたページ（公式サイト・グルメサイト・比較記事・レビュー）を一覧にします。どこを整えれば効くかがわかります。",
+    body: "AIが紹介の根拠にしたページ（公式サイト・比較記事・レビュー・SNS）を一覧にします。競合はどのページで引用されているかがわかります。",
   },
   {
     verb: "直す",
     title: "改善の提案",
-    body: "公式サイトがAIに伝わる書き方かを診断します。お店なら営業時間やメニュー、Webサービスなら一文の説明や1件1ページの情報を確認します。",
+    body: "公式サイトをAIが読めるか、一文で何のサービスか伝わるか、固有の情報が1件1ページになっているかを診断し、直す順番を示します。",
   },
 ];
 
 const STEPS = [
-  { title: "登録する", body: "お店かWebサービスかを選び、名前と公式サイトを入力。質問は自動で作られます。" },
+  { title: "登録する", body: "サービス名・カテゴリ・強み・公式サイトを入力。質問は自動で作られます。" },
   { title: "AIに聞いて計測", body: "ボタンを押すと、AIに質問して回答を記録します（数分〜十数分）。" },
   { title: "結果を見て直す", body: "紹介されなかった質問と、サイトの直すべき点がわかります。" },
 ];
@@ -27,9 +27,9 @@ const STEPS = [
 // AIの回答の画面イメージ。自分の名前が出たところに蛍光ペンを引く
 function AnswerMock() {
   const shops = [
-    { name: "駅前の焼き鳥酒場", note: "カウンター中心で、仕事帰りに立ち寄りやすいお店です。" },
-    { name: "あなたのお店", note: "公式サイトに「カウンターは一人飲みに」とあり、店主との会話も楽しめます。", me: true },
-    { name: "路地裏の小料理屋", note: "季節の地野菜を使った料理が評判です。" },
+    { name: "大手の求人ポータル", note: "掲載数が多く、在宅で絞り込めます。ただし出社ありの求人も混ざります。" },
+    { name: "あなたのサービス", note: "公式サイトに「研修も会議も出社なし」とあり、完全在宅の求人だけを掲載しています。", me: true },
+    { name: "在宅ワーク専門のマッチングサービス", note: "単発の仕事が中心です。" },
   ];
   return (
     <figure className="rounded-2xl border border-slate-200 bg-white" aria-label="AIの回答の画面イメージ">
@@ -38,9 +38,9 @@ function AnswerMock() {
         <span className="font-num text-slate-500">質問 4 / 10</span>
       </div>
       <div className="space-y-4 px-5 py-5">
-        <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-slate-100 px-4 py-2.5 text-slate-800">国立駅の近くで、一人飲みにおすすめの店は？</p>
+        <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-slate-100 px-4 py-2.5 text-slate-800">大学生でも、出社が一切ない長期インターンを探せるサイトは？</p>
         <div className="space-y-3 text-slate-800">
-          <p>一人でも入りやすいお店を3つ紹介します。</p>
+          <p>条件に合いそうなサービスを3つ紹介します。</p>
           <ol className="space-y-2.5">
             {shops.map((s, i) => (
               <li key={s.name} className="grid grid-cols-[1.75rem_1fr] gap-1">
@@ -55,7 +55,7 @@ function AnswerMock() {
           </ol>
           <p className="flex flex-wrap items-center gap-1.5 text-sm text-slate-600">
             参考：
-            {["公式サイト", "食べログ", "Googleマップ"].map((src) => (
+            {["公式サイト", "比較記事", "note"].map((src) => (
               <span key={src} className="rounded-md border border-slate-200 px-1.5 py-0.5">
                 {src}
               </span>
@@ -70,25 +70,6 @@ function AnswerMock() {
         <span>※ 画面イメージ</span>
       </figcaption>
     </figure>
-  );
-}
-
-// 同じ条件のお店で、書いてあるかどうかだけが違う比較（●＝紹介された回）
-function DotsRow({ label, hits, total }: { label: string; hits: number; total: number }) {
-  return (
-    <div className="flex items-center justify-between gap-4 py-3">
-      <span className="text-slate-800">{label}</span>
-      <span className="flex items-center gap-3">
-        <span className="flex gap-1.5" aria-hidden>
-          {Array.from({ length: total }, (_, i) => (
-            <span key={i} className={`h-3.5 w-3.5 rounded-full ${i < hits ? "bg-brand" : "border-2 border-slate-300"}`} />
-          ))}
-        </span>
-        <span className="w-12 text-right font-num font-semibold text-slate-900">
-          {hits}/{total}
-        </span>
-      </span>
-    </div>
   );
 }
 
@@ -112,7 +93,7 @@ export default function AiLandingPage() {
     <div className="space-y-24 pb-12">
       <section className="grid items-center gap-12 pt-6 lg:grid-cols-[1.05fr_1fr]">
         <div className="min-w-0">
-          <p className="font-semibold text-brand">お店・Webサービスのための AI検索チェック</p>
+          <p className="font-semibold text-brand">Webサービスのための AI検索チェック</p>
           <h1 className="mt-4 text-[2rem] font-black leading-[1.3] text-slate-900 sm:text-5xl sm:leading-[1.25]">
             あなたの名前、
             <br />
@@ -121,8 +102,8 @@ export default function AiLandingPage() {
             <span className="marker">出てきますか？</span>
           </h1>
           <p className="mt-6 max-w-[34rem] text-slate-700">
-            「近くでおすすめの居酒屋は？」「〇〇できるサービスは？」とChatGPTやGeminiに聞いて決める人が増えています。
-            AIが答えるのは数件だけ。紹介されているか、何を直せば紹介されやすくなるかを、無料で確かめられます。
+            「〇〇できるサービスは？」とChatGPTやGeminiに聞いて、比べて、決める人が増えています。
+            比較・検討中の見込み客に、あなたのサービスの情報が正しく届いているか。計測して、直す順番まで示します。
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link href="/ai/signup" className="rounded-lg bg-brand px-6 py-3.5 text-lg font-bold text-white hover:bg-brand-dark">
@@ -138,27 +119,23 @@ export default function AiLandingPage() {
       </section>
 
       <section className="space-y-8">
-        <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">実際に測ってわかったこと</h2>
-        <div className="grid gap-x-12 gap-y-12 lg:grid-cols-2">
+        <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">運営元の自社サイトで起きたこと</h2>
+        <div className="grid gap-x-12 gap-y-8 lg:grid-cols-[1fr_1.1fr]">
           <article className="min-w-0 border-t-2 border-slate-900 pt-5">
-            <p className="text-sm font-semibold text-slate-600">飲食店｜東京都国立市の居酒屋、ChatGPTに22回質問</p>
-            <h3 className="mt-2 text-xl font-bold text-slate-900">書いてあるお店が、紹介される</h3>
-            <p className="mt-3 text-slate-700">「一人飲みにおすすめの店は？」と聞いたときに紹介された回数です。どちらもカウンター席があるお店です。</p>
-            <div className="mt-4 divide-y divide-slate-200 border-y border-slate-200">
-              <DotsRow label="公式サイトに「一人飲みに」と書いてある" hits={3} total={3} />
-              <DotsRow label="書いていない" hits={0} total={3} />
-            </div>
+            <p className="text-sm font-semibold text-slate-600">在宅ワークの求人サイト「zaito」｜2026年9月24日〜10月21日（GA4）</p>
+            <h3 className="mt-2 text-xl font-bold text-slate-900">ChatGPT経由の68人が、キーイベントの約半分</h3>
+            <p className="mt-3 text-slate-700">
+              Googleではほとんど上位に出ない開設2か月のサイトです。求人を1件1ページにし、一文の説明と構造化データを整えたあと、ChatGPTからの訪問が始まりました。
+              ChatGPT経由の人が見たのは、主に個別の求人ページ（46種類）でした。
+            </p>
+            <p className="mt-3 text-sm text-slate-500">
+              サイト1件・28日間の数字です。対策と流入増の因果関係は検証していません。キーイベント（興味あり・応募など）は件数で、同じ人の複数回を含みます。
+            </p>
           </article>
-          <article className="min-w-0 border-t-2 border-slate-900 pt-5">
-            <p className="text-sm font-semibold text-slate-600">Webサービス｜運営元の求人サイト「zaito」、28日間</p>
-            <h3 className="mt-2 text-xl font-bold text-slate-900">ChatGPT経由の人が、成果の半分</h3>
-            <p className="mt-3 text-slate-700">求人を1件1ページにし、一文の説明と構造化データを整えたところ、Googleではほとんど出てこないのに、ChatGPTから人が来て応募につながるようになりました。</p>
-            <div className="mt-5 space-y-4">
-              <ShareBar label="ユーザーのうち、ChatGPT経由" value={14.5} />
-              <ShareBar label="成果（応募など）のうち、ChatGPT経由" value={51.6} strong />
-            </div>
-            <p className="mt-3 text-sm text-slate-500">GA4・2026年9月24日〜10月21日。開設まもないサイト1件の数字です。</p>
-          </article>
+          <div className="min-w-0 space-y-5 border-t-2 border-slate-900 pt-5">
+            <ShareBar label="ユーザー469人のうち、ChatGPT経由（68人）" value={14.5} />
+            <ShareBar label="キーイベント95件のうち、ChatGPT経由（49件）" value={51.6} strong />
+          </div>
         </div>
       </section>
 
@@ -196,7 +173,7 @@ export default function AiLandingPage() {
           <h2 className="text-2xl font-bold sm:text-3xl">
             まずは1件、<span className="text-mark">無料で計測</span>してみませんか
           </h2>
-          <p className="mt-3 text-slate-300">登録は1分。AIの回答は毎回変わるため、計測結果は目安です。紹介や来店・問い合わせの増加をお約束するものではありません。</p>
+          <p className="mt-3 text-slate-300">登録は1分。AIの回答は毎回変わるため、計測結果は目安です。紹介や問い合わせの増加をお約束するものではありません。</p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link href="/ai/signup" className="rounded-lg bg-mark px-6 py-3.5 text-lg font-bold text-slate-900 hover:brightness-95">
               無料で始める

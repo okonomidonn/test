@@ -88,7 +88,7 @@ async function NextStep({ storeId, hasUrl }: { storeId: string; hasUrl: boolean 
   ]);
   const running = stats.runs.find((r) => r.status === "RUNNING");
   const base = `/ai/app/stores/${storeId}`;
-  const issues = ((audit?.checks ?? []) as AuditCheck[]).filter((c) => c.status !== "ok").length;
+  const issues = ((audit?.checks ?? []) as AuditCheck[]).filter((c) => c.status === "ng" || c.status === "warn").length;
   const missed = stats.questions.filter((q) => q.hits === 0).length;
 
   let step: { text: string; href: string; label: string };
@@ -359,8 +359,8 @@ async function SourcesTab({ storeId, kind }: { storeId: string; kind: TargetKind
   );
 }
 
-const STATUS_STYLE = { ok: "bg-emerald-50 text-emerald-800", warn: "bg-amber-50 text-amber-900", ng: "bg-rose-50 text-rose-800" } as const;
-const STATUS_LABEL = { ok: "✓ OK", warn: "! 要改善", ng: "✕ 問題あり" } as const;
+const STATUS_STYLE = { ok: "bg-emerald-50 text-emerald-800", warn: "bg-amber-50 text-amber-900", ng: "bg-rose-50 text-rose-800", info: "bg-slate-100 text-slate-700" } as const;
+const STATUS_LABEL = { ok: "✓ OK", warn: "! 要改善", ng: "✕ 問題あり", info: "i 参考" } as const;
 const STATUS_BAR = { ng: "bg-rose-600", warn: "bg-amber-500", ok: "bg-emerald-600" } as const;
 
 async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: boolean; kind: TargetKind }) {
@@ -369,7 +369,7 @@ async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: 
     storeStats(storeId),
   ]);
   const checks = (audit?.checks ?? []) as AuditCheck[];
-  const order = { ng: 0, warn: 1, ok: 2 } as const;
+  const order = { ng: 0, warn: 1, ok: 2, info: 3 } as const;
   const missed = stats.questions.filter((q) => q.hits === 0);
 
   return (

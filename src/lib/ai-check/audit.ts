@@ -4,7 +4,8 @@ import { isIP } from "node:net";
 // 店舗・サービスの公式サイトを読み、AIに伝わりにくい点を洗い出す。
 // URLは利用者が入力するため、社内ネットワーク等へのアクセスに使われないよう宛先を検査する。
 
-export type CheckStatus = "ok" | "warn" | "ng";
+// info：参考情報（点数に入れない）
+export type CheckStatus = "ok" | "warn" | "ng" | "info";
 export type AuditCheck = { key: string; title: string; status: CheckStatus; detail: string; fix?: string };
 
 const MAX_BYTES = 2_000_000;
@@ -219,7 +220,9 @@ async function checkRobots(pageUrl: string, checks: AuditCheck[]): Promise<strin
       title: "AIの読み取りを拒否していないか（robots.txt）",
       status: blocked.length ? "ng" : "ok",
       detail: blocked.length ? `拒否されているAI：${blocked.join("、")}` : "拒否していません",
-      fix: blocked.length ? "robots.txt でAIの読み取りを拒否していると、AIの回答で紹介されにくくなります。" : undefined,
+      fix: blocked.length
+        ? "robots.txt でAIの読み取りを拒否していると、AIの回答で紹介されにくくなります。特にChatGPTの検索に載るには OAI-SearchBot を許可してください。"
+        : undefined,
     });
     return body;
   } catch {
@@ -230,7 +233,8 @@ async function checkRobots(pageUrl: string, checks: AuditCheck[]): Promise<strin
 
 function scoreOf(checks: AuditCheck[]): number {
   const points = { ok: 2, warn: 1, ng: 0 } as const;
-  return Math.round((checks.reduce((s, c) => s + points[c.status], 0) / (checks.length * 2)) * 100);
+  const scored = checks.filter((c): c is AuditCheck & { status: keyof typeof points } => c.status !== "info");
+  return Math.round((scored.reduce((s, c) => s + points[c.status], 0) / (scored.length * 2)) * 100);
 }
 
 async function fetchOk(url: string): Promise<{ ok: boolean; body: string }> {
@@ -382,12 +386,13 @@ export async function auditWebSite(input: { websiteUrl: string; genre: string; p
 
   const llms = await fetchOk(new URL("/llms.txt", page.url).toString());
   const llmsValid = llms.ok && !/<html/i.test(llms.body.slice(0, 500)) && llms.body.trim().length > 50;
+  // llms.txt は、使っていないと公表しているAI（Googleの生成AI機能など）もあるため点数には入れない
   checks.push({
     key: "llms",
     title: "AI向けの案内ファイル（llms.txt）",
-    status: llmsValid ? "ok" : "warn",
-    detail: llmsValid ? "設置されています" : "見つかりません",
-    fix: llmsValid ? undefined : "サイトの説明（一文の立ち位置）と主なページの一覧を書いた /llms.txt を置きましょう。",
+    status: "info",
+    detail: llmsValid ? "設置されています" : "設置されていません",
+    fix: llmsValid ? undefined : "必須ではありません。ほかの項目を先に直しましょう。",
   });
 
   const robots = await checkRobots(page.url, checks);

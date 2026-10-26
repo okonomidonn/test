@@ -1,10 +1,10 @@
 import { PLANS, formatYen, type PlanDef } from "@/lib/billing/plans";
 
 const ROWS: { label: string; value: (p: PlanDef) => string }[] = [
-  { label: "登録数（店舗・サービス）", value: (p) => `${p.stores}件` },
+  { label: "登録できるサービス", value: (p) => `${p.stores}件` },
   { label: "計測（1件あたり）", value: (p) => `30日間で${p.runsPerMonth}回` },
   { label: "AIに聞く質問", value: (p) => `${p.maxQuestions}問まで` },
-  { label: "ChatGPT・Gemini", value: () => "✓" },
+  { label: "ChatGPTで計測", value: () => "✓" },
   { label: "参考にされたページ", value: () => "✓" },
   { label: "公式サイトの診断・改善の提案", value: () => "✓" },
 ];

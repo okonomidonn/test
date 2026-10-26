@@ -4,11 +4,10 @@ import { useActionState } from "react";
 import { signupOwner, type FormState } from "@/app/actions/ai-check";
 import { inputClass, labelClass, primaryButtonClass } from "@/components/ui";
 
-export function SignupForm({ kind }: { kind?: "web" }) {
+export function SignupForm() {
   const [state, formAction, isPending] = useActionState<FormState, FormData>(signupOwner, {});
   return (
     <form action={formAction} className="space-y-4">
-      {kind && <input type="hidden" name="kind" value={kind} />}
       {state.error && <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700">{state.error}</p>}
       <div>
         <label className={labelClass}>お名前</label>
