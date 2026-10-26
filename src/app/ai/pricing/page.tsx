@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { PlanTable } from "@/components/ai/plan-table";
 
 export const metadata = { title: "料金プラン | ススメル" };
 
@@ -35,9 +34,9 @@ const SERVICES = [
 export default function PricingPage() {
   return (
     <div className="space-y-12">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-slate-900">料金プラン</h1>
-        <p className="mt-2 text-base text-slate-700">計測から改善まで任せる「おまかせ」と、自分で計測する「ツール」があります。</p>
+      <div className="max-w-2xl">
+        <h1 className="text-3xl font-black text-slate-900">料金</h1>
+        <p className="mt-2 text-base text-slate-700">まず無料チェック、次に有料のトライアルで効果を確かめ、続けるかを決められます。</p>
       </div>
 
       <section className="space-y-4">
@@ -82,26 +81,14 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">ツール（自分で使う）</h2>
-          <p className="mt-1 text-sm text-slate-700">自分で計測・診断したい方向け。税込です。いつでも解約でき、契約期間の縛りはありません。</p>
-        </div>
-        <PlanTable
-          action={(p) => (
-            <Link
-              href="/ai/signup"
-              className={`block rounded-lg px-4 py-2.5 text-center text-sm font-semibold ${p.key === "STARTER" ? "bg-brand text-white hover:bg-brand-dark" : "border border-slate-200 text-slate-700 hover:bg-slate-50"}`}
-            >
-              {p.priceYen ? "登録して申し込む" : "無料で始める"}
-            </Link>
-          )}
-        />
-      </section>
-
       <ul className="mx-auto max-w-2xl list-disc space-y-1 pl-5 text-sm text-slate-700">
-        <li>ツールのお支払いはクレジットカード（Stripe）です。毎月、申し込み日と同じ日に自動で更新されます。</li>
-        <li>ツールの解約は契約管理画面からいつでもでき、その月の終わりまでご利用いただけます。日割りでの返金はありません。</li>
+        <li>
+          自分で計測したい方は、
+          <Link href="/ai/tool" className="underline">
+            セルフ版ツール（月4,980円〜・税込）
+          </Link>
+          をご覧ください。
+        </li>
         <li>AIの回答は毎回変わります。計測結果は目安で、紹介や問い合わせの増加をお約束するものではありません。</li>
         <li>
           <Link href="/ai/legal" className="underline">
