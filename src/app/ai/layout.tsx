@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BIZ_UDPGothic, IBM_Plex_Mono, Zen_Kaku_Gothic_New } from "next/font/google";
+import { Inter, Noto_Sans_JP } from "next/font/google";
 import { auth, signOut } from "@/auth";
+import { btn } from "@/components/ai/ds";
 
-// 本文：UD書体（読みやすさ優先）、見出し：角ゴシックの太字、数字：等幅
-const body = BIZ_UDPGothic({ variable: "--font-ai-body", weight: ["400", "700"], subsets: ["latin"], display: "swap" });
-const display = Zen_Kaku_Gothic_New({ variable: "--font-ai-display", weight: ["700", "900"], subsets: ["latin"], display: "swap" });
-const num = IBM_Plex_Mono({ variable: "--font-ai-num", weight: ["500", "600"], subsets: ["latin"], display: "swap" });
+// 英数字は Inter、日本語は Noto Sans JP（日本語は文字数が多いため先読みせず、使う文字だけ読み込む）
+const latin = Inter({ variable: "--font-ai-latin", subsets: ["latin"], display: "swap" });
+const jp = Noto_Sans_JP({ variable: "--font-ai-jp", weight: ["400", "500", "700"], preload: false, display: "swap" });
 
 export const metadata: Metadata = {
   title: "ススメル | WebサービスのAI検索対策",
@@ -17,35 +17,35 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
   const session = await auth();
   const user = session?.user;
 
+  const nav = "rounded-md px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+
   return (
-    <div className={`${body.variable} ${display.variable} ${num.variable} ai-scope flex flex-1 flex-col`}>
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white print:hidden">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-4 sm:px-6">
-          <Link href={user ? "/ai/app" : "/ai"} className="flex shrink-0 items-center gap-2.5 font-display text-lg font-black tracking-tight text-slate-900">
-            <span className="relative grid h-8 w-8 place-items-center overflow-hidden rounded-md bg-slate-900 text-sm text-white" aria-hidden>
+    <div className={`${latin.variable} ${jp.variable} ai-scope flex flex-1 flex-col`}>
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-6 sm:px-6">
+          <Link href={user ? "/ai/app" : "/ai"} className="flex shrink-0 items-center gap-2 text-[1.0625rem] font-bold tracking-tight text-slate-900">
+            <span className="grid h-7 w-7 place-items-center rounded-md bg-brand text-sm font-bold text-white" aria-hidden>
               ス
-              <span className="absolute inset-x-1.5 bottom-1.5 h-1 rounded-full bg-mark" />
             </span>
-            {/* スマホでは右側のメニューを優先し、名前を隠す */}
-            <span className={user ? "hidden sm:inline" : "hidden min-[400px]:inline"}>ススメル</span>
+            ススメル
           </Link>
           {user ? (
-            <div className="flex items-center gap-1 whitespace-nowrap text-sm sm:gap-3">
-              <Link href="/ai/app" className="rounded-md px-2 py-1.5 font-medium sm:px-3 text-slate-700 hover:bg-slate-100">
+            <nav className="ml-auto flex items-center gap-0.5 whitespace-nowrap sm:gap-1">
+              <Link href="/ai/app" className={nav}>
                 サービス一覧
               </Link>
               {user.role === "OWNER" && (
-                <Link href="/ai/app/billing" className="rounded-md px-2 py-1.5 font-medium sm:px-3 text-slate-700 hover:bg-slate-100">
+                <Link href="/ai/app/billing" className={nav}>
                   料金
                 </Link>
               )}
               {user.role === "TEAM" && (
-                <Link href="/ai/app/leads" className="rounded-md px-2 py-1.5 font-medium sm:px-3 text-slate-700 hover:bg-slate-100">
+                <Link href="/ai/app/leads" className={nav}>
                   申し込み
                 </Link>
               )}
               {user.role === "TEAM" && (
-                <Link href="/dashboard" className="rounded-md px-2 py-1.5 font-medium sm:px-3 text-slate-700 hover:bg-slate-100">
+                <Link href="/dashboard" className={`${nav} hidden sm:inline-flex`}>
                   SocialDesk
                 </Link>
               )}
@@ -55,45 +55,75 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                   await signOut({ redirectTo: "/ai" });
                 }}
               >
-                <button type="submit" className="rounded-md border border-slate-200 px-2 py-1.5 sm:px-3 text-slate-700 hover:bg-slate-50">
+                <button type="submit" className={btn("secondary")}>
                   ログアウト
                 </button>
               </form>
-            </div>
+            </nav>
           ) : (
-            <div className="flex items-center gap-1 whitespace-nowrap text-sm sm:gap-2">
-              <Link href="/ai/sample" className="hidden rounded-md px-2 py-1.5 font-medium sm:inline sm:px-3 text-slate-700 hover:bg-slate-100">
-                サンプル
-              </Link>
-              <Link href="/ai/pricing" className="rounded-md px-2 py-1.5 font-medium sm:px-3 text-slate-700 hover:bg-slate-100">
-                料金
-              </Link>
-              <Link href="/ai/login" className="rounded-md px-2 py-1.5 font-medium sm:px-3 text-slate-700 hover:bg-slate-100">
-                ログイン
-              </Link>
-              <Link href="/ai/apply" className="rounded-lg bg-brand px-3 py-2 font-semibold sm:px-4 text-white hover:bg-brand-dark">
-                無料チェック
-              </Link>
-            </div>
+            <>
+              <nav className="hidden items-center gap-1 md:flex" aria-label="メインメニュー">
+                <Link href="/ai#features" className={nav}>
+                  できること
+                </Link>
+                <Link href="/ai/sample" className={nav}>
+                  サンプルレポート
+                </Link>
+                <Link href="/ai/pricing" className={nav}>
+                  料金
+                </Link>
+                <Link href="/ai/tool" className={nav}>
+                  セルフ版
+                </Link>
+              </nav>
+              <div className="ml-auto flex items-center gap-1 whitespace-nowrap sm:gap-2">
+                <Link href="/ai/pricing" className={`${nav} md:hidden`}>
+                  料金
+                </Link>
+                <Link href="/ai/login" className={nav}>
+                  ログイン
+                </Link>
+                <Link href="/ai/apply" className={btn("primary")}>
+                  無料で診断する
+                </Link>
+              </div>
+            </>
           )}
         </div>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 print:max-w-none print:p-0">{children}</main>
-      <footer className="border-t border-slate-200 bg-white print:hidden">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-sm text-slate-600 sm:px-6">
-          <span className="font-display font-bold text-slate-800">ススメル</span>
-          <Link href="/ai/sample" className="hover:underline">
-            サンプルの報告書
-          </Link>
-          <Link href="/ai/pricing" className="hover:underline">
-            料金
-          </Link>
-          <Link href="/ai/tool" className="hover:underline">
-            セルフ版ツール
-          </Link>
-          <Link href="/ai/legal" className="hover:underline">
-            特定商取引法に基づく表記
-          </Link>
+      <footer className="border-t border-slate-200 bg-slate-50 print:hidden">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-[1fr_auto_auto] sm:px-6">
+          <div>
+            <p className="flex items-center gap-2 font-bold text-slate-900">
+              <span className="grid h-6 w-6 place-items-center rounded bg-brand text-xs font-bold text-white" aria-hidden>
+                ス
+              </span>
+              ススメル
+            </p>
+            <p className="mt-2 text-sm text-slate-600">WebサービスのAI検索診断と改善</p>
+          </div>
+          <nav aria-label="サービス" className="space-y-2 text-sm">
+            <p className="font-semibold text-slate-900">サービス</p>
+            <Link href="/ai/sample" className="block text-slate-600 hover:text-slate-900">
+              サンプルレポート
+            </Link>
+            <Link href="/ai/pricing" className="block text-slate-600 hover:text-slate-900">
+              料金
+            </Link>
+            <Link href="/ai/tool" className="block text-slate-600 hover:text-slate-900">
+              セルフ版ツール
+            </Link>
+          </nav>
+          <nav aria-label="運営" className="space-y-2 text-sm">
+            <p className="font-semibold text-slate-900">運営</p>
+            <Link href="/ai/apply" className="block text-slate-600 hover:text-slate-900">
+              お申し込み
+            </Link>
+            <Link href="/ai/legal" className="block text-slate-600 hover:text-slate-900">
+              特定商取引法に基づく表記
+            </Link>
+          </nav>
         </div>
       </footer>
     </div>

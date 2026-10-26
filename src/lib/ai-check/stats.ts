@@ -57,14 +57,19 @@ export async function storeStats(storeId: string) {
   const latest = [...runs].reverse().find((r) => r.status !== "RUNNING" && r.answers.some((a) => a.status === "DONE"));
   const latestDone = latest?.answers.filter((a) => a.status === "DONE") ?? [];
 
-  // 質問ごとの紹介（最新の計測）
-  const questions = new Map<number, { text: string; total: number; hits: number; ranks: number[] }>();
+  // 質問ごとの紹介（最新の計測）。自社以外に回答に出た名前も、多い順に3つまで残す
+  const selfKeys = [store.name, ...store.aliases].map(normalize).filter((k) => k.length >= 2);
+  const isSelf = (name: string) => selfKeys.some((k) => normalize(name).includes(k) || k.includes(normalize(name)));
+  const questions = new Map<number, { text: string; total: number; hits: number; ranks: number[]; otherCounts: Map<string, number> }>();
   for (const a of latestDone) {
-    const q = questions.get(a.questionNo) ?? { text: a.questionText, total: 0, hits: 0, ranks: [] };
+    const q = questions.get(a.questionNo) ?? { text: a.questionText, total: 0, hits: 0, ranks: [], otherCounts: new Map<string, number>() };
     q.total++;
     if (a.targetRank !== null) {
       q.hits++;
       if (a.targetRank > 0) q.ranks.push(a.targetRank);
+    }
+    for (const name of new Set(a.shops)) {
+      if (!isSelf(name)) q.otherCounts.set(name, (q.otherCounts.get(name) ?? 0) + 1);
     }
     questions.set(a.questionNo, q);
   }
@@ -129,7 +134,13 @@ export async function storeStats(storeId: string) {
     })),
     trend,
     latest: latest ? { id: latest.id, createdAt: latest.createdAt, answers: latestDone.length, targetHits } : null,
-    questions: [...questions.entries()].sort((a, b) => a[0] - b[0]).map(([no, q]) => ({ no, ...q })),
+    questions: [...questions.entries()]
+      .sort((a, b) => a[0] - b[0])
+      .map(([no, { otherCounts, ...q }]) => ({
+        no,
+        ...q,
+        others: [...otherCounts.entries()].sort((x, y) => y[1] - x[1]).slice(0, 3).map(([name]) => name),
+      })),
     competitors,
     frequentShops,
     sources,

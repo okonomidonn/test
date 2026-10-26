@@ -16,8 +16,8 @@
   --color-brand-dark: var(--brand-dark);
   --color-brand-soft: var(--brand-soft);
   --color-mark: var(--mark);
-  --font-display: var(--font-ai-display), var(--font-noto-sans-jp), sans-serif;
-  --font-num: var(--font-ai-num), ui-monospace, monospace;
+  --font-display: var(--font-ai-latin), var(--font-ai-jp), sans-serif;
+  --font-num: var(--font-ai-latin), var(--font-ai-jp), sans-serif;
   --font-sans: var(--font-noto-sans-jp);
 }
 
@@ -28,62 +28,69 @@ body {
 }
 
 /*
- * AI検索チェックの見た目（SocialDeskの画面には影響しない）
- * 方向性：AIの回答の中で「自分の名前」に蛍光ペンを引く。石油色（ペトロール）の差し色に、同じ色味を少し含んだグレー。
- * 書体：本文はUD書体（読みやすさ優先）、見出しは角ゴシックの太字、数字は等幅。
+ * ススメルの見た目（SocialDeskの画面には影響しない）
+ * 方針：洗練されたBtoB分析SaaS。白を基調に、アクセントは青1色。区切りは罫線で、影は製品画面の窓枠だけ。
+ * 書体：英数字 Inter、日本語 Noto Sans JP。本文16px。
  */
 .ai-scope {
-  --brand: #0e6b73;
-  --brand-dark: #0a5259;
-  --brand-soft: #e3f1f1;
-  --mark: #ffe46b;
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
+  --brand-soft: #eff6ff;
+  --mark: #dbeafe;
 
-  /* グレーをペトロール寄りに（Tailwindのslateを上書き） */
-  --color-slate-50: #f3f6f6;
-  --color-slate-100: #e7eeee;
-  --color-slate-200: #d6e0e0;
-  --color-slate-300: #b6c5c5;
-  --color-slate-400: #8a9e9f;
-  --color-slate-500: #637879;
-  --color-slate-600: #4b5f60;
-  --color-slate-700: #334647;
-  --color-slate-800: #1f3234;
-  --color-slate-900: #0f2224;
+  /* 文字・罫線・背景のグレー（Tailwindのslateを上書き） */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e5e7eb;
+  --color-slate-300: #d1d5db;
+  --color-slate-400: #9ca3af;
+  --color-slate-500: #6b7280;
+  --color-slate-600: #4b5563;
+  --color-slate-700: #374151;
+  --color-slate-800: #1f2937;
+  --color-slate-900: #111827;
 
   /* 以前の紫（indigo）の指定も差し色にそろえる */
   --color-indigo-50: var(--brand-soft);
   --color-indigo-100: var(--brand-soft);
-  --color-indigo-200: #b3d3d5;
+  --color-indigo-200: #bfdbfe;
   --color-indigo-700: var(--brand-dark);
 
-  /* 角は小さく、影は使わない（枠線で区切る） */
-  --radius-md: 4px;
-  --radius-lg: 6px;
-  --radius-xl: 8px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
   --radius-2xl: 12px;
 
-  --text-xs: 0.8125rem;
-  --text-sm: 0.9375rem;
-  --text-base: 1.0625rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
 
-  background: var(--color-slate-50);
+  background: #ffffff;
   color: var(--color-slate-900);
-  font-family: var(--font-ai-body), var(--font-noto-sans-jp), sans-serif;
-  line-height: 1.75;
+  font-family: var(--font-ai-latin), var(--font-ai-jp), "Hiragino Sans", "Yu Gothic", sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  font-feature-settings: "palt" 0;
 }
 
 .ai-scope h1,
 .ai-scope h2,
 .ai-scope h3 {
-  font-family: var(--font-display);
   text-wrap: balance;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
 }
 
-/* 蛍光ペン：AIの回答の中で、自分の名前が出たところ */
+/* 数字は桁をそろえる */
+.ai-scope .font-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* 以前の蛍光ペン表現は使わない（残っている指定を無効にする） */
 .ai-scope .marker {
-  background: linear-gradient(transparent 55%, var(--mark) 55%, var(--mark) 92%, transparent 92%);
-  padding: 0 0.1em;
+  background: none;
+  padding: 0;
 }
 
 /* 共通部品（カード・ボタン）の影を消す。区切りは枠線で十分 */
@@ -94,4 +101,19 @@ body {
 .ai-scope :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
+}
+
+/* ススメルの入力欄：16px・高さ44px（スマホで拡大されない大きさ） */
+.ai-scope form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.ai-scope form select,
+.ai-scope form textarea {
+  font-size: 1rem;
+  border-color: var(--color-slate-300);
+}
+.ai-scope form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+.ai-scope form select {
+  min-height: 2.75rem;
+}
+.ai-scope form button[type="submit"] {
+  min-height: 2.75rem;
 }

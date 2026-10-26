@@ -11,7 +11,8 @@ import { deleteStore, runAudit, startRun, updateQuestions, updateStore } from "@
 import { AuditForm, AutoAudit, QuestionsForm, StartRunForm, StoreForm, WebServiceForm } from "@/components/ai/forms";
 import { TERMS, type TargetKind } from "@/lib/ai-check/terms";
 import { BarList, TrendChart } from "@/components/ai/charts";
-import { FixList, PagePlans } from "@/components/ai/fix-list";
+import { AuditGroups, PlanList } from "@/components/ai/report-dashboard";
+import { btn } from "@/components/ai/ds";
 import { pagePlansFor } from "@/lib/ai-check/suggest";
 import { ConfirmButton } from "@/components/confirm-button";
 import { cardClass, dangerButtonClass } from "@/components/ui";
@@ -101,8 +102,8 @@ async function NextStep({ storeId, hasUrl }: { storeId: string; hasUrl: boolean 
   // 公式サイトがあって未診断なら、ボタンを押さなくても診断を始める
   if (!running && hasUrl && !audit) {
     return (
-      <section className="rounded-xl bg-slate-900 p-5 text-white sm:px-6">
-        <p className="text-sm font-bold text-mark">次にやること</p>
+      <section className="rounded-xl border border-brand/30 bg-brand-soft p-5 text-slate-900 sm:px-6">
+        <p className="text-sm font-bold text-brand">次にやること</p>
         <div className="mt-1">
           <AutoAudit action={runAudit.bind(null, storeId)} />
         </div>
@@ -119,12 +120,12 @@ async function NextStep({ storeId, hasUrl }: { storeId: string; hasUrl: boolean 
   else step = { text: "よい状態です。週に1回計測して、紹介され続けているかを確かめましょう。", href: `${base}?tab=check`, label: "計測結果を見る" };
 
   return (
-    <section className="flex flex-col gap-4 rounded-xl bg-slate-900 p-5 text-white sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <section className="flex flex-col gap-4 rounded-xl border border-brand/30 bg-brand-soft p-5 text-slate-900 sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold text-mark">次にやること</p>
+        <p className="text-sm font-bold text-brand">次にやること</p>
         <p className="mt-1 text-base font-semibold">{step.text}</p>
       </div>
-      <Link href={step.href} className="shrink-0 rounded-lg bg-mark px-5 py-3 text-center font-bold text-slate-900 hover:brightness-95">
+      <Link href={step.href} className={`${btn("primary", "lg")} shrink-0`}>
         {step.label}
       </Link>
     </section>
@@ -428,7 +429,7 @@ async function ImproveTab({ storeId, hasUrl, kind, isOwner }: { storeId: string;
             </div>
           </div>
           <h2 className="pt-2 text-xl font-bold text-slate-900">直すところ（上から順に）</h2>
-          <FixList checks={checks} />
+          <AuditGroups checks={checks} />
         </section>
       )}
 
@@ -441,7 +442,9 @@ async function ImproveTab({ storeId, hasUrl, kind, isOwner }: { storeId: string;
         ) : kind === "WEB" ? (
           <>
             <p className="text-sm text-slate-700">{TERMS[kind].missedHint}</p>
-            <PagePlans plans={plans} />
+            <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+              <PlanList plans={plans} />
+            </div>
           </>
         ) : (
           <div className={cardClass}>

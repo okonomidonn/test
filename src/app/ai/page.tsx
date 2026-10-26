@@ -1,207 +1,167 @@
 import Link from "next/link";
 import { sampleReport } from "@/lib/ai-check/sample";
-import { todoOf, OthersAndSources, QuestionTable } from "@/components/ai/report-view";
-import { FixList, PagePlans } from "@/components/ai/fix-list";
+import { AuditItem, QuestionsTable, RankingTable, ReportDashboard, REPORT_SECTIONS, SourcesTable } from "@/components/ai/report-dashboard";
+import { AppWindow, SectionHead, btn } from "@/components/ai/ds";
 
 const STEPS = [
-  { title: "無料チェック", price: "0円", body: "主な質問でAIに紹介されているかを測り、直すところの上位3つをお送りします。" },
-  { title: "GEO診断・改善トライアル", price: "49,800円", body: "2つのAIで計測、直す点を3つ決めて1ページを実際に直し、30日後に測り直します。" },
-  { title: "継続支援", price: "月98,000円〜", body: "毎月計測し、紹介されなかった質問に答えるページを作ります。" },
+  { title: "無料チェック", price: "0円", term: "3営業日以内にメールで", body: "主な質問でAIに紹介されているかを測り、直すところの上位3つをお送りします。" },
+  { title: "GEO診断・改善トライアル", price: "49,800円", term: "1回・30日間", body: "2つのAIで計測、直す点を3つ決めて1ページを実際に直し、30日後に測り直します。" },
+  { title: "継続支援", price: "月98,000円〜", term: "最低3か月", body: "毎月計測し、紹介されなかった質問に答えるページを作ります。" },
 ];
 
-// 冒頭に置く、報告書の縮小版（架空のサービスのサンプル）
-function ReportPreview() {
-  const d = sampleReport();
-  const todo = todoOf(d.checks).slice(0, 3);
-  const rate = d.measured ? Math.round((d.measured.hits / d.measured.total) * 100) : 0;
+// 機能の1行：左に短い説明、右に報告書の実物
+function FeatureRow({ no, title, body, children }: { no: string; title: string; body: string; children: React.ReactNode }) {
   return (
-    <figure className="min-w-0 rounded-2xl border border-slate-300 bg-white" aria-label="診断報告書のサンプル">
-      <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-5 py-3">
-        <span className="text-sm font-semibold text-brand">AI検索の診断報告書</span>
-        <span className="shrink-0 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">サンプル（架空）</span>
-      </div>
-      <div className="space-y-5 px-5 py-5">
-        <p className="font-display text-xl font-black text-slate-900">{d.name}</p>
-        <dl className="grid grid-cols-3 gap-3 border-y border-slate-200 py-4">
-          <div>
-            <dt className="text-xs font-semibold text-slate-600">紹介された割合</dt>
-            <dd className="font-num text-3xl font-semibold text-slate-900">
-              {rate}
-              <span className="text-lg text-slate-500">%</span>
-            </dd>
-          </div>
-          <div>
-            <dt className="text-xs font-semibold text-slate-600">サイト診断</dt>
-            <dd className="font-num text-3xl font-semibold text-slate-900">
-              {d.score}
-              <span className="text-lg text-slate-500">点</span>
-            </dd>
-          </div>
-          <div>
-            <dt className="text-xs font-semibold text-slate-600">負けている競合</dt>
-            <dd className="font-num text-3xl font-semibold text-slate-900">{d.others.length}</dd>
-          </div>
-        </dl>
-        <div>
-          <p className="text-sm font-bold text-slate-900">直すところ（上から順に）</p>
-          <ol className="mt-2 space-y-2">
-            {todo.map((c, i) => (
-              <li key={c.key} className="grid grid-cols-[1.5rem_1fr] gap-1 text-sm">
-                <span className="font-num font-semibold text-slate-500">{i + 1}</span>
-                <span className="min-w-0">
-                  <span className="font-semibold text-slate-900">{c.title}</span>
-                  {c.where && <span className="block truncate text-slate-600">{c.where}</span>}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
-      <figcaption className="border-t border-slate-200 bg-slate-50 px-5 py-3 text-sm">
-        <Link href="/ai/sample" className="font-semibold text-brand hover:underline">
-          サンプルの報告書を全部見る →
-        </Link>
-      </figcaption>
-    </figure>
-  );
-}
-
-// 報告書の各部分を、実物のまま並べて説明する
-function Feature({ no, title, body, children }: { no: number; title: string; body: string; children: React.ReactNode }) {
-  return (
-    <div className="grid gap-6 border-t border-slate-300 pt-8 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-12">
+    <div className="grid gap-6 border-t border-slate-200 py-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-16">
       <div className="min-w-0">
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-900 font-num font-semibold text-white">{no}</span>
-        <h3 className="mt-3 text-xl font-bold text-slate-900">{title}</h3>
-        <p className="mt-2 text-slate-700">{body}</p>
+        <p className="font-num text-sm font-semibold text-slate-500">{no}</p>
+        <h3 className="mt-2 text-xl font-bold text-slate-900">{title}</h3>
+        <p className="mt-2 text-slate-600">{body}</p>
       </div>
-      <div className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">{children}</div>
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">{children}</div>
     </div>
   );
 }
 
 export default function AiLandingPage() {
   const d = sampleReport();
-  const fix = d.checks.find((c) => c.key === "pitch");
-  const plan = d.plans.find((p) => p.type === "条件に答えるページ");
+  const pitch = d.checks.find((c) => c.key === "pitch");
 
   return (
-    <div className="space-y-24 pb-12">
-      <section className="grid items-center gap-12 pt-6 lg:grid-cols-[1fr_1fr]">
-        <div className="min-w-0">
-          <p className="font-semibold text-brand">ススメル｜WebサービスのAI検索診断と改善</p>
-          <h1 className="mt-4 text-[2rem] font-black leading-[1.3] text-slate-900 sm:text-[2.75rem] sm:leading-[1.25]">
-            あなたのサービスは、
-            <br />
-            AIの<span className="marker">比較候補</span>に
-            <br />
-            入っていますか？
-          </h1>
-          <p className="mt-6 max-w-[34rem] text-slate-700">
-            見込み客がChatGPT・Geminiに聞きそうな質問で、御社が紹介されるか、どの競合に負けているか、サイトのどこを直せばいいかを調べ、報告書にしてお渡しします。
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/ai/apply" className="rounded-lg bg-brand px-6 py-3.5 text-lg font-bold text-white hover:bg-brand-dark">
-              無料チェックを申し込む
-            </Link>
-            <Link href="/ai/sample" className="rounded-lg border border-slate-300 bg-white px-5 py-3.5 text-lg font-semibold text-slate-800 hover:bg-slate-50">
-              サンプルの報告書を見る
-            </Link>
+    <div className="pb-8">
+      {/* ファーストビュー：左揃えの見出しとCTA */}
+      <section className="max-w-3xl pt-8 sm:pt-14">
+        <p className="text-sm font-semibold text-brand">WebサービスのAI検索診断</p>
+        <h1 className="mt-4 text-[2.125rem] font-bold leading-[1.25] tracking-tight text-slate-900 sm:text-[3rem] sm:leading-[1.2]">
+          あなたのサービスは、
+          <br />
+          <span className="text-slate-500">AIの比較候補に入っていますか？</span>
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg text-slate-600">ChatGPT・Geminiでの紹介状況を調べ、競合との差と改善すべきページを明らかにします。</p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link href="/ai/apply" className={btn("primary", "lg")}>
+            無料で診断する
+          </Link>
+          <Link href="/ai/sample" className={btn("secondary", "lg")}>
+            サンプルレポートを見る
+          </Link>
+        </div>
+        <p className="mt-3 text-sm text-slate-600">登録は不要です。3営業日以内に、結果をメールでお送りします。</p>
+      </section>
+
+      {/* 製品画面：実際の報告書（デモ） */}
+      <section className="mt-12 sm:mt-16" aria-label="報告書の画面（デモ）">
+        <AppWindow title="ススメル — AI検索の診断報告書" badge="デモ・架空のサービス">
+          <div className="grid lg:grid-cols-[12rem_minmax(0,1fr)]">
+            <aside className="hidden border-r border-slate-200 bg-slate-50 p-4 lg:block">
+              <p className="text-sm font-semibold text-slate-900">リモ求人ナビ</p>
+              <nav className="mt-4 space-y-0.5 text-sm" aria-hidden>
+                {REPORT_SECTIONS.map((s, i) => (
+                  <span key={s.id} className={`block rounded-md px-2 py-1.5 ${i === 0 ? "bg-white font-semibold text-slate-900 ring-1 ring-slate-200" : "text-slate-600"}`}>
+                    {s.label}
+                  </span>
+                ))}
+              </nav>
+            </aside>
+            <div className="min-w-0 p-4 sm:p-6">
+              <ReportDashboard d={d} compact />
+            </div>
           </div>
-          <p className="mt-3 text-sm text-slate-600">登録は不要です。3営業日以内に、結果をメールでお送りします。</p>
-        </div>
-        <ReportPreview />
+        </AppWindow>
+        <p className="mt-3 text-sm text-slate-600">
+          画面はデモです（架空の求人サイト）。
+          <Link href="/ai/sample" className="font-semibold text-brand hover:underline">
+            全項目を見る →
+          </Link>
+        </p>
       </section>
 
-      <section className="space-y-10">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">報告書でわかること</h2>
-          <p className="mt-2 text-slate-700">下の表やコードは、サンプルの報告書の一部をそのまま載せたものです（架空のサービス）。</p>
+      {/* できること：説明は短く、報告書の実物で見せる */}
+      <section id="features" className="mt-24 scroll-mt-20">
+        <SectionHead label="報告書でわかること" title="数字で終わらせない。" sub="何を直すかまで渡します。" />
+        <div className="mt-10">
+          <FeatureRow no="01" title="どの質問で、何番目に紹介されたか" body="見込み客が聞きそうな質問ごとに、自社の順位と、代わりに紹介されたサービスを記録します。">
+            <QuestionsTable d={d} limit={4} />
+          </FeatureRow>
+          <FeatureRow no="02" title="どの競合に、なぜ負けているか" body="回答に出た回数の比較と、AIが根拠にしたサイトの一覧。競合が引用されている種類のページが分かります。">
+            <div className="grid gap-6 md:grid-cols-2">
+              <RankingTable d={d} />
+              <SourcesTable d={d} />
+            </div>
+          </FeatureRow>
+          {pitch && (
+            <FeatureRow no="03" title="サイトのどこを、どう直すか" body="直す場所・今の内容・そのまま使える書き換え例を出します。構造化データのコードも渡します。">
+              <ul>
+                <AuditItem c={pitch} />
+              </ul>
+            </FeatureRow>
+          )}
         </div>
-        <Feature no={1} title="どの質問で紹介されたか" body="見込み客が聞きそうな質問ごとに、紹介されたか、何番目かを記録します。紹介されなかった質問が、直すべき場所の手がかりになります。">
-          <QuestionTable d={{ ...d, questions: d.questions.slice(0, 5) }} />
-        </Feature>
-        <Feature no={2} title="どの競合に負けているか" body="代わりに紹介されたサービスと、AIが根拠にしたサイト（比較記事・レビューなど）を並べます。">
-          <OthersAndSources d={d} />
-        </Feature>
-        {fix && (
-          <Feature no={3} title="サイトのどこを、どう直すか" body="直す場所、今の内容、そのまま使える書き換え例を出します。構造化データのコードや、トップに書く一文もそのまま渡します。">
-            <FixList checks={[fix]} />
-          </Feature>
-        )}
-        {plan && (
-          <Feature no={4} title="どんなページを作ればいいか" body="紹介されなかった質問ごとに、作るページの題名・最初の一文・入れる内容を出します。">
-            <PagePlans plans={[plan]} />
-          </Feature>
-        )}
       </section>
 
-      <section className="grid gap-8 border-t-2 border-slate-900 pt-8 lg:grid-cols-[1fr_1fr] lg:gap-12">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-600">事例｜運営元の求人サイト「zaito」・2026年9月24日〜10月21日（GA4）</p>
-          <h2 className="mt-2 text-2xl font-bold text-slate-900">全ユーザーの14.5%を占めるChatGPT経由の人が、キーイベントの51.6%を発生させました</h2>
-          <p className="mt-4 text-slate-700">
-            Googleではほとんど上位に出ない開設2か月のサイトです。求人を1件1ページにし、一文の説明と構造化データを整えたあと、ChatGPTからの訪問が始まりました。ChatGPT経由の人が見たのは、主に個別の求人ページでした。
-          </p>
-        </div>
-        <dl className="min-w-0 divide-y divide-slate-200 border-y border-slate-200 text-sm">
+      {/* 事例：数字の帯と、言えないこと */}
+      <section className="mt-16 border-t border-slate-200 pt-10">
+        <SectionHead label="事例" title="ChatGPT経由の人が、キーイベントの半分。" sub="運営元の求人サイト「zaito」の28日間です。" />
+        <dl className="mt-8 grid overflow-hidden rounded-xl border border-slate-200 sm:grid-cols-3">
           {[
-            ["ユーザー", "469人中 68人がChatGPT経由（14.5%）"],
-            ["キーイベント", "95件中 49件がChatGPT経由（51.6%）"],
-            ["キーイベントとは", "「興味あり」「応募ページへ進む」などの操作の件数。同じ人の複数回を含み、応募の完了率ではありません"],
-            ["言えないこと", "サイト1件・28日間の数字です。対策と流入増の因果関係は検証していません"],
-          ].map(([k, v]) => (
-            <div key={k} className="grid grid-cols-[7rem_1fr] gap-3 py-3">
-              <dt className="font-semibold text-slate-600">{k}</dt>
-              <dd className="text-slate-800">{v}</dd>
+            ["14.5%", "ユーザーのうちChatGPT経由", "469人中68人"],
+            ["51.6%", "キーイベントのうちChatGPT経由", "95件中49件"],
+            ["46種類", "ChatGPT経由の人が見た求人ページ", "個別の求人ページが中心"],
+          ].map(([v, k, n], i) => (
+            <div key={k} className={`p-5 ${i ? "border-t border-slate-200 sm:border-l sm:border-t-0" : ""}`}>
+              <dd className="font-num text-[2rem] font-semibold leading-tight text-slate-900">{v}</dd>
+              <dt className="mt-1 font-medium text-slate-800">{k}</dt>
+              <p className="text-sm text-slate-600">{n}</p>
             </div>
           ))}
         </dl>
+        <p className="mt-4 max-w-3xl text-sm text-slate-600">
+          2026年9月24日〜10月21日、GA4。キーイベントは「興味あり」「応募ページへ進む」などの操作の件数で、同じ人の複数回を含み、応募の完了率ではありません。サイト1件・28日間の数字で、対策と流入増の因果関係は検証していません。
+        </p>
       </section>
 
-      <section className="space-y-8">
+      {/* 進め方と料金：罫線の表 */}
+      <section className="mt-16 border-t border-slate-200 pt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">進め方と料金</h2>
+          <SectionHead label="進め方と料金" title="まず無料で、効果を見てから。" />
           <Link href="/ai/pricing" className="font-semibold text-brand hover:underline">
             料金の詳細 →
           </Link>
         </div>
-        <ol className="grid gap-6 md:grid-cols-3">
+        <ol className="mt-8 grid overflow-hidden rounded-xl border border-slate-200 md:grid-cols-3">
           {STEPS.map((s, i) => (
-            <li key={s.title} className="min-w-0">
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-slate-900 font-num text-lg font-semibold text-white">{i + 1}</span>
-                {i < STEPS.length - 1 && <span className="hidden h-px flex-1 bg-slate-300 md:block" aria-hidden />}
-              </div>
-              <h3 className="mt-4 text-lg font-bold text-slate-900">{s.title}</h3>
-              <p className="font-num text-2xl font-semibold text-slate-900">{s.price}</p>
-              <p className="mt-1 text-slate-700">{s.body}</p>
+            <li key={s.title} className={`p-5 ${i ? "border-t border-slate-200 md:border-l md:border-t-0" : ""}`}>
+              <p className="font-num text-sm font-semibold text-slate-500">STEP {i + 1}</p>
+              <h3 className="mt-1 font-bold text-slate-900">{s.title}</h3>
+              <p className="mt-2 font-num text-2xl font-semibold text-slate-900">{s.price}</p>
+              <p className="text-sm text-slate-600">{s.term}</p>
+              <p className="mt-3 text-slate-700">{s.body}</p>
             </li>
           ))}
         </ol>
-        <p className="text-sm text-slate-600">
-          税別。自分で計測したい方は、
-          <Link href="/ai/tool" className="underline">
-            セルフ版のツール
+        <p className="mt-3 text-sm text-slate-600">
+          税別。自分で計測したい方は
+          <Link href="/ai/tool" className="mx-1 font-semibold text-brand hover:underline">
+            セルフ版ツール
           </Link>
-          もあります。
+          （月4,980円〜・税込）もあります。
         </p>
       </section>
 
-      <section className="rounded-2xl bg-slate-900 px-6 py-12 text-white sm:px-12">
+      <section className="mt-16 flex flex-col gap-6 border-t border-slate-200 pt-10 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
-          <h2 className="text-2xl font-bold sm:text-3xl">
-            まずは<span className="text-mark">無料チェック</span>から
+          <h2 className="text-[1.625rem] font-bold text-slate-900 sm:text-[2rem]">
+            まずは無料で診断。<span className="text-slate-500">会社名とURLだけで申し込めます。</span>
           </h2>
-          <p className="mt-3 text-slate-300">会社名・サイトのURL・メールアドレスだけで申し込めます。AIの回答は毎回変わるため、結果は目安です。紹介や問い合わせの増加をお約束するものではありません。</p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Link href="/ai/apply" className="rounded-lg bg-mark px-6 py-3.5 text-lg font-bold text-slate-900 hover:brightness-95">
-              無料チェックを申し込む
-            </Link>
-            <Link href="/ai/sample" className="rounded-lg border border-slate-600 px-6 py-3.5 text-lg font-semibold text-white hover:bg-slate-800">
-              サンプルの報告書を見る
-            </Link>
-          </div>
+          <p className="mt-3 text-sm text-slate-600">AIの回答は毎回変わるため、結果は目安です。紹介や問い合わせの増加をお約束するものではありません。</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/ai/apply" className={btn("primary", "lg")}>
+            無料で診断する
+          </Link>
+          <Link href="/ai/sample" className={btn("secondary", "lg")}>
+            サンプルレポート
+          </Link>
         </div>
       </section>
     </div>
