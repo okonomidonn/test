@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { btn } from "@/components/ai/ds";
+import { MethodSteps } from "@/components/ai/marketing";
 
 export const metadata = { title: "計測のしかたと進め方 | ススメル", description: "ススメルの計測方法、数字の意味、限界、作業の範囲、情報の取り扱い" };
 
@@ -54,6 +55,11 @@ export default function MethodPage() {
             何を、どう測っているか。<span>分かることと、分からないこと。</span>
           </h1>
         </header>
+
+        <div className="pb-10">
+          <MethodSteps />
+          <p className="mt-3 text-sm text-slate-600">くわしい仕組み・数字の定義・限界は、この下にまとめています。</p>
+        </div>
 
         <Block id="measure" title="計測のしかた">
           <ol className="list-decimal space-y-2 pl-5">
