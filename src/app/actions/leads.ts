@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { notifyLead } from "@/lib/contact";
 
 export type LeadField = "company" | "name" | "email" | "websiteUrl" | "message";
 export type LeadState = {
@@ -57,5 +58,6 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
 
   const session = await auth();
   await prisma.lead.create({ data: { ...parsed.data, userId: session?.user?.id ?? null } });
+  await notifyLead(parsed.data);
   return { done: true };
 }
