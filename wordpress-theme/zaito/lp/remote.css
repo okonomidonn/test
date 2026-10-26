@@ -359,13 +359,13 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 .none{margin:24px 0 0;padding:28px;border-radius:16px;background:#F6F7FA;text-align:center;font-size:15px;color:var(--z-text-2)}
 .none button{margin-left:8px;border:0;background:none;color:var(--z-blue);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
 .mini-cta{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;padding:20px 24px;border-radius:20px;background:linear-gradient(135deg,#EEF1FF,#F6F3FF);box-shadow:inset 0 0 0 1.5px #DCE2FF}
-.mc-copy{flex:1 1 280px;display:flex;align-items:center;gap:14px}
+.mc-copy{flex:1 1 280px;min-width:0;display:flex;align-items:center;gap:14px}
 .mc-copy>.ms{flex:none;width:44px;height:44px;border-radius:12px;background:#fff;color:var(--z-blue);display:flex;align-items:center;justify-content:center;font-size:24px}
 .mc-copy p{margin:0;font-size:14px;color:var(--z-text-2);line-height:1.6}
 .mc-copy b{display:block;font-size:16px;color:var(--z-navy);font-weight:900}
 .mc-copy .mc-more{margin-top:6px;padding:0;border:0;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--z-blue);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-#zminiform{flex:1 1 320px;display:flex;gap:8px}
-#zminiform input{flex:1;min-width:0;height:50px;padding:0 14px;border-radius:12px;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font-family:inherit;font-size:16px;color:var(--z-navy)}
+#zminiform{flex:1 1 320px;min-width:0;max-width:100%;display:flex;gap:8px}
+#zminiform input{flex:1;min-width:0;width:100%;height:50px;padding:0 14px;border-radius:12px;border:0;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font-family:inherit;font-size:16px;color:var(--z-navy)}
 #zminiform input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--z-blue)}
 #zminiform .btn{flex:none;height:50px}
 .mini-cta .err{flex-basis:100%;margin:0;font-size:14px;color:#C8313B;font-weight:700}
@@ -685,7 +685,7 @@ body.has-sbar{padding-bottom:96px}
 .reco-end .reco-end-t,.reco-gate .reco-gate-t{font-size:17px!important;font-weight:900;color:var(--z-navy)!important}
 .reco-end .btn,.reco-gate form{width:100%;max-width:300px}
 .reco-gate form{display:flex;flex-direction:column;gap:8px;margin-top:4px}
-.reco-gate input{height:48px;padding:0 14px;border-radius:12px;border:1.5px solid var(--z-border-input);font:inherit;font-size:16px}
+.reco-gate input{width:100%;min-width:0;height:48px;padding:0 14px;border-radius:12px;border:1.5px solid var(--z-border-input);font:inherit;font-size:16px}
 .reco-gate .err{color:var(--z-error)!important;font-size:13px!important}
 .reco-gate-x{border:0;background:none;padding:4px;color:var(--z-text-3);font:inherit;font-size:13px;font-weight:700;text-decoration:underline;cursor:pointer}
 .reco-all{border:0;background:none;color:var(--z-blue);font:inherit;font-size:14px;font-weight:700;cursor:pointer}
