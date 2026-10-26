@@ -2,8 +2,8 @@
  * トップページの「今日のおすすめ」（#zreco）。inc/reco.php（admin-ajax の zaito_reco）から5件を受け取り、
  * 一覧の求人カード（#zcards .card）を写して1枚ずつ重ねて出す。
  * - 右へ（または ♡）で「気になる」＝保存（fav.js の window.zaitoFav）、左へ（または ×）でスキップ。
- * - 登録していないブラウザでも見られるが、スワイプ（♡・×）には登録が要る。押すと登録の案内を出す。
- *   カードを押して詳細を見るのは、登録していなくてもできる。
+ * - 登録していなくても5件すべてスワイプできる（保存はこのブラウザに残り、登録するとマイページに引き継がれる）。
+ *   5件見終わったところで登録を案内する。次の5件は登録すると見られる。
  * - 見終わった求人はこのブラウザに覚えておき、次は別の5件を出す。
  * - その日初めてトップページを開いたときだけ、おすすめを画面の正面に大きく出す（後ろに一覧がうっすら見える）。
  *   閉じると、見出しの横（スマホでは下）の元の場所に戻る。2回目以降はその場所にだけ出す。
@@ -85,7 +85,7 @@
     document.dispatchEvent(new CustomEvent('zaito:favs'));
   }
 
-  var items = [], pos = 0, liked = 0, busy = false, pending = 0;
+  var items = [], pos = 0, liked = 0, busy = false;
 
   function cardFor(slug) {
     var li = list.querySelector('.card[data-slug="' + slug + '"]');
@@ -148,20 +148,27 @@
     stack.hidden = true;
     act.hidden = true;
     num.textContent = '';
+    var guest = !member();
     end.innerHTML =
       '<span class="ms" aria-hidden="true">task_alt</span>' +
       '<p class="reco-end-t">今日のおすすめは以上です</p>' +
       '<p>' + (liked ? '「気になる」にした' + liked + '件は、保存した求人で見られます。' : '気になる求人がなければ、次の5件も見てみてください。') + '</p>' +
-      '<button type="button" class="btn btn-p reco-next">次の5件を見る</button>' +
+      (guest ? '<button type="button" class="btn btn-p reco-join">次の5件を見る（無料登録）</button>' : '<button type="button" class="btn btn-p reco-next">次の5件を見る</button>') +
       (liked ? '<button type="button" class="btn btn-g reco-favs">保存した求人を見る</button>' : '') +
       '<button type="button" class="reco-all">すべての求人を見る</button>';
     end.hidden = false;
-    track('reco_end', { liked: liked });
+    track('reco_end', { liked: liked, guest: guest ? 1 : 0 });
+    // 登録していない人には、見終わったところで一度だけ登録を案内する。
+    if (guest && !gateShown) {
+      gateShown = true;
+      gate.querySelector('.reco-gate-t').textContent = liked ? '「気になる」の' + liked + '件を保存しました' : '今日の5件を見終わりました';
+      openGate();
+    }
   }
+  var gateShown = false;
 
   function go(dir) {
     if (busy || !current()) return;
-    if (!member()) { pending = dir; openGate(); return; }
     var c = stack.querySelector('.sw-top');
     busy = true;
     var slug = current().slug;
@@ -200,13 +207,7 @@
       if (!on) return;
       on = false;
       var fast = Math.abs(dx) > 40 && Date.now() - t0 < 250;
-      if (Math.abs(dx) > c.offsetWidth * 0.3 || fast) {
-        if (member()) { go(dx > 0 ? 1 : -1); return; }
-        back();
-        pending = dx > 0 ? 1 : -1;
-        openGate();
-        return;
-      }
+      if (Math.abs(dx) > c.offsetWidth * 0.3 || fast) { go(dx > 0 ? 1 : -1); return; }
       back();
       // ほとんど動かさずに離したら、タップとして詳しく見る（登録していなくても見られる）。
       if (Math.abs(dx) < 6 && Date.now() - t0 < 300) { track('reco_detail', { job: current().slug }); location.href = more.href; }
@@ -215,7 +216,7 @@
     c.addEventListener('pointercancel', up);
   }
 
-  // 登録の案内（スワイプしようとした未登録の人だけ）
+  // 登録の案内（未登録の人が5件見終わったとき）
   function openGate() {
     gate.hidden = false;
     track('reco_gate', {});
@@ -223,8 +224,13 @@
     var inp = gate.querySelector('input');
     if (inp) setTimeout(function () { inp.focus({ preventScroll: true }); }, rm ? 0 : 400);
   }
-  function closeGate() { gate.hidden = true; pending = 0; }
-  gate.querySelector('.reco-gate-x').addEventListener('click', closeGate);
+  function closeGate() { gate.hidden = true; track('reco_gate_skip', {}); }
+  gate.querySelector('.reco-gate-x').addEventListener('click', function () {
+    closeGate();
+    closeModal();
+    var bar = document.querySelector('.count-bar');
+    if (bar) bar.scrollIntoView({ behavior: rm ? 'auto' : 'smooth', block: 'start' });
+  });
   gate.querySelector('form').addEventListener('submit', function (e) {
     e.preventDefault();
     var err = gate.querySelector('.err');
@@ -245,11 +251,9 @@
           top.hidden = true;
           if (profile) profile.hidden = false;
         }
-        var dir = pending;
         gate.hidden = true;
-        pending = 0;
         showJoined(res.data.created);
-        if (dir) setTimeout(function () { go(dir); }, 200);
+        finish();
       })
       .catch(function (x) {
         btn.disabled = false;
@@ -278,6 +282,7 @@
   more.addEventListener('click', function () { if (current()) track('reco_detail', { job: current().slug }); });
   end.addEventListener('click', function (e) {
     if (e.target.closest('.reco-next')) { load(); return; }
+    if (e.target.closest('.reco-join')) { openGate(); return; }
     var bar = document.querySelector('.count-bar');
     if (e.target.closest('.reco-favs') || e.target.closest('.reco-all')) closeModal();
     if (e.target.closest('.reco-favs')) {
@@ -297,12 +302,12 @@
   var TEXT_AI = {
     member: '登録した希望条件をもとに、AIがあなたに合いそうな求人を選びました。',
     member_noprefs: 'AIが選んだおすすめです。希望の条件を教えると、もっとあなたに合う求人を選べます。',
-    guest: 'AIが、初めての人にまず見てほしい求人を選びました。無料登録すると、スワイプで保存できます。'
+    guest: 'AIが、初めての人にまず見てほしい求人を選びました。右へスワイプすると「気になる」に保存できます。'
   };
   var TEXT = {
     member: '登録した希望条件から、あなたに合いそうな求人を選びました。',
     member_noprefs: '希望の条件を教えると、もっとあなたに合う求人を選べます。',
-    guest: '未経験OK・高時給・新着から選びました。無料登録すると、スワイプで保存できます。'
+    guest: '未経験OK・高時給・新着から選びました。右へスワイプすると「気になる」に保存できます。'
   };
   function loading(on) {
     root.classList.toggle('is-loading', on);

@@ -226,17 +226,17 @@ if ( ! $zaito_cond ) :
           <div class="reco-deck">
             <div class="sw-stack"></div>
             <div class="reco-end" hidden></div>
-            <div class="reco-gate" hidden role="dialog" aria-label="無料登録">
-              <button type="button" class="reco-gate-x" aria-label="閉じる"><span class="ms" aria-hidden="true">close</span></button>
-              <span class="ms reco-gate-i" aria-hidden="true">swipe</span>
-              <p class="reco-gate-t">スワイプで保存するには、無料登録が必要です</p>
-              <p>メールアドレスだけで登録できます。気になる求人を保存して、あとで見返せます。</p>
+            <div class="reco-gate" hidden role="dialog" aria-labelledby="zrecogt">
+              <span class="ms reco-gate-i" aria-hidden="true">mark_email_unread</span>
+              <p class="reco-gate-t" id="zrecogt">今日の5件を見終わりました</p>
+              <p>無料登録すると、次の5件と、あなたの希望に合うおすすめが毎日見られます。保存した求人は、登録後もそのまま残ります。</p>
               <form novalidate>
                 <label class="sr" for="zrecoemail">メールアドレス</label>
                 <input type="email" id="zrecoemail" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
-                <button type="submit" class="btn btn-p">無料で登録してスワイプ</button>
+                <button type="submit" class="btn btn-p">無料で登録する（メールだけ）</button>
               </form>
               <p class="err" role="alert"></p>
+              <button type="button" class="reco-gate-x">登録せずに一覧を見る</button>
             </div>
           </div>
           <div class="sw-act">
