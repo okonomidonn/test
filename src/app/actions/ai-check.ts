@@ -34,8 +34,7 @@ export async function signupOwner(_prev: FormState, formData: FormData): Promise
     return { error: "このメールアドレスは既に登録されています" };
   }
   await prisma.user.create({ data: { name, email, role: "OWNER", passwordHash: await hash(password, 10) } });
-  const kind = formData.get("kind") === "web" ? "?kind=web" : "";
-  await signIn("credentials", { email, password, redirectTo: `/ai/app/new${kind}` });
+  await signIn("credentials", { email, password, redirectTo: "/ai/app/new" });
   return {};
 }
 

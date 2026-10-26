@@ -33,6 +33,8 @@
   table { width: 100%; border-collapse: collapse; font-size: 9pt; }
   th, td { border-bottom: 1px solid var(--line); padding: 1.4mm 2mm; text-align: left; vertical-align: top; }
   td.r { text-align: right; white-space: nowrap; font-weight: 700; }
+  td:first-child { width: 26%; font-weight: 700; }
+  .steps .step { border: 1px solid transparent; }
   .monitor { margin-top: 4mm; background: var(--accent-bg); border-radius: 2mm; padding: 3mm 4mm; }
   .monitor b { color: var(--accent); }
   .cta { margin-top: 4mm; background: var(--ink); color: #fff; border-radius: 2mm; padding: 3mm 4mm; display: grid; grid-template-columns: 1fr auto; gap: 4mm; align-items: center; }
@@ -45,57 +47,40 @@
 
 <div class="eyebrow">AI検索対策（GEO）｜Webサービス向け</div>
 <h1>料金表</h1>
-<p class="lead">ChatGPT・Geminiに「〇〇できるサービスは？」と聞かれたとき、御社が紹介されるようにします。毎月実際にAIに聞いて測り、紹介されなかった質問に答えるページを作ります。</p>
+<p class="lead">生成AIでサービスを比較・検討している見込み客に、御社の情報が正しく届く状態をつくります。実際にAIに聞いて測り、サイトを直し、また測ります。</p>
 
-<h2>はじめ方</h2>
+<h2>3つのステップ</h2>
 <div class="steps">
-  <div class="step"><div class="no">STEP 1</div><div class="t">簡易診断</div><div class="p">無料</div><div class="d">主な質問でAIに紹介されているかを計測し、サイトの作りを自動で診断します。</div></div>
-  <div class="step"><div class="no">STEP 2</div><div class="t">詳しい診断＋報告会</div><div class="p">98,000<small>円</small></div><div class="d">30問×2つのAIで計測、競合が引用されているページとAI流入（GA4）を分析し、直す順番を1時間でご説明。<b>おまかせを申し込むと初期整備から全額差し引き。</b></div></div>
-  <div class="step"><div class="no">STEP 3</div><div class="t">初期整備</div><div class="p">198,000<small>円〜</small></div><div class="d">一文の立ち位置、1件1ページの設計、構造化データ、llms.txt、サイトマップ・Bing登録、AI流入の計測設定。ページ数で見積もり。</div></div>
+  <div class="step"><div class="no">STEP 1</div><div class="t">無料チェック</div><div class="p">0<small>円</small></div><div class="d">主な質問でAIに紹介されているかを計測し、公式サイトを自動で診断します。結果をお送りします。</div></div>
+  <div class="step" style="border:2px solid var(--accent);background:#fff"><div class="no">STEP 2　はじめての方へ</div><div class="t">GEO診断・改善トライアル</div><div class="p">49,800<small>円（1回・30日間）</small></div><div class="d">現状を数字で確かめ、改善を1つ実際に行い、30日後に同じ条件で測り直します。</div></div>
+  <div class="step"><div class="no">STEP 3</div><div class="t">継続支援</div><div class="p">月98,000<small>円〜</small></div><div class="d">毎月AIで計測し、紹介されなかった質問に答えるページを作ります。作業量を決めてお見積もりします。</div></div>
 </div>
 
-<h2>毎月のおまかせ</h2>
-<div class="plans">
-  <div class="plan hl">
-    <span class="badge">おすすめ</span>
-    <div class="name">おまかせ 月4ページ</div>
-    <div class="price">98,000<small>円／月</small></div>
-    <ul>
-      <li>毎月の計測（ChatGPT・Gemini）と1枚レポート</li>
-      <li>ページの作成・書き換え <b>月4ページ</b></li>
-      <li>構造化データ・llms.txtの更新</li>
-      <li>月1回の打ち合わせ（30分）</li>
-    </ul>
-  </div>
-  <div class="plan">
-    <span class="badge">本格的に</span>
-    <div class="name">おまかせ 月8ページ</div>
-    <div class="price">198,000<small>円／月</small></div>
-    <ul>
-      <li>月4ページの内容すべて</li>
-      <li>ページの作成・書き換え <b>月8ページ</b></li>
-      <li>外部での紹介集め（比較記事・プレスリリース・業界メディア）</li>
-      <li>月2回の打ち合わせ</li>
-    </ul>
-  </div>
-</div>
-
-<h2>オプション</h2>
+<h2>トライアルの内容（49,800円）</h2>
 <table>
-  <tr><td>追加のページ作成</td><td class="r">1ページ 30,000〜50,000円</td></tr>
-  <tr><td>実装代行（WordPressなどに直接反映）</td><td class="r">100,000円〜</td></tr>
-  <tr><td>年払い（12か月分の先払い）</td><td class="r">2か月分割引</td></tr>
-  <tr><td>自分で計測したい方：AI検索チェック（ツール）</td><td class="r">無料〜月14,800円</td></tr>
+  <tr><td>計測</td><td>ChatGPT・Geminiで各10問。紹介されたか・何番目か・どのページが引用されたかを記録</td></tr>
+  <tr><td>競合比較</td><td>主な競合2社と、紹介された回数・引用されたページを比べる</td></tr>
+  <tr><td>直す点</td><td>公式サイトで直すべき点を3つ特定し、優先順位をつける</td></tr>
+  <tr><td>改善</td><td>既存ページを1ページ改善（CMSで編集できる範囲）</td></tr>
+  <tr><td>再計測と報告</td><td>30日後に同じ質問・同じ条件で測り直し、変化をご報告</td></tr>
+  <tr><td>含まないもの</td><td>新しいページの制作、外部媒体への掲載、大規模な実装</td></tr>
 </table>
 
-<div class="monitor"><b>モニター募集（先着3社）</b>：初期整備を無料、おまかせ 月4ページを<b>3か月間 月29,800円</b>で実施します。条件は、社名と結果の数字を事例として紹介させていただくこと、Googleアナリティクスを一緒に見られることです。</div>
+<h2>継続支援の内容（月98,000円〜）</h2>
+<table>
+  <tr><td>毎月の計測とレポート</td><td>同じ質問で測り、推移と次にやることを1枚にまとめる</td></tr>
+  <tr><td>ページの作成・書き換え</td><td>月4ページから。紹介されなかった質問に答えるページ、事例・機能・比較のページなど</td></tr>
+  <tr><td>技術面の保守</td><td>構造化データ、AIの読み取り許可（robots.txt）、サイトマップ</td></tr>
+  <tr><td>打ち合わせ</td><td>月1回</td></tr>
+  <tr><td>契約期間</td><td>最低3か月、以降は1か月ごと</td></tr>
+</table>
 
 <div class="cta">
-  <div><b>まずは無料の簡易診断から</b><br>御社のサービスがAIに紹介されているか、計測結果をお送りします。</div>
+  <div><b>まずは無料チェックから</b><br>御社のサービスがAIに紹介されているか、計測結果をお送りします。</div>
   <div class="c">担当：<br>連絡先：</div>
 </div>
 
-<p class="note">表示はすべて税別です。おまかせは最低3か月、以降は1か月ごとの更新です。AIの回答は毎回変わるため、紹介や問い合わせの増加をお約束するものではありません。実績：自社運営の求人サイトで、ChatGPT経由のユーザーが全体の14.5%、成果の51.6%（2026年9月24日〜10月21日、GA4）。</p>
+<p class="note">表示はすべて税別です。AIの回答は毎回変わるため、紹介や問い合わせの増加をお約束するものではありません。参考：運営元の求人サイトでは、28日間でChatGPT経由のユーザー68人（全体の14.5%）が、キーイベント95件のうち49件を発生させました（2026年9月24日〜10月21日、GA4。対策との因果関係は未検証）。</p>
 
 </body>
 </html>

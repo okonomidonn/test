@@ -23,7 +23,7 @@ export default async function StoresPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">登録一覧</h1>
-          <p className="mt-1 text-sm text-slate-600">お店・Webサービスごとに、AIでの紹介状況と改善点を確認できます。</p>
+          <p className="mt-1 text-sm text-slate-600">サービスごとに、AIでの紹介状況と改善点を確認できます。</p>
         </div>
         <Link href="/ai/app/new" className={primaryButtonClass}>
           追加する
@@ -33,14 +33,9 @@ export default async function StoresPage() {
       {stores.length === 0 ? (
         <div className={`${cardClass} text-center`}>
           <p className="text-sm text-slate-700">まだ登録がありません。</p>
-          <div className="mt-4 flex justify-center gap-3">
-            <Link href="/ai/app/new" className={primaryButtonClass}>
-              お店を登録する
-            </Link>
-            <Link href="/ai/app/new?kind=web" className={primaryButtonClass}>
-              Webサービスを登録する
-            </Link>
-          </div>
+          <Link href="/ai/app/new" className={`${primaryButtonClass} mt-4`}>
+            サービスを登録する
+          </Link>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

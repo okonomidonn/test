@@ -13,8 +13,8 @@ export type PlanDef = {
 
 export const PLANS: Record<Plan, PlanDef> = {
   FREE: { key: "FREE", name: "フリー", priceYen: 0, stores: 1, runsPerMonth: 1, maxQuestions: 10, summary: "まずはお試しで1回計測" },
-  STARTER: { key: "STARTER", name: "スターター", priceYen: 4980, stores: 1, runsPerMonth: 4, maxQuestions: 15, summary: "1件（店舗・サービス）を毎週チェック" },
-  PRO: { key: "PRO", name: "プロ", priceYen: 14800, stores: 3, runsPerMonth: 4, maxQuestions: 15, summary: "3件まで毎週チェック" },
+  STARTER: { key: "STARTER", name: "スターター", priceYen: 4980, stores: 1, runsPerMonth: 4, maxQuestions: 15, summary: "1サービスを毎週チェック" },
+  PRO: { key: "PRO", name: "プロ", priceYen: 14800, stores: 3, runsPerMonth: 4, maxQuestions: 15, summary: "3サービスまで毎週チェック" },
 };
 
 export const PAID_PLANS = ["STARTER", "PRO"] as const;
