@@ -37,11 +37,11 @@ export default async function RunPage({ params }: PageProps<"/ai/app/stores/[id]
 
       <section className={cardClass}>
         {run.status === "RUNNING" ? (
-          <RunProgress runId={run.id} initialDone={finished.length} total={run.answers.length} />
+          <RunProgress runId={run.id} storeId={run.storeId} initialDone={finished.length} total={run.answers.length} />
         ) : (
           <p className="text-sm text-slate-700">
             計測が終わりました。{done.length}回答中 <strong className="text-slate-900">{hits}回</strong> 紹介されました
-            {done.length ? `（推薦率 ${Math.round((hits / done.length) * 100)}%）` : ""}。
+            {done.length ? `（紹介率 ${Math.round((hits / done.length) * 100)}%）` : ""}。
             {run.answers.length - done.length > 0 && <span className="text-amber-700"> 取得できなかった回答が{run.answers.length - done.length}件あります。</span>}
           </p>
         )}

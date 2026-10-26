@@ -8,16 +8,18 @@ import { ENGINE_LABELS, enabledEngines, type EngineKey } from "@/lib/ai-check/en
 import { ownerPlan, ownerRunQuota } from "@/lib/billing/limits";
 import type { AuditCheck } from "@/lib/ai-check/audit";
 import { deleteStore, runAudit, startRun, updateQuestions, updateStore } from "@/app/actions/ai-check";
-import { AuditForm, QuestionsForm, StartRunForm, StoreForm, WebServiceForm } from "@/components/ai/forms";
+import { AuditForm, AutoAudit, QuestionsForm, StartRunForm, StoreForm, WebServiceForm } from "@/components/ai/forms";
 import { TERMS, type TargetKind } from "@/lib/ai-check/terms";
 import { BarList, TrendChart } from "@/components/ai/charts";
+import { FixList, PagePlans } from "@/components/ai/fix-list";
+import { pagePlansFor } from "@/lib/ai-check/suggest";
 import { ConfirmButton } from "@/components/confirm-button";
 import { cardClass, dangerButtonClass } from "@/components/ui";
 
 const TABS = [
-  { key: "check", label: "AIでの表示チェック" },
-  { key: "sources", label: "参考にされたページ" },
-  { key: "improve", label: "改善の提案" },
+  { key: "check", label: "AIでの紹介" },
+  { key: "sources", label: "引用されたページ" },
+  { key: "improve", label: "直すところ" },
   { key: "settings", label: "設定" },
 ] as const;
 type Tab = (typeof TABS)[number]["key"];
@@ -38,9 +40,14 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
     <div className="space-y-6">
       <div>
         <Link href="/ai/app" className="text-sm text-slate-600 hover:underline">
-          ← 登録一覧
+          ← サービス一覧
         </Link>
-        <h1 className="mt-1 text-3xl font-black text-slate-900">{store.name}</h1>
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-3xl font-black text-slate-900">{store.name}</h1>
+          <Link href={`/ai/app/stores/${id}/report`} className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-50">
+            報告書を開く（印刷・PDF）
+          </Link>
+        </div>
         <p className="text-sm text-slate-600">
           {store.kind === "WEB" ? (
             <>
@@ -74,7 +81,7 @@ export default async function StorePage({ params, searchParams }: PageProps<"/ai
 
       {tab === "check" && <CheckTab storeId={id} userId={user.id} isTeam={user.role === "TEAM"} kind={store.kind} />}
       {tab === "sources" && <SourcesTab storeId={id} kind={store.kind} />}
-      {tab === "improve" && <ImproveTab storeId={id} hasUrl={!!store.websiteUrl} kind={store.kind} />}
+      {tab === "improve" && <ImproveTab storeId={id} hasUrl={!!store.websiteUrl} kind={store.kind} isOwner={user.role === "OWNER"} />}
       {tab === "settings" && <SettingsTab storeId={id} userId={user.id} isTeam={user.role === "TEAM"} />}
     </div>
   );
@@ -91,13 +98,24 @@ async function NextStep({ storeId, hasUrl }: { storeId: string; hasUrl: boolean 
   const issues = ((audit?.checks ?? []) as AuditCheck[]).filter((c) => c.status === "ng" || c.status === "warn").length;
   const missed = stats.questions.filter((q) => q.hits === 0).length;
 
+  // 公式サイトがあって未診断なら、ボタンを押さなくても診断を始める
+  if (!running && hasUrl && !audit) {
+    return (
+      <section className="rounded-xl bg-slate-900 p-5 text-white sm:px-6">
+        <p className="text-sm font-bold text-mark">次にやること</p>
+        <div className="mt-1">
+          <AutoAudit action={runAudit.bind(null, storeId)} />
+        </div>
+      </section>
+    );
+  }
+
   let step: { text: string; href: string; label: string };
   if (running) step = { text: `AIに聞いて計測しています（${running.done}/${running.total}）。終わるまで数分かかります。`, href: `${base}/runs/${running.id}`, label: "進み具合を見る" };
   else if (!hasUrl) step = { text: "公式サイトのURLを登録しましょう。サイト診断と、AIが公式サイトを参考にしたかの判定に使います。", href: `${base}?tab=settings`, label: "設定を開く" };
-  else if (!audit) step = { text: "まず公式サイトを診断しましょう。無料で、30秒ほどで終わります。", href: `${base}?tab=improve`, label: "サイトを診断する" };
   else if (!stats.latest && enabledEngines().length > 0) step = { text: "AIに質問して、紹介されているかを計測しましょう。", href: `${base}?tab=check`, label: "計測を始める" };
   else if (issues > 0) step = { text: `サイト診断で直すとよい点が${issues}個あります。上から順に直しましょう。`, href: `${base}?tab=improve`, label: "直す点を見る" };
-  else if (missed > 0) step = { text: `紹介されなかった質問が${missed}問あります。答えになる内容をサイトに書き足しましょう。`, href: `${base}?tab=improve`, label: "改善の提案を見る" };
+  else if (missed > 0) step = { text: `紹介されなかった質問が${missed}問あります。答えになる内容をサイトに書き足しましょう。`, href: `${base}?tab=improve`, label: "直すところを見る" };
   else step = { text: "よい状態です。週に1回計測して、紹介され続けているかを確かめましょう。", href: `${base}?tab=check`, label: "計測結果を見る" };
 
   return (
@@ -164,7 +182,7 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
         <>
           <section className={`${cardClass} grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-10`}>
             <div>
-              <p className="text-sm font-semibold text-slate-600">最新の推薦率</p>
+              <p className="text-sm font-semibold text-slate-600">最新の紹介率</p>
               <p className="font-num text-6xl font-semibold leading-none text-slate-900">
                 {pct(stats.latest.targetHits, stats.latest.answers)}
                 <span className="text-3xl text-slate-500">%</span>
@@ -202,7 +220,7 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
 
           {stats.trend.length > 1 && (
             <section className={cardClass}>
-              <h2 className="mb-3 font-bold">推薦率の推移</h2>
+              <h2 className="mb-3 font-bold">紹介率の推移</h2>
               <TrendChart
                 points={stats.trend.map((t) => ({
                   label: fmtDate(t.date),
@@ -214,7 +232,7 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
           )}
 
           <section className={cardClass}>
-            <h2 className="font-bold">質問ごとの結果（最新の計測）</h2>
+            <h2 className="font-bold">質問ごとの紹介（最新の計測）</h2>
             <p className="mt-1 text-sm text-slate-600">紹介されなかった質問が、改善のねらい目です。</p>
             <table className="mt-3 w-full text-sm">
               <thead>
@@ -278,7 +296,7 @@ async function CheckTab({ storeId, userId, isTeam, kind }: { storeId: string; us
       )}
 
       <p className="text-sm text-slate-500">
-        ※ AIの回答は毎回変わります。推薦率は決まった質問で測った目安で、すべての利用者への表示確率ではありません。APIでの回答はアプリの回答と完全には一致しない場合があります。
+        ※ AIの回答は毎回変わります。紹介率は決まった質問で測った目安で、すべての利用者への表示確率ではありません。APIでの回答はアプリの回答と完全には一致しない場合があります。
       </p>
     </div>
   );
@@ -359,27 +377,26 @@ async function SourcesTab({ storeId, kind }: { storeId: string; kind: TargetKind
   );
 }
 
-const STATUS_STYLE = { ok: "bg-emerald-50 text-emerald-800", warn: "bg-amber-50 text-amber-900", ng: "bg-rose-50 text-rose-800", info: "bg-slate-100 text-slate-700" } as const;
-const STATUS_LABEL = { ok: "✓ OK", warn: "! 要改善", ng: "✕ 問題あり", info: "i 参考" } as const;
 const STATUS_BAR = { ng: "bg-rose-600", warn: "bg-amber-500", ok: "bg-emerald-600" } as const;
 
-async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: boolean; kind: TargetKind }) {
+async function ImproveTab({ storeId, hasUrl, kind, isOwner }: { storeId: string; hasUrl: boolean; kind: TargetKind; isOwner: boolean }) {
   const [audit, stats] = await Promise.all([
     prisma.siteAudit.findFirst({ where: { storeId }, orderBy: { createdAt: "desc" } }),
     storeStats(storeId),
   ]);
   const checks = (audit?.checks ?? []) as AuditCheck[];
-  const order = { ng: 0, warn: 1, ok: 2, info: 3 } as const;
   const missed = stats.questions.filter((q) => q.hits === 0);
+  const plans = kind === "WEB" ? pagePlansFor(missed.map((q) => q.text), stats.store) : [];
+  const count = (st: AuditCheck["status"]) => checks.filter((c) => c.status === st).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <section className={`${cardClass} flex flex-wrap items-center justify-between gap-4`}>
-        <div>
+        <div className="min-w-0">
           <h2 className="font-bold">公式サイトの診断</h2>
           <p className="mt-1 text-sm text-slate-600">
             {kind === "WEB"
-              ? "AIが読む公式サイトに、一文の立ち位置・強み・1件1ページの情報・構造化データ・llms.txtがそろっているかを確認します。"
+              ? "AIが読めるか、一文で何のサービスか伝わるか、固有の情報が1件1ページになっているかを確かめ、直す場所と書き換え例を出します。"
               : "AIが読む公式サイトに、紹介に必要な情報が文字で書かれているかを確認します。"}
           </p>
         </div>
@@ -387,67 +404,69 @@ async function ImproveTab({ storeId, hasUrl, kind }: { storeId: string; hasUrl: 
       </section>
 
       {audit && (
-        <section className={cardClass}>
-          <div className="flex flex-wrap items-end justify-between gap-2">
+        <section className="space-y-4">
+          <div className={`${cardClass} flex flex-wrap items-end justify-between gap-4`}>
             <div>
-              <p className="text-sm font-semibold text-slate-600">サイト診断スコア</p>
+              <p className="text-sm font-semibold text-slate-600">サイト診断の点数</p>
               <p className="font-num text-6xl font-semibold leading-none text-slate-900">
                 {audit.score}
                 <span className="text-2xl text-slate-500"> / 100</span>
               </p>
+              <p className="mt-2 text-sm text-slate-700">
+                直す <span className="font-num font-semibold text-slate-900">{count("ng")}</span>・直すとよい{" "}
+                <span className="font-num font-semibold text-slate-900">{count("warn")}</span>・OK <span className="font-num font-semibold text-slate-900">{count("ok")}</span>
+              </p>
             </div>
-            <p className="min-w-0 break-all text-sm text-slate-600">
-              {fmtDate(audit.createdAt)}に診断・{audit.url}
-            </p>
+            <div className="w-full min-w-0 sm:w-72">
+              {/* 直す・直すとよい・OKの数を、1本の帯で見せる */}
+              <div className="flex h-3 gap-0.5 overflow-hidden rounded-full" aria-hidden>
+                {(["ng", "warn", "ok"] as const).map((st) => (count(st) ? <span key={st} className={STATUS_BAR[st]} style={{ flexGrow: count(st) }} /> : null))}
+              </div>
+              <p className="mt-2 break-all text-sm text-slate-600">
+                {fmtDate(audit.createdAt)}に診断・{audit.url}
+              </p>
+            </div>
           </div>
-          {/* 問題あり・要改善・OKの数を、1本の帯で見せる */}
-          <div className="mt-5 flex h-3 gap-0.5 overflow-hidden rounded-full" aria-hidden>
-            {(["ng", "warn", "ok"] as const).map((st) => {
-              const n = checks.filter((c) => c.status === st).length;
-              return n ? <span key={st} className={STATUS_BAR[st]} style={{ flexGrow: n }} /> : null;
-            })}
-          </div>
-          <p className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-700">
-            {(["ng", "warn", "ok"] as const).map((st) => (
-              <span key={st}>
-                {STATUS_LABEL[st]} <span className="font-num font-semibold text-slate-900">{checks.filter((c) => c.status === st).length}</span>
-              </span>
-            ))}
-          </p>
-          <ul className="mt-5 divide-y divide-slate-100">
-            {[...checks].sort((a, b) => order[a.status] - order[b.status]).map((c) => (
-              <li key={c.key} className="grid gap-1.5 py-4 sm:grid-cols-[7.5rem_1fr]">
-                <span className={`h-fit w-fit whitespace-nowrap rounded-full px-2.5 py-0.5 text-sm font-semibold ${STATUS_STYLE[c.status]}`}>{STATUS_LABEL[c.status]}</span>
-                <div>
-                  <p className="font-semibold text-slate-900">{c.title}</p>
-                  <p className="text-sm text-slate-700">{c.detail}</p>
-                  {c.fix && <p className="mt-1 text-sm text-slate-800">→ {c.fix}</p>}
-                </div>
-              </li>
-            ))}
-          </ul>
+          <h2 className="pt-2 text-xl font-bold text-slate-900">直すところ（上から順に）</h2>
+          <FixList checks={checks} />
         </section>
       )}
 
-      <section className={cardClass}>
-        <h2 className="font-bold">紹介されなかった質問</h2>
-        {stats.latest ? (
-          missed.length ? (
-            <>
-              <p className="mt-1 text-sm text-slate-600">{TERMS[kind].missedHint}</p>
-              <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">
-                {missed.map((q) => (
-                  <li key={q.no}>{q.text}</li>
-                ))}
-              </ul>
-            </>
-          ) : (
-            <p className="mt-1 text-sm text-slate-700">最新の計測では、すべての質問で紹介されました。</p>
-          )
+      <section className="space-y-4">
+        <h2 className="text-xl font-bold text-slate-900">紹介されなかった質問と、作るページの案</h2>
+        {!stats.latest ? (
+          <p className={`${cardClass} text-sm text-slate-600`}>計測すると、ここに表示されます。</p>
+        ) : missed.length === 0 ? (
+          <p className={`${cardClass} text-sm text-slate-700`}>最新の計測では、すべての質問で紹介されました。</p>
+        ) : kind === "WEB" ? (
+          <>
+            <p className="text-sm text-slate-700">{TERMS[kind].missedHint}</p>
+            <PagePlans plans={plans} />
+          </>
         ) : (
-          <p className="mt-1 text-sm text-slate-600">計測するとここに表示されます。</p>
+          <div className={cardClass}>
+            <p className="text-sm text-slate-600">{TERMS[kind].missedHint}</p>
+            <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">
+              {missed.map((q) => (
+                <li key={q.no}>{q.text}</li>
+              ))}
+            </ul>
+          </div>
         )}
       </section>
+
+      {isOwner && kind === "WEB" && (
+        <section className="flex flex-col gap-4 rounded-xl border-2 border-brand bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-brand">直すところまで任せたい方へ</p>
+            <p className="mt-1 font-semibold text-slate-900">GEO診断・改善トライアル 49,800円（税別・30日間）</p>
+            <p className="mt-1 text-sm text-slate-700">2つのAIで計測し、直す点を3つ決めて1ページを実際に直し、30日後に同じ条件で測り直します。</p>
+          </div>
+          <Link href={`/ai/apply?plan=trial&store=${storeId}`} className="shrink-0 rounded-lg bg-brand px-5 py-3 text-center font-bold text-white hover:bg-brand-dark">
+            トライアルを申し込む
+          </Link>
+        </section>
+      )}
     </div>
   );
 }

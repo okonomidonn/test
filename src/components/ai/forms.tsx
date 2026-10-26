@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { FormState } from "@/app/actions/ai-check";
 import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass } from "@/components/ui";
 
@@ -165,4 +166,21 @@ export function AuditForm({ action, hasUrl }: { action: Action; hasUrl: boolean 
       {state.error && <span className="text-sm text-red-600">{state.error}</span>}
     </form>
   );
+}
+
+// 公式サイトを登録したばかりで、まだ診断していないときに自動で診断を始める
+export function AutoAudit({ action }: { action: Action }) {
+  const router = useRouter();
+  const started = useRef(false);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    startTransition(async () => {
+      const res = await action({}, new FormData());
+      if (res.error) setError(res.error);
+      router.refresh();
+    });
+  }, [action, router]);
+  return <p className="text-base font-semibold">{error ? `診断できませんでした：${error}` : "公式サイトを診断しています（30秒ほど）…"}</p>;
 }

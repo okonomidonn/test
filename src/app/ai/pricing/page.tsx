@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PlanTable } from "@/components/ai/plan-table";
 
-export const metadata = { title: "料金プラン | AI検索チェック" };
+export const metadata = { title: "料金プラン | ススメル" };
 
 // 計測・改善を代わりに行う「おまかせ」。申し込みは相談から（Stripeの自動課金ではない）。法人向けのため税別
 const SERVICES = [
@@ -33,7 +33,6 @@ const SERVICES = [
 ];
 
 export default function PricingPage() {
-  const email = process.env.LEGAL_EMAIL;
   return (
     <div className="space-y-12">
       <div className="text-center">
@@ -73,14 +72,13 @@ export default function PricingPage() {
           ))}
         </ol>
         <p className="text-sm text-slate-600">トライアルに含まないもの：新しいページの制作、外部媒体への掲載、大規模な実装。継続支援は最低3か月、以降は1か月ごとの更新です。</p>
-        <div>
-          {email ? (
-            <a href={`mailto:${email}?subject=${encodeURIComponent("GEO診断・改善トライアルの相談")}`} className="inline-block rounded-lg bg-slate-900 px-6 py-3 font-semibold text-white hover:bg-slate-800">
-              トライアルについて相談する
-            </a>
-          ) : (
-            <p className="text-sm text-slate-600">ご相談は担当者までご連絡ください。</p>
-          )}
+        <div className="flex flex-wrap gap-3">
+          <Link href="/ai/apply?plan=trial" className="inline-block rounded-lg bg-brand px-6 py-3 font-bold text-white hover:bg-brand-dark">
+            トライアルを申し込む
+          </Link>
+          <Link href="/ai/apply" className="inline-block rounded-lg border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-800 hover:bg-slate-50">
+            まず無料チェック
+          </Link>
         </div>
       </section>
 

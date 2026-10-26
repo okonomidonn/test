@@ -1,4 +1,4 @@
-export const metadata = { title: "特定商取引法に基づく表記 | AI検索チェック" };
+export const metadata = { title: "特定商取引法に基づく表記 | ススメル" };
 
 // 販売事業者の情報は環境変数で設定する（未設定の項目は「請求があれば遅滞なく開示します」と表示）
 const DISCLOSE = "請求があった場合は遅滞なく開示します";

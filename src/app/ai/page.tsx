@@ -3,17 +3,17 @@ import Link from "next/link";
 const FEATURES = [
   {
     verb: "測る",
-    title: "AIでの表示チェック",
+    title: "AIでの紹介",
     body: "見込み客がAIに聞きそうな質問をChatGPT・Geminiに投げ、あなたのサービスが紹介されたか、何番目か、どのページが引用されたかを記録します。",
   },
   {
     verb: "知る",
-    title: "参考にされたページ",
+    title: "引用されたページ",
     body: "AIが紹介の根拠にしたページ（公式サイト・比較記事・レビュー・SNS）を一覧にします。競合はどのページで引用されているかがわかります。",
   },
   {
     verb: "直す",
-    title: "改善の提案",
+    title: "直すところ",
     body: "公式サイトをAIが読めるか、一文で何のサービスか伝わるか、固有の情報が1件1ページになっているかを診断し、直す順番を示します。",
   },
 ];
@@ -93,7 +93,7 @@ export default function AiLandingPage() {
     <div className="space-y-24 pb-12">
       <section className="grid items-center gap-12 pt-6 lg:grid-cols-[1.05fr_1fr]">
         <div className="min-w-0">
-          <p className="font-semibold text-brand">Webサービスのための AI検索チェック</p>
+          <p className="font-semibold text-brand">ススメル｜WebサービスのAI検索対策</p>
           <h1 className="mt-4 text-[2rem] font-black leading-[1.3] text-slate-900 sm:text-5xl sm:leading-[1.25]">
             あなたの名前、
             <br />
@@ -106,14 +106,14 @@ export default function AiLandingPage() {
             比較・検討中の見込み客に、あなたのサービスの情報が正しく届いているか。計測して、直す順番まで示します。
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/ai/signup" className="rounded-lg bg-brand px-6 py-3.5 text-lg font-bold text-white hover:bg-brand-dark">
-              無料で診断する
+            <Link href="/ai/apply" className="rounded-lg bg-brand px-6 py-3.5 text-lg font-bold text-white hover:bg-brand-dark">
+              無料チェックを申し込む
             </Link>
-            <Link href="/ai/login" className="rounded-lg px-4 py-3.5 text-lg font-semibold text-slate-800 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-800">
-              ログイン
+            <Link href="/ai/signup" className="rounded-lg px-4 py-3.5 text-lg font-semibold text-slate-800 underline decoration-slate-300 underline-offset-4 hover:decoration-slate-800">
+              自分で計測する
             </Link>
           </div>
-          <p className="mt-3 text-sm text-slate-600">カード登録は不要です。有料プランは月4,980円から、いつでも解約できます。</p>
+          <p className="mt-3 text-sm text-slate-600">無料チェックは、計測と診断の結果を3営業日以内にメールでお送りします。</p>
         </div>
         <AnswerMock />
       </section>
@@ -175,8 +175,8 @@ export default function AiLandingPage() {
           </h2>
           <p className="mt-3 text-slate-300">登録は1分。AIの回答は毎回変わるため、計測結果は目安です。紹介や問い合わせの増加をお約束するものではありません。</p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link href="/ai/signup" className="rounded-lg bg-mark px-6 py-3.5 text-lg font-bold text-slate-900 hover:brightness-95">
-              無料で始める
+            <Link href="/ai/apply" className="rounded-lg bg-mark px-6 py-3.5 text-lg font-bold text-slate-900 hover:brightness-95">
+              無料チェックを申し込む
             </Link>
             <Link href="/ai/pricing" className="rounded-lg border border-slate-600 px-6 py-3.5 text-lg font-semibold text-white hover:bg-slate-800">
               料金を見る
