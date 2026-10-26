@@ -52,8 +52,10 @@ export default function MethodPage() {
         <header className="pb-8">
           <p className="text-sm font-semibold text-brand">計測のしかたと進め方</p>
           <h1 className="mt-2 text-[1.875rem] font-bold leading-tight text-slate-900 sm:text-[2.25rem]">
-            何を、どう測っているか。<span>分かることと、分からないこと。</span>
+            診断の進め方と、<br />結果の見方。
           </h1>
+          <p className="mt-4 leading-relaxed text-slate-700">AIでの紹介状況を調べ、直す場所と内容を整理します。ここでは、調べ方・数字の意味・対応できる範囲をご説明します。</p>
+          <nav aria-label="このページの内容" className="mt-5 flex flex-wrap gap-2 lg:hidden">{SECTIONS.map(s => <a key={s.id} href={`#${s.id}`} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">{s.label}</a>)}</nav>
         </header>
 
         <div className="pb-10">
