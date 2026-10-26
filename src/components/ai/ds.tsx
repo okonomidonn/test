@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-// ススメルの共通部品。色・余白・文字の大きさはここでそろえる（docs/susumeru-redesign.md）
+// AIススメルの共通部品。色・余白・文字の大きさはここでそろえる（docs/susumeru-redesign.md）
 
 type Variant = "primary" | "secondary" | "ghost" | "dark";
 type Size = "md" | "lg";

@@ -264,6 +264,12 @@ enum LeadKind {
   TRIAL
 }
 
+enum LeadStatus {
+  NEW
+  CONTACTED
+  COMPLETED
+}
+
 model Lead {
   id         String   @id @default(cuid())
   kind       LeadKind
@@ -275,6 +281,13 @@ model Lead {
   // ログイン中に申し込んだ場合のアカウント
   userId     String?
   createdAt  DateTime @default(now())
+  status     LeadStatus @default(NEW)
+  notifiedAt DateTime?
+  notificationAttemptedAt DateTime?
+  notificationLockedAt DateTime?
+  notificationAttempts Int @default(0)
+  notificationError String?
 
   @@index([createdAt])
+  @@index([notifiedAt, notificationAttemptedAt])
 }

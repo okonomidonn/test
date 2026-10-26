@@ -9,25 +9,25 @@ const latin = Inter({ variable: "--font-ai-latin", subsets: ["latin"], display: 
 const jp = Noto_Sans_JP({ variable: "--font-ai-jp", weight: ["400", "500", "700"], preload: false, display: "swap" });
 
 export const metadata: Metadata = {
-  title: "ススメル | WebサービスのAI検索対策",
-  description: "ChatGPT・GeminiでWebサービスがどう紹介されているかを計測し、改善点を提案するツール",
+  title: "AIススメル | WebサービスのAI検索対策",
+  description: "Webサービス向けのAI検索診断・改善サービス。ChatGPT・Geminiでの紹介状況を調べ、サイトのどこをどう直すかをご提案します。",
 };
 
 export default async function AiLayout({ children }: LayoutProps<"/ai">) {
   const session = await auth();
   const user = session?.user;
 
-  const nav = "rounded-md px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+  const nav = "rounded-md px-1.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 sm:px-2.5";
 
   return (
     <div className={`${latin.variable} ${jp.variable} ai-scope flex flex-1 flex-col`}>
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-6 sm:px-6">
-          <Link href={user ? "/ai/app" : "/ai"} className="flex shrink-0 items-center gap-2 text-[1.0625rem] font-bold tracking-tight text-slate-900">
-            <span className="grid h-7 w-7 place-items-center rounded-md bg-brand text-sm font-bold text-white" aria-hidden>
+        <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center gap-2 px-3 py-1.5 sm:h-14 sm:flex-nowrap sm:gap-6 sm:px-6 sm:py-0">
+          <Link href={user ? "/ai/app" : "/ai"} className="flex min-h-11 shrink-0 items-center gap-2 text-[1.0625rem] font-bold tracking-tight text-slate-900">
+            <span className="hidden h-7 w-7 place-items-center rounded-md bg-brand text-sm font-bold text-white min-[360px]:grid" aria-hidden>
               ス
             </span>
-            ススメル
+            AIススメル
           </Link>
           {user ? (
             <nav className="ml-auto flex items-center gap-0.5 whitespace-nowrap sm:gap-1">
@@ -62,30 +62,33 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
             </nav>
           ) : (
             <>
-              <nav className="hidden items-center gap-1 md:flex" aria-label="メインメニュー">
+              <nav className="hidden items-center gap-1 lg:flex" aria-label="メインメニュー">
                 <Link href="/ai#features" className={nav}>
-                  できること
+                  診断の内容
                 </Link>
                 <Link href="/ai/sample" className={nav}>
-                  サンプルレポート
+                  レポートの見本
                 </Link>
                 <Link href="/ai/pricing" className={nav}>
                   料金
                 </Link>
                 <Link href="/ai/method" className={nav}>
-                  計測のしかた
+                  進め方
                 </Link>
               </nav>
               <div className="ml-auto flex items-center gap-1 whitespace-nowrap sm:gap-2">
-                <Link href="/ai/pricing" className={`${nav} md:hidden`}>
-                  料金
-                </Link>
-                <Link href="/ai/login" className={nav}>
+                <Link href="/ai/login" className={`${nav} hidden lg:inline-flex`}>
                   ログイン
                 </Link>
-                <Link href="/ai/apply" className={btn("primary")}>
-                  無料で診断する
+                <Link href="/ai/apply" className={`${btn("primary")} min-h-11 max-[359px]:px-2 lg:min-h-9`} aria-label="無料チェック">
+                  無料チェック
                 </Link>
+                <details className="relative lg:hidden">
+                  <summary aria-label="メニュー" className="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-sm font-semibold text-slate-700 focus-visible:outline-2 focus-visible:outline-brand"><span className="hidden min-[400px]:inline">メニュー</span><span aria-hidden className="text-lg min-[400px]:ml-1">☰</span></summary>
+                  <nav aria-label="メインメニュー" className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+                    {[["/ai#features", "診断の内容"], ["/ai/sample", "レポートの見本"], ["/ai/pricing", "料金"], ["/ai/method", "進め方・計測方法"], ["/ai/login", "ログイン"]].map(([href, label]) => <a key={href} href={href} className="block rounded-lg px-4 py-3 text-base font-medium text-slate-800 hover:bg-blue-50">{label}</a>)}
+                  </nav>
+                </details>
               </div>
             </>
           )}
@@ -99,7 +102,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
               <span className="grid h-6 w-6 place-items-center rounded bg-brand text-xs font-bold text-white" aria-hidden>
                 ス
               </span>
-              ススメル
+              AIススメル
             </p>
             <p className="mt-2 text-sm text-slate-600">WebサービスのAI検索診断と改善</p>
           </div>

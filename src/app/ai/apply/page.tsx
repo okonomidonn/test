@@ -5,7 +5,7 @@ import { LeadForm } from "@/components/ai/lead-form";
 import { sampleReport } from "@/lib/ai-check/sample";
 import { reportKpis } from "@/components/ai/report-dashboard";
 
-export const metadata = { title: "申し込み | ススメル" };
+export const metadata = { title: "申し込み | AIススメル" };
 
 const COPY = {
   CHECK: {
@@ -16,7 +16,7 @@ const COPY = {
       ["届くもの", "紹介率と、最初に直すこと上位3つ"],
       ["届く時期", "3営業日以内にメールで"],
     ],
-    after: ["3営業日以内に、診断結果をメールでお送りします", "電話での営業はしません。トライアルのご案内をメールで1回お送りすることがあります", "続けるかどうかは、結果を見てから決めてください"],
+    after: ["3営業日以内に、診断結果をメールでお送りします", "電話での営業はしません。ご連絡は診断とご相談への対応に必要な範囲に限ります", "続けるかどうかは、結果を見てから決めてください"],
   },
   TRIAL: {
     title: "GEO診断・改善トライアル",

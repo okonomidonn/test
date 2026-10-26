@@ -41,6 +41,7 @@ export function LeadForm({ kind, defaults = {} }: { kind: "CHECK" | "TRIAL"; def
         <p className="text-sm font-semibold text-brand">受け付けました</p>
         <p className="text-xl font-bold text-slate-900">{kind === "TRIAL" ? "2営業日以内に、進め方とお見積もりをお送りします。" : "3営業日以内に、診断結果をお送りします。"}</p>
         <p className="text-slate-700">入力したメールアドレスに届きます。届かない場合は、迷惑メールのフォルダもご確認ください。</p>
+        <p className="text-sm text-slate-600">受付内容は保存されました。自動返信メールは送っていません。担当者からのご連絡をお待ちください。</p>
       </div>
     );
   }

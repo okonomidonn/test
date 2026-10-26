@@ -3,7 +3,7 @@ import { sampleReport } from "@/lib/ai-check/sample";
 import { REPORT_SECTIONS, ReportDashboard } from "@/components/ai/report-dashboard";
 import { btn } from "@/components/ai/ds";
 
-export const metadata = { title: "サンプルレポート | ススメル", description: "ススメルの診断報告書のデモ（架空の求人サイト）" };
+export const metadata = { title: "サンプルレポート | AIススメル", description: "AIススメルの診断報告書のデモ（架空の求人サイト）" };
 
 // 誰でも見られる報告書のデモ。ログイン後の実際の報告書と同じ部品で表示する
 export default function SamplePage() {

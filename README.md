@@ -1,4 +1,4 @@
-# SocialDesk
+# AIススメル / SocialDesk
 
 SNS運用代行チーム向けの投稿管理・予約・エンゲージメント分析ツールです。Next.js (App Router) + TypeScript で構築しています。
 
@@ -23,48 +23,58 @@ Instagram API（Instagram ログイン）を使い、リールの予約投稿と
 
 必要な環境変数は `.env.example` を参照してください（`INSTAGRAM_APP_ID` / `INSTAGRAM_APP_SECRET` / `CRON_SECRET` / `BLOB_READ_WRITE_TOKEN`）。Meta のアプリには OAuth リダイレクト URI として `https://<ドメイン>/api/instagram/callback` を登録します。
 
-## AI検索チェック（飲食店向け・`/ai`）
+## AIススメル（Webサービス向け・`/ai`）
 
-飲食店が ChatGPT・Gemini でどう紹介されているかを計測し、改善点を提案する店舗オーナー向けのツールです。SocialDesk と同じアプリ・データベースで動きます。
+WebサービスがChatGPT・Geminiでどう紹介されるかを計測し、競合・引用元・サイト診断から、直す場所と書き換え例をまとめるサービスです。SocialDeskと同じアプリで動きます。飲食店向けの新規受付と、セルフ版ツールの新規販売は終了しています。
 
-- **公開ページ** `/ai`（紹介ページ）、`/ai/signup`（店舗オーナーの無料登録・招待不要）、`/ai/login`
-- **店舗オーナー**（`role = OWNER`）は `/ai/app` 以下だけを使えます。SocialDesk の画面には入れません
-- **運用チーム**（`role = TEAM`、従来のメンバー）は全店舗を閲覧・計測でき、各質問の繰り返し回数（1〜3回）も選べます
-- 店舗ごとのタブ
-  - **AIでの表示チェック**：登録した質問（エリア・業態から自動生成、編集可）を各AIに聞き、推薦率・順位・競合との比較・推移を表示。回答全文も確認できます
-  - **参考にされたページ**：AIが参照したサイトを、公式サイト／グルメサイト・地図／その他に分けて集計
-  - **改善の提案**：公式サイトを読み取り、メニューや価格が文字で読めるか、営業情報、構造化データ、「一人飲み」「デート」などの利用シーンの記述、robots.txt を診断
-  - **設定**：店舗情報・比べたい店・質問の編集、店舗の削除
-- 計測は「AIに聞いて計測する」で開始。計測画面を開いている間は `POST /api/ai/runs/[id]/step` で順に処理され、閉じた後に残った分は `GET /api/cron/ai-check`（`Authorization: Bearer $CRON_SECRET`、`vercel.json` で1日1回）が進めます
-- **費用の上限**：APIは1回答あたり数十円かかります。オーナーの計測回数・店舗数・質問数はプランで決まり（下記）、同じ店舗の計測は20時間に1回まで。サービス全体でも24時間に `GEO_DAILY_ANSWER_LIMIT`（既定300）回答まで
-- 必要な環境変数は `.env.example` の「AI検索チェック」欄（`OPENAI_API_KEY` / `GEMINI_API_KEY` ほか）。開発環境では `GEO_ENGINES=mock` で固定回答のテスト用エンジンを使えます（本番では無効）
+### 現在の販売内容
 
-> AIの回答は毎回変わります。推薦率は決まった質問で測った目安で、APIの回答はアプリの回答と完全には一致しない場合があります。
+- 無料チェック：0円。3営業日以内に診断結果を手動でメール送付。
+- GEO診断・改善トライアル：49,800円（税別・1回・30日間）。ChatGPT・Gemini各10問、競合2社、改善点3つ、既存ページ1ページの改善、30日後の再計測。
+- 継続支援：月98,000円〜（税別・最低3か月）。基本料金の最低総額294,000円（税別）。
+- 代行は相談・見積もりから進めます。フォーム送信時に契約・自動課金は発生しません。支払方法・支払期限・解約条件は、確定後に設定してください。
 
-### 料金プランと課金（Stripe）
+### 画面と権限
 
-| プラン | 月額（税込） | 店舗数 | 計測（1店舗・30日間） | 質問数 |
-|---|---|---|---|---|
-| フリー | 0円 | 1 | 1回 | 10問 |
-| スターター | 4,980円 | 1 | 4回 | 15問 |
-| プロ | 14,800円 | 3 | 4回 | 15問 |
+- 公開：`/ai`、`/ai/sample`、`/ai/pricing`、`/ai/method`、`/ai/apply`、`/ai/login`、`/ai/legal`。
+- `/ai/tool` は料金へ、`/ai/signup` は申し込みへ転送します。サーバー側の新規オーナー登録も停止（`AI_SIGNUP_OPEN=1` での再開は通常行いません）。
+- OWNERは自分のサービスだけを利用でき、TEAMは全サービスと申し込み一覧を扱います。
+- サービス登録で質問を自動生成し、公式URLがあればサイト診断を開始します。計測終了後は結果へ戻ります。報告書は印刷・PDF保存に対応。
+- 無料プランは1サービス・30日間で1回の計測。E2Eには新しいローカル専用アカウントを使うか、対象を確認したうえでローカルのテスト用サービスだけを整理してください。
 
-プランの内容は `src/lib/billing/plans.ts` で変更できます。
+### 申し込みの運用
 
-- 申し込みはStripe Checkout、プラン変更・カード変更・解約・領収書はStripeのカスタマーポータル（`/ai/app/billing` から開く）で行います
-- 契約状態は Webhook `POST /api/stripe/webhook` で同期します（`customer.subscription.created / updated / deleted / paused / resumed`）。順不同で届いた古いイベントは無視します
-- 支払い遅延（`past_due`）の間は有料プランのまま使え、解約・失効するとフリーに戻ります。プランの店舗数を超えた店舗は閲覧できますが、計測は古い順に枠内の店舗だけです
-- `/ai/pricing`（料金）と `/ai/legal`（特定商取引法に基づく表記）は公開ページです
+- `/ai/apply` からCHECK/TRIALを保存。ハニーポット、10分間の重複抑止、項目別エラーを実装しています。
+- TEAM向け `/ai/app/leads` で「未対応／連絡済み／完了」と通知状態を確認・更新できます。メール未設定でも受付は保存されるため、一覧を毎営業日確認してください。
+- 申込者への自動返信・診断結果の自動送付は行いません。無料チェックは3営業日以内、トライアルは2営業日以内に担当者が返信します。
+- 運営向け通知はResend APIへ送ります。追加SDKは不要です。確認済みドメインの送信元・受信先を決め、Productionにだけ `RESEND_API_KEY`、`MAIL_FROM`、`LEAD_NOTIFY_EMAIL`、`LEAD_NOTIFICATIONS_ENABLED=1` を設定します。未設定時は送信しません。
+- Previewでは有効化設定があっても送信しません。通知本文は会社・サービス名と管理画面へのリンクだけで、氏名・連絡先・相談内容は含めません。
+- 送信失敗は一覧から再送できます。定期再送 `GET /api/cron/lead-notifications` はBearer `CRON_SECRET` で認証。1回10件、最大5回まで自動再試行し、以後は手動確認します。Hobbyでは1日1回の実行です。
+- 配信サービスの受付成功を「通知送信済み」とし、実際の受信は運営側でも確認します。プロバイダーの冪等キーとDBのロックで二重送信を抑止します（プロバイダー側の重複抑止期間には制限があります）。
 
-**Stripeの設定手順**
+### 計測と診断
 
-1. Stripeで商品を2つ作り、それぞれに月額・日本円・税込の価格（4,980円／14,800円）を作る → 価格ID（`price_...`）を `STRIPE_PRICE_STARTER` / `STRIPE_PRICE_PRO` に設定
-2. APIキー（シークレットキー）を `STRIPE_SECRET_KEY` に設定
-3. Webhookの送信先に `https://<ドメイン>/api/stripe/webhook` を登録し、上記の5種類のイベントを選ぶ → 署名シークレットを `STRIPE_WEBHOOK_SECRET` に設定
-4. カスタマーポータルを有効にし、プラン変更で2つの価格を選べるようにする
-5. `/ai/legal` に表示する事業者情報（`LEGAL_*`）を設定する
+- `OPENAI_API_KEY` / `GEMINI_API_KEY` を使用。ローカルでは `GEO_ENGINES=mock` で固定回答を使え、本番ではmockは無効です。
+- 計測画面を開いている間はstep APIが処理し、残りは認証付き `/api/cron/ai-check` が進めます。同一サービスの20時間間隔制限、プラン枠、全体の `GEO_DAILY_ANSWER_LIMIT`（既定300回答）があります。
+- 数値はAPIに決まった質問を聞いた目安です。アプリでの表示確率や改善との因果関係を保証しません。改善案は事実・要確認・仮説を区別します。
 
-3つ（`STRIPE_SECRET_KEY` と2つの価格ID）が揃うまでは、申し込みボタンは「準備中」と表示されます。
+### 既存セルフ版契約（新規販売終了）
+
+- フリー0円、スターター月4,980円、プロ月14,800円（いずれも税込）。既存ユーザーのログイン・閲覧・Stripe契約管理を維持しています。
+- `STRIPE_SECRET_KEY`、`STRIPE_PRICE_STARTER`、`STRIPE_PRICE_PRO`、`STRIPE_WEBHOOK_SECRET` は既存セルフ版契約の設定です。代行トライアルの自動決済設定ではありません。
+- Webhookは `/api/stripe/webhook`。subscription created / updated / deleted / paused / resumedを同期し、古い順不同イベントを無視します。
+
+### 検証・公開準備
+
+`npm test` で通知の単体テストを実行します。通知のDBテストは `DATABASE_URL` が `127.0.0.1:55432/susumeru_local` の場合だけ動作し、それ以外ではスキップします。外部メールは送信しません。
+
+`npm run check:launch` は設定値を表示せず不足項目を出し、未完了なら終了コード1にします。本番用の秘密鍵をローカルのテスト環境に取り込まないでください。
+
+本番URL： https://test-one-xi-90.vercel.app/ai
+
+2026-10-26にVercelのNeon接続でPreviewブランチの自動作成を有効化し、`preview/codex/dependency-security` の作成を確認しました。今後もDB変更を含むPRでは、Preview専用ブランチであることを確認してください。本番DBでの書き込みテストは行いません。
+
+運用手順と未完了事項は [公開・受付の手順](docs/launch-runbook.md) を参照してください。
 
 ## 技術スタック
 
@@ -75,11 +85,11 @@ Instagram API（Instagram ログイン）を使い、リールの予約投稿と
 ## セットアップ
 
 ```bash
-npm install
+npm ci
 cp .env.example .env   # DATABASE_URL と AUTH_SECRET（`openssl rand -base64 32`）を設定
 npx prisma migrate dev
 npx prisma db seed
-npm run dev
+GEO_ENGINES=mock npm run dev   # Windows PowerShell: $env:GEO_ENGINES='mock'; npm run dev
 ```
 
 [http://localhost:3000](http://localhost:3000) を開き、デモアカウント `demo@example.com` / `password123` でログインできます（`prisma db seed` はローカル専用で、本番ビルドでは実行されません）。

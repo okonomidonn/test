@@ -2,7 +2,7 @@ import Link from "next/link";
 import { btn } from "@/components/ai/ds";
 import { MethodSteps } from "@/components/ai/marketing";
 
-export const metadata = { title: "計測のしかたと進め方 | ススメル", description: "ススメルの計測方法、数字の意味、限界、作業の範囲、情報の取り扱い" };
+export const metadata = { title: "計測のしかたと進め方 | AIススメル", description: "AIススメルの計測方法、数字の意味、限界、作業の範囲、情報の取り扱い" };
 
 const SECTIONS = [
   { id: "measure", label: "計測のしかた" },
@@ -52,8 +52,10 @@ export default function MethodPage() {
         <header className="pb-8">
           <p className="text-sm font-semibold text-brand">計測のしかたと進め方</p>
           <h1 className="mt-2 text-[1.875rem] font-bold leading-tight text-slate-900 sm:text-[2.25rem]">
-            何を、どう測っているか。<span>分かることと、分からないこと。</span>
+            診断の進め方と、<br />結果の見方。
           </h1>
+          <p className="mt-4 leading-relaxed text-slate-700">AIでの紹介状況を調べ、直す場所と内容を整理します。ここでは、調べ方・数字の意味・対応できる範囲をご説明します。</p>
+          <nav aria-label="このページの内容" className="mt-5 flex flex-wrap gap-2 lg:hidden">{SECTIONS.map(s => <a key={s.id} href={`#${s.id}`} className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700">{s.label}</a>)}</nav>
         </header>
 
         <div className="pb-10">
@@ -106,7 +108,7 @@ export default function MethodPage() {
         <Block id="flow" title="申し込み後の流れ">
           <Rows
             rows={[
-              ["無料で診断", "3営業日以内に、診断結果をメールでお送りします。電話での営業はしません。トライアルのご案内をメールで1回お送りすることがあります。"],
+              ["無料で診断", "3営業日以内に、診断結果をメールでお送りします。電話での営業はしません。ご連絡は診断とご相談への対応に必要な範囲に限ります。"],
               ["トライアル", "2営業日以内に、進め方とお見積もりをメールでお送りします。内容を確認してから正式にご依頼ください。ご依頼後、30分のヒアリングから始めます。"],
             ]}
           />
@@ -117,7 +119,8 @@ export default function MethodPage() {
             <li>いただいた会社名・お名前・メールアドレス・サイトのURLは、診断とご連絡にだけ使います。</li>
             <li>サイトのURLは、公開されているページの読み取りと、AIへの質問の結果の判定にだけ使います。ログインが必要なページは読み取りません。</li>
             <li>診断の結果を公開したり、ほかの会社に渡したりすることはありません。事例として紹介する場合は、事前に同意をいただきます。</li>
-            <li>情報の削除をご希望の場合は、お送りしたメールへの返信でお知らせください。</li>
+            <li>データの保管や運営への通知メール配信を、業務委託先のサービスで行う場合があります。通知メールには申し込み者の氏名・メールアドレス・自由記入欄を含めず、会社・サービス名と管理画面へのリンクだけを送ります。</li>
+            <li>情報の削除をご希望の場合は、お送りしたメールへの返信、または<Link href="/ai/apply" className="font-semibold text-brand underline">お問い合わせフォーム</Link>でお知らせください。</li>
           </ul>
         </Block>
 
