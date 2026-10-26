@@ -55,6 +55,10 @@
 - HASC: https://zaito-work.com/?utm_source=hasc&utm_medium=partner&utm_campaign=hit
 - KBC: https://zaito-work.com/?utm_source=kbc&utm_medium=partner&utm_campaign=keio
 - 塾生情報局: https://zaito-work.com/?utm_source=info_jukusei&utm_medium=partner&utm_campaign=keio
+- 北大新聞編集部: https://zaito-work.com/?utm_source=hokudaishinbun&utm_medium=partner&utm_campaign=hokudai
+- アイセック北海道: https://zaito-work.com/?utm_source=aiesec_hokkaido&utm_medium=partner&utm_campaign=hokudai
+- 起業部VEX: https://zaito-work.com/?utm_source=vex&utm_medium=partner&utm_campaign=tohoku
+- 東北大学新聞: https://zaito-work.com/?utm_source=tonpress&utm_medium=partner&utm_campaign=tohoku
 
 ## DM文面
 
@@ -100,13 +104,6 @@
 > https://zaito-work.com/
 >
 > お忙しいところ恐れ入りますが、よろしくお願いいたします。
-
-専用URL（北大・東北大）:
-- 北大新聞編集部: https://zaito-work.com/?utm_source=hokudaishinbun&utm_medium=partner&utm_campaign=hokudai
-- アイセック北海道: https://zaito-work.com/?utm_source=aiesec_hokkaido&utm_medium=partner&utm_campaign=hokudai
-- 起業部VEX: https://zaito-work.com/?utm_source=vex&utm_medium=partner&utm_campaign=tohoku
-- 東北大学新聞: https://zaito-work.com/?utm_source=tonpress&utm_medium=partner&utm_campaign=tohoku
-
 
 ### 4. 学生新聞向け（北大新聞編集部・東北大学新聞）
 
