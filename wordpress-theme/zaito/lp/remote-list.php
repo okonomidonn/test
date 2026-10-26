@@ -214,6 +214,9 @@ if ( ! $zaito_cond ) :
         <h1>完全在宅の仕事だけを、<br>集めました。</h1>
         <p><b>研修も会議も、出社なし。</b>「在宅OK」で探すと出社ありの求人が混ざるため、zaitoは運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
         <?php endif; ?>
+        <?php if ( ! $zaito_cond ) : ?>
+          <button type="button" class="btn btn-p btn-lg sw-open" id="zswipe-open"><span class="ms" aria-hidden="true">swipe</span>スワイプで探す</button>
+        <?php endif; ?>
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
       </div>
     </div>
@@ -365,6 +368,7 @@ if ( ! $zaito_cond ) :
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u022.css' ) ); ?>">
 <script src="<?php echo esc_url( zaito_lp_asset( 'u022.js' ) ); ?>"></script>
 <?php if ( ! $zaito_cond ) : ?><script src="<?php echo esc_url( zaito_lp_asset( 'u073.js' ) ); ?>"></script><?php endif; ?>
+<?php if ( ! $zaito_cond ) : ?><script src="<?php echo esc_url( zaito_lp_asset( 'swipe.js' ) ); ?>"></script><?php endif; ?>
 <div class="sbar" id="zbar" hidden>
   <p><b>新着の在宅求人をメールで</b>登録無料・メールアドレスだけ</p>
   <a class="btn btn-p" href="#signup" id="zbargo">登録する</a>
