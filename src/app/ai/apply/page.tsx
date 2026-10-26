@@ -5,7 +5,7 @@ import { LeadForm } from "@/components/ai/lead-form";
 import { sampleReport } from "@/lib/ai-check/sample";
 import { reportKpis } from "@/components/ai/report-dashboard";
 
-export const metadata = { title: "申し込み | ススメル" };
+export const metadata = { title: "申し込み | AIススメル" };
 
 const COPY = {
   CHECK: {

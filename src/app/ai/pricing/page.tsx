@@ -2,7 +2,7 @@ import Link from "next/link";
 import { MarketCompare, WHY_AFFORDABLE } from "@/components/ai/marketing";
 import { ServicePlans } from "@/components/ai/service-plans";
 
-export const metadata = { title: "料金 | ススメル" };
+export const metadata = { title: "料金 | AIススメル" };
 
 export default function PricingPage() {
   return (

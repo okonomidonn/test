@@ -49,7 +49,7 @@ export function MarketCompare() {
             <dl className="mt-4 space-y-3">
               {[
                 { k: "公開料金の中央値", v: r.market, cls: "bg-slate-300" },
-                { k: `ススメル：${r.oursLabel}`, v: r.ours, cls: "bg-brand" },
+                { k: `AIススメル：${r.oursLabel}`, v: r.ours, cls: "bg-brand" },
               ].map((x) => (
                 <div key={x.k}>
                   <div className="flex items-baseline justify-between gap-3 text-sm">
@@ -74,7 +74,7 @@ export function MarketCompare() {
         <a href={MARKET.url} target="_blank" rel="noopener noreferrer" className="underline">
           {MARKET.source}
         </a>
-        （{MARKET.checked}）。各社の作業範囲・税の扱いは異なり、同じ内容・同じ成果を比べたものではありません。ススメルの料金は税別です。
+        （{MARKET.checked}）。各社の作業範囲・税の扱いは異なり、同じ内容・同じ成果を比べたものではありません。AIススメルの料金は税別です。
       </p>
     </div>
   );
