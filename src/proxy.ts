@@ -6,7 +6,7 @@ const { auth } = NextAuth(authConfig);
 
 const TEAM_PUBLIC = ["/login", "/register"];
 // AI検索チェック（店舗オーナー向け）の公開ページ
-const AI_PUBLIC = ["/ai", "/ai/web", "/ai/apply", "/ai/login", "/ai/signup", "/ai/pricing", "/ai/legal"];
+const AI_PUBLIC = ["/ai", "/ai/web", "/ai/apply", "/ai/sample", "/ai/tool", "/ai/login", "/ai/signup", "/ai/pricing", "/ai/legal"];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;

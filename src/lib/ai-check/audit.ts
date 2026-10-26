@@ -291,13 +291,14 @@ type WebFixContext = {
 };
 
 // 各項目に「どこを・どう直すか」を、サイトの実際の内容と登録情報から具体的に書き足す
-function addWebFixes(checks: AuditCheck[], c: WebFixContext) {
+export function addWebFixes(checks: AuditCheck[], c: WebFixContext) {
   const origin = new URL(c.pageUrl).origin;
   const who = c.audience?.trim() ? `${c.audience.trim()}向けの` : "";
   const strengths = c.features.slice(0, 3).join("・");
   // 求人サイトなら「求人」、それ以外は「サービス」と呼ぶ
   const noun = /求人|仕事|バイト|転職|インターン/.test(c.category) ? "求人" : "サービス";
-  const oneLine = c.pitch?.trim() || `${who}${c.features.slice(0, 2).map((f) => `${f}の`).join("")}${c.category}`;
+  const top2 = c.features.slice(0, 2).join("・");
+  const oneLine = c.pitch?.trim() || `${who}${top2 ? `${top2}の` : ""}${c.category}`;
   const shortLine = c.pitch?.trim() || `${c.features[0] ? `${c.features[0]}の` : ""}${c.category}`;
   const today = new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "long", day: "numeric" }).format(new Date());
 

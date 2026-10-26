@@ -62,6 +62,9 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
             </div>
           ) : (
             <div className="flex items-center gap-1 whitespace-nowrap text-sm sm:gap-2">
+              <Link href="/ai/sample" className="hidden rounded-md px-2 py-1.5 font-medium sm:inline sm:px-3 text-slate-700 hover:bg-slate-100">
+                サンプル
+              </Link>
               <Link href="/ai/pricing" className="rounded-md px-2 py-1.5 font-medium sm:px-3 text-slate-700 hover:bg-slate-100">
                 料金
               </Link>
@@ -79,8 +82,14 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
       <footer className="border-t border-slate-200 bg-white print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-sm text-slate-600 sm:px-6">
           <span className="font-display font-bold text-slate-800">ススメル</span>
+          <Link href="/ai/sample" className="hover:underline">
+            サンプルの報告書
+          </Link>
           <Link href="/ai/pricing" className="hover:underline">
-            料金プラン
+            料金
+          </Link>
+          <Link href="/ai/tool" className="hover:underline">
+            セルフ版ツール
           </Link>
           <Link href="/ai/legal" className="hover:underline">
             特定商取引法に基づく表記

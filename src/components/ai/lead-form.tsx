@@ -60,7 +60,7 @@ export function LeadForm({ kind, defaults = {} }: { kind: "CHECK" | "TRIAL"; def
           id="lead-message"
           name="message"
           rows={3}
-          placeholder={kind === "TRIAL" ? "例：競合ばかりChatGPTに紹介される" : "例：未経験OKのリモート求人を探せるサイトは？"}
+          placeholder={kind === "TRIAL" ? "例：ChatGPTに聞くと、競合ばかり紹介される" : "例：地方在住の大学生が利用できる、完全在宅の求人サイトは？"}
           className={inputClass}
         />
       </div>
