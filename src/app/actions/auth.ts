@@ -51,7 +51,8 @@ export async function registerUser(
   });
   if (error) return { error };
 
-  await signIn("credentials", { email, password, redirectTo: "/dashboard" });
+  const redirectTo = formData.get("callbackUrl") === "/ai/app" ? "/ai/app" : "/dashboard";
+  await signIn("credentials", { email, password, redirectTo });
   return {};
 }
 
