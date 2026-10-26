@@ -169,7 +169,7 @@ function zaito_lp_send_waitlist_thanks( $email, $context = 'lp', $interest_id = 
     $what = 'remote' === $context ? '登録' : '先行登録';
 
     if ( $url ) {
-        $subject = '【zaito】ボタンを押して' . $what . 'を完了してください';
+        $subject = '【zaito】' . $what . 'ありがとうございます（メールアドレスの確認）';
         $title   = 'あと1ステップで' . $what . 'が完了します';
         $lead    = '下のボタンを押すと、メールアドレスの確認が終わり、あなたに合う完全在宅の新着求人が届くようになります。';
         $button  = $what . 'を完了する';
