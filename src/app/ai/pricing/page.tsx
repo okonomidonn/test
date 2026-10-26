@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { PLANS, formatYen } from "@/lib/billing/plans";
 import { btn } from "@/components/ai/ds";
 
 export const metadata = { title: "料金 | ススメル" };
@@ -24,29 +23,17 @@ const ROWS: { label: string; cells: Record<Key, string> }[] = [
 ];
 
 export default function PricingPage() {
-  const tools = Object.values(PLANS);
   return (
     <div className="space-y-14 pt-4">
       <header className="max-w-3xl">
         <h1 className="text-[2rem] font-bold text-slate-900 sm:text-[2.5rem]">料金</h1>
-        <p className="mt-3 text-lg text-slate-600">目的に合わせて選んでください。</p>
-        {/* 目的で選ぶ */}
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <a href="#managed" className="group rounded-xl border border-slate-200 p-4 hover:border-brand">
-            <p className="font-semibold text-slate-900 group-hover:text-brand">改善まで任せたい →</p>
-            <p className="mt-1 text-sm text-slate-600">おまかせ（代行）：無料チェック・トライアル・継続支援。法人向け・税別</p>
-          </a>
-          <a href="#self" className="group rounded-xl border border-slate-200 p-4 hover:border-brand">
-            <p className="font-semibold text-slate-900 group-hover:text-brand">自分で計測したい →</p>
-            <p className="mt-1 text-sm text-slate-600">セルフ版ツール：月4,980円から。税込・いつでも解約できます</p>
-          </a>
-        </div>
+        <p className="mt-3 text-lg text-slate-600">まず無料チェック、次に有料のトライアルで効果を確かめ、続けるかを決められます。</p>
       </header>
 
       <section id="managed" className="scroll-mt-24 space-y-5">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">おまかせ（計測から改善まで代行）</h2>
-          <p className="mt-1 text-slate-600">まず無料チェック、次に有料のトライアルで効果を確かめ、続けるかを決められます。税別です。</p>
+          <h2 className="text-2xl font-bold text-slate-900">計測から改善まで</h2>
+          <p className="mt-1 text-slate-600">法人向け・税別です。</p>
         </div>
 
         {/* PC：比較表 */}
@@ -121,55 +108,7 @@ export default function PricingPage() {
         <p className="text-sm text-slate-600">トライアルに含まないもの：新しいページの制作、外部媒体への掲載、大規模な実装。</p>
       </section>
 
-      <section id="self" className="scroll-mt-24 space-y-5 border-t border-slate-200 pt-10">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900">セルフ版ツール（自分で計測する）</h2>
-            <p className="mt-1 text-slate-600">税込です。いつでも解約でき、契約期間の縛りはありません。</p>
-          </div>
-          <Link href="/ai/tool" className="font-semibold text-brand hover:underline">
-            ツールでできること →
-          </Link>
-        </div>
-        <div className="overflow-x-auto rounded-xl border border-slate-200">
-          <table className="w-full min-w-[560px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
-                <th className="p-3 font-semibold">プラン</th>
-                <th className="p-3 font-semibold">料金（税込）</th>
-                <th className="p-3 font-semibold">登録できるサービス</th>
-                <th className="p-3 font-semibold">計測（1件あたり）</th>
-                <th className="p-3 font-semibold">AIに聞く質問</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {tools.map((p) => (
-                <tr key={p.key}>
-                  <td className="p-3">
-                    <span className="font-semibold text-slate-900">{p.name}</span>
-                    <span className="block text-slate-600">{p.summary}</span>
-                  </td>
-                  <td className="p-3 font-num font-semibold text-slate-900">
-                    {p.priceYen ? `${formatYen(p.priceYen)}／月` : "0円"}
-                    {p.priceYen > 0 && <span className="block text-sm font-normal text-slate-600">税込・1年で{formatYen(p.priceYen * 12)}</span>}
-                  </td>
-                  <td className="p-3 text-slate-900">{p.stores}件</td>
-                  <td className="p-3 text-slate-900">30日間で{p.runsPerMonth}回</td>
-                  <td className="p-3 text-slate-900">{p.maxQuestions}問まで</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <Link href="/ai/signup" className={btn("dark")}>
-            無料で登録する
-          </Link>
-        </div>
-      </section>
-
       <ul className="max-w-3xl list-disc space-y-1 border-t border-slate-200 pt-6 pl-5 text-sm text-slate-600">
-        <li>セルフ版のお支払いはクレジットカード（Stripe）です。毎月、申し込み日と同じ日に自動で更新されます。解約は契約管理画面からいつでもでき、その月の終わりまでご利用いただけます。日割りでの返金はありません。</li>
         <li>AIの回答は毎回変わります。計測結果は目安で、紹介や問い合わせの増加をお約束するものではありません。</li>
         <li>
           <Link href="/ai/legal" className="underline">

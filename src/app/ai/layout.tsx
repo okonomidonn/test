@@ -72,8 +72,8 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                 <Link href="/ai/pricing" className={nav}>
                   料金
                 </Link>
-                <Link href="/ai/tool" className={nav}>
-                  セルフ版
+                <Link href="/ai/method" className={nav}>
+                  計測のしかた
                 </Link>
               </nav>
               <div className="ml-auto flex items-center gap-1 whitespace-nowrap sm:gap-2">
@@ -110,9 +110,6 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
             </Link>
             <Link href="/ai/pricing" className="block text-slate-600 hover:text-slate-900">
               料金
-            </Link>
-            <Link href="/ai/tool" className="block text-slate-600 hover:text-slate-900">
-              セルフ版ツール
             </Link>
           </nav>
           <nav aria-label="運営" className="space-y-2 text-sm">

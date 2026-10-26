@@ -22,6 +22,8 @@ const signupSchema = z.object({
 });
 
 export async function signupOwner(_prev: FormState, formData: FormData): Promise<FormState> {
+  // セルフ版の販売終了にあわせて、新規の登録は止めている（再開するときは AI_SIGNUP_OPEN=1）
+  if (process.env.AI_SIGNUP_OPEN !== "1") return { error: "現在、新規の登録は受け付けていません" };
   const parsed = signupSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),

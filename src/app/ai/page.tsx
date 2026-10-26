@@ -177,13 +177,7 @@ export default function AiLandingPage() {
             </li>
           ))}
         </ol>
-        <p className="mt-3 text-sm text-slate-600">
-          税別。自分で計測したい方は
-          <Link href="/ai/tool" className="mx-1 font-semibold text-brand hover:underline">
-            セルフ版ツール
-          </Link>
-          （月4,980円〜・税込）もあります。
-        </p>
+        <p className="mt-3 text-sm text-slate-600">表示はすべて税別です。</p>
       </section>
 
       <section className="mt-16 flex flex-col gap-6 border-t border-slate-200 pt-10 sm:flex-row sm:items-end sm:justify-between">
