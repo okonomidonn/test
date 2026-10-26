@@ -257,3 +257,24 @@ model SiteAudit {
 
   @@index([storeId, createdAt])
 }
+
+// 無料チェック・トライアルの申し込み（紹介ページ・料金ページ・計測結果の画面から）
+enum LeadKind {
+  CHECK
+  TRIAL
+}
+
+model Lead {
+  id         String   @id @default(cuid())
+  kind       LeadKind
+  company    String
+  name       String
+  email      String
+  websiteUrl String
+  message    String?
+  // ログイン中に申し込んだ場合のアカウント
+  userId     String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}

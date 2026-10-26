@@ -9,7 +9,7 @@ const AXIS_TEXT = "#64748b";
 
 export type TrendPoint = { label: string; values: Record<string, number | null> };
 
-// 推薦率（%）の推移。1本の軸・細い線・十字線のツールチップ。
+// 紹介率（%）の推移。1本の軸・細い線・十字線のツールチップ。
 export function TrendChart({ points, series }: { points: TrendPoint[]; series: { key: string; label: string }[] }) {
   const [hover, setHover] = useState<number | null>(null);
   const W = 640;
@@ -40,7 +40,7 @@ export function TrendChart({ points, series }: { points: TrendPoint[]; series: {
         viewBox={`0 0 ${W} ${H}`}
         className="w-full"
         role="img"
-        aria-label="推薦率の推移"
+        aria-label="紹介率の推移"
         onPointerLeave={() => setHover(null)}
         onPointerMove={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();

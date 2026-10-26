@@ -22,7 +22,7 @@ export default async function StoresPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">登録一覧</h1>
+          <h1 className="text-2xl font-bold">サービス一覧</h1>
           <p className="mt-1 text-sm text-slate-600">サービスごとに、AIでの紹介状況と改善点を確認できます。</p>
         </div>
         <Link href="/ai/app/new" className={primaryButtonClass}>
@@ -51,7 +51,7 @@ export default async function StoresPage() {
                 </div>
                 <div className="mt-auto">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-sm text-slate-600">最新の推薦率</span>
+                    <span className="text-sm text-slate-600">最新の紹介率</span>
                     <span className="font-num text-2xl font-semibold text-slate-900">{answers.length ? `${Math.round((hits / answers.length) * 100)}%` : "—"}</span>
                   </div>
                   <div className="mt-1.5 h-2 rounded-full bg-slate-100">

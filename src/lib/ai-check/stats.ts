@@ -39,7 +39,7 @@ export async function storeStats(storeId: string) {
     },
   });
 
-  // 推薦率＝対象店舗が推薦された回答数 ÷ 取得できた回答数（本文で触れただけ＝順位0も推薦に含める）
+  // 紹介率＝対象店舗が推薦された回答数 ÷ 取得できた回答数（本文で触れただけ＝順位0も推薦に含める）
   const trend = runs
     .filter((r) => r.status !== "RUNNING")
     .map((r) => {
@@ -57,7 +57,7 @@ export async function storeStats(storeId: string) {
   const latest = [...runs].reverse().find((r) => r.status !== "RUNNING" && r.answers.some((a) => a.status === "DONE"));
   const latestDone = latest?.answers.filter((a) => a.status === "DONE") ?? [];
 
-  // 質問ごとの結果（最新の計測）
+  // 質問ごとの紹介（最新の計測）
   const questions = new Map<number, { text: string; total: number; hits: number; ranks: number[] }>();
   for (const a of latestDone) {
     const q = questions.get(a.questionNo) ?? { text: a.questionText, total: 0, hits: 0, ranks: [] };
@@ -92,7 +92,7 @@ export async function storeStats(storeId: string) {
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
-  // 参考にされたページ（全計測）
+  // 引用されたページ（全計測）
   const domains = new Map<string, { domain: string; count: number; urls: Map<string, number> }>();
   let totalSources = 0;
   for (const r of runs) {

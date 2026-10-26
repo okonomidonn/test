@@ -6,7 +6,18 @@ import { isIP } from "node:net";
 
 // info：参考情報（点数に入れない）
 export type CheckStatus = "ok" | "warn" | "ng" | "info";
-export type AuditCheck = { key: string; title: string; status: CheckStatus; detail: string; fix?: string };
+export type AuditCheck = {
+  key: string;
+  title: string;
+  status: CheckStatus;
+  detail: string;
+  fix?: string;
+  // 具体的な直し方（Webサービスの診断のみ）：直す場所・今の内容・そのまま使える書き換え例
+  where?: string;
+  current?: string;
+  example?: string;
+  exampleLabel?: string;
+};
 
 const MAX_BYTES = 2_000_000;
 const AI_CRAWLERS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "Google-Extended", "ClaudeBot", "PerplexityBot"];
@@ -267,7 +278,121 @@ function internalLinks(html: string, pageUrl: string): string[] {
 const squash = (s: string) => s.normalize("NFKC").replace(/[\s　、。,.!！?？「」]/g, "");
 
 // Webサービス向けの診断。zaitoの事例で効いた作り（一文の立ち位置・1件1ページ・構造化データ・llms.txt）を確認する。
-export async function auditWebSite(input: { websiteUrl: string; genre: string; pitch?: string | null; features?: string[] }) {
+type WebFixContext = {
+  name: string;
+  category: string;
+  audience?: string | null;
+  pitch?: string | null;
+  features: string[];
+  pageUrl: string;
+  title: string;
+  description: string;
+  missingFeatures: string[];
+};
+
+// 各項目に「どこを・どう直すか」を、サイトの実際の内容と登録情報から具体的に書き足す
+function addWebFixes(checks: AuditCheck[], c: WebFixContext) {
+  const origin = new URL(c.pageUrl).origin;
+  const who = c.audience?.trim() ? `${c.audience.trim()}向けの` : "";
+  const strengths = c.features.slice(0, 3).join("・");
+  // 求人サイトなら「求人」、それ以外は「サービス」と呼ぶ
+  const noun = /求人|仕事|バイト|転職|インターン/.test(c.category) ? "求人" : "サービス";
+  const oneLine = c.pitch?.trim() || `${who}${c.features.slice(0, 2).map((f) => `${f}の`).join("")}${c.category}`;
+  const shortLine = c.pitch?.trim() || `${c.features[0] ? `${c.features[0]}の` : ""}${c.category}`;
+  const today = new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "long", day: "numeric" }).format(new Date());
+
+  const fixes: Record<string, Partial<AuditCheck>> = {
+    title: {
+      where: `トップページ（${c.pageUrl}）の題名（<title>）と説明文（<meta name="description">）`,
+      current: `題名：${c.title || "なし"}\n説明文：${c.description || "なし"}`,
+      exampleLabel: "書き換え例",
+      example: `題名：${shortLine}｜${c.name}\n説明文：${c.name}は、${who}${c.category}です。${strengths ? `${strengths}など、` : ""}（ほかのサービスとの違いを1文で）。`,
+    },
+    pitch: {
+      where: `トップページ（${c.pageUrl}）の一番上の見出しのすぐ下。同じ文をFAQ・会社概要にも`,
+      exampleLabel: "そのまま使える一文",
+      example: `${c.name}は、${oneLine}です。`,
+    },
+    features: c.missingFeatures.length
+      ? {
+          where: `トップページ（${c.pageUrl}）の本文（画像の中の文字ではなく、文章として）`,
+          current: `見つからない言葉：${c.missingFeatures.join("、")}`,
+          exampleLabel: "書き足す文の例",
+          example: `${c.name}では、「${c.missingFeatures.join("」「")}」の${noun}を掲載しています。（件数や具体例を1つ添える。例：〇件、〇〇など）`,
+        }
+      : {},
+    text: {
+      where: `トップページ（${c.pageUrl}）`,
+      exampleLabel: "やること",
+      example: "・画像の中に書いた説明を、本文の文章としても書く\n・JavaScriptで後から表示している一覧は、最初のHTMLに含める（サーバー側で出力する）",
+    },
+    pages: {
+      where: `サイト全体（${origin}）`,
+      exampleLabel: "作るページの例（1つの話題に1ページ）",
+      example: [
+        ...c.features.slice(0, 3).map((f) => `・${f}の${noun}一覧（${origin}/…）`),
+        `・${c.name}と他の${c.category}の違い`,
+        "・利用者の事例・声（1件1ページ）",
+        "・料金・使い方・よくある質問",
+      ].join("\n"),
+    },
+    jsonld: {
+      where: `トップページ（${c.pageUrl}）の <head> の中`,
+      exampleLabel: "そのまま貼れるコード（中身を確認してから使ってください）",
+      example: `<script type="application/ld+json">
+${JSON.stringify(
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", "@id": `${origin}/#org`, name: c.name, url: `${origin}/` },
+      { "@type": "WebSite", "@id": `${origin}/#website`, name: c.name, url: `${origin}/`, description: `${c.name}は、${oneLine}です。`, publisher: { "@id": `${origin}/#org` } },
+    ],
+  },
+  null,
+  2,
+)}
+</script>`,
+    },
+    faq: {
+      where: `新しいページ（例：${origin}/faq/）と、トップページからのリンク`,
+      exampleLabel: "質問と答えの例（答えは事実に合わせて書き換える）",
+      example: [
+        `Q. ${c.name}はどんなサービスですか？\nA. ${c.name}は、${oneLine}です。`,
+        ...c.features.slice(0, 2).map((f) => `Q. ${f}の${noun}はありますか？\nA. はい。（件数・条件・具体例）`),
+        `Q. 他の${c.category}との違いは？\nA. （${c.name}だけの特徴を1〜2文で）`,
+      ].join("\n\n"),
+    },
+    fresh: {
+      where: `トップページ（${c.pageUrl}）の一覧の上、または下`,
+      exampleLabel: "書き足す一行の例",
+      example: `最終更新日：${today}（掲載〇件）`,
+    },
+    robots: {
+      where: `${origin}/robots.txt`,
+      exampleLabel: "追記する内容（AIの検索用ロボットの読み取りを許可）",
+      example: "User-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ChatGPT-User\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /",
+    },
+    sitemap: {
+      where: `${origin}/robots.txt と、Bing Webmaster Tools（https://www.bing.com/webmasters）`,
+      exampleLabel: "robots.txt に書く一行",
+      example: `Sitemap: ${origin}/sitemap.xml`,
+    },
+  };
+
+  for (const check of checks) {
+    if (check.status === "ok" && check.key !== "sitemap") continue;
+    Object.assign(check, fixes[check.key] ?? {});
+  }
+}
+
+export async function auditWebSite(input: {
+  websiteUrl: string;
+  name: string;
+  genre: string;
+  audience?: string | null;
+  pitch?: string | null;
+  features?: string[];
+}) {
   const checks: AuditCheck[] = [];
   let page: Awaited<ReturnType<typeof safeFetch>>;
   try {
@@ -321,8 +446,10 @@ export async function auditWebSite(input: { websiteUrl: string; genre: string; p
   });
 
   const features = (input.features ?? []).filter(Boolean);
+  let missingFeatures: string[] = [];
   if (features.length) {
-    const missing = features.filter((f) => !squash(text).includes(squash(f)));
+    missingFeatures = features.filter((f) => !squash(text).includes(squash(f)));
+    const missing = missingFeatures;
     checks.push({
       key: "features",
       title: "強み（特徴の言葉）がトップページに文字で書かれているか",
@@ -407,5 +534,16 @@ export async function auditWebSite(input: { websiteUrl: string; genre: string; p
       : "サイトマップを作り、Google Search Console と Bing Webmaster Tools に登録しましょう。",
   });
 
+  addWebFixes(checks, {
+    name: input.name,
+    category,
+    audience: input.audience,
+    pitch: input.pitch,
+    features,
+    pageUrl: page.url,
+    title,
+    description,
+    missingFeatures,
+  });
   return { url: page.url, score: scoreOf(checks), checks };
 }

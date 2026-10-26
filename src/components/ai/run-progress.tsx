@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // 計測画面を開いている間、サーバーに続きの処理を頼み、進み具合を表示する
-export function RunProgress({ runId, initialDone, total }: { runId: string; initialDone: number; total: number }) {
+export function RunProgress({ runId, storeId, initialDone, total }: { runId: string; storeId: string; initialDone: number; total: number }) {
   const router = useRouter();
   const [done, setDone] = useState(initialDone);
   const [error, setError] = useState<string | null>(null);
@@ -20,8 +20,12 @@ export function RunProgress({ runId, initialDone, total }: { runId: string; init
           const data: { status: string; done: number } = await res.json();
           setDone(data.done);
           setError(null);
+          if (data.status !== "RUNNING") {
+            // 終わったら、計測結果の画面へ戻る
+            router.push(`/ai/app/stores/${storeId}`);
+            break;
+          }
           router.refresh();
-          if (data.status !== "RUNNING") break;
         } catch {
           setError("通信が途切れました。自動で再開します…");
           await new Promise((r) => setTimeout(r, 5000));
@@ -31,7 +35,7 @@ export function RunProgress({ runId, initialDone, total }: { runId: string; init
     return () => {
       stopped.current = true;
     };
-  }, [runId, router]);
+  }, [runId, storeId, router]);
 
   const ratio = total ? done / total : 0;
   return (

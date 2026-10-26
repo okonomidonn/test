@@ -5,8 +5,8 @@ const ROWS: { label: string; value: (p: PlanDef) => string }[] = [
   { label: "計測（1件あたり）", value: (p) => `30日間で${p.runsPerMonth}回` },
   { label: "AIに聞く質問", value: (p) => `${p.maxQuestions}問まで` },
   { label: "ChatGPTで計測", value: () => "✓" },
-  { label: "参考にされたページ", value: () => "✓" },
-  { label: "公式サイトの診断・改善の提案", value: () => "✓" },
+  { label: "引用されたページ", value: () => "✓" },
+  { label: "公式サイトの診断・直すところ", value: () => "✓" },
 ];
 
 // 料金表。各プランの下に、申し込みボタンなどを差し込めるようにする

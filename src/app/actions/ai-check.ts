@@ -200,7 +200,7 @@ export async function runAudit(storeId: string): Promise<FormState> {
   }
   const result =
     store.kind === "WEB"
-      ? await auditWebSite({ websiteUrl: store.websiteUrl, genre: store.genre, pitch: store.pitch, features: store.features })
+      ? await auditWebSite({ websiteUrl: store.websiteUrl, name: store.name, genre: store.genre, audience: store.audience, pitch: store.pitch, features: store.features })
       : await auditSite({ websiteUrl: store.websiteUrl, area: store.area, genre: store.genre });
   await prisma.siteAudit.create({
     data: { storeId, url: result.url, score: result.score, checks: result.checks },
