@@ -26,7 +26,7 @@ export default async function ReportPage({ params }: PageProps<"/ai/app/stores/[
         </Link>
         <PrintButton />
       </div>
-      <ReportDashboard d={buildReportData(store, stats, audit)} />
+      <ReportDashboard d={buildReportData(store, stats, audit)} expandDetails />
     </article>
   );
 }

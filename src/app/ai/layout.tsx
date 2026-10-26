@@ -120,6 +120,9 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
             <Link href="/ai/apply" className="block text-slate-600 hover:text-slate-900">
               お申し込み
             </Link>
+            <Link href="/ai/method" className="block text-slate-600 hover:text-slate-900">
+              計測のしかたと進め方
+            </Link>
             <Link href="/ai/legal" className="block text-slate-600 hover:text-slate-900">
               特定商取引法に基づく表記
             </Link>

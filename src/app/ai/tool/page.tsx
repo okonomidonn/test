@@ -2,33 +2,40 @@ import Link from "next/link";
 import { PLANS, formatYen } from "@/lib/billing/plans";
 import { webQuestions } from "@/lib/ai-check/questions";
 import { sampleReport } from "@/lib/ai-check/sample";
-import { TrendLine } from "@/components/ai/report-dashboard";
-import { AppWindow, btn } from "@/components/ai/ds";
+import { AuditItem, QuestionsTable, reportKpis } from "@/components/ai/report-dashboard";
+import { AppWindow, KpiStrip, btn } from "@/components/ai/ds";
 
 export const metadata = { title: "セルフ版ツール | ススメル" };
 
-const STEPS = [
-  { title: "サービスを登録", body: "カテゴリ・対象・強み・URLを入れると、見込み客がAIに聞きそうな質問が自動でできます。質問は自由に直せます。" },
-  { title: "ボタンで計測", body: "ChatGPTに質問して、紹介されたか・何番目か・どのサイトが引用されたかを記録します。1問30秒〜2分ほどです。" },
-  { title: "直して、また測る", body: "サイト診断で直す場所と書き換え例を確認し、直したら測り直して推移を見ます。" },
+const FACTS: [string, string][] = [
+  ["計測にかかる時間", "1問30秒〜2分ほど。10問で5〜20分です。画面を閉じても計測は続きます"],
+  ["専門知識", "質問は自動で作られ、直す項目には書き換え例が付きます。構造化データのコードはコピーして貼るだけです。HTMLの編集が必要な項目もあります"],
+  ["無料で分かること", "フリープランで1サービス・30日に1回・10問まで。紹介率、質問ごとの結果、サイト診断、報告書を使えます"],
 ];
 
-const FEATURES: [string, string][] = [
-  ["質問の自動作成と編集", "カテゴリと強みから10問を作成。業界の言い回しに合わせて書き換えられます"],
-  ["紹介率と順位の記録", "質問ごとに、自社の順位と、代わりに紹介されたサービスを残します"],
-  ["推移のグラフ", "計測するたびに紹介率を記録し、直したあとの変化を追えます"],
-  ["サイト診断と書き換え例", "直す場所・今の内容・そのまま使える例を、優先度の順に出します"],
-  ["報告書の出力", "社内共有や上司への報告に使える報告書を、印刷・PDFで出せます"],
-];
+// 操作の1手順：左に説明、右に実際の画面の一部
+function Step({ no, title, body, children }: { no: number; title: string; body: string; children: React.ReactNode }) {
+  return (
+    <li className="grid gap-5 border-t border-slate-200 py-8 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-12">
+      <div className="min-w-0">
+        <p className="font-num text-sm font-semibold text-slate-500">STEP {no}</p>
+        <h3 className="mt-1 text-xl font-bold text-slate-900">{title}</h3>
+        <p className="mt-2 text-slate-600">{body}</p>
+      </div>
+      <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">{children}</div>
+    </li>
+  );
+}
 
 export default function ToolPage() {
-  const questions = webQuestions({ genre: "求人サイト", audience: "子育て中の人", features: ["フルリモート", "未経験OK", "週3日から"] }).slice(0, 6);
-  const trend = sampleReport().trend;
+  const questions = webQuestions({ genre: "求人サイト", audience: "子育て中の人", features: ["フルリモート", "未経験OK", "週3日から"] }).slice(0, 5);
+  const d = sampleReport();
   const tools = Object.values(PLANS);
+  const fix = d.checks.find((c) => c.key === "features");
 
   return (
     <div className="space-y-20 pt-8">
-      <section className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <section className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <div className="min-w-0 max-w-xl">
           <p className="text-sm font-semibold text-brand">セルフ版ツール</p>
           <h1 className="mt-3 text-[2rem] font-bold leading-tight text-slate-900 sm:text-[2.5rem]">
@@ -46,18 +53,51 @@ export default function ToolPage() {
           <p className="mt-3 text-sm text-slate-600">フリープランはカード登録不要です。</p>
         </div>
 
-        <AppWindow title="ススメル — リモ求人ナビ（デモ）" badge="デモ">
-          <div className="divide-y divide-slate-200">
-            <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-slate-900">AIに聞く質問</p>
-                <p className="text-sm text-slate-600">自動で作成・あとから編集できます</p>
-              </div>
+        {/* 実際のアプリの画面（デモ） */}
+        <AppWindow title="ススメル — リモ求人ナビ" badge="デモ">
+          <div className="space-y-4 p-4 sm:p-5">
+            <nav className="flex gap-4 overflow-x-auto border-b border-slate-200 text-sm" aria-hidden>
+              {["AIでの紹介", "引用されたページ", "直すところ", "設定"].map((t, i) => (
+                <span key={t} className={`whitespace-nowrap border-b-2 pb-2 font-semibold ${i === 0 ? "border-brand text-brand" : "border-transparent text-slate-500"}`}>
+                  {t}
+                </span>
+              ))}
+            </nav>
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-brand/30 bg-brand-soft p-3">
+              <p className="min-w-0 text-sm">
+                <span className="block font-bold text-brand">次にやること</span>
+                <span className="text-slate-900">サイト診断で直すとよい点が4個あります。上から順に直しましょう。</span>
+              </p>
               <span className={btn("primary")} aria-hidden>
-                AIに聞いて計測する
+                直す点を見る
               </span>
             </div>
-            <ol className="divide-y divide-slate-100 px-4 text-sm">
+            <KpiStrip items={reportKpis(d).slice(0, 2)} />
+            <QuestionsTable d={d} limit={3} />
+          </div>
+        </AppWindow>
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-bold text-slate-900">操作の流れ</h2>
+        <ol className="mt-6">
+          <Step no={1} title="サービスを登録" body="サービス名・カテゴリ・誰向けか・強み・URLを入れます。入力は1分ほどです。">
+            <dl className="grid gap-3 text-sm sm:grid-cols-2">
+              {[
+                ["サービス名", "リモ求人ナビ"],
+                ["カテゴリ", "求人サイト"],
+                ["誰向けのサービスか", "子育て中の人"],
+                ["強み・特徴の言葉", "フルリモート／未経験OK／週3日から"],
+              ].map(([k, v]) => (
+                <div key={k}>
+                  <dt className="font-semibold text-slate-900">{k}</dt>
+                  <dd className="mt-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-800">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </Step>
+          <Step no={2} title="質問を確認" body="見込み客がAIに聞きそうな質問が自動でできます。業界の言い回しに合わせて書き換えられます。">
+            <ol className="divide-y divide-slate-100 text-sm">
               {questions.map((q, i) => (
                 <li key={q} className="flex gap-3 py-2">
                   <span className="w-5 shrink-0 font-num text-slate-400">{i + 1}</span>
@@ -65,39 +105,40 @@ export default function ToolPage() {
                 </li>
               ))}
             </ol>
-            <div className="p-4">
-              <p className="mb-2 text-sm font-semibold text-slate-900">紹介率の推移</p>
-              <TrendLine points={trend} />
+          </Step>
+          <Step no={3} title="ボタンで計測" body="ChatGPTに1問ずつ聞いて、紹介されたか・何番目か・どのサイトが引用されたかを記録します。">
+            <div className="space-y-2" aria-label="計測中の画面（デモ）">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-semibold text-slate-900">AIに質問中… 6 / 10</span>
+                <span className="font-num text-slate-600">60%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-2 w-[60%] rounded-full bg-brand" />
+              </div>
+              <p className="text-sm text-slate-600">このページを開いたままにすると早く終わります。閉じても、残りは自動で続きます。終わると結果の画面に戻ります。</p>
             </div>
-          </div>
-        </AppWindow>
-      </section>
-
-      <section className="space-y-8">
-        <h2 className="text-2xl font-bold text-slate-900">使い方</h2>
-        <ol className="grid overflow-hidden rounded-xl border border-slate-200 md:grid-cols-3">
-          {STEPS.map((s, i) => (
-            <li key={s.title} className={`p-5 ${i ? "border-t border-slate-200 md:border-l md:border-t-0" : ""}`}>
-              <p className="font-num text-sm font-semibold text-slate-500">STEP {i + 1}</p>
-              <h3 className="mt-1 font-bold text-slate-900">{s.title}</h3>
-              <p className="mt-2 text-slate-700">{s.body}</p>
-            </li>
-          ))}
+          </Step>
+          <Step no={4} title="直して、また測る" body="直す場所・書き換え例・事前に確かめることを確認して直し、同じ質問で測り直します。">
+            {fix ? (
+              <ul>
+                <AuditItem c={fix} />
+              </ul>
+            ) : null}
+          </Step>
         </ol>
       </section>
 
       <section className="grid gap-8 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
-        <h2 className="text-2xl font-bold text-slate-900">できること</h2>
+        <h2 className="text-2xl font-bold text-slate-900">よく聞かれること</h2>
         <dl className="divide-y divide-slate-200 border-y border-slate-200">
-          {FEATURES.map(([k, v]) => (
-            <div key={k} className="grid gap-1 py-4 sm:grid-cols-[14rem_1fr] sm:gap-6">
+          {FACTS.map(([k, v]) => (
+            <div key={k} className="grid gap-1 py-4 sm:grid-cols-[11rem_1fr] sm:gap-6">
               <dt className="font-semibold text-slate-900">{k}</dt>
               <dd className="text-slate-700">{v}</dd>
             </div>
           ))}
         </dl>
       </section>
-
       <section id="plans" className="scroll-mt-24 space-y-5">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">プラン</h2>

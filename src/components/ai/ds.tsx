@@ -61,7 +61,7 @@ export function AppWindow({ title, badge, children }: { title: string; badge?: s
 export type Kpi = { label: string; value: string; unit?: string; note?: string; emphasis?: boolean };
 export function KpiStrip({ items }: { items: Kpi[] }) {
   return (
-    <dl className="grid grid-cols-2 overflow-hidden rounded-xl border border-slate-200 lg:grid-cols-4">
+    <dl className={`grid grid-cols-2 overflow-hidden rounded-xl border border-slate-200 ${items.length >= 4 ? "lg:grid-cols-4" : items.length === 3 ? "lg:grid-cols-3" : ""}`}>
       {items.map((k, i) => (
         <div
           key={k.label}

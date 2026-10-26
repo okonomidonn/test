@@ -6,9 +6,9 @@ export const metadata = { title: "料金 | ススメル" };
 
 // 代行（おまかせ）。法人向け・税別。申し込みは相談から（Stripeの自動課金ではない）
 const COLUMNS = [
-  { key: "check", title: "無料チェック", price: "0円", unit: "", term: "—", cta: { label: "無料で診断する", href: "/ai/apply" } },
-  { key: "trial", title: "GEO診断・改善トライアル", price: "49,800円", unit: "1回・30日間", term: "1回", cta: { label: "トライアルを申し込む", href: "/ai/apply?plan=trial" }, recommended: "はじめて依頼する方へ" },
-  { key: "retainer", title: "継続支援", price: "月98,000円〜", unit: "トライアル後にお見積もり", term: "最低3か月、以降は1か月ごと", cta: { label: "トライアルから始める", href: "/ai/apply?plan=trial" } },
+  { key: "check", title: "無料チェック", price: "0円", unit: "費用はかかりません", term: "—", cta: { label: "無料で診断する", href: "/ai/apply" } },
+  { key: "trial", title: "GEO診断・改善トライアル", price: "49,800円", unit: "税別・1回・30日間", term: "1回", cta: { label: "トライアルを申し込む", href: "/ai/apply?plan=trial" }, recommended: "はじめて依頼する方へ" },
+  { key: "retainer", title: "継続支援", price: "月98,000円〜", unit: "税別・トライアル後にお見積もり", term: "最低3か月、以降は1か月ごと", cta: { label: "トライアルから始める", href: "/ai/apply?plan=trial" } },
 ] as const;
 
 type Key = (typeof COLUMNS)[number]["key"];
@@ -20,6 +20,7 @@ const ROWS: { label: string; cells: Record<Key, string> }[] = [
   { label: "改善の作業", cells: { check: "—", trial: "既存ページ1ページを改善", retainer: "ページの作成・書き換え（月4ページ〜）" } },
   { label: "報告", cells: { check: "結果の共有", trial: "30日後に再計測して報告", retainer: "月1回の打ち合わせ" } },
   { label: "契約期間", cells: { check: "—", trial: "1回", retainer: "最低3か月、以降は1か月ごと" } },
+  { label: "総額の目安", cells: { check: "0円", trial: "49,800円（税別）", retainer: "最低3か月で294,000円〜（税別）" } },
 ];
 
 export default function PricingPage() {
@@ -148,7 +149,10 @@ export default function PricingPage() {
                     <span className="font-semibold text-slate-900">{p.name}</span>
                     <span className="block text-slate-600">{p.summary}</span>
                   </td>
-                  <td className="p-3 font-num font-semibold text-slate-900">{p.priceYen ? `${formatYen(p.priceYen)}／月` : "0円"}</td>
+                  <td className="p-3 font-num font-semibold text-slate-900">
+                    {p.priceYen ? `${formatYen(p.priceYen)}／月` : "0円"}
+                    {p.priceYen > 0 && <span className="block text-sm font-normal text-slate-600">税込・1年で{formatYen(p.priceYen * 12)}</span>}
+                  </td>
                   <td className="p-3 text-slate-900">{p.stores}件</td>
                   <td className="p-3 text-slate-900">30日間で{p.runsPerMonth}回</td>
                   <td className="p-3 text-slate-900">{p.maxQuestions}問まで</td>

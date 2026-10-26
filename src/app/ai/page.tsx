@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { sampleReport } from "@/lib/ai-check/sample";
-import { AuditItem, QuestionsTable, RankingTable, ReportDashboard, REPORT_SECTIONS, SourcesTable } from "@/components/ai/report-dashboard";
+import { AuditItem, QuestionsTable, RankingTable, ReportDashboard, REPORT_SECTIONS, SourcesTable, todoOf } from "@/components/ai/report-dashboard";
 import { AppWindow, SectionHead, btn } from "@/components/ai/ds";
 
 const STEPS = [
@@ -26,12 +26,35 @@ function FeatureRow({ no, title, body, children }: { no: string; title: string; 
 export default function AiLandingPage() {
   const d = sampleReport();
   const pitch = d.checks.find((c) => c.key === "pitch");
+  const total = d.measured?.total ?? 10;
+  const self = d.ranking.find((r) => r.self)!;
+  const rival = [...d.ranking].filter((r) => !r.self).sort((a, b) => b.hits - a.hits)[0];
+  const lost = d.questions.filter((q) => q.hits === 0 && q.others.includes(rival.label));
+  const topSource = d.sources.find((x) => x.kind !== "official");
+  const first = todoOf(d.checks)[0];
+  const story = [
+    {
+      step: "1. 差が分かる",
+      head: `「${rival.label}」は${total}問中${rival.hits}問で紹介。自社は${self.hits}問。`,
+      body: `紹介されなかった質問のうち${lost.length}問で、代わりに「${rival.label}」が紹介されていました。`,
+    },
+    {
+      step: "2. 理由が分かる",
+      head: `AIが根拠にしたのは「${topSource?.domain}」などの比較記事。`,
+      body: "競合が引用されているページの種類と、自社サイトに足りない情報（例：「週3日から」の記載がない）が分かります。",
+    },
+    {
+      step: "3. 次にやることが決まる",
+      head: `まず「${first.title}」。`,
+      body: "直す場所・書き換え例・事前に確かめることを渡します。直したあと、同じ条件で測り直します。",
+    },
+  ];
 
   return (
     <div className="pb-8">
       {/* ファーストビュー：左揃えの見出しとCTA */}
       <section className="max-w-3xl pt-8 sm:pt-14">
-        <p className="text-sm font-semibold text-brand">WebサービスのAI検索診断</p>
+        <p className="text-sm font-semibold text-brand">ChatGPT・Geminiでの競合比較とサイト改善</p>
         <h1 className="mt-4 text-[2.125rem] font-bold leading-[1.25] tracking-tight text-slate-900 sm:text-[3rem] sm:leading-[1.2]">
           あなたのサービスは、
           <br />
@@ -74,6 +97,21 @@ export default function AiLandingPage() {
             全項目を見る →
           </Link>
         </p>
+      </section>
+
+      {/* 問題 → 理由 → 行動：買ったあとに何が分かり、何をするか（デモの数字） */}
+      <section className="mt-24">
+        <SectionHead label="診断で分かること" title="差が分かり、理由が分かり、次にやることが決まる。" />
+        <ol className="mt-8 grid overflow-hidden rounded-xl border border-slate-200 lg:grid-cols-3">
+          {story.map((st, i) => (
+            <li key={st.step} className={`min-w-0 p-5 sm:p-6 ${i ? "border-t border-slate-200 lg:border-l lg:border-t-0" : ""}`}>
+              <p className="text-sm font-semibold text-brand">{st.step}</p>
+              <p className="mt-2 text-lg font-bold leading-snug text-slate-900">{st.head}</p>
+              <p className="mt-2 text-slate-700">{st.body}</p>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-3 text-sm text-slate-600">数字はデモ（架空の求人サイト）です。紹介や問い合わせの増加をお約束するものではありません。</p>
       </section>
 
       {/* できること：説明は短く、報告書の実物で見せる */}
