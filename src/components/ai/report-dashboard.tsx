@@ -457,24 +457,134 @@ function Fold({ id, title, note, open, children }: { id: string; title: string; 
   );
 }
 
+// 今月やることを1行で言うと（診断項目ごと）
+const ACTION_TITLE: Record<string, string> = {
+  fetch: "サイトが開ける状態にする",
+  robots: "AIの読み取りを許可する",
+  sitemap: "サイトマップを登録する",
+  text: "説明を画像ではなく文章で書く",
+  title: "題名と説明文で、何のサービスかを示す",
+  pitch: "サービスを一文で説明する文を、トップに書く",
+  features: "強みの言葉を、事実を確かめて書き足す",
+  faq: "よくある質問のページを作る",
+  fresh: "更新日と掲載件数を書く",
+  pages: "固有の情報を1件1ページにする",
+  jsonld: "運営者とサービスの情報をデータで追加する",
+  llms: "AI向けの案内ファイルを置く",
+};
+
+// 状態の一言（競合との比較で決める）
+export function verdictOf(d: ReportData) {
+  if (!d.measured) return null;
+  const total = d.measured.total;
+  const self = pct(d.measured.hits, total);
+  const rival = topRival(d);
+  const rivalRate = rival ? pct(rival.hits, total) : 0;
+  const title = !rival ? "紹介の状況を計測しました" : rivalRate - self >= 10 ? "競合より紹介されにくい状態です" : self - rivalRate >= 10 ? "競合より多く紹介されています" : "競合と同じくらい紹介されています";
+  const sub = `${total}回答中${d.measured.hits}回答で紹介。${rival ? `最も多く紹介された競合「${rival.label}」との差は${Math.abs(rivalRate - self)}ポイントです。` : ""}`;
+  return { title, sub, self, rival, rivalRate };
+}
+
+// 報告書の冒頭：一言の結論、2つの数字、今月やること3つ（1行ずつ。押すと詳しく）
+export function ReportSummaryHero({ d, linkDetails = true }: { d: ReportData; linkDetails?: boolean }) {
+  const v = verdictOf(d);
+  const todo = todoOf(d.checks).slice(0, 3);
+  return (
+    <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      {v && (
+        <div className="grid gap-5 border-b border-slate-200 p-5 sm:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+          <div className="min-w-0">
+            <h2 className="text-[1.5rem] font-bold leading-snug text-slate-900 sm:text-[1.75rem]">{v.title}</h2>
+            <p className="mt-2 text-slate-700">{v.sub}</p>
+          </div>
+          <dl className="grid grid-cols-2 gap-6">
+            <div>
+              <dt className="text-sm font-medium text-slate-600">自社の紹介率</dt>
+              <dd className="font-num text-[2.5rem] font-semibold leading-none text-brand">
+                {v.self}
+                <span className="text-xl">%</span>
+              </dd>
+            </div>
+            {v.rival && (
+              <div>
+                <dt className="text-sm font-medium text-slate-600">最多の競合</dt>
+                <dd className="font-num text-[2.5rem] font-semibold leading-none text-slate-900">
+                  {v.rivalRate}
+                  <span className="text-xl">%</span>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      )}
+      <div id="fixes" className="scroll-mt-24 p-5 sm:p-6">
+        <h3 className="font-semibold text-slate-900">今月、優先して確認する3つのこと</h3>
+        {todo.length === 0 ? (
+          <p className="mt-2 text-slate-700">直す項目はありません。</p>
+        ) : (
+          <ol className="mt-3 divide-y divide-slate-200 border-y border-slate-200">
+            {todo.map((c, i) => (
+              <li key={c.key}>
+                <details className="group">
+                  <summary className="flex cursor-pointer list-none items-center gap-3 py-3">
+                    <span className="font-num text-lg font-semibold text-slate-400">{i + 1}</span>
+                    <span className="min-w-0 flex-1 font-semibold text-slate-900">{ACTION_TITLE[c.key] ?? c.title}</span>
+                    {c.kind && <span className="hidden shrink-0 rounded-md border border-slate-200 px-1.5 py-0.5 text-xs font-semibold text-slate-700 sm:inline">{FIX_KIND[c.kind].label}</span>}
+                    <span className="shrink-0 text-sm font-semibold text-brand">
+                      <span className="group-open:hidden">詳しく</span>
+                      <span className="hidden group-open:inline">閉じる</span>
+                    </span>
+                  </summary>
+                  <dl className="grid gap-x-4 gap-y-1.5 pb-4 pl-7 text-sm sm:grid-cols-[6.5rem_1fr]">
+                    <dt className="font-medium text-slate-600">わかったこと</dt>
+                    <dd className="min-w-0 text-slate-900">{c.detail}</dd>
+                    {c.where && (
+                      <>
+                        <dt className="font-medium text-slate-600">直す場所</dt>
+                        <dd className="min-w-0 break-all text-slate-900">{c.where}</dd>
+                      </>
+                    )}
+                    {c.verify && (
+                      <>
+                        <dt className="font-medium text-slate-600">確かめること</dt>
+                        <dd className="min-w-0 text-slate-900">{c.verify}</dd>
+                      </>
+                    )}
+                    {linkDetails && c.example && (
+                      <>
+                        <dt className="font-medium text-slate-600">書き換え例</dt>
+                        <dd>
+                          <a href={`#check-${c.key}`} className="font-semibold text-brand hover:underline">
+                            サイト診断の詳細で見る ↓
+                          </a>
+                        </dd>
+                      </>
+                    )}
+                  </dl>
+                </details>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // 報告書の本体：結論 → 今月やること → 数字 → 根拠のデータ → 技術的な詳細（必要な人だけ開く）
 export function ReportDashboard({ d, compact = false, expandDetails = false }: { d: ReportData; compact?: boolean; expandDetails?: boolean }) {
-  const conclusion = conclusionOf(d);
   return (
     <div className="space-y-5">
       <header id="overview" className="scroll-mt-24">
         <p className="text-sm font-semibold text-brand">AI検索の診断報告書</p>
-        <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-[1.75rem]">{d.name}</h1>
+        <h1 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">{d.name}</h1>
         <p className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-slate-600">
           {d.url && <span className="break-all">{d.url}</span>}
           <span>{d.measured ? `${fmtDay(d.measured.at)} 計測` : `${fmtDay(d.createdAt)} 作成`}</span>
         </p>
-        {conclusion && <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-slate-900 sm:text-lg">{conclusion}</p>}
       </header>
 
-      <Panel id="fixes" title="今月やること" note="影響が大きく、確かめやすい順。「確かめること」を確認してから直してください">
-        <TopFixes d={d} />
-      </Panel>
+      <ReportSummaryHero d={d} linkDetails={!compact} />
 
       <section id="numbers" className="scroll-mt-24 space-y-3">
         <KpiStrip items={compact ? reportKpis(d).slice(0, 4) : reportKpis(d)} />

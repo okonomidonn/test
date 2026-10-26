@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { btn } from "@/components/ai/ds";
+import { MarketCompare, WHY_AFFORDABLE } from "@/components/ai/marketing";
 
 export const metadata = { title: "料金 | ススメル" };
 
@@ -91,21 +92,53 @@ export default function PricingPage() {
                 {c.price}
                 {c.unit && <span className="ml-1 text-sm font-normal text-slate-600">{c.unit}</span>}
               </p>
-              <dl className="mt-3 divide-y divide-slate-100 border-t border-slate-200 text-sm">
-                {ROWS.filter((r) => r.cells[c.key] !== "—").map((r) => (
-                  <div key={r.label} className="grid grid-cols-[6.5rem_1fr] gap-3 py-2">
-                    <dt className="font-semibold text-slate-600">{r.label}</dt>
-                    <dd className="text-slate-900">{r.cells[c.key]}</dd>
-                  </div>
-                ))}
-              </dl>
+              <p className="mt-2 text-sm text-slate-800">
+                <span className="font-semibold">こんな方に：</span>
+                {ROWS[0].cells[c.key]}
+              </p>
               <Link href={c.cta.href} className={`${btn("recommended" in c ? "primary" : "secondary")} mt-3 w-full`}>
                 {c.cta.label}
               </Link>
+              {/* 詳しい内容は開いて見る */}
+              <details className="group mt-3 border-t border-slate-200 pt-2">
+                <summary className="cursor-pointer list-none py-1 text-sm font-semibold text-brand">
+                  <span className="group-open:hidden">提供内容と契約条件を見る</span>
+                  <span className="hidden group-open:inline">閉じる</span>
+                </summary>
+                <dl className="divide-y divide-slate-100 text-sm">
+                  {ROWS.slice(1)
+                    .filter((r) => r.cells[c.key] !== "—")
+                    .map((r) => (
+                      <div key={r.label} className="grid grid-cols-[6.5rem_1fr] gap-3 py-2">
+                        <dt className="font-semibold text-slate-600">{r.label}</dt>
+                        <dd className="text-slate-900">{r.cells[c.key]}</dd>
+                      </div>
+                    ))}
+                </dl>
+              </details>
             </section>
           ))}
         </div>
         <p className="text-sm text-slate-600">トライアルに含まないもの：新しいページの制作、外部媒体への掲載、大規模な実装。</p>
+      </section>
+
+      <section className="space-y-5 border-t border-slate-200 pt-10">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">一般的なGEO・LLMO対策より、始めやすい価格です</h2>
+          <p className="mt-1 text-slate-600">公開されている料金の中央値と比べました。</p>
+        </div>
+        <MarketCompare />
+        <div>
+          <h3 className="text-lg font-bold text-slate-900">この価格でできる理由</h3>
+          <dl className="mt-3 divide-y divide-slate-200 border-y border-slate-200">
+            {WHY_AFFORDABLE.map(([k, v]) => (
+              <div key={k} className="grid gap-1 py-3 sm:grid-cols-[14rem_1fr] sm:gap-6">
+                <dt className="font-semibold text-slate-900">{k}</dt>
+                <dd className="text-slate-700">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </section>
 
       <ul className="max-w-3xl list-disc space-y-1 border-t border-slate-200 pt-6 pl-5 text-sm text-slate-600">
