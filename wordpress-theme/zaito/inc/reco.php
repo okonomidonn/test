@@ -2,11 +2,11 @@
 /**
  * トップページの「あなたへのおすすめ」（5件）。lp/reco.js が admin-ajax（zaito_reco）から読み込む。
  *
- * - 本人確認済みのブラウザ（zaito_my_id）では、登録した希望条件（立場・やってみたい仕事・日数・希望時給）で
- *   掲載中の求人に点数をつけ、高い順に返す。理由（「SNS運用に興味がある」など）も添える。
- * - それ以外のブラウザには、未経験OK・高時給・新着・学生OKを重く見た共通のおすすめを返す。
+ * - 登録したブラウザ（本人確認の前でも、登録のCookieがあれば）では、登録した希望条件に合う求人を、
+ *   生成AI（inc/reco-ai.php）で選ぶ。理由（「SNS運用に興味あり」など）も添える。
+ * - 登録していないブラウザには、生成AIが選んだ共通のおすすめ（1日1回選び直す）を返す。
+ * - 生成AIが使えないとき（キーがない・時間切れなど）は、下の点数づけで選ぶ。
  * - このブラウザで見終わった求人（seen）と、保存済みの求人は除く。全部見終わったら除かずに返す。
- * - 点数は決まったルールで計算する（外部のAIには何も送らない）。
  * - ページはキャッシュされるため、中身はここで作らず、JSが読み込んで並べる。
  */
 
@@ -40,12 +40,16 @@ function zaito_reco_interest_words() {
 function zaito_reco_prefs() {
     $id = function_exists( 'zaito_my_id' ) ? zaito_my_id() : 0;
     if ( ! $id ) {
+        $id = zaito_remote_member_id();
+    }
+    if ( ! $id ) {
         return null;
     }
     $interests = get_post_meta( $id, 'interests', true );
     $favs      = function_exists( 'zaito_fav_get' ) ? zaito_fav_get( $id ) : array();
     return array(
         'role'      => (string) get_post_meta( $id, 'role', true ),
+        'grade'     => (string) get_post_meta( $id, 'grade', true ),
         'days'      => (string) get_post_meta( $id, 'days', true ),
         'min_pay'   => (string) get_post_meta( $id, 'min_pay', true ),
         'interests' => is_array( $interests ) ? $interests : array(),
@@ -132,6 +136,24 @@ function zaito_handle_reco() {
         list( $s, $why ) = zaito_reco_score( $j, $has ? $p : null, $now );
         $rows[] = array( 'slug' => $j['slug'], 's' => $s, 'i' => $i, 'why' => $why );
     }
+    // 生成AIの順位があれば、それを先に使う（見終わった・保存済みの求人は除く）。
+    $open = array_values( array_filter( zaito_remote_jobs(), function ( $j ) {
+        return empty( $j['closed'] );
+    } ) );
+    $ai   = function_exists( 'zaito_reco_ai_rank' ) ? zaito_reco_ai_rank( $open, $has ? $p : null ) : null;
+    if ( $ai ) {
+        $picked = array_values( array_filter( $ai, function ( $r ) use ( $skip ) {
+            return ! in_array( $r['slug'], $skip, true );
+        } ) );
+        if ( count( $picked ) >= ZAITO_RECO_N ) {
+            wp_send_json_success( array(
+                'mode'     => $has ? 'member' : ( $p ? 'member_noprefs' : 'guest' ),
+                'ai'       => true,
+                'all_seen' => false,
+                'items'    => array_slice( $picked, 0, ZAITO_RECO_N ),
+            ) );
+        }
+    }
     $fresh = array_values( array_filter( $rows, function ( $r ) use ( $skip ) {
         return ! in_array( $r['slug'], $skip, true );
     } ) );
@@ -170,6 +192,7 @@ function zaito_handle_reco() {
 
     wp_send_json_success( array(
         'mode'     => $has ? 'member' : ( $p ? 'member_noprefs' : 'guest' ),
+        'ai'       => false,
         'all_seen' => $all_seen,
         'items'    => array_map( function ( $r ) {
             return array( 'slug' => $r['slug'], 'why' => $r['why'] );

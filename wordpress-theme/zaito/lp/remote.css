@@ -692,3 +692,31 @@ body.has-sbar{padding-bottom:96px}
 @media(max-width:719px){.reco{max-width:none}}
 .reco-deck>.sw-stack{grid-area:1/1}
 .hero-in:has(.reco:not([hidden])){align-items:center}
+
+/* 今日のおすすめを、その日初めての訪問で正面に出す（後ろの一覧はうっすら見える） */
+html.reco-lock,html.reco-lock body{overflow:hidden}
+.reco-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(11,21,48,.42);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:reco-fade .25s ease}
+.reco-modal[hidden]{display:none}
+.reco-modal-in{position:relative;width:100%;max-width:420px;max-height:100%;overflow:auto;padding:22px 18px 20px;border-radius:24px;background:var(--z-surface);box-shadow:0 30px 70px -20px rgba(11,21,48,.55);animation:reco-pop .35s cubic-bezier(.2,.9,.3,1.2)}
+.reco-modal .reco{max-width:none}
+.reco-modal .reco h2{font-size:21px}
+.reco-modal-x{position:absolute;top:14px;right:14px;z-index:4;width:38px;height:38px;border:0;border-radius:999px;background:#fff;color:var(--z-navy);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:inset 0 0 0 1px var(--z-border)}
+.reco-modal .reco-hd{padding-right:48px}
+@keyframes reco-fade{from{opacity:0}}
+@keyframes reco-pop{from{opacity:0;transform:translateY(16px) scale(.97)}}
+@media(max-width:600px){.reco-modal{padding:12px}.reco-modal-in{padding:18px 14px 16px;border-radius:20px}}
+
+/* スワイプできることを伝える：最初のカードが左右に少し揺れ、手のアイコンを出す（触ったら消える） */
+.sw-hint{animation:sw-nudge 2.4s ease-in-out .6s 2}
+@keyframes sw-nudge{0%,100%{transform:none}20%{transform:translateX(26px) rotate(3deg)}45%{transform:translateX(-22px) rotate(-3deg)}65%{transform:none}}
+.reco-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:2;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:rgba(11,21,48,.86);color:#fff;font-size:13px;font-weight:700;white-space:nowrap;pointer-events:none}
+.reco-hint .ms{font-size:20px;animation:sw-hand 1.2s ease-in-out infinite}
+@keyframes sw-hand{0%,100%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+@media(prefers-reduced-motion:reduce){.sw-hint,.reco-hint .ms,.reco-modal,.reco-modal-in{animation:none}}
+
+/* 選んでいる間の仮のカード */
+.reco-skel{display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:20px;background:#fff;border:1px solid var(--z-border);min-height:300px}
+.reco-skel span{display:block;height:16px;border-radius:8px;background:linear-gradient(90deg,var(--z-chip) 25%,#fff 50%,var(--z-chip) 75%);background-size:200% 100%;animation:reco-shine 1.2s linear infinite}
+.reco-skel span:nth-child(1){width:40%}.reco-skel span:nth-child(2){width:85%;height:22px}.reco-skel span:nth-child(3){width:60%}
+@keyframes reco-shine{to{background-position:-200% 0}}
+.reco-modal-in:focus{outline:none}

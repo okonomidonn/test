@@ -35,6 +35,26 @@ jobs:
           ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
             "mkdir -p zaito-work.com/public_html/wp-content/themes/zaito"
 
+      - name: Install PHP libraries (Anthropic SDK)
+        run: |
+          cd wordpress-theme/zaito
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+          # ライブラリのファイルをURLで直接開けないようにする。
+          printf 'Require all denied\n' > vendor/.htaccess
+
+      - name: Write API key outside public_html (only when the secret is set)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "ANTHROPIC_API_KEY is not set. Recommendations use the rule-based fallback."
+            exit 0
+          fi
+          # キーはコマンドの引数に出さず、標準入力で渡す。ファイルは本人だけが読めるようにする。
+          printf "<?php\ndefine( 'ZAITO_ANTHROPIC_API_KEY', '%s' );\n" "$ANTHROPIC_API_KEY" | \
+            ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            'umask 077; cat > zaito-work.com/zaito-secrets.php'
+
       - name: Deploy theme via rsync
         run: |
           rsync -avz --delete \

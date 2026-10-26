@@ -2442,3 +2442,4 @@ require_once get_template_directory() . '/inc/newsletter.php';
 require_once get_template_directory() . '/inc/mypage.php';
 // トップページの「今日のおすすめ」（5件）
 require_once get_template_directory() . '/inc/reco.php';
+require_once get_template_directory() . '/inc/reco-ai.php';

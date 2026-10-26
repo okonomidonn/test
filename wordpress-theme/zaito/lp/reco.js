@@ -5,6 +5,8 @@
  * - 登録していないブラウザでも見られるが、スワイプ（♡・×）には登録が要る。押すと登録の案内を出す。
  *   カードを押して詳細を見るのは、登録していなくてもできる。
  * - 見終わった求人はこのブラウザに覚えておき、次は別の5件を出す。
+ * - その日初めてトップページを開いたときだけ、おすすめを画面の正面に大きく出す（後ろに一覧がうっすら見える）。
+ *   閉じると、見出しの横（スマホでは下）の元の場所に戻る。2回目以降はその場所にだけ出す。
  * - 企業には何も送らない（応募は今までどおり各企業の募集ページで行う）。
  */
 (function () {
@@ -18,6 +20,47 @@
   var gate = root.querySelector('.reco-gate'), end = root.querySelector('.reco-end');
   var sub = root.querySelector('.reco-sub'), num = root.querySelector('.reco-n');
   var top = document.getElementById('ztop'), profile = document.getElementById('zprofile');
+
+  // その日初めての訪問かどうか（このブラウザの日付で数える）。
+  var DAY = 'zaito_reco_day';
+  var d = new Date();
+  var today = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  var firstToday = false;
+  try { firstToday = localStorage.getItem(DAY) !== today; } catch (e) {}
+  var home = document.createComment('reco');
+  root.parentNode.insertBefore(home, root);
+  var modal = document.createElement('div');
+  modal.className = 'reco-modal';
+  modal.hidden = true;
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'zreco-t');
+  modal.innerHTML = '<div class="reco-modal-in" tabindex="-1"><button type="button" class="reco-modal-x" aria-label="閉じる"><span class="ms" aria-hidden="true">close</span></button></div>';
+  document.body.appendChild(modal);
+  var modalIn = modal.firstChild;
+  var backFocus = null;
+  function openModal() {
+    backFocus = document.activeElement;
+    modalIn.appendChild(root);
+    root.hidden = false;
+    modal.hidden = false;
+    document.documentElement.classList.add('reco-lock');
+    try { localStorage.setItem(DAY, today); } catch (e) {}
+    modalIn.focus({ preventScroll: true });
+    track('reco_modal_open', {});
+  }
+  function closeModal() {
+    if (modal.hidden) return;
+    modal.hidden = true;
+    document.documentElement.classList.remove('reco-lock');
+    home.parentNode.insertBefore(root, home.nextSibling);
+    root.hidden = !items.length;
+    if (backFocus && backFocus.focus) backFocus.focus({ preventScroll: true });
+    track('reco_modal_close', { seen: pos });
+  }
+  modal.querySelector('.reco-modal-x').addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden && gate.hidden) closeModal(); });
 
   function member() { return /(?:^|;\s*)zaito_m=1/.test(document.cookie); }
   function track(name, p) { if (typeof window.gtag === 'function') window.gtag('event', name, p || {}); }
@@ -84,8 +127,22 @@
       stack.appendChild(c);
     }
     more.href = cardFor(current().slug).querySelector('a').href;
-    drag(stack.querySelector('.sw-top'));
+    var topCard = stack.querySelector('.sw-top');
+    if (!hinted && pos === 0) {
+      topCard.classList.add('sw-hint');
+      topCard.insertAdjacentHTML('beforeend', '<span class="reco-hint" aria-hidden="true"><span class="ms">swipe</span>右へで「気になる」・左へでスキップ</span>');
+    }
+    drag(topCard);
   }
+  var hinted = false;
+  function unhint() {
+    if (hinted) return;
+    hinted = true;
+    stack.querySelectorAll('.sw-hint').forEach(function (c) { c.classList.remove('sw-hint'); });
+    stack.querySelectorAll('.reco-hint').forEach(function (h) { h.remove(); });
+  }
+  root.addEventListener('pointerdown', unhint, true);
+  root.addEventListener('keydown', unhint, true);
 
   function finish() {
     stack.hidden = true;
@@ -208,6 +265,7 @@
       b.className = 'reco-prefs';
       b.textContent = '希望の条件を教える';
       b.addEventListener('click', function () {
+        closeModal();
         document.getElementById('signup').scrollIntoView({ behavior: rm ? 'auto' : 'smooth' });
         track('profile_open', { from: 'reco' });
       });
@@ -221,6 +279,7 @@
   end.addEventListener('click', function (e) {
     if (e.target.closest('.reco-next')) { load(); return; }
     var bar = document.querySelector('.count-bar');
+    if (e.target.closest('.reco-favs') || e.target.closest('.reco-all')) closeModal();
     if (e.target.closest('.reco-favs')) {
       var q = document.querySelector('.qfav');
       if (q && q.getAttribute('aria-pressed') !== 'true') q.click();
@@ -235,31 +294,51 @@
     else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
   });
 
+  var TEXT_AI = {
+    member: '登録した希望条件をもとに、AIがあなたに合いそうな求人を選びました。',
+    member_noprefs: 'AIが選んだおすすめです。希望の条件を教えると、もっとあなたに合う求人を選べます。',
+    guest: 'AIが、初めての人にまず見てほしい求人を選びました。無料登録すると、スワイプで保存できます。'
+  };
   var TEXT = {
     member: '登録した希望条件から、あなたに合いそうな求人を選びました。',
     member_noprefs: '希望の条件を教えると、もっとあなたに合う求人を選べます。',
     guest: '未経験OK・高時給・新着から選びました。無料登録すると、スワイプで保存できます。'
   };
+  function loading(on) {
+    root.classList.toggle('is-loading', on);
+    if (on) {
+      sub.textContent = 'あなたに合う求人を選んでいます…';
+      stack.innerHTML = '<div class="reco-skel" aria-hidden="true"><span></span><span></span><span></span></div>';
+      stack.hidden = false;
+      act.hidden = true;
+      end.hidden = true;
+    }
+  }
   function load() {
+    loading(true);
     var fd = new FormData();
     fd.append('action', 'zaito_reco');
     seen().forEach(function (s) { fd.append('seen[]', s); });
     return fetch(ajax, { method: 'POST', body: fd, credentials: 'same-origin' })
       .then(function (r) { return r.json(); })
       .then(function (res) {
-        if (!res || !res.success) return;
+        loading(false);
+        if (!res || !res.success) { closeModal(); return; }
         items = res.data.items.filter(function (it) { return cardFor(it.slug); });
-        if (!items.length) return;
+        if (!items.length) { closeModal(); return; }
         pos = 0; liked = 0;
-        sub.textContent = TEXT[res.data.mode] || TEXT.guest;
+        var T = res.data.ai ? TEXT_AI : TEXT;
+        sub.textContent = T[res.data.mode] || T.guest;
         if (res.data.mode === 'member_noprefs') showJoined(true);
         root.hidden = false;
         render();
-        track('reco_show', { mode: res.data.mode });
+        track('reco_show', { mode: res.data.mode, ai: res.data.ai ? 1 : 0 });
       })
-      .catch(function () {});
+      .catch(function () { loading(false); closeModal(); });
   }
   // 希望条件を答え終わったら、おすすめを選び直す。
   if (profile) profile.addEventListener('submit', function () { setTimeout(load, 1200); });
+  // 条件を付けたURL（共有されたリンクなど）や、ページの途中への移動で来た人には、正面には出さない。
+  if (firstToday && !location.hash && !/[?&](g|who|pay|days|newbie|fav)=/.test(location.search)) openModal();
   load();
 })();

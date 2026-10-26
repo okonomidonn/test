@@ -1,0 +1,19 @@
+{
+    "name": "zaito/theme",
+    "description": "zaito テーマが使うライブラリ（おすすめを選ぶ生成AIの呼び出し）。vendor はデプロイのときに composer install で作る。",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "anthropic-ai/sdk": "^1.3",
+        "guzzlehttp/guzzle": "^7.9"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": false
+        },
+        "platform": {
+            "php": "8.2"
+        },
+        "optimize-autoloader": true
+    }
+}
