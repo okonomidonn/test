@@ -3,6 +3,11 @@
 import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { after } from "next/server";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { requireUser } from "@/lib/session";
+import { notifyLead } from "@/lib/leads/notifications";
 
 export type LeadField = "company" | "name" | "email" | "websiteUrl" | "message";
 export type LeadState = {
@@ -56,6 +61,23 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
   if (await prisma.lead.findFirst({ where: { email: parsed.data.email, createdAt: { gt: since } } })) return { done: true };
 
   const session = await auth();
-  await prisma.lead.create({ data: { ...parsed.data, userId: session?.user?.id ?? null } });
+  const lead = await prisma.lead.create({ data: { ...parsed.data, userId: session?.user?.id ?? null } });
+  after(async () => {
+    try { await notifyLead(lead.id); } catch { console.error("lead_notification_failed", lead.id); }
+  });
   return { done: true };
+}
+
+export async function updateLeadStatus(id: string, formData: FormData) {
+  await requireUser();
+  const status = z.enum(["NEW", "CONTACTED", "COMPLETED"]).parse(formData.get("status"));
+  await prisma.lead.update({ where: { id }, data: { status } });
+  revalidatePath("/ai/app/leads");
+}
+
+export async function retryLeadNotification(id: string) {
+  await requireUser();
+  const result = await notifyLead(id);
+  revalidatePath("/ai/app/leads");
+  redirect(`/ai/app/leads?notification=${result}`);
 }

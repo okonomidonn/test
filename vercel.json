@@ -1,6 +1,7 @@
 {
   "crons": [
     { "path": "/api/cron/tick", "schedule": "0 21 * * *" },
-    { "path": "/api/cron/ai-check", "schedule": "30 21 * * *" }
+    { "path": "/api/cron/ai-check", "schedule": "30 21 * * *" },
+    { "path": "/api/cron/lead-notifications", "schedule": "0 22 * * *" }
   ]
 }
