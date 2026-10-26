@@ -39,7 +39,7 @@ export default function ToolPage() {
         <div className="min-w-0 max-w-xl">
           <p className="text-sm font-semibold text-brand">セルフ版ツール</p>
           <h1 className="mt-3 text-[2rem] font-bold leading-tight text-slate-900 sm:text-[2.5rem]">
-            自分のペースで、<span className="text-slate-500">何度でも測る。</span>
+            自分のペースで、<span>何度でも測る。</span>
           </h1>
           <p className="mt-5 text-lg text-slate-600">質問づくりから計測、直す場所の確認までを、自分で回したいチーム向けです。月4,980円（税込）から、いつでも解約できます。</p>
           <div className="mt-8 flex flex-wrap gap-3">

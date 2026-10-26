@@ -33,7 +33,7 @@ export function SectionHead({ label, title, sub, id }: { label?: string; title: 
       {label && <p className="text-sm font-semibold text-brand">{label}</p>}
       <h2 className="mt-2 text-[1.625rem] font-bold text-slate-900 sm:text-[2rem]">
         {title}
-        {sub && <span className="text-slate-500"> {sub}</span>}
+        {sub && <span> {sub}</span>}
       </h2>
     </div>
   );

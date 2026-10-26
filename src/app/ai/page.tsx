@@ -58,7 +58,7 @@ export default function AiLandingPage() {
         <h1 className="mt-4 text-[2.125rem] font-bold leading-[1.25] tracking-tight text-slate-900 sm:text-[3rem] sm:leading-[1.2]">
           あなたのサービスは、
           <br />
-          <span className="text-slate-500">AIの比較候補に入っていますか？</span>
+          <span>AIの比較候補に入っていますか？</span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-slate-600">ChatGPT・Geminiでの紹介状況を調べ、競合との差と改善すべきページを明らかにします。</p>
         <div className="mt-8 flex flex-wrap gap-3">
@@ -189,7 +189,7 @@ export default function AiLandingPage() {
       <section className="mt-16 flex flex-col gap-6 border-t border-slate-200 pt-10 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-2xl">
           <h2 className="text-[1.625rem] font-bold text-slate-900 sm:text-[2rem]">
-            まずは無料で診断。<span className="text-slate-500">会社名とURLだけで申し込めます。</span>
+            まずは無料で診断。<span>会社名とURLだけで申し込めます。</span>
           </h2>
           <p className="mt-3 text-sm text-slate-600">AIの回答は毎回変わるため、結果は目安です。紹介や問い合わせの増加をお約束するものではありません。</p>
         </div>

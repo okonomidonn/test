@@ -51,7 +51,7 @@ export default function MethodPage() {
         <header className="pb-8">
           <p className="text-sm font-semibold text-brand">計測のしかたと進め方</p>
           <h1 className="mt-2 text-[1.875rem] font-bold leading-tight text-slate-900 sm:text-[2.25rem]">
-            何を、どう測っているか。<span className="text-slate-500">分かることと、分からないこと。</span>
+            何を、どう測っているか。<span>分かることと、分からないこと。</span>
           </h1>
         </header>
 
