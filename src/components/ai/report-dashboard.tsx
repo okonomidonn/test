@@ -1,4 +1,5 @@
-import type { AuditCheck } from "@/lib/ai-check/audit";
+import Link from "next/link";
+import { FIX_KIND, type AuditCheck } from "@/lib/ai-check/audit";
 import type { PagePlan } from "@/lib/ai-check/suggest";
 import { CopyButton } from "@/components/ai/copy-button";
 import { KpiStrip, PriorityBadge, ShareRow } from "@/components/ai/ds";
@@ -25,7 +26,29 @@ const pct = (n: number, total: number) => (total ? Math.round((n / total) * 100)
 
 // 重い順（直す → 直すとよい）
 export function todoOf(checks: AuditCheck[]) {
-  return [...checks.filter((c) => c.status === "ng"), ...checks.filter((c) => c.status === "warn")];
+  const sev = { ng: 0, warn: 1 } as const;
+  const kind = { tech: 0, info: 1, hypothesis: 2 } as const;
+  return checks
+    .filter((c): c is AuditCheck & { status: "ng" | "warn" } => c.status === "ng" || c.status === "warn")
+    .sort((a, b) => sev[a.status] - sev[b.status] || kind[a.kind ?? "info"] - kind[b.kind ?? "info"]);
+}
+
+// 結論：紹介率と、いちばん紹介されている競合との差、代わりに紹介された質問の数
+export function conclusionOf(d: ReportData): string | null {
+  if (!d.measured) return null;
+  const total = d.measured.total;
+  const self = pct(d.measured.hits, total);
+  const rival = [...d.ranking].filter((r) => !r.self).sort((a, b) => b.hits - a.hits)[0];
+  const missed = d.questions.filter((q) => q.hits === 0);
+  const parts = [`AIに紹介された割合は${self}%（${total}回答中${d.measured.hits}回）。`];
+  if (rival && rival.hits > d.measured.hits) {
+    const lost = missed.filter((q) => q.others.includes(rival.label)).length;
+    parts.push(`いちばん多く紹介された「${rival.label}」は${pct(rival.hits, total)}%で、差は${pct(rival.hits, total) - self}ポイントです。`);
+    if (lost) parts.push(`紹介されなかった${missed.length}問のうち${lost}問で、代わりに「${rival.label}」が紹介されています。`);
+  } else if (rival) {
+    parts.push("回答に出たサービスの中で、最も多く紹介されています。");
+  }
+  return parts.join("");
 }
 
 const SOURCE_KIND = { official: "自社サイト", platform: "比較・レビュー・SNS", other: "その他の記事" } as const;
@@ -43,6 +66,10 @@ function rankOfSelf(d: ReportData) {
   return { pos: sorted.findIndex((r) => r.self) + 1, of: sorted.length };
 }
 
+function topRival(d: ReportData) {
+  return [...d.ranking].filter((r) => !r.self).sort((a, b) => b.hits - a.hits)[0];
+}
+
 export function reportKpis(d: ReportData) {
   const total = d.measured?.total ?? 0;
   const { pos, of } = rankOfSelf(d);
@@ -50,7 +77,13 @@ export function reportKpis(d: ReportData) {
   const own = d.sources.filter((s) => s.kind === "official").reduce((n, s) => n + s.count, 0);
   const todo = todoOf(d.checks).length;
   return [
-    { label: "紹介率", value: d.measured ? String(pct(d.measured.hits, total)) : "—", unit: "%", note: d.measured ? `${total}回答中 ${d.measured.hits}回 紹介` : "未計測", emphasis: true },
+    {
+      label: "紹介率",
+      value: d.measured ? String(pct(d.measured.hits, total)) : "—",
+      unit: "%",
+      note: d.measured ? `${total}回答中 ${d.measured.hits}回。${topRival(d) ? `競合の最大は${pct(topRival(d)!.hits, total)}%` : ""}` : "未計測",
+      emphasis: true,
+    },
     { label: "比較候補の中の順位", value: d.measured && pos ? String(pos) : "—", unit: "位", note: d.measured ? `回答に出た${of}サービス中` : "未計測" },
     { label: "自社サイトが引用された割合", value: citeTotal ? String(pct(own, citeTotal)) : "—", unit: "%", note: citeTotal ? `引用${citeTotal}件中 ${own}件` : "引用なし" },
     { label: "サイト診断", value: d.score !== null ? String(d.score) : "—", unit: "点", note: d.score !== null ? `直すところ ${todo}項目` : "未診断" },
@@ -149,20 +182,55 @@ export function TopFixes({ d, limit = 3 }: { d: ReportData; limit?: number }) {
   return (
     <ol className="divide-y divide-slate-200">
       {todo.map((c, i) => (
-        <li key={c.key} className="grid gap-x-4 gap-y-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[2rem_7rem_1fr]">
+        <li key={c.key} className="grid gap-x-4 gap-y-1.5 py-3.5 first:pt-0 last:pb-0 sm:grid-cols-[2rem_1fr]">
           <span className="font-num text-lg font-semibold text-slate-400">{String(i + 1).padStart(2, "0")}</span>
-          <span>
-            <PriorityBadge status={c.status} />
-          </span>
-          <span className="min-w-0">
-            <a href={`#check-${c.key}`} className="font-semibold text-slate-900 hover:text-brand">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <PriorityBadge status={c.status} />
+              {c.kind && <span className="rounded-md border border-slate-200 px-1.5 py-0.5 text-xs font-semibold text-slate-700">{FIX_KIND[c.kind].label}</span>}
+            </div>
+            <a href={`#check-${c.key}`} className="mt-1 block font-semibold text-slate-900 hover:text-brand">
               {c.title}
             </a>
-            {c.where && <span className="block break-all text-sm text-slate-600">{c.where}</span>}
-          </span>
+            {c.where && <p className="break-all text-sm text-slate-600">{c.where}</p>}
+            {c.verify && (
+              <p className="mt-1 text-sm text-slate-800">
+                <span className="font-semibold">確かめること：</span>
+                {c.verify}
+              </p>
+            )}
+          </div>
         </li>
       ))}
     </ol>
+  );
+}
+
+// 数字の見方と計測の条件
+export function HowToRead({ d }: { d: ReportData }) {
+  return (
+    <details className="group rounded-xl border border-slate-200 bg-white">
+      <summary className="cursor-pointer list-none px-4 py-3 text-sm font-semibold text-slate-900 sm:px-5">
+        <span className="mr-1 inline-block transition group-open:rotate-90" aria-hidden>
+          ▸
+        </span>
+        数字の見方と計測の条件
+      </summary>
+      <dl className="grid gap-x-6 gap-y-3 border-t border-slate-200 px-4 py-4 text-sm sm:grid-cols-[10rem_1fr] sm:px-5">
+        <dt className="font-semibold text-slate-700">計測の条件</dt>
+        <dd className="text-slate-800">{d.description}</dd>
+        <dt className="font-semibold text-slate-700">紹介率</dt>
+        <dd className="text-slate-800">AIの回答のうち、サービス名かサイトのURLが出た回答の割合。良し悪しは、同じ質問での競合の紹介率と比べて判断します。</dd>
+        <dt className="font-semibold text-slate-700">比較候補の中の順位</dt>
+        <dd className="text-slate-800">同じ質問の回答に出たサービスを、紹介された回数で並べたときの順位です。</dd>
+        <dt className="font-semibold text-slate-700">自社サイトが引用された割合</dt>
+        <dd className="text-slate-800">AIが根拠として示したサイトのうち、自社サイトの割合です。</dd>
+        <dt className="font-semibold text-slate-700">サイト診断の点数</dt>
+        <dd className="text-slate-800">各項目を OK＝2点・直すとよい＝1点・直す＝0点 で数え、満点に対する割合を100点満点にしたものです（参考の項目は数えません）。紹介率とは別の指標で、点数が高くても紹介されるとは限りません。</dd>
+        <dt className="font-semibold text-slate-700">限界</dt>
+        <dd className="text-slate-800">AIの回答は毎回変わります。APIで聞いた結果で、一人ひとりの画面での表示とは一致しないことがあります。</dd>
+      </dl>
+    </details>
   );
 }
 
@@ -251,6 +319,7 @@ export function AuditItem({ c }: { c: AuditCheck }) {
     <li id={`check-${c.key}`} className="scroll-mt-24 py-3 first:pt-0 last:pb-0">
       <div className="flex flex-wrap items-center gap-2">
         <PriorityBadge status={c.status} />
+        {open && c.kind && <span className="rounded-md border border-slate-200 px-1.5 py-0.5 text-xs font-semibold text-slate-700">{FIX_KIND[c.kind].label}</span>}
         <span className="font-semibold text-slate-900">{c.title}</span>
       </div>
       <p className="mt-1 text-sm text-slate-700">{c.detail}</p>
@@ -272,6 +341,12 @@ export function AuditItem({ c }: { c: AuditCheck }) {
             <>
               <dt className="font-medium text-slate-600">直し方</dt>
               <dd className="min-w-0 text-slate-900">{c.fix}</dd>
+            </>
+          )}
+          {c.verify && (
+            <>
+              <dt className="font-medium text-slate-600">確かめること</dt>
+              <dd className="min-w-0 text-slate-900">{c.verify}</dd>
             </>
           )}
         </dl>
@@ -329,8 +404,12 @@ export function PlanList({ plans }: { plans: PagePlan[] }) {
         <li key={p.title} className="grid gap-x-6 gap-y-2 py-4 first:pt-0 last:pb-0 lg:grid-cols-[2rem_minmax(0,1fr)_minmax(0,1.2fr)]">
           <span className="font-num text-lg font-semibold text-slate-400">{String(i + 1).padStart(2, "0")}</span>
           <div className="min-w-0">
-            <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-xs font-semibold text-slate-700">{p.type}</span>
+            <span className="flex flex-wrap gap-1.5">
+              <span className={`rounded border px-1.5 py-0.5 text-xs font-semibold ${p.action === "既存ページを直す" ? "border-brand/30 bg-brand-soft text-brand-dark" : "border-amber-200 bg-amber-50 text-amber-900"}`}>{p.action}</span>
+              <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-xs font-semibold text-slate-700">{p.type}</span>
+            </span>
             <p className="mt-1.5 font-semibold text-slate-900">{p.title}</p>
+            <p className="mt-1 text-sm text-slate-700">{p.reason}</p>
             <p className="mt-1 text-sm text-slate-600">答える質問：{p.questions.map((q) => `「${q}」`).join("")}</p>
           </div>
           <dl className="min-w-0 space-y-1.5 text-sm">
@@ -350,16 +429,37 @@ export function PlanList({ plans }: { plans: PagePlan[] }) {
 }
 
 export const REPORT_SECTIONS = [
-  { id: "overview", label: "概要" },
-  { id: "fixes", label: "最初に直すこと" },
+  { id: "overview", label: "結論" },
+  { id: "fixes", label: "今月やること" },
+  { id: "numbers", label: "数字" },
   { id: "questions", label: "質問ごとの結果" },
   { id: "sources", label: "競合と引用元" },
-  { id: "audit", label: "サイト診断" },
+  { id: "audit", label: "サイト診断の詳細" },
   { id: "pages", label: "作るページの案" },
 ] as const;
 
-// 報告書の本体（見出し → 指標 → 推移と比較 → 直すこと → 質問 → 競合と引用元 → 診断 → ページの案）
-export function ReportDashboard({ d, compact = false }: { d: ReportData; compact?: boolean }) {
+// 折りたたみ（印刷用の報告書では最初から開く）
+function Fold({ id, title, note, open, children }: { id: string; title: string; note: string; open: boolean; children: React.ReactNode }) {
+  return (
+    <details id={id} open={open} className="group scroll-mt-24 rounded-xl border border-slate-200 bg-white">
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-3 sm:px-5">
+        <span className="min-w-0">
+          <span className="block text-base font-semibold text-slate-900">{title}</span>
+          <span className="block text-sm text-slate-600">{note}</span>
+        </span>
+        <span className="mt-0.5 shrink-0 text-sm font-semibold text-brand">
+          <span className="group-open:hidden">開く</span>
+          <span className="hidden group-open:inline">閉じる</span>
+        </span>
+      </summary>
+      <div className="border-t border-slate-200 p-4 sm:p-5">{children}</div>
+    </details>
+  );
+}
+
+// 報告書の本体：結論 → 今月やること → 数字 → 根拠のデータ → 技術的な詳細（必要な人だけ開く）
+export function ReportDashboard({ d, compact = false, expandDetails = false }: { d: ReportData; compact?: boolean; expandDetails?: boolean }) {
+  const conclusion = conclusionOf(d);
   return (
     <div className="space-y-5">
       <header id="overview" className="scroll-mt-24">
@@ -369,50 +469,51 @@ export function ReportDashboard({ d, compact = false }: { d: ReportData; compact
           {d.url && <span className="break-all">{d.url}</span>}
           <span>{d.measured ? `${fmtDay(d.measured.at)} 計測` : `${fmtDay(d.createdAt)} 作成`}</span>
         </p>
-        <p className="mt-2 max-w-3xl text-sm text-slate-700">{d.description}</p>
+        {conclusion && <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-slate-900 sm:text-lg">{conclusion}</p>}
       </header>
 
-      <KpiStrip items={reportKpis(d)} />
-
-      <div className="grid gap-5 lg:grid-cols-[1.25fr_1fr]">
-        <Panel title="紹介率の推移" note="計測ごとの、紹介された回答の割合">
-          <TrendLine points={d.trend} />
-        </Panel>
-        <Panel title="比較ランキング" note="同じ質問の回答に出た回数の割合">
-          {d.ranking.length ? <RankingTable d={d} /> : <p className="text-sm text-slate-600">計測すると表示されます。</p>}
-        </Panel>
-      </div>
-
-      <Panel id="fixes" title="最初に直すこと" note="影響が大きい順。項目名を押すと、直す場所と書き換え例へ移ります">
+      <Panel id="fixes" title="今月やること" note="影響が大きく、確かめやすい順。「確かめること」を確認してから直してください">
         <TopFixes d={d} />
       </Panel>
 
+      <section id="numbers" className="scroll-mt-24 space-y-3">
+        <KpiStrip items={compact ? reportKpis(d).slice(0, 4) : reportKpis(d)} />
+        {!compact && <HowToRead d={d} />}
+      </section>
+
       {!compact && (
         <>
+          <div className="grid gap-5 lg:grid-cols-[1.25fr_1fr]">
+            <Panel title="紹介率の推移" note="計測ごとの、紹介された回答の割合">
+              <TrendLine points={d.trend} />
+            </Panel>
+            <Panel title="比較ランキング" note="同じ質問の回答に出た回数の割合">
+              {d.ranking.length ? <RankingTable d={d} /> : <p className="text-sm text-slate-600">計測すると表示されます。</p>}
+            </Panel>
+          </div>
           {d.measured && (
-            <Panel id="questions" title="質問ごとの結果" note="紹介されなかった質問が、直すべき場所の手がかりです">
+            <Panel id="questions" title="質問ごとの結果" note="紹介されなかった質問と、代わりに紹介されたサービス">
               <QuestionsTable d={d} />
             </Panel>
           )}
-          <Panel id="sources" title="競合と引用元" note="AIが紹介の根拠にしたサイト。競合が引用されている種類のページを、自社にも用意します">
+          <Panel id="sources" title="競合と引用元" note="AIが紹介の根拠にしたサイト。競合が引用されている種類のページを、自社にも用意できるかを検討します">
             {d.sources.length ? <SourcesTable d={d} /> : <p className="text-sm text-slate-600">計測すると表示されます。</p>}
           </Panel>
           {d.score !== null && (
-            <section id="audit" className="scroll-mt-24 space-y-3">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">サイト診断の詳細</h2>
-                <p className="text-sm text-slate-600">4つの観点に分けています。直す項目は、場所・今の内容・書き換え例つきです。</p>
-              </div>
+            <Fold id="audit" title={`サイト診断の詳細（${d.score}点）`} note="技術的な内容です。4つの観点に分け、直す項目には場所・今の内容・書き換え例・確かめることを付けています" open={expandDetails}>
               <AuditGroups checks={d.checks} />
-            </section>
+            </Fold>
           )}
           {d.plans.length > 0 && (
-            <Panel id="pages" title="作るページの案" note="紹介されなかった質問に答えるページ。同じページで答えられる質問はまとめています">
+            <Fold id="pages" title={`作るページの案（${d.plans.length}件）`} note="紹介されなかった質問への答え方。まず既存ページの修正で済むかを判断しています" open={expandDetails}>
               <PlanList plans={d.plans} />
-            </Panel>
+            </Fold>
           )}
           <p className="border-t border-slate-200 pt-4 text-sm text-slate-500">
-            AIの回答は毎回変わります。数字は、決まった質問をAPIで聞いた結果の目安で、すべての利用者への表示を表すものではありません。紹介や問い合わせの増加をお約束するものではありません。
+            AIの回答は毎回変わります。数字は、決まった質問をAPIで聞いた結果の目安で、すべての利用者への表示を表すものではありません。改善案には仮説を含みます。紹介や問い合わせの増加をお約束するものではありません。
+            <Link href="/ai/method" className="ml-1 underline">
+              計測のしかたと限界
+            </Link>
           </p>
         </>
       )}

@@ -17,7 +17,17 @@ export type AuditCheck = {
   current?: string;
   example?: string;
   exampleLabel?: string;
+  // 指摘の種類：tech＝確かめた技術的な問題、info＝情報が足りない（事実を確認してから書く）、hypothesis＝効果が確かでない改善の仮説
+  kind?: "tech" | "info" | "hypothesis";
+  // 直す前・直した後に確かめること
+  verify?: string;
 };
+
+export const FIX_KIND = {
+  tech: { label: "技術的な問題", note: "サイトを読み取って確かめた事実です" },
+  info: { label: "情報不足・要確認", note: "書き足す前に、内容が事実か確認してください" },
+  hypothesis: { label: "改善の仮説", note: "効果は確かではありません。直したあと計測して確かめます" },
+} as const;
 
 const MAX_BYTES = 2_000_000;
 const AI_CRAWLERS = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "Google-Extended", "ClaudeBot", "PerplexityBot"];
@@ -319,7 +329,7 @@ export function addWebFixes(checks: AuditCheck[], c: WebFixContext) {
           where: `トップページ（${c.pageUrl}）の本文（画像の中の文字ではなく、文章として）`,
           current: `見つからない言葉：${c.missingFeatures.join("、")}`,
           exampleLabel: "書き足す文の例",
-          example: `${c.name}では、「${c.missingFeatures.join("」「")}」の${noun}を掲載しています。（件数や具体例を1つ添える。例：〇件、〇〇など）`,
+          example: `（「${c.missingFeatures.join("」「")}」に当てはまる${noun}が実際にある場合だけ）\n${c.name}では、「${c.missingFeatures.join("」「")}」の${noun}を掲載しています。（件数や具体例を1つ添える。例：〇件、〇〇など）`,
         }
       : {},
     text: {
@@ -380,7 +390,24 @@ ${JSON.stringify(
     },
   };
 
+  // 指摘の種類と、確かめること
+  const meta: Record<string, Pick<AuditCheck, "kind" | "verify">> = {
+    fetch: { kind: "tech", verify: "ブラウザでURLを開けるか、エラーが出ないかを確認する" },
+    robots: { kind: "tech", verify: "直したあと、robots.txt をブラウザで開いて内容を確認する" },
+    sitemap: { kind: "tech", verify: "Bing Webmaster Tools でサイトマップが読み込まれたかを確認する" },
+    text: { kind: "tech", verify: "ページのソースを表示して、説明の文章がHTMLに含まれているかを確認する" },
+    title: { kind: "tech", verify: "書き換えた題名が、実際のサービス内容と合っているかを確認する" },
+    pitch: { kind: "info", verify: "一文が事実か（本当に他社と違うか）を社内で確認してから載せる" },
+    features: { kind: "info", verify: "書き足す言葉に当てはまる内容（求人・機能など）が実際にあるかを確認する。なければ書かない" },
+    faq: { kind: "info", verify: "答えの内容が事実か、問い合わせの多い質問かを確認する" },
+    fresh: { kind: "info", verify: "日付と件数が正しいかを確認し、更新するたびに書き換える" },
+    pages: { kind: "info", verify: "既存のページで答えられないかを先に確認する。同じ内容のページを増やさない" },
+    jsonld: { kind: "hypothesis", verify: "入れたあと、同じ質問で計測し直して変化を見る。変化がなくても問題はない" },
+    llms: { kind: "hypothesis", verify: "必須ではない" },
+  };
+
   for (const check of checks) {
+    Object.assign(check, meta[check.key] ?? {});
     if (check.status === "ok" && check.key !== "sitemap") continue;
     Object.assign(check, fixes[check.key] ?? {});
   }
@@ -486,7 +513,8 @@ export async function auditWebSite(input: {
   checks.push({
     key: "jsonld",
     title: "AI向けのサービスデータ（構造化データ）",
-    status: hasOrg && hasContent ? "ok" : hasOrg || hasContent ? "warn" : "ng",
+    // 入れれば紹介が増えるとは限らない（改善の仮説）ため、なくても「直すとよい」にとどめる
+    status: hasOrg && hasContent ? "ok" : "warn",
     detail: types.length ? `見つかった種類：${types.join("、")}` : "設置されていません",
     fix:
       hasOrg && hasContent

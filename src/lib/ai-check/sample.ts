@@ -32,7 +32,7 @@ const QUESTIONS: { text: string; hits: number; ranks: number[]; others: string[]
 function sampleChecks(): AuditCheck[] {
   const checks: AuditCheck[] = [
     { key: "fetch", title: "公式サイトを読み込めるか", status: "ok", detail: `読み込めました（${SAMPLE.url}）` },
-    { key: "jsonld", title: "AI向けのサービスデータ（構造化データ）", status: "ng", detail: "設置されていません" },
+    { key: "jsonld", title: "AI向けのサービスデータ（構造化データ）", status: "warn", detail: "設置されていません" },
     { key: "pitch", title: "一文の立ち位置がトップページに書かれているか", status: "warn", detail: "「設定」で一文の立ち位置が登録されていません" },
     { key: "features", title: "強み（特徴の言葉）がトップページに文字で書かれているか", status: "warn", detail: "見つからない言葉：週3日から" },
     { key: "fresh", title: "更新日・確認日が書かれているか", status: "warn", detail: "日付の記載が見つかりません" },
@@ -63,6 +63,7 @@ export function sampleReport(): ReportData {
   const hits = questions.reduce((n, q) => n + q.hits, 0);
   const count = (name: string) => questions.filter((q) => q.others.includes(name)).length;
   const at = new Date("2026-10-20T10:00:00+09:00");
+  const checks = sampleChecks();
   return {
     name: `${SAMPLE.name}（サンプル）`,
     url: SAMPLE.url,
@@ -90,10 +91,11 @@ export function sampleReport(): ReportData {
       { label: "10/13", rate: 30 },
       { label: "10/20", rate: Math.round((hits / questions.length) * 100) },
     ],
-    checks: sampleChecks(),
+    checks,
     plans: pagePlansFor(
       questions.filter((q) => q.hits === 0).map((q) => q.text),
       SAMPLE,
+      checks,
     ),
   };
 }

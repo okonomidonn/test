@@ -10,8 +10,8 @@ export default function AiLoginPage() {
       footer={
         <>
           はじめての方は{" "}
-          <Link href="/ai/signup" className="font-semibold text-brand hover:underline">
-            無料で登録
+          <Link href="/ai/apply" className="font-semibold text-brand hover:underline">
+            無料で診断する
           </Link>
         </>
       }

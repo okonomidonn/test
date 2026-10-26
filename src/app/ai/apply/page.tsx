@@ -117,9 +117,19 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
             </Link>
           </section>
 
-          <p className="text-sm text-slate-600">
-            いただいた情報は、診断とご連絡にだけ使います。結果を公開したり、ほかの会社に渡したりすることはありません。AIの回答は毎回変わるため、紹介や問い合わせの増加をお約束するものではありません。
-          </p>
+          <section className="space-y-2 text-sm text-slate-700">
+            <h2 className="text-base font-semibold text-slate-900">情報の取り扱い</h2>
+            <p>いただいた情報は、診断とご連絡にだけ使います。サイトのURLは、公開されているページの読み取りとAIの回答の判定にだけ使い、結果を公開したり、ほかの会社に渡したりすることはありません。</p>
+            <p>
+              <Link href="/ai/method#privacy" className="font-semibold text-brand hover:underline">
+                情報の取り扱い
+              </Link>
+              ・
+              <Link href="/ai/method#measure" className="font-semibold text-brand hover:underline">
+                計測のしかたと限界
+              </Link>
+            </p>
+          </section>
         </div>
       </div>
     </div>

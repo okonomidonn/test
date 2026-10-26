@@ -42,6 +42,6 @@ export function buildReportData(store: Store, stats: Stats, audit: SiteAudit | n
       return { label: md(t.date), rate: v.total ? Math.round((v.hits / v.total) * 100) : 0 };
     }),
     checks: (audit?.checks ?? []) as AuditCheck[],
-    plans: store.kind === "WEB" ? pagePlansFor(missed.map((q) => q.text), store) : [],
+    plans: store.kind === "WEB" ? pagePlansFor(missed.map((q) => q.text), store, (audit?.checks ?? []) as AuditCheck[]) : [],
   };
 }

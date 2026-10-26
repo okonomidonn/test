@@ -387,7 +387,7 @@ async function ImproveTab({ storeId, hasUrl, kind, isOwner }: { storeId: string;
   ]);
   const checks = (audit?.checks ?? []) as AuditCheck[];
   const missed = stats.questions.filter((q) => q.hits === 0);
-  const plans = kind === "WEB" ? pagePlansFor(missed.map((q) => q.text), stats.store) : [];
+  const plans = kind === "WEB" ? pagePlansFor(missed.map((q) => q.text), stats.store, checks) : [];
   const count = (st: AuditCheck["status"]) => checks.filter((c) => c.status === st).length;
 
   return (
