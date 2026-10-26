@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "特定商取引法に基づく表記 | ススメル" };
+export const metadata = { title: "特定商取引法に基づく表記 | AIススメル" };
 
 // 未確定の販売情報・契約条件は創作せず、正式な依頼前に確認する。
 const DISCLOSE = "お問い合わせフォームからご請求ください。正式なご依頼前にご案内します";

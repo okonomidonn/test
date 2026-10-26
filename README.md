@@ -1,4 +1,4 @@
-# ススメル / SocialDesk
+# AIススメル / SocialDesk
 
 SNS運用代行チーム向けの投稿管理・予約・エンゲージメント分析ツールです。Next.js (App Router) + TypeScript で構築しています。
 
@@ -23,7 +23,7 @@ Instagram API（Instagram ログイン）を使い、リールの予約投稿と
 
 必要な環境変数は `.env.example` を参照してください（`INSTAGRAM_APP_ID` / `INSTAGRAM_APP_SECRET` / `CRON_SECRET` / `BLOB_READ_WRITE_TOKEN`）。Meta のアプリには OAuth リダイレクト URI として `https://<ドメイン>/api/instagram/callback` を登録します。
 
-## ススメル（Webサービス向け・`/ai`）
+## AIススメル（Webサービス向け・`/ai`）
 
 WebサービスがChatGPT・Geminiでどう紹介されるかを計測し、競合・引用元・サイト診断から、直す場所と書き換え例をまとめるサービスです。SocialDeskと同じアプリで動きます。飲食店向けの新規受付と、セルフ版ツールの新規販売は終了しています。
 

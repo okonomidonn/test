@@ -4,7 +4,7 @@ import { requireAccount } from "@/lib/session";
 import { LeadRetryForm, LeadStatusForm } from "@/components/ai/lead-management";
 import { leadMailConfig } from "@/lib/leads/mail";
 
-export const metadata = { title: "申し込み一覧 | ススメル" };
+export const metadata = { title: "申し込み一覧 | AIススメル" };
 
 const fmt = (d: Date) =>
   new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);

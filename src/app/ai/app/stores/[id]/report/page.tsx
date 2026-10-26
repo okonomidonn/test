@@ -8,7 +8,7 @@ import { buildReportData } from "@/lib/ai-check/report";
 import { ReportDashboard } from "@/components/ai/report-dashboard";
 import { PrintButton } from "@/components/ai/print-button";
 
-export const metadata = { title: "診断報告書 | ススメル" };
+export const metadata = { title: "診断報告書 | AIススメル" };
 
 // お客様にそのまま渡せる報告書（印刷・PDF保存向け）。サンプルと同じ部品で表示する
 export default async function ReportPage({ params }: PageProps<"/ai/app/stores/[id]/report">) {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { btn } from "@/components/ai/ds";
 import { MethodSteps } from "@/components/ai/marketing";
 
-export const metadata = { title: "計測のしかたと進め方 | ススメル", description: "ススメルの計測方法、数字の意味、限界、作業の範囲、情報の取り扱い" };
+export const metadata = { title: "計測のしかたと進め方 | AIススメル", description: "AIススメルの計測方法、数字の意味、限界、作業の範囲、情報の取り扱い" };
 
 const SECTIONS = [
   { id: "measure", label: "計測のしかた" },

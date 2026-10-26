@@ -35,7 +35,7 @@ export async function sendLeadNotice(lead: LeadNotice, fetcher: typeof fetch = f
     body: JSON.stringify({
       from: config.from,
       to: [config.to],
-      subject: `【ススメル】${kind}の申し込み`,
+      subject: `【AIススメル】${kind}の申し込み`,
       text: `${kind}の申し込みを受け付けました。\n会社・サービス：${lead.company}\n\n管理画面で内容を確認してください（ログインが必要です）。\n${url}\n\n${lead.kind === "TRIAL" ? "2営業日以内に進め方と見積もりを連絡してください。" : "3営業日以内に診断結果を連絡してください。"}`,
     }),
     signal: AbortSignal.timeout(10_000),

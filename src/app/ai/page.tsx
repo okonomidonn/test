@@ -9,7 +9,7 @@ const RESULTS = [
 ];
 const FLOW = [
   ["サイトのURLを送る", "会社・サービス名と、ご連絡先を入力。アカウント登録は不要です。"],
-  ["ススメルが調べる", "AIでの紹介状況と、公開されているサイトの情報を確認します。"],
+  ["AIススメルが調べる", "AIでの紹介状況と、公開されているサイトの情報を確認します。"],
   ["結果がメールで届く", "3営業日以内に、紹介状況と最初に直す3つのことをお送りします。"],
 ];
 
@@ -64,7 +64,7 @@ export default function AiLandingPage() {
       <section id="flow" className="scroll-mt-24 rounded-2xl bg-slate-50 p-5 sm:p-8">
         <p className="text-sm font-semibold text-brand">ご利用の流れ</p>
         <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">あなたがするのは、URLを送るだけ。</h2>
-        <p className="mt-3 text-slate-700">診断はススメルが行います。ツールを覚えたり、自分で計測したりする必要はありません。</p>
+        <p className="mt-3 text-slate-700">診断はAIススメルが行います。ツールを覚えたり、自分で計測したりする必要はありません。</p>
         <ol className="mt-7 grid gap-6 md:grid-cols-3">
           {FLOW.map(([title, body], i) => <li key={title} className="flex gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white font-num font-bold text-brand ring-1 ring-slate-200">{i + 1}</span><div><h3 className="font-bold text-slate-900">{title}</h3><p className="mt-2 text-sm leading-relaxed text-slate-700">{body}</p></div></li>)}
         </ol>

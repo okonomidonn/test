@@ -28,7 +28,7 @@ body {
 }
 
 /*
- * ススメルの見た目（SocialDeskの画面には影響しない）
+ * AIススメルの見た目（SocialDeskの画面には影響しない）
  * 方針：洗練されたBtoB分析SaaS。白を基調に、アクセントは青1色。区切りは罫線で、影は製品画面の窓枠だけ。
  * 書体：英数字 Inter、日本語 Noto Sans JP。本文16px。
  */
@@ -103,7 +103,7 @@ body {
   outline-offset: 2px;
 }
 
-/* ススメルの入力欄：16px・高さ44px（スマホで拡大されない大きさ） */
+/* AIススメルの入力欄：16px・高さ44px（スマホで拡大されない大きさ） */
 .ai-scope form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
 .ai-scope form select,
 .ai-scope form textarea {
