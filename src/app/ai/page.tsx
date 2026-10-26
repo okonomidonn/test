@@ -21,10 +21,10 @@ export default function AiLandingPage() {
       <section className="grid items-center gap-10 pt-6 sm:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-14">
         <div className="min-w-0">
           <p className="text-sm font-semibold text-brand">ChatGPT・Geminiでの競合比較とサイト改善</p>
-          <h1 className="mt-4 text-[2.125rem] font-bold leading-[1.25] tracking-tight text-slate-900 sm:text-[2.75rem] sm:leading-[1.2] lg:text-[2.25rem]">
+          <h1 className="mt-4 text-[clamp(1.625rem,8vw,2.125rem)] font-bold leading-[1.25] tracking-tight text-slate-900 sm:text-[2.75rem] sm:leading-[1.2] lg:text-[2.25rem]">
             あなたのサービスは、
             <br />
-            AIの比較候補に入っていますか？
+            <span className="inline-block">AIの比較候補に</span><span className="inline-block">入っていますか？</span>
           </h1>
           <p className="mt-6 text-lg text-slate-600">ChatGPT・Geminiでの紹介状況を調べ、競合との差と改善すべきページを明らかにします。</p>
           <div className="mt-8 flex flex-wrap gap-3">
