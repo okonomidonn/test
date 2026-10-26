@@ -7,7 +7,9 @@
     "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "node --import tsx --test tests/lead-mail.test.ts tests/lead-notifications.test.ts",
+    "check:launch": "node scripts/check-launch.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
