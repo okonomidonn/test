@@ -7,6 +7,7 @@ import { storeStats } from "@/lib/ai-check/stats";
 import { buildReportData } from "@/lib/ai-check/report";
 import { ReportDashboard } from "@/components/ai/report-dashboard";
 import { PrintButton } from "@/components/ai/print-button";
+import { CONTACT } from "@/lib/contact";
 
 export const metadata = { title: "診断報告書 | AIススメル" };
 
@@ -27,6 +28,9 @@ export default async function ReportPage({ params }: PageProps<"/ai/app/stores/[
         <PrintButton />
       </div>
       <ReportDashboard d={buildReportData(store, stats, audit)} expandDetails />
+      <p className="border-t border-slate-200 pt-4 text-sm text-slate-600">
+        発行：{CONTACT.seller}　お問い合わせ：{CONTACT.email}
+      </p>
     </article>
   );
 }

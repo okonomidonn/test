@@ -1,3 +1,4 @@
+import { CONTACT } from "@/lib/contact";
 import { z } from "zod";
 
 export type LeadNotice = { id: string; kind: "CHECK" | "TRIAL"; company: string };
@@ -6,7 +7,7 @@ export type LeadNotice = { id: string; kind: "CHECK" | "TRIAL"; company: string 
 export function leadMailConfig() {
   if (process.env.LEAD_NOTIFICATIONS_ENABLED !== "1" || process.env.VERCEL_ENV === "preview") return null;
   const from = z.email().safeParse(process.env.MAIL_FROM);
-  const to = z.email().safeParse(process.env.LEAD_NOTIFY_EMAIL);
+  const to = z.email().safeParse(process.env.LEAD_NOTIFY_EMAIL || CONTACT.email);
   const key = process.env.RESEND_API_KEY;
   if (!key || !from.success || !to.success) return null;
   let origin: URL;

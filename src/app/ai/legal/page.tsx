@@ -1,26 +1,26 @@
 import Link from "next/link";
+import { CONTACT } from "@/lib/contact";
 
 export const metadata = { title: "特定商取引法に基づく表記 | AIススメル" };
 
-// 未確定の販売情報・契約条件は創作せず、正式な依頼前に確認する。
-const DISCLOSE = "お問い合わせフォームからご請求ください。正式なご依頼前にご案内します";
-const BEFORE_CONTRACT = "正式なご依頼前に、お見積もり・契約書でご案内します";
+// 運営責任者・所在地・電話は環境変数で設定する（未設定なら請求時に開示）
+const DISCLOSE = "請求があった場合は遅滞なく開示します";
 
 export default function LegalPage() {
   const env = process.env;
   const rows: [string, string][] = [
-    ["販売事業者", env.LEGAL_SELLER_NAME || "正式なご依頼前にご案内します"],
-    ["運営責任者", env.LEGAL_REPRESENTATIVE || "鳥居潤"],
+    ["販売事業者", CONTACT.seller],
+    ["運営責任者", env.LEGAL_REPRESENTATIVE || DISCLOSE],
     ["所在地", env.LEGAL_ADDRESS || DISCLOSE],
     ["電話番号", env.LEGAL_PHONE || DISCLOSE],
-    ["連絡先", env.LEGAL_EMAIL || "下のお問い合わせフォームをご利用ください"],
+    ["メールアドレス", CONTACT.email],
     ["販売価格", "無料チェック：0円。トライアル：49,800円（税別）／54,780円（税込）、1回・30日間。継続支援：月98,000円〜（税別）／月107,800円〜（税込）"],
     ["契約期間・総額", "継続支援は最低3か月。基本料金での最低総額は294,000円（税別）／323,400円（税込）。個別の作業範囲と総額は見積書で確認します"],
     ["商品代金以外の必要料金", env.LEGAL_ADDITIONAL_FEES || "インターネット接続にかかる通信料。その他の費用が必要な場合は、正式なご依頼前に見積書でご案内します"],
-    ["支払方法", env.LEGAL_PAYMENT_METHODS || BEFORE_CONTRACT],
-    ["支払時期", env.LEGAL_PAYMENT_TIMING || BEFORE_CONTRACT],
+    ["支払方法", env.LEGAL_PAYMENT_METHODS || "銀行振込（請求書払い）。振込手数料はお客様のご負担となります"],
+    ["支払時期", env.LEGAL_PAYMENT_TIMING || "前払い。トライアルは請求書の発行から7日以内、継続支援は翌月分を毎月末までにお支払いください。ご入金を確認してから作業を始めます"],
     ["サービスの提供時期", "トライアルは正式なご依頼後、ヒアリングで開始日を合意します。無料チェックは3営業日以内に診断結果、トライアルのご相談は2営業日以内に進め方とお見積もりをご連絡します"],
-    ["解約・キャンセル", env.LEGAL_CANCELLATION_TERMS || "ご相談・お見積もりの段階では費用はかかりません。正式なご依頼後の解約・キャンセル条件は、契約前に見積書・契約書でご案内します"],
+    ["解約・キャンセル", env.LEGAL_CANCELLATION_TERMS || "作業を始める前のキャンセルは全額を返金します。作業を始めた後の返金はいたしません。継続支援は最低3か月で、その後は前月末までにメールでご連絡いただくと翌月末で終了します"],
     ["成果について", "AIでの紹介や問い合わせの増加を保証するものではありません。作業範囲・納品物を契約前に確認します"],
   ];
   return (
