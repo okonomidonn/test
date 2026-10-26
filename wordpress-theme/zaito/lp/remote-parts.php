@@ -255,7 +255,7 @@ if ( ! function_exists( 'zaito_remote_head' ) ) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;family=Outfit:wght@500;600;700&amp;display=swap" rel="stylesheet">
 <?php // アイコンは使うものだけを読み込む（全部だと約540KB、使う分だけで約8KB）。新しいアイコンを使うときは、ここに名前を足す（アルファベット順）。 ?>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&amp;icon_names=add,apps,arrow_back,arrow_forward,block,bookmark,call,campaign,check_circle,close,code,description,edit_document,edit_note,emoji_people,fact_check,favorite,home,home_work,info,insights,ios_share,lightbulb,link,mail,mark_email_read,mark_email_unread,notifications,open_in_new,palette,payments,person,schedule,school,search,support_agent,swap_vert,swipe,task_alt,timelapse,verified,visibility_off,warning,work,work_history&amp;display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&amp;icon_names=add,apps,arrow_back,arrow_forward,auto_awesome,block,bookmark,call,campaign,check_circle,close,code,description,edit_document,edit_note,emoji_people,fact_check,favorite,home,home_work,info,insights,ios_share,lightbulb,link,mail,mark_email_read,mark_email_unread,notifications,open_in_new,palette,payments,person,schedule,school,search,support_agent,swap_vert,swipe,task_alt,timelapse,verified,visibility_off,warning,work,work_history&amp;display=block" rel="stylesheet">
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'tokens.css' ) ); ?>">
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'remote.css' ) ); ?>">
 <?php if ( $json_ld ) : ?>

@@ -214,11 +214,38 @@ if ( ! $zaito_cond ) :
         <h1>完全在宅の仕事だけを、<br>集めました。</h1>
         <p><b>研修も会議も、出社なし。</b>「在宅OK」で探すと出社ありの求人が混ざるため、zaitoは運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
         <?php endif; ?>
-        <?php if ( ! $zaito_cond ) : ?>
-          <button type="button" class="btn btn-p btn-lg sw-open" id="zswipe-open"><span class="ms" aria-hidden="true">swipe</span>スワイプで探す</button>
-        <?php endif; ?>
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
       </div>
+      <?php if ( ! $zaito_cond ) : ?>
+        <section class="reco" id="zreco" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" aria-labelledby="zreco-t" hidden>
+          <div class="reco-hd">
+            <h2 id="zreco-t"><span class="ms" aria-hidden="true">auto_awesome</span>今日のおすすめ</h2>
+            <span class="reco-n" aria-live="polite"></span>
+          </div>
+          <p class="reco-sub"></p>
+          <div class="reco-deck">
+            <div class="sw-stack"></div>
+            <div class="reco-end" hidden></div>
+            <div class="reco-gate" hidden role="dialog" aria-label="無料登録">
+              <button type="button" class="reco-gate-x" aria-label="閉じる"><span class="ms" aria-hidden="true">close</span></button>
+              <span class="ms reco-gate-i" aria-hidden="true">swipe</span>
+              <p class="reco-gate-t">スワイプで保存するには、無料登録が必要です</p>
+              <p>メールアドレスだけで登録できます。気になる求人を保存して、あとで見返せます。</p>
+              <form novalidate>
+                <label class="sr" for="zrecoemail">メールアドレス</label>
+                <input type="email" id="zrecoemail" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
+                <button type="submit" class="btn btn-p">無料で登録してスワイプ</button>
+              </form>
+              <p class="err" role="alert"></p>
+            </div>
+          </div>
+          <div class="sw-act">
+            <button type="button" class="sw-b sw-no" aria-label="スキップ"><span class="ms" aria-hidden="true">close</span></button>
+            <a class="sw-more" href="#">詳しく見る</a>
+            <button type="button" class="sw-b sw-yes" aria-label="気になる"><span class="ms" aria-hidden="true">favorite</span></button>
+          </div>
+        </section>
+      <?php endif; ?>
     </div>
 
     <?php if ( ! $zaito_cond && count( $zaito_groups ) > 1 ) : ?>
@@ -368,7 +395,7 @@ if ( ! $zaito_cond ) :
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u022.css' ) ); ?>">
 <script src="<?php echo esc_url( zaito_lp_asset( 'u022.js' ) ); ?>"></script>
 <?php if ( ! $zaito_cond ) : ?><script src="<?php echo esc_url( zaito_lp_asset( 'u073.js' ) ); ?>"></script><?php endif; ?>
-<?php if ( ! $zaito_cond ) : ?><script src="<?php echo esc_url( zaito_lp_asset( 'swipe.js' ) ); ?>"></script><?php endif; ?>
+<?php if ( ! $zaito_cond ) : ?><script src="<?php echo esc_url( zaito_lp_asset( 'reco.js' ) ); ?>"></script><?php endif; ?>
 <div class="sbar" id="zbar" hidden>
   <p><b>新着の在宅求人をメールで</b>登録無料・メールアドレスだけ</p>
   <a class="btn btn-p" href="#signup" id="zbargo">登録する</a>
@@ -474,6 +501,8 @@ if ( ! $zaito_cond ) :
   document.addEventListener('click', function (e) {
     if (e.target.closest && e.target.closest('[data-fav]')) setTimeout(function () { apply(false); }, 0);
   });
+  // おすすめ（lp/reco.js）で保存したときも同じ。
+  document.addEventListener('zaito:favs', function () { apply(false); });
   (function restore() {
     var q = new URLSearchParams(location.search);
     var groups = Array.prototype.map.call(groupBtns, function (b) { return b.getAttribute('data-filter'); });
