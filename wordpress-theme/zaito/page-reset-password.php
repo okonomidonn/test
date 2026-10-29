@@ -9,7 +9,8 @@ $zaito_user  = ( $zaito_login && $zaito_key ) ? check_password_reset_key( $zaito
 zaito_biz_head( '新しいパスワード' );
 ?>
 <body>
-<?php zaito_remote_header( 'company' ); ?>
+<?php zaito_biz_auth_header( 'login' ); ?>
+<div class="biz-auth">
 <main class="auth">
   <h1>新しいパスワード</h1>
   <?php if ( is_wp_error( $zaito_user ) ) : ?>
@@ -29,6 +30,7 @@ zaito_biz_head( '新しいパスワード' );
     </form>
   <?php endif; ?>
 </main>
-<?php zaito_remote_footer(); ?>
+</div>
+<?php zaito_biz_auth_footer(); ?>
 </body>
 </html>

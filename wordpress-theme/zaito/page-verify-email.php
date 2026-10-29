@@ -27,7 +27,8 @@ $zaito_next = is_user_logged_in() && zaito_is_company() ? home_url( '/company/' 
 zaito_biz_head( 'メールアドレスの確認' );
 ?>
 <body>
-<?php zaito_remote_header( 'company' ); ?>
+<?php zaito_biz_auth_header( 'login' ); ?>
+<div class="biz-auth">
 <main class="auth">
   <h1>メールアドレスの確認</h1>
   <?php if ( 'success' === $zaito_status || 'already' === $zaito_status ) : ?>
@@ -39,6 +40,7 @@ zaito_biz_head( 'メールアドレスの確認' );
   <?php endif; ?>
   <a class="btn btn-p btn-lg" href="<?php echo esc_url( $zaito_next ); ?>"><?php echo is_user_logged_in() && zaito_is_company() ? 'ホームへ' : 'ログインへ'; ?></a>
 </main>
-<?php zaito_remote_footer(); ?>
+</div>
+<?php zaito_biz_auth_footer(); ?>
 </body>
 </html>

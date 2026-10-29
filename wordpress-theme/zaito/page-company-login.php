@@ -15,33 +15,40 @@ if ( 0 !== strpos( $zaito_to, home_url() ) ) {
 zaito_biz_head( '企業ログイン' );
 ?>
 <body>
-<?php zaito_remote_header( 'company' ); ?>
+<?php zaito_biz_auth_header( 'login' ); ?>
+<div class="biz-auth">
 <main class="auth">
-  <h1>企業ログイン</h1>
-  <p class="lead">求人の管理と、応募者とのメッセージはこちらから。</p>
+    <h1>ログイン</h1>
+    <p class="lead">zaitoの採用管理画面にログインします。</p>
 
-  <?php if ( isset( $_GET['reset'] ) ) : ?>
-    <div class="note n-ok" role="status"><span class="ms" aria-hidden="true">check_circle</span><div><b>パスワードを変更しました</b><p>新しいパスワードでログインしてください。</p></div></div>
-  <?php endif; ?>
-  <?php if ( isset( $_GET['login'] ) && 'failed' === $_GET['login'] ) : ?>
-    <div class="note n-err" role="alert"><span class="ms" aria-hidden="true">warning</span><div><b>ログインできませんでした</b><p>メールアドレスかパスワードが違います。</p></div></div>
-  <?php endif; ?>
+    <?php if ( isset( $_GET['reset'] ) ) : ?>
+      <div class="note n-ok" role="status"><span class="ms" aria-hidden="true">check_circle</span><div><b>パスワードを変更しました</b><p>新しいパスワードでログインしてください。</p></div></div>
+    <?php endif; ?>
+    <?php if ( isset( $_GET['login'] ) && 'failed' === $_GET['login'] ) : ?>
+      <div class="note n-err" role="alert"><span class="ms" aria-hidden="true">warning</span><div><b>ログインできませんでした</b><p>メールアドレスまたはパスワードが正しくありません。</p></div></div>
+    <?php endif; ?>
 
-  <?php if ( function_exists( 'zaito_google_login_is_configured' ) && zaito_google_login_is_configured() ) : ?>
-    <a class="btn btn-g btn-lg" href="<?php echo esc_url( zaito_google_login_url( $zaito_to, 'zaito_company' ) ); ?>">Googleでログイン</a>
-    <div class="or">または</div>
-  <?php endif; ?>
+    <?php if ( function_exists( 'zaito_google_login_is_configured' ) && zaito_google_login_is_configured() ) : ?>
+      <a class="btn btn-g btn-lg" href="<?php echo esc_url( zaito_google_login_url( $zaito_to, 'zaito_company' ) ); ?>">Googleでログイン</a>
+      <div class="or">または</div>
+    <?php endif; ?>
 
-  <form class="form" method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>">
-    <input type="hidden" name="redirect_to" value="<?php echo esc_url( $zaito_to ); ?>">
-    <div class="fld"><label for="user_login">メールアドレス</label><input type="text" id="user_login" name="log" autocomplete="username" autocapitalize="off" spellcheck="false" required><p class="hint">運営の方は、ユーザー名でもログインできます。</p></div>
-    <div class="fld"><label for="user_pass">パスワード</label><input type="password" id="user_pass" name="pwd" autocomplete="current-password" required></div>
-    <input type="hidden" name="rememberme" value="forever">
-    <button type="submit" class="btn btn-p btn-lg">ログイン</button>
-  </form>
-  <p class="alt"><a href="<?php echo esc_url( home_url( '/forgot-password/' ) ); ?>">パスワードを忘れた方</a></p>
-  <p class="alt">アカウントをお持ちでない企業の方は<br><a href="<?php echo esc_url( home_url( '/company-register/' ) ); ?>"><b>無料で企業アカウントを作る</b></a></p>
+    <form class="form" method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>">
+      <input type="hidden" name="redirect_to" value="<?php echo esc_url( $zaito_to ); ?>">
+      <?php // 運営の管理者はユーザー名でもログインするため、type="email" にはしない。 ?>
+      <div class="fld"><label for="user_login">メールアドレス</label><input type="text" id="user_login" name="log" autocomplete="username" autocapitalize="off" spellcheck="false" inputmode="email" required></div>
+      <div class="fld"><label for="user_pass">パスワード</label><input type="password" id="user_pass" name="pwd" autocomplete="current-password" required></div>
+      <input type="hidden" name="rememberme" value="forever">
+      <button type="submit" class="btn btn-p btn-lg">ログイン</button>
+    </form>
+    <a class="forgot" href="<?php echo esc_url( home_url( '/forgot-password/' ) ); ?>">パスワードをお忘れの方</a>
+
+    <div class="first">
+      <p><b style="color:var(--z-navy)">はじめてご利用の企業様</b><br>掲載は無料。費用は採用時の成果報酬のみです。</p>
+      <a class="btn btn-g btn-lg" href="<?php echo esc_url( home_url( '/company-register/' ) ); ?>">企業アカウントを作成する</a>
+    </div>
 </main>
-<?php zaito_remote_footer(); ?>
+</div>
+<?php zaito_biz_auth_footer(); ?>
 </body>
 </html>

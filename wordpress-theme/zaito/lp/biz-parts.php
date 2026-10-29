@@ -48,6 +48,36 @@ if ( ! function_exists( 'zaito_biz_head' ) ) {
         <?php
     }
 
+    /**
+     * 企業向けのログイン・登録・パスワード再設定の画面の上部。学生向けのメニューは出さず、
+     * ロゴと「採用担当者様向け」と、ログイン⇔新規登録の切り替えだけにする。$mode は 'login' か 'register'。
+     */
+    function zaito_biz_auth_header( $mode = 'login' ) {
+        ?>
+<header class="biz-hd"><div class="wrap">
+  <a class="logo" href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>" aria-label="zaito 企業の方へ">za<span>i</span>to</a>
+  <span class="for">採用担当者様向け</span>
+  <div class="who">
+    <?php if ( 'register' === $mode ) : ?>
+      <span class="nm">アカウントをお持ちの方</span><a class="btn btn-g" style="height:38px;color:var(--z-navy)" href="<?php echo esc_url( home_url( '/company-login/' ) ); ?>">ログイン</a>
+    <?php else : ?>
+      <a class="btn btn-p" style="height:38px;color:#fff" href="<?php echo esc_url( home_url( '/company-register/' ) ); ?>">無料で掲載をはじめる</a>
+    <?php endif; ?>
+  </div>
+</div></header>
+        <?php
+    }
+
+    /** 企業向けの認証画面の下部（運営者・規約・求職者向けサイトへのリンクだけ）。 */
+    function zaito_biz_auth_footer() {
+        ?>
+<footer class="biz-auth-ft"><div class="wrap">
+  <nav><a href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>">zaitoについて（企業の方へ）</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a><a href="mailto:info@zaito-work.com">お問い合わせ</a></nav>
+  <p>求人を探している方は <a href="<?php echo esc_url( home_url( '/' ) ); ?>">こちら</a>　／　© zaito</p>
+</div></footer>
+        <?php
+    }
+
     /** 企業のホームとメニューに出す数（未読のやりとり・新着の応募・掲載中・審査待ち）。 */
     function zaito_biz_counts( $user_id ) {
         static $cache = array();

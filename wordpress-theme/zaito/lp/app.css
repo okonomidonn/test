@@ -198,3 +198,20 @@ fieldset.fld{border:0;padding:0}
   .fld .row select{flex:1 1 100%}
   .msg{max-width:88%}
 }
+
+/* 企業向けのログイン・登録画面（zaito_biz_auth_header / footer） */
+.biz-auth{display:flow-root;background:var(--z-surface);min-height:calc(100dvh - 64px - 90px)}
+.biz-auth main.auth{box-sizing:border-box;margin:48px auto 72px;padding:36px 32px;background:#fff;border:1px solid var(--z-border);border-radius:var(--z-r-xl)}
+.biz-auth .auth-split main.auth{margin:0;padding:32px}
+.biz-auth .auth-split{padding-top:48px}
+.biz-auth .auth h1{font-size:24px}
+.biz-auth .first{margin-top:28px;padding-top:24px;border-top:1px solid var(--z-line);text-align:center}
+.biz-auth .first p{margin:0 0 12px;font-size:14px;color:var(--z-text-3)}
+.biz-auth .first .btn{width:100%}
+.biz-auth .forgot{display:block;margin:14px 0 0;text-align:center;font-size:14px}
+.biz-auth-ft{border-top:1px solid var(--z-line);background:#fff;padding:24px 0;font-size:13px;color:var(--z-text-4)}
+.biz-auth-ft nav{display:flex;flex-wrap:wrap;gap:8px 20px}
+.biz-auth-ft nav a{color:var(--z-text-3)}
+.biz-auth-ft p{margin:10px 0 0}
+@media (max-width:560px){.biz-auth main.auth{margin:20px 12px 48px;padding:24px 20px}.biz-auth .auth-split{padding:20px 12px 48px}.biz-auth .auth-split main.auth{padding:24px 20px}}
+@media (max-width:560px){.biz-hd .for{display:none}.biz-hd .who .btn{height:36px!important;padding:0 12px;font-size:13px;white-space:nowrap}}

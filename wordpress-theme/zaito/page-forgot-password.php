@@ -6,7 +6,8 @@ require_once get_template_directory() . '/lp/biz-parts.php';
 zaito_biz_head( 'パスワードの再設定' );
 ?>
 <body>
-<?php zaito_remote_header( 'company' ); ?>
+<?php zaito_biz_auth_header( 'login' ); ?>
+<div class="biz-auth">
 <main class="auth">
   <h1>パスワードの再設定</h1>
   <?php if ( isset( $_GET['sent'] ) && '1' === $_GET['sent'] ) : ?>
@@ -22,8 +23,8 @@ zaito_biz_head( 'パスワードの再設定' );
     </form>
   <?php endif; ?>
   <p class="alt"><a href="<?php echo esc_url( home_url( '/company-login/' ) ); ?>">ログイン画面に戻る</a></p>
-  <p class="alt" style="font-size:13px">学生の方はパスワードは不要です。<a href="<?php echo esc_url( home_url( '/mypage/' ) ); ?>">マイページ</a>からログインしてください。</p>
 </main>
-<?php zaito_remote_footer(); ?>
+</div>
+<?php zaito_biz_auth_footer(); ?>
 </body>
 </html>
