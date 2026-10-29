@@ -138,7 +138,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 
           <form class="signup<?php echo $zaito_error ? ' on' : ''; ?>" id="zsignup" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
             <b><?php echo $zaito_direct ? '無料登録して応募する' : '無料登録して応募ページへ'; ?></b>
-            <p>メールアドレスだけで登録できます。次回からはすぐに<?php echo $zaito_direct ? '応募できます' : '応募ページへ進めます'; ?>。新しい完全在宅の求人もお知らせします。</p>
+            <p>お名前・学校名・メールアドレスで登録できます。次回からはすぐに<?php echo $zaito_direct ? '応募できます' : '応募ページへ進めます'; ?>。新しい完全在宅の求人もお知らせします。</p>
             <input type="hidden" name="action" value="zaito_remote_register">
             <input type="hidden" name="job" value="<?php echo esc_attr( $zaito_j['slug'] ); ?>">
             <input type="hidden" name="utm_source" value="">
@@ -146,6 +146,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
             <input type="hidden" name="utm_campaign" value="">
             <input type="hidden" name="referrer" value="">
             <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+            <?php zaito_remote_basic_fields( 'zj' ); ?>
             <label for="zemail">メールアドレス</label>
             <input type="email" id="zemail" name="email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
             <button type="submit" class="btn btn-p btn-lg"><?php echo $zaito_direct ? '登録して応募フォームへ' : '登録して応募ページへ進む'; ?></button>
@@ -190,6 +191,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 <script>
 (function () {
   var slug = <?php echo wp_json_encode( $zaito_j['slug'] ); ?>;
+  <?php echo zaito_remote_basic_check_js(); // 固定のJSのみ ?>
   var form = document.getElementById('zsignup');
   var err = document.getElementById('zerr');
   var profile = document.getElementById('zprofile');
@@ -241,6 +243,8 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     err.textContent = '';
+    var bx = zbasic(form);
+    if (bx) { err.textContent = bx; return; }
     var email = form.elements.email.value.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = '正しいメールアドレスを入力してください'; return; }
     var btn = form.querySelector('button[type=submit]');
@@ -256,6 +260,9 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         track('sign_up', { method: 'remote' });
         form.hidden = true;
         profile.hidden = false;
+        // 登録フォームで入れた学校名を、あとの質問にも入れておく。
+        var ps = profile.querySelector('input[name=school]');
+        if (ps && !ps.value) ps.value = form.elements.school.value;
         profile.dataset.go = res.data.go;
         if (sheet && sheet.open) { sheet.scrollTop = 0; } else { profile.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       })

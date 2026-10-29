@@ -14,6 +14,9 @@
       .replace(/應/g, '応').replace(/學/g, '学').replace(/國/g, '国').replace(/澤/g, '沢').replace(/鷗/g, '鴎').replace(/龍/g, '竜').replace(/佛/g, '仏').replace(/獨/g, '独');
   }
   function setup(input) {
+    // このファイルが1ページで2回読み込まれても、同じ入力欄に2回つけない。
+    if (input.dataset.sg) return;
+    input.dataset.sg = '1';
     var list = null;
     var loading = null;
     var box = document.createElement('ul');

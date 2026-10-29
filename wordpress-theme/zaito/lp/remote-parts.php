@@ -228,6 +228,29 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     }
 }
 
+if ( ! function_exists( 'zaito_remote_basic_fields' ) ) {
+    /**
+     * 無料登録のフォームで、メールアドレスと一緒に聞く名前と学校名（inc/remote-jobs.php の zaito_handle_remote_register で必須）。
+     * 学生でない人は「学生ではありません」にチェックすると、学校名なしで登録できる。$p は id の頭につける文字。
+     */
+    function zaito_remote_basic_fields( $p ) {
+        ?>
+        <div class="basic">
+          <div><label for="<?php echo esc_attr( $p ); ?>name">お名前</label><input type="text" id="<?php echo esc_attr( $p ); ?>name" name="name" required maxlength="40" autocomplete="name" placeholder="例：山田 花子"></div>
+          <div><label for="<?php echo esc_attr( $p ); ?>school">学校名</label><input type="text" id="<?php echo esc_attr( $p ); ?>school" name="school" required maxlength="80" autocomplete="organization" placeholder="例：〇〇大学" data-schools="<?php echo esc_url( zaito_lp_asset( 'schools.json' ) ); ?>">
+            <label class="ns"><input type="checkbox" name="not_student" value="1">学生ではありません</label></div>
+        </div>
+        <script src="<?php echo esc_url( zaito_lp_asset( 'school-suggest.js' ) ); ?>" defer></script>
+        <?php
+    }
+
+    /** 登録フォームのJS用: 名前・学校名が入っているかを確かめ、足りなければ文を返す。 */
+    function zaito_remote_basic_check_js() {
+        return "function zbasic(f){var n=f.elements.name,s=f.elements.school,ns=f.elements.not_student;if(!n.value.trim())return 'お名前を入力してください';if(!ns.checked&&!s.value.trim())return '学校名を入力してください（学生でない方はチェックを入れてください）';return '';}"
+            . "document.querySelectorAll('.basic .ns input').forEach(function(c){c.addEventListener('change',function(){var s=c.closest('.basic').querySelector('input[name=school]');s.disabled=c.checked;if(c.checked)s.value='';});});";
+    }
+}
+
 if ( ! function_exists( 'zaito_remote_head' ) ) {
     function zaito_remote_head( $title, $description, $canonical, $json_ld = null ) {
         ?>

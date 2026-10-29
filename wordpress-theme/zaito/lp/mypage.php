@@ -27,6 +27,11 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     <span class="my-ok" id="zmy-verify-sent" hidden>送りました。メールのリンクを押してください。</span>
   </div>
 
+  <div class="my-verify" id="zmy-basic" role="status" hidden>
+    <p><b>お名前と学校名を教えてください</b>求人に応募するときに使います。下の「新着メールの希望条件」から入力できます。</p>
+    <a class="btn btn-g" href="#zmy-pref-t">入力する</a>
+  </div>
+
   <section class="my-sec" id="zmy-apps-sec" hidden aria-labelledby="zmy-apps-t">
     <h2 id="zmy-apps-t">応募した求人</h2>
     <p>zaitoで応募した求人です。押すと、企業とのメッセージが開きます。</p>
@@ -68,6 +73,8 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     <h2 id="zmy-pref-t">新着メールの希望条件</h2>
     <p>ここで選んだ条件に合う新しい求人だけを、メールでお知らせします。</p>
     <form class="profile" id="zmy-prefs" style="margin-top:0;padding-top:0;border-top:0">
+      <div class="pq"><label class="lb" for="zmy-name">お名前</label>
+        <input type="text" id="zmy-name" name="name" maxlength="40" autocomplete="name" placeholder="例：山田 花子" style="width:100%;box-sizing:border-box;height:48px;padding:0 14px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font:inherit;font-size:16px"></div>
       <?php zaito_remote_profile_fields(); ?>
       <label class="my-mail"><input type="checkbox" name="mail" id="zmy-mail" value="on">新着求人のメールを受け取る</label>
       <div class="my-acts">
@@ -158,6 +165,10 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     });
     prefs.querySelectorAll('input[name="interests[]"]').forEach(function (el) { el.checked = p.interests.indexOf(el.value) !== -1; });
     prefs.elements.school.value = p.school || '';
+    prefs.elements.name.value = p.name || '';
+    // 以前の登録（メールアドレスだけ）で、名前か学校名がまだの人にお願いを出す。
+    var isStu = !p.role || /生$/.test(p.role);
+    document.getElementById('zmy-basic').hidden = !!(p.name && (p.school || !isStu || p.not_student));
     showStu();
   }
   function showStu() {

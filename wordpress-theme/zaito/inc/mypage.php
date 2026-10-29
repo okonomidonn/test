@@ -310,7 +310,7 @@ function zaito_handle_my_data() {
         update_post_meta( $id, 'favorites', $favs );
     }
     $prefs = array();
-    foreach ( array( 'role', 'grade', 'school', 'days', 'min_pay' ) as $k ) {
+    foreach ( array( 'name', 'role', 'grade', 'school', 'days', 'min_pay', 'not_student' ) as $k ) {
         $prefs[ $k ] = (string) get_post_meta( $id, $k, true );
     }
     $interests          = get_post_meta( $id, 'interests', true );
@@ -347,6 +347,10 @@ function zaito_handle_my_save() {
         } elseif ( '' === $v ) {
             delete_post_meta( $id, $k );
         }
+    }
+    $name = isset( $_POST['name'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name'] ) ) ), 0, 40 ) : '';
+    if ( '' !== $name ) {
+        update_post_meta( $id, 'name', $name );
     }
     $school = isset( $_POST['school'] ) ? sanitize_text_field( wp_unslash( $_POST['school'] ) ) : '';
     if ( '' !== $school ) {

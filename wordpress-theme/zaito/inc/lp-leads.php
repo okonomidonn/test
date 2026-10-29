@@ -495,7 +495,7 @@ function zaito_interest_admin_columns( $columns ) {
     $columns = zaito_lead_admin_columns( $columns );
     $date    = $columns['date'];
     unset( $columns['date'] );
-    $columns['zaito_profile']   = '立場・学年';
+    $columns['zaito_profile']   = '名前・立場・学校';
     $columns['zaito_interests'] = '興味のある仕事';
     $columns['date']            = $date;
     return $columns;
@@ -514,6 +514,7 @@ function zaito_lead_admin_column_value( $column, $post_id ) {
         echo esc_html( $source ? $source : '—' );
     } elseif ( 'zaito_profile' === $column ) {
         $parts = array_filter( array(
+            get_post_meta( $post_id, 'name', true ),
             get_post_meta( $post_id, 'role', true ),
             get_post_meta( $post_id, 'grade', true ),
             get_post_meta( $post_id, 'school', true ),
