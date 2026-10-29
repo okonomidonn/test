@@ -34,7 +34,7 @@ zaito_biz_head( '企業ログイン' );
 
   <form class="form" method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>">
     <input type="hidden" name="redirect_to" value="<?php echo esc_url( $zaito_to ); ?>">
-    <div class="fld"><label for="user_login">メールアドレス</label><input type="email" id="user_login" name="log" autocomplete="username" required></div>
+    <div class="fld"><label for="user_login">メールアドレス</label><input type="text" id="user_login" name="log" autocomplete="username" autocapitalize="off" spellcheck="false" required><p class="hint">運営の方は、ユーザー名でもログインできます。</p></div>
     <div class="fld"><label for="user_pass">パスワード</label><input type="password" id="user_pass" name="pwd" autocomplete="current-password" required></div>
     <input type="hidden" name="rememberme" value="forever">
     <button type="submit" class="btn btn-p btn-lg">ログイン</button>
