@@ -324,6 +324,10 @@ function zaito_handle_direct_apply() {
     if ( ! in_array( $grade, $opts['grade'], true ) ) {
         $grade = '';
     }
+    // 学生（大学生・大学院生・専門学校・短大生・高校生）は、学校名も必須。
+    if ( preg_match( '/生$/u', $role ) && '' === $school ) {
+        $errors[] = '学校名を入力してください';
+    }
     if ( '' === trim( $message ) ) {
         $errors[] = '自己紹介・応募の理由を入力してください';
     }

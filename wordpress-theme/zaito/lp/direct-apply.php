@@ -110,7 +110,8 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
             <label><input type="radio" name="grade" value="<?php echo esc_attr( $zaito_o ); ?>"<?php checked( $zaito_v['grade'], $zaito_o ); ?>><span><?php echo esc_html( $zaito_o ); ?></span></label>
           <?php endforeach; ?>
         </div></fieldset>
-        <div class="fld"><label for="zschool">学校名<span class="opt">任意</span></label><input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" value="<?php echo esc_attr( $zaito_v['school'] ); ?>" placeholder="例：〇〇大学"></div>
+        <div class="fld"><label for="zschool">学校名<span class="req">必須</span></label><input type="text" id="zschool" name="school" maxlength="80" autocomplete="organization" value="<?php echo esc_attr( $zaito_v['school'] ); ?>" placeholder="例：〇〇大学" data-schools="<?php echo esc_url( zaito_lp_asset( 'schools.json' ) ); ?>"></div>
+        <script src="<?php echo esc_url( zaito_lp_asset( 'school-suggest.js' ) ); ?>" defer></script>
       </div>
     </div>
 
@@ -129,7 +130,12 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
   <script>
   (function () {
     var f = document.getElementById('zapply'), stu = f.querySelector('.stu');
-    f.addEventListener('change', function (e) { if (e.target.name === 'role') { stu.hidden = !/生$/.test(e.target.value); } });
+    var school = document.getElementById('zschool');
+    // 学生を選んだときだけ、学年と学校名を出す。学校名は学生なら必須。
+    function sync(v) { var on = /生$/.test(v); stu.hidden = !on; school.required = on; }
+    var cur = f.querySelector('input[name=role]:checked');
+    sync(cur ? cur.value : '大学生');
+    f.addEventListener('change', function (e) { if (e.target.name === 'role') { sync(e.target.value); } });
     f.addEventListener('submit', function () { f.querySelector('button[type=submit]').disabled = true; });
   })();
   </script>
