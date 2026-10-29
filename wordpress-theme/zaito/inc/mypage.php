@@ -165,6 +165,11 @@ function zaito_mypage_template_redirect() {
             }
         }
         $to = $ok ? zaito_mypage_url() : add_query_arg( 'login', 'expired', zaito_mypage_url() );
+        // 応募のやりとり・応募フォームのメールから来たときは、そのページを開く（行き先はこのサイトの決まったページだけ）。
+        $next = isset( $_GET['next'] ) ? (string) wp_unslash( $_GET['next'] ) : '';
+        if ( $ok && preg_match( '#^/(chat/\?c=\d+|remote/d\d+/apply/)$#', $next ) ) {
+            $to = home_url( $next );
+        }
         if ( ! empty( $newly ) ) {
             $to = add_query_arg( 'verified', '1', $to );
         }
@@ -317,6 +322,7 @@ function zaito_handle_my_data() {
         'favorites'    => array_values( array_filter( array_map( 'zaito_my_job_summary', $favs ) ) ),
         'unsubscribed' => (bool) get_post_meta( $id, 'unsubscribed', true ),
         'verified'     => zaito_interest_verified( $id ),
+        'apps'         => function_exists( 'zaito_direct_my_apps' ) ? zaito_direct_my_apps( $id ) : array(),
     ) );
 }
 add_action( 'wp_ajax_zaito_my_data', 'zaito_handle_my_data' );

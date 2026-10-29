@@ -27,6 +27,12 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     <span class="my-ok" id="zmy-verify-sent" hidden>送りました。メールのリンクを押してください。</span>
   </div>
 
+  <section class="my-sec" id="zmy-apps-sec" hidden aria-labelledby="zmy-apps-t">
+    <h2 id="zmy-apps-t">応募した求人</h2>
+    <p>zaitoで応募した求人です。押すと、企業とのメッセージが開きます。</p>
+    <ul class="my-favs" id="zmy-apps"></ul>
+  </section>
+
   <section class="my-sec" aria-labelledby="zmy-fav-t">
     <h2 id="zmy-fav-t">保存した求人</h2>
     <p>求人の <span class="ms" aria-hidden="true" style="font-size:16px;vertical-align:-3px">bookmark</span> を押すと、ここに保存されます。</p>
@@ -125,6 +131,27 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     empty.hidden = list.length > 0;
   }
 
+  // 応募した求人（直接掲載の求人に、zaitoで応募したもの）。
+  function renderApps(list) {
+    var ul = document.getElementById('zmy-apps');
+    ul.innerHTML = '';
+    (list || []).forEach(function (j) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.className = 't';
+      a.href = j.url;
+      var b = document.createElement('b');
+      b.textContent = (j.unread ? '● ' : '') + j.title;
+      var s = document.createElement('span');
+      s.textContent = j.company + '・' + j.date + '応募・' + j.status + (j.unread ? '・新しいメッセージ' : '');
+      a.appendChild(b);
+      a.appendChild(s);
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    document.getElementById('zmy-apps-sec').hidden = !(list && list.length);
+  }
+
   function fillPrefs(p) {
     ['role', 'grade', 'days', 'min_pay'].forEach(function (k) {
       prefs.querySelectorAll('input[name="' + k + '"]').forEach(function (el) { el.checked = el.value === p[k]; });
@@ -149,6 +176,7 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
     state = d.state;
     renderFavs(d.favorites);
     if (d.state === 'member') {
+      renderApps(d.apps);
       try { localStorage.setItem('zaito_favs_merged', '1'); } catch (e) {}
       F.save(d.favorites.map(function (j) { return j.slug; }));
       F.paint();

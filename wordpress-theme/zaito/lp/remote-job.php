@@ -15,6 +15,8 @@ require_once __DIR__ . '/remote-parts.php';
 
 $zaito_j       = $zaito_remote_job;
 $zaito_closed  = ! empty( $zaito_j['closed'] );
+$zaito_direct  = ! empty( $zaito_j['direct'] ); // 企業がzaitoに直接掲載した求人（inc/direct.php）。応募はzaitoの中で受け付ける。
+$zaito_go_lb   = $zaito_direct ? 'この求人に応募する' : '応募ページへ進む';
 $zaito_go      = zaito_remote_url( $zaito_j['slug'] ) . 'go/';
 $zaito_initial = mb_substr( preg_replace( '/^(株式会社|合同会社|有限会社|学校法人)|(株式会社|合同会社|有限会社)$/u', '', $zaito_j['company'] ), 0, 1 );
 $zaito_error   = isset( $_GET['signup'] ) && 'error' === $_GET['signup'];
@@ -28,7 +30,9 @@ $zaito_facts = array(
     array( 'schedule', '稼働条件', $zaito_j['hours'] ? $zaito_j['hours'] : '元のページで確認してください', '' ),
     array( 'school', '対象', $zaito_j['target'], '' ),
     array( 'description', '契約の形', ! empty( $zaito_j['contract'] ) ? $zaito_j['contract'] : '募集ページで確認してください', '' ),
-    array( 'fact_check', 'zaitoの確認日', date_i18n( 'Y年n月j日', strtotime( $zaito_j['checked'] ) ), '募集内容はその後変わっている場合があります。確認していることは<a href="' . esc_url( home_url( '/kijun/' ) ) . '">掲載基準</a>をご覧ください' ),
+    $zaito_direct
+        ? array( 'fact_check', 'zaitoの審査日', date_i18n( 'Y年n月j日', strtotime( $zaito_j['checked'] ) ), '出社がないことなどを、掲載前にzaito運営が確認しています（<a href="' . esc_url( home_url( '/kijun/' ) ) . '">掲載基準</a>）' )
+        : array( 'fact_check', 'zaitoの確認日', date_i18n( 'Y年n月j日', strtotime( $zaito_j['checked'] ) ), '募集内容はその後変わっている場合があります。確認していることは<a href="' . esc_url( home_url( '/kijun/' ) ) . '">掲載基準</a>をご覧ください' ),
 );
 
 $zaito_ld = array(
@@ -64,6 +68,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
           <span class="warn">募集終了</span>
         <?php else : ?>
           <span class="ok"><span class="ms" aria-hidden="true">verified</span>完全在宅を確認</span>
+          <?php if ( $zaito_direct ) : ?><span class="cat"><span class="ms" aria-hidden="true" style="font-size:16px;vertical-align:-3px">forum</span> zaitoで応募</span><?php endif; ?>
         <?php endif; ?>
       </div>
       <h1 class="t"><?php echo esc_html( $zaito_j['title'] ); ?></h1>
@@ -79,6 +84,27 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         <p class="caution"><span class="ms" aria-hidden="true">info</span><span><?php echo esc_html( $zaito_j['caution'] ); ?></span></p>
       <?php endif; ?>
 
+      <?php if ( $zaito_direct ) : ?>
+      <section class="blk">
+        <h2>仕事内容</h2>
+        <p style="white-space:pre-wrap"><?php echo esc_html( $zaito_j['content'] ); ?></p>
+      </section>
+
+      <section class="blk">
+        <h2>応募の流れ</h2>
+        <ol class="steps">
+          <li>「この求人に応募する」を押す（はじめての方はメールアドレスで無料登録）</li>
+          <li>応募フォームで、自己紹介と応募の理由を送る</li>
+          <li><?php echo esc_html( $zaito_j['company'] ); ?>と、zaitoのメッセージでやりとりする（面接はZoomなどのオンラインです）</li>
+        </ol>
+      </section>
+
+      <section class="blk">
+        <h2>この求人情報について</h2>
+        <p><?php echo esc_html( $zaito_j['company'] ); ?>がzaitoに直接掲載している求人です。掲載の前に、面接・初日・研修・会議も含めて出社がないことを、zaito運営が確認しています。応募と企業とのやりとりは、すべてzaitoの中で行います。</p>
+        <p>出社を求められたなど、困ったことがあれば <a href="mailto:info@zaito-work.com?subject=<?php echo rawurlencode( '求人について（' . $zaito_j['company'] . '）' ); ?>">info@zaito-work.com</a> までお知らせください。</p>
+      </section>
+      <?php else : ?>
       <section class="blk">
         <h2>応募の流れ</h2>
         <ol class="steps">
@@ -93,6 +119,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         <p>企業が公開している募集ページをもとに、zaito運営が在宅の条件などを確認してまとめたものです。仕事内容のくわしい説明は、元の募集ページをご覧ください。zaitoは応募を受け付けたり取り次いだりしません。</p>
         <p>掲載内容の修正・削除をご希望の企業の方は、<a href="mailto:info@zaito-work.com?subject=<?php echo rawurlencode( 'まとめ求人の掲載について（' . $zaito_j['company'] . '）' ); ?>">info@zaito-work.com</a> までご連絡ください。</p>
       </section>
+      <?php endif; ?>
     </div>
 
     <aside class="side">
@@ -102,16 +129,16 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
           <span class="btn btn-g btn-lg" aria-disabled="true">募集は終了しました</span>
           <p class="cap"><a href="<?php echo esc_url( zaito_remote_url() ); ?>">ほかの完全在宅の求人を見る</a></p>
         <?php else : ?>
-          <a class="btn btn-p btn-lg" id="zgo" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow">応募ページへ進む<span class="ms" aria-hidden="true">open_in_new</span></a>
-          <p class="cap"><?php echo esc_html( $zaito_j['company'] ); ?>の募集ページに移動します</p>
+          <a class="btn btn-p btn-lg" id="zgo" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow"><?php echo esc_html( $zaito_go_lb ); ?><span class="ms" aria-hidden="true"><?php echo $zaito_direct ? 'arrow_forward' : 'open_in_new'; ?></span></a>
+          <p class="cap"><?php echo $zaito_direct ? 'zaitoの応募フォームが開きます' : esc_html( $zaito_j['company'] ) . 'の募集ページに移動します'; ?></p>
           <button type="button" class="btn btn-g fav-wide u022" data-fav="<?php echo esc_attr( $zaito_j['slug'] ); ?>" aria-pressed="false"><span class="u022-ico"><?php echo zaito_u022_heart(); // 固定のSVGのみ ?></span><span class="lb">保存する</span></button>
           <?php $zaito_favn = function_exists( 'zaito_fav_count' ) ? zaito_fav_count( $zaito_j['slug'] ) : 0; ?>
           <p class="u022-meta" data-fav-count="<?php echo esc_attr( $zaito_j['slug'] ); ?>" data-n="<?php echo esc_attr( $zaito_favn ); ?>"<?php echo $zaito_favn ? '' : ' hidden'; ?>><span class="u022-roll" aria-live="polite"><span><?php echo esc_html( $zaito_favn ); ?></span><span></span></span>人が保存しています</p>
           <?php zaito_share_box( '出社なしの在宅バイト：' . $zaito_j['title'] . ( $zaito_j['pay'] ? '（' . $zaito_j['pay'] . '）' : '' ), zaito_remote_url( $zaito_j['slug'] ) ); ?>
 
           <form class="signup<?php echo $zaito_error ? ' on' : ''; ?>" id="zsignup" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
-            <b>無料登録して応募ページへ</b>
-            <p>メールアドレスだけで登録できます。次回からはすぐに応募ページへ進めます。新しい完全在宅の求人もお知らせします。</p>
+            <b><?php echo $zaito_direct ? '無料登録して応募する' : '無料登録して応募ページへ'; ?></b>
+            <p>メールアドレスだけで登録できます。次回からはすぐに<?php echo $zaito_direct ? '応募できます' : '応募ページへ進めます'; ?>。新しい完全在宅の求人もお知らせします。</p>
             <input type="hidden" name="action" value="zaito_remote_register">
             <input type="hidden" name="job" value="<?php echo esc_attr( $zaito_j['slug'] ); ?>">
             <input type="hidden" name="utm_source" value="">
@@ -121,7 +148,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
             <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
             <label for="zemail">メールアドレス</label>
             <input type="email" id="zemail" name="email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
-            <button type="submit" class="btn btn-p btn-lg">登録して応募ページへ進む</button>
+            <button type="submit" class="btn btn-p btn-lg"><?php echo $zaito_direct ? '登録して応募フォームへ' : '登録して応募ページへ進む'; ?></button>
             <p class="legal">登録すると、<a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>と<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a>に同意したものとみなします。</p>
             <p class="err" id="zerr" role="alert"><?php echo $zaito_error ? '登録できませんでした。メールアドレスを確認して、もう一度お試しください。' : ''; ?></p>
           </form>
@@ -152,7 +179,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
   <?php if ( $zaito_closed ) : ?>
     <a class="btn btn-g" href="<?php echo esc_url( zaito_remote_url() ); ?>">ほかの求人を見る</a>
   <?php else : ?>
-    <a class="btn btn-p" id="zgo-sp" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow">応募ページへ進む<span class="ms" aria-hidden="true">open_in_new</span></a>
+    <a class="btn btn-p" id="zgo-sp" href="<?php echo esc_url( $zaito_go ); ?>" rel="nofollow"><?php echo esc_html( $zaito_go_lb ); ?><span class="ms" aria-hidden="true"><?php echo $zaito_direct ? 'arrow_forward' : 'open_in_new'; ?></span></a>
   <?php endif; ?>
 </div>
 

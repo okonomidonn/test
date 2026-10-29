@@ -1814,9 +1814,11 @@ function zaito_remote_jobs() {
         ),
     );
     // 掲載基準（初日・研修・会議を含めて出社を求めない）に合わないと分かった求人は、記録だけ残して表に出さない。
-    return array_values( array_filter( $jobs, function ( $j ) {
+    $jobs = array_values( array_filter( $jobs, function ( $j ) {
         return empty( $j['excluded'] );
     } ) );
+    // 企業がzaitoに直接掲載した求人（inc/direct.php）を混ぜる。
+    return apply_filters( 'zaito_remote_jobs', $jobs );
 }
 
 function zaito_remote_job( $slug ) {
@@ -1841,12 +1843,15 @@ function zaito_remote_rewrite_rules() {
     add_rewrite_rule( '^remote/?$', 'index.php?zaito_page=remote', 'top' );
     add_rewrite_rule( '^remote/([a-z0-9-]+)/?$', 'index.php?zaito_page=remote&zaito_remote=$matches[1]', 'top' );
     add_rewrite_rule( '^remote/([a-z0-9-]+)/go/?$', 'index.php?zaito_page=remote&zaito_remote=$matches[1]&zaito_go=1', 'top' );
+    // 直接掲載の求人の応募フォーム（inc/direct.php・lp/direct-apply.php）。
+    add_rewrite_rule( '^remote/(d[0-9]+)/apply/?$', 'index.php?zaito_page=remote&zaito_remote=$matches[1]&zaito_apply=1', 'top' );
 }
 add_action( 'init', 'zaito_remote_rewrite_rules' );
 
 function zaito_remote_query_vars( $vars ) {
     $vars[] = 'zaito_remote';
     $vars[] = 'zaito_go';
+    $vars[] = 'zaito_apply';
     return $vars;
 }
 add_filter( 'query_vars', 'zaito_remote_query_vars' );
@@ -1889,6 +1894,16 @@ function zaito_remote_template_redirect() {
 
     if ( get_query_var( 'zaito_go' ) ) {
         zaito_remote_go( $job );
+        exit;
+    }
+
+    if ( get_query_var( 'zaito_apply' ) && ! empty( $job['direct'] ) ) {
+        $zaito_remote_job = $job;
+        nocache_headers();
+        status_header( 200 );
+        header( 'Content-Type: text/html; charset=UTF-8' );
+        header( 'X-Robots-Tag: noindex, nofollow' );
+        include get_template_directory() . '/lp/direct-apply.php';
         exit;
     }
 
@@ -1948,6 +1963,11 @@ function zaito_remote_go( $job ) {
     }
     if ( empty( $job['closed'] ) ) {
         zaito_remote_record_click( $job['slug'], $member );
+    }
+    // 直接掲載の求人は、zaitoの中の応募フォームへ。
+    if ( ! empty( $job['direct'] ) ) {
+        wp_safe_redirect( $job['url'], 302 );
+        return;
     }
     // 転送先は zaito_remote_jobs() に運営が書いたURLだけ（利用者の入力は使わない）。
     wp_redirect( esc_url_raw( zaito_remote_out_url( $job ) ), 302 );

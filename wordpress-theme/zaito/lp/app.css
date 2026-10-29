@@ -1,0 +1,200 @@
+/*
+ * 企業の画面・応募フォーム・メッセージの見た目（lp/biz-parts.php、lp/direct-apply.php、page-chat.php）。
+ * 色・角丸などは tokens.css の値を使う。カードは枠線だけで、影はつけない。
+ */
+
+/* ---------- 企業の画面の枠 ---------- */
+.biz-hd{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--z-line)}
+.biz-hd .wrap{height:64px;display:flex;align-items:center;gap:20px}
+.biz-hd .logo{font-size:26px}
+.biz-hd .for{font-size:12px;font-weight:700;color:var(--z-text-3);padding:3px 8px;border-radius:var(--z-r-pill);background:var(--z-surface)}
+.biz-hd .who{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13px;color:var(--z-text-3)}
+.biz-hd .who b{color:var(--z-navy);font-weight:700}
+.biz-hd .who a{display:inline-flex;align-items:center;gap:4px;color:var(--z-text-3);font-weight:700}
+.biz-hd .who a:hover{color:var(--z-navy)}
+.biz-hd .who .ms{font-size:18px}
+.biz-nav{border-bottom:1px solid var(--z-line);background:#fff}
+.biz-nav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.biz-nav a{position:relative;display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 14px;font-size:14px;font-weight:700;color:var(--z-text-3);white-space:nowrap}
+.biz-nav a .ms{font-size:20px}
+.biz-nav a:hover{color:var(--z-navy)}
+.biz-nav a[aria-current="page"]{color:var(--z-blue)}
+.biz-nav a[aria-current="page"]::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2px;border-radius:2px;background:var(--z-blue)}
+.biz-nav .n{min-width:18px;height:18px;padding:0 5px;border-radius:var(--z-r-pill);background:var(--z-blue);color:#fff;font-size:11px;line-height:18px;text-align:center;font-family:var(--z-font-en)}
+
+.bz{max-width:1080px;padding-top:32px;padding-bottom:80px}
+.biz-title{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 24px}
+.biz-title h1{margin:0;font-size:26px;line-height:1.3;font-weight:900}
+.biz-title p{margin:6px 0 0;font-size:14px;color:var(--z-text-3)}
+.bz h2{margin:0 0 14px;font-size:17px;font-weight:700}
+.biz-sec{margin-top:36px}
+
+/* お知らせの帯 */
+.note{display:flex;gap:12px;align-items:flex-start;padding:16px 18px;border-radius:var(--z-r-md);background:var(--z-surface);font-size:14px;line-height:1.7;margin:0 0 20px}
+.note .ms{flex:none;font-size:22px;color:var(--z-text-3);margin-top:1px}
+.note b{display:block;font-size:15px;color:var(--z-navy)}
+.note p{margin:2px 0 0;color:var(--z-text-2)}
+.note.n-info{background:var(--z-blue-light)}
+.note.n-info .ms{color:var(--z-blue)}
+.note.n-ok .ms{color:var(--z-success)}
+.note.n-warn{background:#FFF6E5}
+.note.n-warn .ms{color:#B36B00}
+.note.n-err{background:var(--z-error-bg)}
+.note.n-err .ms{color:var(--z-error)}
+.note ul{margin:4px 0 0;padding-left:1.2em}
+.note form{margin-top:8px}
+
+/* 数字のまとめ */
+.stats4{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--z-border);border-radius:var(--z-r-lg);overflow:hidden}
+.stats4 a{display:block;padding:18px 20px;color:var(--z-navy);border-right:1px solid var(--z-line)}
+.stats4 a:last-child{border-right:0}
+.stats4 a:hover{background:var(--z-surface)}
+.stats4 span{display:block;font-size:13px;color:var(--z-text-3);font-weight:700}
+.stats4 b{display:block;margin-top:4px;font-family:var(--z-font-en);font-size:30px;line-height:1.1}
+.stats4 b small{font-family:var(--z-font);font-size:13px;margin-left:2px}
+.stats4 .hot b{color:var(--z-blue)}
+
+/* 一覧（応募・求人） */
+.rows{border:1px solid var(--z-border);border-radius:var(--z-r-lg);overflow:hidden;background:#fff}
+.rows>li,.rows>div{list-style:none;display:flex;align-items:center;gap:16px;padding:16px 20px;border-top:1px solid var(--z-line)}
+.rows>li:first-child,.rows>div:first-child{border-top:0}
+.rows{margin:0;padding:0}
+.rows .main{flex:1;min-width:0}
+.rows .main b{display:block;font-size:15px;line-height:1.5}
+.rows .main b a{color:var(--z-navy)}
+.rows .main b a:hover{color:var(--z-blue)}
+.rows .rsub{display:block;margin-top:2px;font-size:13px;color:var(--z-text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rows .meta{font-size:13px;color:var(--z-text-4);white-space:nowrap}
+.rows .acts{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.rows .btn{height:36px;padding:0 14px;font-size:13px}
+.empty{padding:32px 20px;text-align:center;font-size:14px;color:var(--z-text-3)}
+.empty .btn{margin-top:12px}
+.dot-new{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--z-blue);margin-right:6px;vertical-align:2px}
+
+/* 状態のラベル */
+.st{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:var(--z-r-pill);font-size:12px;font-weight:700;white-space:nowrap;background:var(--z-chip);color:var(--z-text-2)}
+.st-new,.st-pending{background:var(--z-blue-light);color:var(--z-blue)}
+.st-talking,.st-interview{background:#E8F6F0;color:#13734F}
+.st-offer,.st-open{background:#E8F6F0;color:#13734F}
+.st-returned{background:#FFF1E0;color:#9A5B00}
+.st-rejected,.st-declined,.st-closed,.st-draft{background:var(--z-chip);color:var(--z-text-3)}
+
+/* 絞り込み */
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.seg a{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:var(--z-r-pill);font-size:13px;font-weight:700;color:var(--z-text-2);box-shadow:inset 0 0 0 1px var(--z-border)}
+.seg a[aria-current="true"]{background:var(--z-navy);color:#fff;box-shadow:none}
+.seg a small{font-family:var(--z-font-en);font-size:12px;opacity:.75}
+
+/* ---------- フォーム ---------- */
+.form{max-width:720px}
+.form .fcard{border:1px solid var(--z-border);border-radius:var(--z-r-lg);padding:24px;margin:0 0 16px}
+.form .fcard h2{margin:0 0 4px;padding:0;border:0;font-size:17px;line-height:1.5;font-weight:700}
+.form .fcard>p{margin:0 0 16px;font-size:13px;color:var(--z-text-3)}
+.fld{margin:0 0 18px}
+.fld:last-child{margin-bottom:0}
+.fld>label,.fld>legend,.fld .lb{display:block;margin:0 0 6px;font-size:14px;font-weight:700;color:var(--z-navy)}
+.fld .req{margin-left:6px;font-size:11px;font-weight:700;color:var(--z-error)}
+.fld .opt{margin-left:6px;font-size:11px;font-weight:700;color:var(--z-text-4)}
+.fld .hint{margin:6px 0 0;font-size:12px;line-height:1.6;color:var(--z-text-4)}
+fieldset.fld{border:0;padding:0}
+.in,.fld input[type=text],.fld input[type=email],.fld input[type=password],.fld input[type=url],.fld input[type=tel],.fld input[type=number],.fld select,.fld textarea{width:100%;box-sizing:border-box;height:48px;padding:0 14px;border:1.5px solid var(--z-border-input);border-radius:var(--z-r-md);background:#fff;font:inherit;font-size:16px;color:var(--z-navy);transition:border-color .15s,box-shadow .15s}
+.fld textarea{height:auto;min-height:140px;padding:12px 14px;line-height:1.7;resize:vertical}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:0;border-color:var(--z-blue);box-shadow:var(--z-focus-ring)}
+.fld .row{display:flex;gap:10px;align-items:center}
+.fld .row>*{flex:1}
+.fld .row .unit{flex:0 0 auto;font-size:14px;color:var(--z-text-3)}
+.fld .row select{flex:0 0 140px}
+.picks{display:flex;flex-wrap:wrap;gap:8px}
+.picks label{position:relative}
+.picks input{position:absolute;opacity:0;pointer-events:none}
+.picks span{display:inline-flex;align-items:center;height:38px;padding:0 14px;border-radius:var(--z-r-pill);font-size:14px;font-weight:700;color:var(--z-text-2);box-shadow:inset 0 0 0 1.5px var(--z-border-input);cursor:pointer;user-select:none}
+.picks input:checked+span{background:var(--z-blue-light);color:var(--z-blue);box-shadow:inset 0 0 0 1.5px var(--z-blue)}
+.picks input:focus-visible+span{box-shadow:inset 0 0 0 1.5px var(--z-blue),var(--z-focus-ring)}
+.check{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:var(--z-r-md);background:var(--z-surface);font-size:14px;line-height:1.7;cursor:pointer;margin:0 0 10px}
+.check input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--z-blue);flex-shrink:0}
+.check b{display:block}
+.check small{display:block;color:var(--z-text-3);font-size:13px}
+.form-acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px}
+.form-acts .sp{flex:1}
+.form .legal{font-size:12px;color:var(--z-text-4);margin:10px 0 0}
+
+/* 登録・ログイン（1カラムの小さいカード） */
+.auth{max-width:440px;margin:0 auto;padding:48px 20px 96px}
+.auth h1{margin:0 0 6px;font-size:26px;font-weight:900;line-height:1.3}
+.auth .lead{margin:0 0 24px;font-size:14px;color:var(--z-text-3)}
+.auth .btn-lg{width:100%}
+.auth .alt{margin:20px 0 0;text-align:center;font-size:14px;color:var(--z-text-3)}
+.auth .or{display:flex;align-items:center;gap:12px;margin:18px 0;font-size:12px;color:var(--z-text-4)}
+.auth .or::before,.auth .or::after{content:"";flex:1;height:1px;background:var(--z-line)}
+.auth-split{display:grid;grid-template-columns:1fr 1fr;gap:56px;max-width:1000px;margin:0 auto;padding:48px 20px 96px;align-items:start}
+.auth-split .pitch h2{margin:0 0 16px;font-size:24px;line-height:1.4;font-weight:900}
+.auth-split .pitch ol{margin:0;padding:0;list-style:none;counter-reset:s}
+.auth-split .pitch li{counter-increment:s;position:relative;padding:0 0 18px 44px;font-size:14px;color:var(--z-text-2);line-height:1.7}
+.auth-split .pitch li::before{content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--z-blue-light);color:var(--z-blue);font-family:var(--z-font-en);font-weight:700;font-size:14px;line-height:28px;text-align:center}
+.auth-split .pitch li b{display:block;color:var(--z-navy);font-size:15px}
+.auth-split .auth{padding:0;margin:0}
+
+/* 応募者の詳細 */
+.app-head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.status-form{display:flex;gap:8px;align-items:center}
+.status-form select{height:40px;padding:0 12px;border:1.5px solid var(--z-border-input);border-radius:10px;font:inherit;font-size:14px;background:#fff}
+.status-form .btn{height:40px}
+
+/* ---------- メッセージ ---------- */
+.chat{max-width:1080px;display:grid;grid-template-columns:1fr 320px;gap:24px;padding-top:24px;padding-bottom:40px;align-items:start}
+.chat-main{border:1px solid var(--z-border);border-radius:var(--z-r-lg);display:flex;flex-direction:column;height:calc(100dvh - 180px);min-height:480px;overflow:hidden;background:#fff}
+.chat-top{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--z-line)}
+.chat-top .who{flex:1;min-width:0}
+.chat-top .who b{display:block;font-size:15px;line-height:1.4}
+.chat-top .who span{display:block;font-size:12px;color:var(--z-text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-log{flex:1;overflow-y:auto;padding:20px 18px;display:flex;flex-direction:column;gap:12px;background:var(--z-surface)}
+.msg{display:flex;flex-direction:column;max-width:78%}
+.msg .bub{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.75;white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid var(--z-border);color:var(--z-navy)}
+.msg .tm{margin-top:4px;font-size:11px;color:var(--z-text-4)}
+.msg.own{align-self:flex-end;align-items:flex-end}
+.msg.own .bub{background:var(--z-blue);border-color:var(--z-blue);color:#fff}
+.msg .bub a{color:inherit;text-decoration:underline}
+.chat-day{align-self:center;font-size:12px;color:var(--z-text-4)}
+.chat-form{display:flex;gap:10px;align-items:flex-end;padding:12px;border-top:1px solid var(--z-line);background:#fff}
+.chat-form textarea{flex:1;min-height:48px;max-height:180px;padding:12px 14px;border:1.5px solid var(--z-border-input);border-radius:var(--z-r-md);font:inherit;font-size:15px;line-height:1.6;resize:none}
+.chat-form textarea:focus{outline:0;border-color:var(--z-blue);box-shadow:var(--z-focus-ring)}
+.chat-form .btn{height:48px;width:48px;padding:0;flex-shrink:0}
+.chat-form .btn .ms{font-size:22px}
+.chat-err{margin:0;padding:0 14px 10px;font-size:13px;color:var(--z-error)}
+.chat-side{display:flex;flex-direction:column;gap:16px}
+.side-card{border:1px solid var(--z-border);border-radius:var(--z-r-lg);padding:18px}
+.side-card h3{margin:0 0 10px;font-size:14px;font-weight:700}
+.side-card dl{margin:0;font-size:13px}
+.side-card dt{color:var(--z-text-4);margin-top:8px}
+.side-card dt:first-child{margin-top:0}
+.side-card dd{margin:2px 0 0;color:var(--z-navy);line-height:1.6;white-space:pre-wrap}
+.side-card p{margin:0;font-size:13px;line-height:1.7;color:var(--z-text-2)}
+.side-card ul{margin:0;padding-left:1.1em;font-size:13px;line-height:1.7;color:var(--z-text-2)}
+.side-card .btn{width:100%;margin-top:12px}
+
+/* ---------- 応募フォーム（学生） ---------- */
+.apply-page{max-width:720px;padding-top:28px;padding-bottom:80px}
+.apply-page h1{margin:8px 0 4px;font-size:24px;line-height:1.4;font-weight:900}
+.apply-page .co{margin:0 0 20px;font-size:14px;color:var(--z-text-3)}
+.apply-page .btn-lg{width:100%}
+
+@media (max-width:860px){
+  .stats4{grid-template-columns:repeat(2,1fr)}
+  .stats4 a:nth-child(2){border-right:0}
+  .stats4 a:nth-child(-n+2){border-bottom:1px solid var(--z-line)}
+  .chat{grid-template-columns:1fr;padding-top:12px}
+  .chat-main{height:calc(100dvh - 150px)}
+  .auth-split{grid-template-columns:1fr;gap:32px}
+  .auth-split .pitch{order:2}
+  .rows>li,.rows>div{flex-wrap:wrap}
+  .rows .acts{width:100%}
+  .biz-hd .who .nm{display:none}
+}
+@media (max-width:560px){
+  .bz{padding-top:20px}
+  .biz-title h1{font-size:22px}
+  .form .fcard{padding:18px}
+  .fld .row{flex-wrap:wrap}
+  .fld .row select{flex:1 1 100%}
+  .msg{max-width:88%}
+}

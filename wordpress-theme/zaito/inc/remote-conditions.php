@@ -72,6 +72,10 @@ function zaito_remote_job_tags() {
 }
 
 function zaito_remote_has_tag( $job, $tag ) {
+    // 直接掲載の求人は、企業が求人のフォームで選んだ特徴（inc/direct.php）。
+    if ( ! empty( $job['tags'] ) && in_array( $tag, $job['tags'], true ) ) {
+        return true;
+    }
     $tags = zaito_remote_job_tags();
     return isset( $tags[ $job['slug'] ] ) && in_array( $tag, $tags[ $job['slug'] ], true );
 }

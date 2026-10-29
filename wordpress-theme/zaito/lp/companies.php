@@ -13,13 +13,13 @@ $zaito_jobs  = array_filter( zaito_remote_jobs(), function ( $j ) {
 } );
 $zaito_url   = home_url( '/for-companies/' );
 $zaito_title = '企業の方へ｜完全在宅の求人を無料で掲載 | zaito';
-$zaito_desc  = '出社なしの仕事だけを集めた求人サイト「zaito」。在宅で働く人の募集を、無料で掲載できます。求人原稿の作成もzaito運営がお手伝いします。';
+$zaito_desc  = '出社なしの仕事だけを集めた求人サイト「zaito」。在宅で働く人の募集を、無料で掲載できます。費用は、zaitoからの応募者に内定を出したときの成果報酬だけです。';
 
 $zaito_faqs = array(
-    array( '掲載料金はかかりますか？', '現在は無料で掲載しています。今後料金が発生する場合は事前にご案内し、ご同意いただかないまま請求することはありません。' ),
+    array( '費用はかかりますか？', '掲載と応募の受け付けは無料です。zaitoから応募した方に内定を出した時点で、成果報酬をいただきます。金額は求人の公開前にご案内し、ご同意いただかないまま請求することはありません。' ),
     array( '求人原稿がなくても大丈夫ですか？', '大丈夫です。募集内容をお伺いし、zaito運営が原稿を作成します。掲載前に内容をご確認いただきます。' ),
     array( 'どんな求人を掲載できますか？', '出社なしで、自宅だけで働ける求人です。学生・社会人・主婦の方など、対象は問いません。研修期間だけ出社がある場合などは、条件として明記したうえで掲載します。' ),
-    array( '応募はどこで受け付けますか？', '現在は、貴社の募集ページ（採用サイトやWantedlyなど）で受け付けていただく形です。zaitoからは、求人を見た方を貴社の募集ページへご案内します。' ),
+    array( '応募はどこで受け付けますか？', 'zaitoの中で受け付けます。企業アカウントの画面で応募者を確認し、zaitoのメッセージでやりとりできます。面接はZoomなどのオンラインで行ってください。' ),
     array( 'すでにzaitoに載っている自社の求人を直したい・消したい', '公開されている募集ページをもとに、zaito運営がまとめて掲載している求人があります。修正・削除のご希望は、下のフォームか info@zaito-work.com までご連絡ください。すぐに対応します。' ),
 );
 
@@ -39,17 +39,18 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
     <div class="hero-in">
       <div class="hero-copy">
         <span class="eb">FOR COMPANIES</span>
-        <h1>在宅で働く人を、<br>無料で募集できます。</h1>
-        <p>zaitoは、出社なしの仕事だけを集めた求人サイトです。在宅で働きたい人だけが見に来るので、「フルリモートのはずが出社の話でずれる」ことがありません。求人原稿の作成もお手伝いします。</p>
+        <h1>在宅で働く人を、<br>掲載無料で募集できます。</h1>
+        <p>zaitoは、出社なしの仕事だけを集めた求人サイトです。在宅で働きたい人だけが見に来るので、「フルリモートのはずが出社の話でずれる」ことがありません。費用は、内定を出したときの成果報酬だけです。</p>
         <div class="cta-row">
-          <a class="btn btn-p btn-lg" href="#contact">無料で掲載を相談する<span class="ms" aria-hidden="true">arrow_forward</span></a>
-          <a class="btn btn-g btn-lg" href="<?php echo esc_url( home_url( '/' ) ); ?>">掲載中の求人を見る</a>
+          <a class="btn btn-p btn-lg" href="<?php echo esc_url( home_url( '/company-register/' ) ); ?>">無料で企業アカウントを作る<span class="ms" aria-hidden="true">arrow_forward</span></a>
+          <a class="btn btn-g btn-lg" href="#contact">まずは相談する</a>
         </div>
+        <p style="margin-top:12px;font-size:14px">アカウントをお持ちの方は <a href="<?php echo esc_url( home_url( '/company-login/' ) ); ?>">企業ログイン</a></p>
       </div>
       <dl class="stats">
         <div><dt>掲載中の求人</dt><dd><b><?php echo esc_html( count( $zaito_jobs ) ); ?></b>件</dd></div>
         <div><dt>掲載費</dt><dd><b>無料</b></dd></div>
-        <div><dt>原稿作成</dt><dd><b>無料</b></dd></div>
+        <div><dt>費用</dt><dd><b>内定時</b>のみ</dd></div>
       </dl>
     </div>
   </div>
@@ -61,17 +62,17 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
     <ul class="why">
       <li class="t-a"><span class="ic ms" aria-hidden="true">home_work</span><b>在宅で働きたい人だけが見る</b><p>載っているのは、運営が出社の有無を確かめた求人だけ。最初から在宅を前提に探している人に届きます。</p></li>
       <li class="t-b"><span class="ic ms" aria-hidden="true">edit_document</span><b>原稿はzaitoが作ります</b><p>募集内容をお伺いして、報酬・稼働時間・在宅の条件が伝わる原稿を作成します。確認していただくだけで掲載できます。</p></li>
-      <li class="t-d"><span class="ic ms" aria-hidden="true">insights</span><b>見られた数をお伝えします</b><p>求人ごとに、何人が貴社の募集ページへ進んだかを記録しています。掲載の効果を数字で確かめられます。</p></li>
+      <li class="t-d"><span class="ic ms" aria-hidden="true">forum</span><b>応募からやりとりまでzaitoで</b><p>応募はzaitoに届き、応募者とはzaitoのメッセージでやりとりできます。費用は内定を出したときだけです。</p></li>
     </ul>
   </section>
 
   <section class="co-sec" aria-labelledby="flow-title">
     <h2 id="flow-title">掲載までの流れ</h2>
     <ol class="flow4">
-      <li><b>フォームから相談</b><span>会社名と募集したい仕事を送ってください。</span></li>
-      <li><b>内容の確認</b><span>メールかオンラインで、条件を確認します。</span></li>
-      <li><b>原稿の作成</b><span>zaito運営が原稿を作り、確認していただきます。</span></li>
+      <li><b>企業アカウントを作る</b><span>会社の情報を登録します。運営が確認して承認します。</span></li>
+      <li><b>求人を作って審査に出す</b><span>出社がないかなどを運営が確認します。原稿づくりのご相談も受け付けます。</span></li>
       <li><b>掲載開始</b><span>求人一覧に載り、新着としてお知らせします。</span></li>
+      <li><b>応募者とやりとり</b><span>応募はzaitoに届き、メッセージで日程調整や連絡ができます。</span></li>
     </ol>
   </section>
 
