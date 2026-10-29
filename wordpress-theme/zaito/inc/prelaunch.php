@@ -285,6 +285,9 @@ function zaito_prelaunch_redirect_map() {
         'jobs'          => '/',
         'register'      => '/',
         'interest'      => '/',
+        // 以前の求職者アカウント（パスワードあり）の画面。学生はマイページ（パスワードなし）を使う。
+        'worker-profile' => '/mypage/',
+        'apply'         => '/',
     );
 }
 

@@ -20,6 +20,9 @@ zaito_biz_head( '企業ログイン' );
   <h1>企業ログイン</h1>
   <p class="lead">求人の管理と、応募者とのメッセージはこちらから。</p>
 
+  <?php if ( isset( $_GET['reset'] ) ) : ?>
+    <div class="note n-ok" role="status"><span class="ms" aria-hidden="true">check_circle</span><div><b>パスワードを変更しました</b><p>新しいパスワードでログインしてください。</p></div></div>
+  <?php endif; ?>
   <?php if ( isset( $_GET['login'] ) && 'failed' === $_GET['login'] ) : ?>
     <div class="note n-err" role="alert"><span class="ms" aria-hidden="true">warning</span><div><b>ログインできませんでした</b><p>メールアドレスかパスワードが違います。</p></div></div>
   <?php endif; ?>

@@ -1,79 +1,14 @@
 <?php
-$zaito_login_redirect_to = ! empty( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['redirect_to'] ) ) : home_url( '/mypage/' );
-get_header();
-?>
-
-<main class="auth-main">
-  <div class="auth-container">
-    <div class="auth-card">
-      <h1>ログイン</h1>
-
-      <?php if ( isset( $_GET['login'] ) && $_GET['login'] === 'failed' ) : ?>
-        <div class="auth-error">
-          メールアドレスまたはパスワードが正しくありません
-        </div>
-      <?php endif; ?>
-
-      <?php if ( isset( $_GET['reset'] ) && $_GET['reset'] === '1' ) : ?>
-        <div class="auth-success-message">
-          パスワードを再設定しました。新しいパスワードでログインしてください。
-        </div>
-      <?php endif; ?>
-
-      <?php if ( function_exists( 'zaito_google_login_is_configured' ) && zaito_google_login_is_configured() ) : ?>
-        <a href="<?php echo esc_url( zaito_google_login_url( $zaito_login_redirect_to ) ); ?>" class="btn btn-google btn-block">
-          <span class="google-icon" aria-hidden="true">G</span> Googleでログイン
-        </a>
-        <div class="auth-divider">
-          <span>または</span>
-        </div>
-      <?php endif; ?>
-
-      <form method="post" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" class="auth-form">
-        <input type="hidden" name="redirect_to" value="<?php echo esc_url( $zaito_login_redirect_to ); ?>" />
-        <div class="form-group">
-          <label for="user_login">メールアドレス</label>
-          <input
-            type="text"
-            id="user_login"
-            name="log"
-            autocomplete="username"
-            value="<?php echo isset( $_POST['log'] ) ? esc_attr( $_POST['log'] ) : ''; ?>"
-            required
-          />
-          <small>ユーザー名でもログインできます</small>
-        </div>
-
-        <div class="form-group">
-          <label for="user_pass">パスワード</label>
-          <input
-            type="password"
-            id="user_pass"
-            name="pwd"
-            required
-          />
-        </div>
-
-        <p class="auth-link auth-link-right">
-          <a href="<?php echo esc_url( home_url( '/forgot-password/' ) ); ?>">パスワードをお忘れですか？</a>
-        </p>
-
-        <button type="submit" class="btn btn-accent btn-block">ログイン</button>
-      </form>
-
-      <p class="auth-link">
-        アカウントをお持ちでない方は <a href="<?php echo esc_url( home_url( '/register/' ) ); ?>">こちらから登録</a>
-      </p>
-
-      <div class="auth-divider">
-        <span>企業の方は</span>
-      </div>
-
-      <a href="<?php echo esc_url( home_url( '/company-login/' ) ); ?>" class="btn btn-outline btn-block">
-        企業ログイン
-      </a>
-    </div>
-  </div>
-</main>
-
-<?php get_footer(); ?>
+/**
+ * 以前の求職者向けログイン（/login/）。学生はパスワードなしのマイページ（/mypage/）を使うようになったため、
+ * パスワードでログインするのは企業と運営だけになった。ログインは /company-login/ にまとめ、
+ * ここに来た人（wp-login.php からの転送・ログイン失敗の戻り・古いリンク）は付いていた値ごとそちらへ移す。
+ */
+$zaito_args = array();
+foreach ( array( 'redirect_to', 'login', 'reset' ) as $zaito_k ) {
+    if ( isset( $_GET[ $zaito_k ] ) ) {
+        $zaito_args[ $zaito_k ] = rawurlencode( sanitize_text_field( wp_unslash( $_GET[ $zaito_k ] ) ) );
+    }
+}
+wp_safe_redirect( add_query_arg( $zaito_args, home_url( '/company-login/' ) ), 301 );
+exit;
