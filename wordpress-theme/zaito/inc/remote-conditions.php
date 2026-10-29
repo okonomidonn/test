@@ -66,6 +66,8 @@ function zaito_remote_job_tags() {
         'fermelanta-ceo-office-intern' => array( 'tanjikan' ),
         'replus-ai-automation-intern'  => array( 'tanjikan' ),
         'andgo-software-engineer-intern' => array( 'tanjikan' ),
+        'mediafirst-backoffice'    => array( 'mikeiken' ),
+        'stocksun-hr-marketing-intern' => array( 'tanjikan' ),
     );
 }
 
