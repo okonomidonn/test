@@ -18,6 +18,7 @@ CLOSED_WORDS = [
     '募集を終了', '募集は終了', '募集終了しました', '現在募集を停止', '募集を停止しています', '掲載を終了',
     '掲載は終了', '掲載期間が終了', 'この求人は現在募集しておりません', '現在、募集していません', '現在募集していません',
     'お探しのページは見つかりません', 'ページが見つかりません', 'This job is no longer available', 'no longer accepting',
+    'この求人は現在非公開',
 ]
 
 
@@ -46,8 +47,14 @@ def check(item):
     code, _, final = tail.partition(' ')
     if code in ('404', '410'):
         return slug, url, 'closed', 'HTTP ' + code
+    # ハープキャリアは、非公開になった求人を403で返し、本文に「現在非公開」と出す。
+    if code == '403' and 'この求人は現在非公開' in body:
+        return slug, url, 'closed', '「この求人は現在非公開」（HTTP 403）'
     if not code.startswith('2'):
         return slug, url, 'error', 'HTTP ' + code
+    # ハープキャリアの求人ページがログイン画面に転送されるのは、求人が非公開になったとき。
+    if '/careers/login' in final:
+        return slug, url, 'closed', 'ログイン画面に転送（非公開）'
     # 画面に出る文字だけで判定する（ハープキャリアなどは、どのページにも「見つかりません」の文言がスクリプトの中に入っている）。
     text = re.sub(r'<(script|style|noscript|template)\b.*?</\1>', ' ', body, flags=re.S | re.I)
     text = re.sub(r'<[^>]+>', ' ', text)

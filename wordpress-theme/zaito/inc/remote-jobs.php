@@ -356,7 +356,8 @@ function zaito_remote_jobs() {
             'contract' => '業務委託',
             'url'      => 'https://herp.careers/v1/knithy202303/JaA0imqhrpFw',
             'listed'   => '2026-10-08',
-            'checked'  => '2026-10-08',
+            'checked'  => '2026-10-29',
+            'closed'   => true, // 2026-10-29 募集ページが非公開になっていた
         ),
         array(
             'slug'     => 'knit-online-secretary',
@@ -371,7 +372,8 @@ function zaito_remote_jobs() {
             'contract' => '業務委託',
             'url'      => 'https://herp.careers/v1/knithy202303/NmVmLfWEJpZf',
             'listed'   => '2026-10-08',
-            'checked'  => '2026-10-08',
+            'checked'  => '2026-10-29',
+            'closed'   => true, // 2026-10-29 募集ページが非公開になっていた
         ),
         array(
             'slug'     => 'wonder-education-support',
@@ -416,7 +418,8 @@ function zaito_remote_jobs() {
             'contract' => '業務委託',
             'url'      => 'https://www.wantedly.com/projects/2564978',
             'listed'   => '2026-10-08',
-            'checked'  => '2026-10-08',
+            'checked'  => '2026-10-29',
+            'closed'   => true, // 2026-10-29 募集ページに「募集終了しました」と表示
         ),
         array(
             'slug'     => 'highball-sns-marketer',
@@ -598,7 +601,8 @@ function zaito_remote_jobs() {
             'contract' => 'アルバイト',
             'url'      => 'https://herp.careers/careers/companies/vividgarden/jobs/q23LqDQ4kZ_I',
             'listed'   => '2026-10-08',
-            'checked'  => '2026-10-08',
+            'checked'  => '2026-10-29',
+            'closed'   => true, // 2026-10-29 募集ページが非公開になっていた
         ),
         array(
             'slug'     => 'lr-furusato-support',
@@ -1222,7 +1226,8 @@ function zaito_remote_jobs() {
             'contract' => '業務委託・契約社員',
             'url'      => 'https://herp.careers/careers/companies/weare3sunny/jobs/zyeZsrgw7bt8',
             'listed'   => '2026-10-13',
-            'checked'  => '2026-10-13',
+            'checked'  => '2026-10-29',
+            'closed'   => true, // 2026-10-29 募集ページが非公開になっていた
             'caution'  => 'このページからは応募できないため、募集ページにある企業サイトから応募してください。',
         ),
         array(
@@ -1285,7 +1290,8 @@ function zaito_remote_jobs() {
             'contract' => 'アルバイト',
             'url'      => 'https://herp.careers/careers/companies/itmedia/jobs/h4-cmhdll79u02zzs607hm0e3daf',
             'listed'   => '2026-10-13',
-            'checked'  => '2026-10-13',
+            'checked'  => '2026-10-29',
+            'closed'   => true, // 2026-10-29 募集ページが削除されていた
             'caution'  => 'このページからは応募できないため、募集ページにある企業サイトから応募してください。',
         ),
         array(
@@ -1731,6 +1737,35 @@ function zaito_remote_jobs() {
             'url'      => 'https://u-intern.com/andgo/',
             'listed'   => '2026-10-23',
             'checked'  => '2026-10-23',
+        ),
+        array(
+            'slug'     => 'laugh-ceo-office-intern',
+            'company'  => 'ラフ株式会社',
+            'title'    => '大人の趣味のオンライン講座会社で、代表直下の経営企画・マーケティングインターン',
+            'category' => '経営企画・事業開発',
+            'summary'  => '刺繍やレザークラフトなどのオンライン講座をつくって売る会社で、代表のすぐ近くで働きます。会議資料や新しい講座の市場調査、広告やLPの改善、生成AIを使った社内作業の自動化などを、本人の希望に合わせて担当します。',
+            'remote'   => 'フルリモート（全国どこからでも）',
+            'pay'      => '時給1,500円',
+            'hours'    => '週3日・週12時間以上、9:00〜22:00の間（土日も可）。6か月以上続けられる方',
+            'target'   => '大学生・大学院生の長期インターン。生成AI（ChatGPTやClaudeなど）を自分の作業で使ったことがある方',
+            'url'      => 'https://u-intern.com/laugh3/',
+            'listed'   => '2026-10-29',
+            'checked'  => '2026-10-29',
+        ),
+        array(
+            'slug'     => 'lifeprompt-engineer-intern',
+            'company'  => '株式会社LifePrompt',
+            'title'    => '生成AIプロダクトのエンジニアインターン（Next.js）',
+            'category' => 'エンジニア',
+            'summary'  => '企業向けの生成AIプロダクトを開発するスタートアップで、画面からサーバーまでの設計と開発を担当します。AIツールを使いながら、PMやデザイナーと相談して機能をつくります。',
+            'remote'   => 'フルリモート',
+            'pay'      => '時給2,000〜4,000円（未経験の場合は1,300円から）',
+            'hours'    => '週3回以上・週20時間以上が目安。時間帯は自由（土日祝も可）',
+            'target'   => '大学生・大学院生の長期インターン。何らかのプログラミング言語での開発経験と、Next.jsやNode.jsの基礎知識、GitHubを使った開発経験がある方',
+            'contract' => '業務委託',
+            'url'      => 'https://ut-board.com/recruitment/693/',
+            'listed'   => '2026-10-29',
+            'checked'  => '2026-10-29',
         ),
     );
     // 掲載基準（初日・研修・会議を含めて出社を求めない）に合わないと分かった求人は、記録だけ残して表に出さない。
