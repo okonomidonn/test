@@ -24,7 +24,7 @@ export function leadMailConfig() {
 export async function sendLeadNotice(lead: LeadNotice, fetcher: typeof fetch = fetch) {
   const config = leadMailConfig();
   if (!config) throw new Error("mail_not_configured");
-  const kind = lead.kind === "TRIAL" ? "トライアル" : "無料チェック";
+  const kind = lead.kind === "TRIAL" ? "有料プランのご相談" : "無料チェック";
   const url = `${config.origin}/ai/app/leads#lead-${encodeURIComponent(lead.id)}`;
   const response = await fetcher("https://api.resend.com/emails", {
     method: "POST",
@@ -36,8 +36,8 @@ export async function sendLeadNotice(lead: LeadNotice, fetcher: typeof fetch = f
     body: JSON.stringify({
       from: config.from,
       to: [config.to],
-      subject: `【AIススメル】${kind}の申し込み`,
-      text: `${kind}の申し込みを受け付けました。\n会社・サービス：${lead.company}\n\n管理画面で内容を確認してください（ログインが必要です）。\n${url}\n\n${lead.kind === "TRIAL" ? "2営業日以内に進め方と見積もりを連絡してください。" : "3営業日以内に診断結果を連絡してください。"}`,
+      subject: `【AIススメル】${kind}の受付`,
+      text: `${kind}を受け付けました。\n会社・サービス：${lead.company}\n\n管理画面で内容を確認してください（ログインが必要です）。\n${url}\n\n${lead.kind === "TRIAL" ? "2営業日以内に進め方と見積もりを連絡してください。" : "3営業日以内に診断結果を連絡してください。"}`,
     }),
     signal: AbortSignal.timeout(10_000),
   });

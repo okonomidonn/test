@@ -3,6 +3,7 @@ import { ServicePlans } from "@/components/ai/service-plans";
 import { HeroLeadForm } from "@/components/ai/hero-lead-form";
 import { Band, Cta, Head, em } from "@/components/ai/lp";
 import { VERTICALS } from "@/lib/ai-check/verticals";
+import { ImprovementExample } from "@/components/ai/improvement-example";
 
 const COMPARE = [
   ["目的", "検索結果で上位に表示される", "AIの回答で紹介・引用される"],
@@ -15,8 +16,8 @@ const STRENGTHS = [
   ["自社サイトで実践した方法", "運営する求人サイトで、AIからの流入を測りながら改善してきた方法をそのまま使います。"],
   ["競合と同じ質問で比べる", "同じ質問・同じ条件で自社と競合を測るので、どこで負けているかがはっきりします。"],
   ["直す文章まで具体的に", "「どのページに、何を書くか」まで書き換え例つきでお渡しします。"],
-  ["AIの「営業成績」まで見える", "AIからサイトに来た人数と、申し込みにつながった行動をGA4で確かめます（月額プラン）。"],
-  ["始めやすい価格", "診断は49,800円、月額は10万円から（税別）。最低契約期間がなく、いつでもやめられます。"],
+  ["AI経由の流入と行動を確認", "AIからサイトに来た人数と、申し込みにつながった行動をGA4で確かめます（月額プラン）。"],
+  ["1か月単位で検討できる", "診断は49,800円、月額は10万円から（税別）。最低契約期間はありません。当月20日までのメール連絡で当月末に終了できます。"],
 ];
 const FAQ = [
   ["どんなサービスが対象ですか？", "求人・人材サービス、スクール、SaaSなど、Webサイトで問い合わせや申し込みを受け付けているサービスが対象です。"],
@@ -41,7 +42,7 @@ const QUESTION_TYPES = [
 const WORRY_NOTES = ["同じ質問で自社と競合を測り、紹介された回数で比べます。", "AIからの流入と紹介状況を数字でまとめ、社内で説明しやすくします。", "最初に直す3つを、優先順位つきでお伝えします。"];
 const CYCLE = [
   ["計測", "AIでの紹介状況を数字で見える化"],
-  ["分析", "競合との差と原因を明確に"],
+  ["分析", "競合との差と改善候補を整理"],
   ["改善", "直すページと文章をご提案・実施"],
 ];
 
@@ -54,13 +55,13 @@ export default function AiLandingPage() {
           <div>
             <p className="inline-flex rounded-md bg-brand/10 px-3 py-1 text-sm font-bold text-brand">Webサービス向け AI検索対策</p>
             <h1 className="mt-4 text-[2.25rem] font-bold leading-[1.3] tracking-tight text-slate-900 sm:text-[3.25rem]">
-              ChatGPTが、
+              AIで比較されるとき、
               <br />
-              <span className="text-brand">あなたの代わりに</span>
+              <span className="text-brand">選択肢に入る</span>
               <br />
-              営業する。
+              ために。
             </h1>
-            <p className="mt-5 max-w-lg leading-relaxed text-slate-700 sm:text-lg">見込み客がAIに「おすすめは？」と聞いたとき、あなたのサービスを紹介してくれるように。いまAIがどう紹介しているかを調べ、直し方までお伝えします。</p>
+            <p className="mt-5 max-w-lg leading-relaxed text-slate-700 sm:text-lg">ChatGPT・Geminiでの紹介状況を調べ、競合との差と直すページを具体的にお伝えします。改善をご希望の場合は、文章の修正とCMSへの反映まで支援します。</p>
             <div className="mt-7 max-w-md rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <p className="text-xs font-bold text-slate-600">AIに紹介された回数（10回答中・架空の例）</p>
               <div className="mt-3 space-y-2">
@@ -183,6 +184,8 @@ export default function AiLandingPage() {
         <Cta />
       </Band>
 
+      <Band className="bg-slate-50"><ImprovementExample /></Band>
+
       {/* PROBLEMS：お悩み */}
       <Band className="bg-[#f1f5f9]">
         <Head en="こんなお悩み" sub="ChatGPTやGeminiの中で「何が起きているか」は、検索順位を見ても分かりません。AIススメルなら数字で確かめられます。">
@@ -205,7 +208,7 @@ export default function AiLandingPage() {
       {/* FEATURES：強み（番号つきの大きなパネル） */}
       <Band id="features" className="bg-white">
         <Head en="AIススメルの強み">
-          <span className={em}>5つの強み</span>で、AIを営業担当に
+          <span className={em}>5つの強み</span>で、計測から改善まで支援
         </Head>
         <div className="mt-10 space-y-6">
           {STRENGTHS.map(([t, b], i) => (
@@ -228,7 +231,7 @@ export default function AiLandingPage() {
       {/* FLOW */}
       <Band id="flow" className="bg-[#e3ebf5]">
         <Head en="ご利用の流れ">
-          あなたがするのは、<span className={em}>URLを送るだけ</span>
+          無料チェックは、<span className={em}>URLと連絡先だけ</span>
         </Head>
         <ol className="mt-10 grid gap-5 md:grid-cols-3">
           {FLOW.map(([t, b], i) => (

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { LeadForm } from "@/components/ai/lead-form";
 import { sampleReport } from "@/lib/ai-check/sample";
 import { reportKpis } from "@/components/ai/report-dashboard";
+import { LEAD_PLANS, resolveLeadPlan } from "@/lib/leads/plans";
 
 export const metadata = { title: "申し込み | AIススメル" };
 
@@ -32,8 +33,20 @@ const COPY = {
 
 export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">) {
   const sp = await searchParams;
-  const kind = sp.plan === "trial" ? "TRIAL" : "CHECK";
-  const copy = COPY[kind];
+  const plan = resolveLeadPlan(sp.plan);
+  const kind = LEAD_PLANS[plan].kind;
+  const monthly = plan === "basic" || plan === "production";
+  const copy = monthly ? {
+    title: `${LEAD_PLANS[plan].label}のご相談`,
+    lead: "ご希望のプランに合わせて、対象ページと作業範囲を確認し、お見積もりをお送りします。",
+    facts: [
+      ["月額", plan === "basic" ? "100,000円（税別）／110,000円（税込）" : "200,000円（税別）／220,000円（税込）"],
+      ["内容", plan === "basic" ? "30問×2つのAIで計測・競合3社比較・既存ページ改善月2件・GA4の確認・月1回の報告" : "基本プランに加え、新規ページ月2本（各3,000字まで）・既存ページ改善は月4件・FAQと構造化データ"],
+      ["契約", "1か月単位・最低契約期間なし。当月20日までのメール連絡で当月末終了"],
+      ["対象範囲", "CMSで編集できる範囲。制作本数・文字量・修正回数・実装範囲は契約前に見積書で確定"],
+    ],
+    after: ["2営業日以内に、ご希望のプランの進め方とお見積もりをメールでお送りします", "対象ページ・作業範囲・支払条件に合意してから正式なご依頼となります", "銀行振込による前払いです。入金確認後、合意した日程で始めます。トライアルは必須ではありません"],
+  } : COPY[kind];
   const kpis = reportKpis(sampleReport());
 
   // ログイン中なら、登録済みのサービスとアカウントの情報を入れておく
@@ -50,16 +63,18 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
   return (
     <div className="mx-auto max-w-5xl pt-4">
       {/* 申し込みの種類の切り替え（?plan=trial） */}
-      <nav aria-label="申し込みの種類" className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1 text-sm">
+      <nav aria-label="申し込みの種類" className="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 text-sm">
         {[
-          ["CHECK", "無料で診断", `/ai/apply${storeQ ? `?${storeQ.slice(1)}` : ""}`],
-          ["TRIAL", "トライアル 49,800円", `/ai/apply?plan=trial${storeQ}`],
+          ["check", "無料で診断", `/ai/apply${storeQ ? `?${storeQ.slice(1)}` : ""}`],
+          ["trial", "トライアル", `/ai/apply?plan=trial${storeQ}`],
+          ["basic", "基本プラン", `/ai/apply?plan=basic${storeQ}`],
+          ["production", "制作プラン", `/ai/apply?plan=production${storeQ}`],
         ].map(([k, label, href]) => (
           <Link
             key={k}
             href={href}
-            aria-current={kind === k ? "page" : undefined}
-            className={`rounded-md px-3 py-1.5 font-semibold ${kind === k ? "bg-white text-slate-900 shadow-[0_1px_2px_rgba(17,24,39,0.08)] ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-900"}`}
+            aria-current={plan === k ? "page" : undefined}
+            className={`rounded-md px-3 py-1.5 font-semibold ${plan === k ? "bg-white text-slate-900 shadow-[0_1px_2px_rgba(17,24,39,0.08)] ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-900"}`}
           >
             {label}
           </Link>
@@ -82,7 +97,7 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
 
         {/* フォーム：スマホでは見出しのすぐ後、PCでは右の列 */}
         <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:row-span-2 lg:self-start">
-          <LeadForm kind={kind} defaults={defaults} />
+          <LeadForm key={plan} kind={kind} defaults={defaults} plan={plan} submitLabel={monthly ? `${LEAD_PLANS[plan].label}を相談する` : undefined} />
         </div>
 
         <div className="min-w-0 space-y-8">

@@ -3,6 +3,7 @@
 import { useActionState, type ReactNode } from "react";
 import { createLead, type LeadField, type LeadState } from "@/app/actions/leads";
 import { btn } from "@/components/ai/ds";
+import type { LeadPlan } from "@/lib/leads/plans";
 
 type Defaults = { company?: string; websiteUrl?: string; name?: string; email?: string };
 
@@ -29,7 +30,7 @@ function Field({ id, label, hint, error, children }: { id: string; label: string
   );
 }
 
-export function LeadForm({ kind, defaults = {} }: { kind: "CHECK" | "TRIAL"; defaults?: Defaults }) {
+export function LeadForm({ kind, defaults = {}, plan, submitLabel }: { kind: "CHECK" | "TRIAL"; defaults?: Defaults; plan?: LeadPlan; submitLabel?: string }) {
   const [state, formAction, isPending] = useActionState<LeadState, FormData>(createLead, {});
   const err = (k: LeadField) => state.fieldErrors?.[k];
   const val = (k: LeadField) => state.values?.[k] ?? (defaults as Record<string, string | undefined>)[k];
@@ -54,6 +55,7 @@ export function LeadForm({ kind, defaults = {} }: { kind: "CHECK" | "TRIAL"; def
         </p>
       )}
       <input type="hidden" name="kind" value={kind} />
+      {plan && <input type="hidden" name="plan" value={plan} />}
       {/* 機械的な送信よけ（人には見えない） */}
       <input type="text" name="fax" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
@@ -111,7 +113,7 @@ export function LeadForm({ kind, defaults = {} }: { kind: "CHECK" | "TRIAL"; def
 
       <div className="space-y-2">
         <button type="submit" disabled={isPending} className={`${btn("primary", "lg")} w-full`}>
-          {isPending ? "送信しています…" : kind === "TRIAL" ? "トライアルを申し込む" : "無料で診断する"}
+          {isPending ? "送信しています…" : submitLabel ?? (kind === "TRIAL" ? "トライアルの見積もりを依頼する" : "無料で診断する")}
         </button>
         <p className="text-sm text-slate-600">送信の時点では料金はかかりません。</p>
       </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MarketCompare, WHY_AFFORDABLE } from "@/components/ai/marketing";
 import { ServicePlans } from "@/components/ai/service-plans";
+import { ImprovementExample, ImprovementScope } from "@/components/ai/improvement-example";
 
 export const metadata = { title: "料金 | AIススメル" };
 
@@ -12,10 +13,12 @@ export default function PricingPage() {
         <h1 className="mt-3 text-3xl font-bold leading-snug text-slate-900 sm:text-[2.75rem]">まず無料で調べて、<br />必要なら改善まで。</h1>
         <p className="mt-5 text-lg leading-relaxed text-slate-700">無料チェックだけのご利用もできます。<br className="hidden sm:block" />有料プランへの自動切り替えはありません。</p>
       </header>
-      <section aria-label="3つの料金プラン"><h2 className="sr-only">3つの料金プラン</h2><ServicePlans /></section>
+      <section aria-label="無料チェック・トライアルと月額2プラン"><h2 className="sr-only">無料チェック・トライアルと月額2プラン</h2><ServicePlans /></section>
+      <ImprovementScope />
+      <ImprovementExample />
       <section className="grid gap-6 rounded-xl bg-slate-50 p-5 sm:grid-cols-2 sm:p-7">
         <div><h2 className="text-lg font-bold text-slate-900">トライアルで行う改善</h2><p className="mt-3 leading-relaxed text-slate-700">CMSで編集できる既存ページを1ページ改善します。変更案をご確認いただいてから作業します。</p><p className="mt-2 text-sm text-slate-600">新規ページ制作・外部媒体への掲載・大規模な実装は含みません。</p></div>
-        <div><h2 className="text-lg font-bold text-slate-900">申し込みから契約まで</h2><p className="mt-3 leading-relaxed text-slate-700">トライアルのご相談には、2営業日以内に進め方と見積もりをご連絡します。内容をご確認いただいてから正式なご依頼となります。</p><p className="mt-2 text-sm text-slate-600">フォームの送信だけでは、契約や自動課金は発生しません。</p></div>
+        <div><h2 className="text-lg font-bold text-slate-900">ご相談から契約まで</h2><p className="mt-3 leading-relaxed text-slate-700">トライアル・月額プランのご相談には、2営業日以内に進め方と見積もりをご連絡します。対象ページ・原稿量・修正回数・実装範囲をご確認いただいてから正式なご依頼となります。</p><p className="mt-2 text-sm text-slate-600">フォームの送信だけでは、契約や自動課金は発生しません。</p></div>
       </section>
       <section className="max-w-4xl">
         <h2 className="text-2xl font-bold text-slate-900">料金について、もう少し詳しく</h2>

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
-    "test": "node --import tsx --test tests/lead-mail.test.ts tests/lead-notifications.test.ts",
+    "test": "node --import tsx --test tests/lead-mail.test.ts tests/lead-notifications.test.ts tests/lead-plans.test.ts",
     "check:launch": "node scripts/check-launch.mjs"
   },
   "dependencies": {
