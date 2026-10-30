@@ -344,7 +344,7 @@ if ( ! $zaito_cond ) :
         <input type="hidden" name="job" value="">
         <input type="hidden" name="utm_source" value=""><input type="hidden" name="utm_medium" value=""><input type="hidden" name="utm_campaign" value=""><input type="hidden" name="referrer" value="">
         <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-        <?php if ( zaito_social_buttons( '/?signup=done#signup', 'かんたん登録' ) ) : ?><div class="or-line">またはメールアドレスで登録</div><?php endif; ?>
+        <?php if ( zaito_social_buttons( '/?signup=done#signup', '登録' ) ) : ?><div class="or-line">または</div><?php endif; ?>
         <?php zaito_remote_basic_fields( 'ztop' ); ?>
         <label for="ztopemail">メールアドレス</label>
         <div class="sb-row">
