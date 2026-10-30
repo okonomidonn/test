@@ -2,16 +2,40 @@ import Link from "next/link";
 import { btn } from "@/components/ai/ds";
 import { ServicePlans } from "@/components/ai/service-plans";
 
-const RESULTS = [
-  ["どんな質問で紹介されるか", "見込み客が聞きそうな質問で、自社がAIの回答に出てくるかを調べます。", "例：未経験から使える求人サイトは？"],
-  ["代わりに選ばれている競合", "トライアルでは競合2社と比較し、自社との紹介回数や引用元の違いを確認します。", "有料トライアルで競合2社を比較"],
-  ["最初に直す3つのこと", "情報が足りないページと、書き足す内容を優先順位つきでお伝えします。", "直すページと文章の案まで"],
+const COMPARE = [
+  ["目的", "検索結果で上位に表示される", "AIの回答で紹介・引用される"],
+  ["相手", "Googleなどの検索エンジン", "ChatGPT・Geminiなどの生成AI"],
+  ["見る数字", "順位・クリック数", "紹介された回数・順番・引用元"],
+];
+const SERVICES = ["見込み客が聞く質問で、AIに紹介されるかを計測", "競合と比べた紹介回数・順番の比較", "AIが引用しているサイトの確認", "公式サイトの診断（足りない情報の洗い出し）", "直すページと書き換え文章のご提案", "30日後の再計測と毎月のレポート"];
+const WORRIES = ["ChatGPTで業界名を聞いても、自社が出てこない", "AIが競合ばかりおすすめしている", "AI検索対策が気になるが、何から始めればいいか分からない", "専門の会社に頼むと高く、効果が見えにくい"];
+const STRENGTHS = [
+  ["自社サイトで実践した方法", "運営する求人サイトで、AIからの流入を測りながら改善してきた方法をそのまま使います。"],
+  ["競合と同じ質問で比べる", "同じ質問・同じ条件で自社と競合を測るので、どこで負けているかがはっきりします。"],
+  ["直す文章まで具体的に", "「どのページに、何を書くか」まで書き換え例つきでお渡しします。"],
+  ["始めやすい価格", "診断は49,800円（税別）から。公開料金の中央値（診断15万円）より手軽に試せます。"],
+];
+const FAQ = [
+  ["どんなサービスが対象ですか？", "求人・人材サービス、スクール、SaaSなど、Webサイトで問い合わせや申し込みを受け付けているサービスが対象です。"],
+  ["無料チェックのあと、契約しないといけませんか？", "いいえ。結果を見てからご検討ください。フォーム送信だけで有料契約や自動課金は発生しません。"],
+  ["結果はいつ届きますか？", "無料チェックは3営業日以内にメールでお送りします。トライアルのご相談は2営業日以内に進め方とお見積もりをご連絡します。"],
+  ["改善すれば、必ずAIに紹介されますか？", "紹介や問い合わせの増加は保証していません。AIの回答は毎回変わるため、同じ条件で測り直して変化を確かめます。"],
+  ["SEO対策とは何が違いますか？", "SEOは検索結果の順位、AI検索対策はAIの回答で紹介されることが目的です。サイトの情報を整える点は共通しており、SEOにも役立つ改善が中心です。"],
+  ["支払い方法は？", "銀行振込（請求書払い・前払い）です。詳しくは特定商取引法に基づく表記をご覧ください。"],
 ];
 const FLOW = [
   ["サイトのURLを送る", "会社・サービス名と、ご連絡先を入力。アカウント登録は不要です。"],
   ["AIススメルが調べる", "AIでの紹介状況と、公開されているサイトの情報を確認します。"],
   ["結果がメールで届く", "3営業日以内に、紹介状況と最初に直す3つのことをお送りします。"],
 ];
+
+function Head({ label, title }: { label: string; title: string }) {
+  return <div><p className="text-sm font-semibold text-brand">{label}</p><h2 className="mt-2 text-2xl font-bold leading-snug text-slate-900 sm:text-3xl">{title}</h2></div>;
+}
+
+function Cta() {
+  return <div className="mt-8 text-center"><Link href="/ai/apply" className={`${btn("primary", "lg")} w-full sm:w-auto`}>まずは無料でチェックする <span aria-hidden>→</span></Link><p className="mt-2 text-sm text-slate-600">3営業日以内に、結果をメールでお届けします。</p></div>;
+}
 
 export default function AiLandingPage() {
   return (
@@ -52,40 +76,77 @@ export default function AiLandingPage() {
           <p className="mt-1 text-sm text-slate-600">数値は架空の例です。無料チェックは紹介状況と改善点を、トライアルは競合比較までお届けします。</p>
         </div>
       </section>
+      <section id="about" className="scroll-mt-24">
+        <Head label="AI検索対策とは" title="AIの回答で「おすすめ」に挙がるための対策です。" />
+        <p className="mt-4 max-w-3xl leading-relaxed text-slate-700">ChatGPTやGeminiに「おすすめの〇〇は？」と聞くと、AIはいくつかのサービスを挙げて答えます。そこに自社が入るように、サイトの情報を整えるのがAI検索対策（LLMO・GEOとも呼ばれます）です。</p>
+        <div className="mt-6 overflow-hidden rounded-xl border border-slate-200">
+          <table className="w-full text-left text-sm sm:text-base">
+            <thead className="bg-slate-50"><tr><th className="w-24 p-3 sm:w-40 sm:p-4" /><th className="p-3 font-bold text-slate-900 sm:p-4">SEO</th><th className="p-3 font-bold text-brand sm:p-4">AI検索対策</th></tr></thead>
+            <tbody className="divide-y divide-slate-200">
+              {COMPARE.map(([k, a, b]) => <tr key={k}><th scope="row" className="bg-slate-50 p-3 font-semibold text-slate-700 sm:p-4">{k}</th><td className="p-3 text-slate-700 sm:p-4">{a}</td><td className="p-3 text-slate-900 sm:p-4">{b}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+        <h3 className="mt-10 text-lg font-bold text-slate-900">AIススメルでできること</h3>
+        <ul className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+          {SERVICES.map((t) => <li key={t} className="flex gap-2 text-slate-800"><span aria-hidden className="font-bold text-brand">✓</span>{t}</li>)}
+        </ul>
+      </section>
+
+      <section className="rounded-2xl bg-slate-50 p-5 sm:p-8">
+        <Head label="こんなお悩みありませんか？" title="AIで競合ばかり紹介されていませんか。" />
+        <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+          {WORRIES.map((t) => <li key={t} className="rounded-lg bg-white p-4 text-slate-800 ring-1 ring-slate-200">{t}</li>)}
+        </ul>
+        <p className="mt-6 text-lg font-bold text-slate-900">そのお悩み、AIススメルが<span className="text-brand">調べて、直すところまで</span>お手伝いします。</p>
+      </section>
+
       <section id="features" className="scroll-mt-24">
-        <p className="text-sm font-semibold text-brand">診断で分かること</p>
-        <h2 className="mt-2 text-2xl font-bold leading-snug text-slate-900 sm:text-3xl">数字を調べて終わりにせず、<br className="hidden sm:block" />次にやることを明確にします。</h2>
-        <div className="mt-7 grid overflow-hidden rounded-xl border border-slate-200 md:grid-cols-3">
-          {RESULTS.map(([title, body], i) => <div key={title} className={`bg-white p-5 sm:p-6 ${i ? "border-t border-slate-200 md:border-l md:border-t-0" : ""}`}>
-            <p className="font-num text-sm font-semibold text-brand">0{i + 1}</p><h3 className="mt-2 text-lg font-bold text-slate-900">{title}</h3><p className="mt-3 text-slate-700">{body}</p>
+        <Head label="AIススメルの強み" title="選ばれる理由は4つです。" />
+        <div className="mt-7 grid gap-4 md:grid-cols-2">
+          {STRENGTHS.map(([title, body], i) => <div key={title} className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+            <p className="font-num text-2xl font-bold text-brand">0{i + 1}</p><h3 className="mt-2 text-lg font-bold text-slate-900">{title}</h3><p className="mt-2 leading-relaxed text-slate-700">{body}</p>
           </div>)}
         </div>
+        <Cta />
       </section>
-      <section id="flow" className="scroll-mt-24 rounded-2xl bg-slate-50 p-5 sm:p-8">
-        <p className="text-sm font-semibold text-brand">ご利用の流れ</p>
-        <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">あなたがするのは、URLを送るだけ。</h2>
-        <p className="mt-3 text-slate-700">診断はAIススメルが行います。ツールを覚えたり、自分で計測したりする必要はありません。</p>
+
+      <section id="flow" className="scroll-mt-24">
+        <Head label="ご利用の流れ" title="あなたがするのは、URLを送るだけ。" />
         <ol className="mt-7 grid gap-6 md:grid-cols-3">
-          {FLOW.map(([title, body], i) => <li key={title} className="flex gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white font-num font-bold text-brand ring-1 ring-slate-200">{i + 1}</span><div><h3 className="font-bold text-slate-900">{title}</h3><p className="mt-2 text-sm leading-relaxed text-slate-700">{body}</p></div></li>)}
+          {FLOW.map(([title, body], i) => <li key={title} className="flex gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand font-num font-bold text-white">{i + 1}</span><div><h3 className="font-bold text-slate-900">{title}</h3><p className="mt-2 text-sm leading-relaxed text-slate-700">{body}</p></div></li>)}
         </ol>
       </section>
-      <section>
-        <p className="text-sm font-semibold text-brand">料金とサポート</p>
-        <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">まず無料で現状を知る。改善の依頼はそのあとで。</h2>
+
+      <section id="pricing" className="scroll-mt-24">
+        <Head label="料金プラン" title="まず無料で。改善の依頼はそのあとで。" />
         <p className="mt-3 text-slate-700">無料チェックだけでもご利用いただけます。有料プランへの自動切り替えはありません。</p>
-        <div className="mt-7"><ServicePlans compact /></div>
+        <div className="mt-7"><ServicePlans /></div>
         <Link href="/ai/pricing" className="mt-5 inline-flex min-h-11 items-center font-semibold text-brand underline underline-offset-4">料金と作業内容を詳しく見る <span aria-hidden className="ml-2">→</span></Link>
       </section>
-      <section className="mx-auto max-w-3xl">
-        <h2 className="text-2xl font-bold text-slate-900">申し込む前に、気になること</h2>
-        <div className="mt-5 divide-y divide-slate-200 border-y border-slate-200">
-          {[
-            ["どんなサービスが対象ですか？", "求人・人材サービス、スクール、SaaSなど、Webサイトで問い合わせや申し込みを受け付けているサービスが対象です。"],
-            ["無料チェックのあと、契約しないといけませんか？", "いいえ。結果を見てからご検討ください。フォーム送信だけで有料契約や自動課金は発生しません。"],
-            ["改善すれば、必ずAIに紹介されますか？", "紹介や問い合わせの増加は保証していません。AIの回答は毎回変わるため、同じ条件で計測し、変化を確かめます。"],
-          ].map(([q, a]) => <details key={q} className="group py-1"><summary className="flex cursor-pointer list-none items-start justify-between gap-4 py-4 font-semibold text-slate-900">{q}<span aria-hidden className="shrink-0 text-brand group-open:hidden">＋</span><span aria-hidden className="hidden shrink-0 text-brand group-open:inline">−</span></summary><p className="pb-5 leading-relaxed text-slate-700">{a}</p></details>)}
+
+      <section className="grid gap-6 md:grid-cols-2">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+          <p className="text-sm font-semibold text-brand">代表紹介</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-900">鳥居 潤</h2>
+          <p className="text-sm text-slate-600">AIススメル 代表</p>
+          <p className="mt-4 leading-relaxed text-slate-700">求人サイト「zaito」を運営しています。自分のサイトでChatGPTからの流入が増えたことをきっかけに、AIでの紹介状況を測って改善する方法を作り、同じ悩みを持つWebサービスに提供しています。</p>
         </div>
-        <Link href="/ai/method" className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-brand underline underline-offset-4">計測方法・できることと限界を確認する →</Link>
+        <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+          <p className="text-sm font-semibold text-brand">運営サイトの事例</p>
+          <h2 className="mt-2 text-xl font-bold text-slate-900">求人サイト「zaito」</h2>
+          <dl className="mt-4 grid grid-cols-2 gap-4">
+            {[["14.5%", "ユーザーのうちChatGPT経由"], ["51.6%", "キーイベントのうちChatGPT経由"]].map(([v, k]) => <div key={k}><dd className="font-num text-3xl font-bold text-slate-900">{v}</dd><dt className="mt-1 text-sm text-slate-700">{k}</dt></div>)}
+          </dl>
+          <p className="mt-4 text-xs leading-relaxed text-slate-600">GA4、2026年9月24日〜10月21日の28日間（469人中68人、95件中49件）。キーイベントは「応募ページへ進む」などの操作数で、応募完了率ではありません。サイト1件の数字で、効果を保証するものではありません。</p>
+        </div>
+      </section>
+
+      <section id="faq" className="mx-auto max-w-3xl scroll-mt-24">
+        <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">よくある質問</h2>
+        <div className="mt-5 divide-y divide-slate-200 border-y border-slate-200">
+          {FAQ.map(([q, a]) => <details key={q} className="group py-1"><summary className="flex cursor-pointer list-none items-start justify-between gap-4 py-4 font-semibold text-slate-900"><span><span className="mr-2 text-brand">Q.</span>{q}</span><span aria-hidden className="shrink-0 text-brand group-open:hidden">＋</span><span aria-hidden className="hidden shrink-0 text-brand group-open:inline">−</span></summary><p className="pb-5 leading-relaxed text-slate-700">{a}</p></details>)}
+        </div>
       </section>
       <section className="rounded-2xl bg-[#142b50] px-5 py-9 text-center text-white sm:px-8 sm:py-12">
         <h2 className="text-2xl font-bold leading-snug sm:text-3xl">まずは、今の状態を知るところから。</h2>

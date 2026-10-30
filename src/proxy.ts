@@ -6,7 +6,7 @@ const { auth } = NextAuth(authConfig);
 
 const TEAM_PUBLIC = ["/login", "/register"];
 // AI検索チェック（店舗オーナー向け）の公開ページ
-const AI_PUBLIC = ["/ai", "/ai/web", "/ai/apply", "/ai/sample", "/ai/tool", "/ai/method", "/ai/login", "/ai/register", "/ai/signup", "/ai/pricing", "/ai/legal"];
+const AI_PUBLIC = ["/ai", "/ai/web", "/ai/apply", "/ai/sample", "/ai/tool", "/ai/method", "/ai/login", "/ai/register", "/ai/signup", "/ai/pricing", "/ai/legal", "/ai/privacy"];
 
 const AI_HOSTS = ["aisusumeru.com", "www.aisusumeru.com"];
 

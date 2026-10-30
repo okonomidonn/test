@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Inter, Noto_Sans_JP } from "next/font/google";
 import { auth, signOut } from "@/auth";
 import { btn } from "@/components/ai/ds";
+import { CONTACT } from "@/lib/contact";
 
 // 英数字は Inter、日本語は Noto Sans JP（日本語は文字数が多いため先読みせず、使う文字だけ読み込む）
 const latin = Inter({ variable: "--font-ai-latin", subsets: ["latin"], display: "swap" });
@@ -63,8 +64,11 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
           ) : (
             <>
               <nav className="hidden items-center gap-1 lg:flex" aria-label="メインメニュー">
+                <Link href="/ai#about" className={nav}>
+                  AI検索対策とは
+                </Link>
                 <Link href="/ai#features" className={nav}>
-                  診断の内容
+                  強み
                 </Link>
                 <Link href="/ai/sample" className={nav}>
                   レポートの見本
@@ -72,8 +76,8 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                 <Link href="/ai/pricing" className={nav}>
                   料金
                 </Link>
-                <Link href="/ai/method" className={nav}>
-                  進め方
+                <Link href="/ai#faq" className={nav}>
+                  よくある質問
                 </Link>
               </nav>
               <div className="ml-auto flex items-center gap-1 whitespace-nowrap sm:gap-2">
@@ -86,7 +90,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                 <details className="relative lg:hidden">
                   <summary aria-label="メニュー" className="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-sm font-semibold text-slate-700 focus-visible:outline-2 focus-visible:outline-brand"><span className="hidden min-[400px]:inline">メニュー</span><span aria-hidden className="text-lg min-[400px]:ml-1">☰</span></summary>
                   <nav aria-label="メインメニュー" className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
-                    {[["/ai#features", "診断の内容"], ["/ai/sample", "レポートの見本"], ["/ai/pricing", "料金"], ["/ai/method", "進め方・計測方法"], ["/ai/login", "ログイン"]].map(([href, label]) => <a key={href} href={href} className="block rounded-lg px-4 py-3 text-base font-medium text-slate-800 hover:bg-blue-50">{label}</a>)}
+                    {[["/ai#about", "AI検索対策とは"], ["/ai#features", "強み"], ["/ai/sample", "レポートの見本"], ["/ai/pricing", "料金"], ["/ai/method", "進め方・計測方法"], ["/ai#faq", "よくある質問"], ["/ai/login", "ログイン"]].map(([href, label]) => <a key={href} href={href} className="block rounded-lg px-4 py-3 text-base font-medium text-slate-800 hover:bg-blue-50">{label}</a>)}
                   </nav>
                 </details>
               </div>
@@ -105,6 +109,8 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
               AIススメル
             </p>
             <p className="mt-2 text-sm text-slate-600">WebサービスのAI検索診断と改善</p>
+            <p className="mt-3 text-sm text-slate-600">お問い合わせ：{CONTACT.email}</p>
+            <p className="mt-4 text-xs text-slate-500">© 2026 AIススメル</p>
           </div>
           <nav aria-label="サービス" className="space-y-2 text-sm">
             <p className="font-semibold text-slate-900">サービス</p>
@@ -122,6 +128,9 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
             </Link>
             <Link href="/ai/method" className="block text-slate-600 hover:text-slate-900">
               計測のしかたと進め方
+            </Link>
+            <Link href="/ai/privacy" className="block text-slate-600 hover:text-slate-900">
+              プライバシーポリシー
             </Link>
             <Link href="/ai/legal" className="block text-slate-600 hover:text-slate-900">
               特定商取引法に基づく表記
