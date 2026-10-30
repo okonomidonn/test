@@ -64,7 +64,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
           ) : (
             <>
               <nav className="hidden items-center gap-1 lg:flex" aria-label="メインメニュー">
-                <Link href="/ai#about" className={nav}>
+                <Link href="/ai#why" className={nav}>
                   AI検索対策とは
                 </Link>
                 <Link href="/ai#features" className={nav}>
@@ -90,7 +90,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                 <details className="relative lg:hidden">
                   <summary aria-label="メニュー" className="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-sm font-semibold text-slate-700 focus-visible:outline-2 focus-visible:outline-brand"><span className="hidden min-[400px]:inline">メニュー</span><span aria-hidden className="text-lg min-[400px]:ml-1">☰</span></summary>
                   <nav aria-label="メインメニュー" className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
-                    {[["/ai#about", "AI検索対策とは"], ["/ai#features", "強み"], ["/ai/sample", "レポートの見本"], ["/ai/pricing", "料金"], ["/ai/method", "進め方・計測方法"], ["/ai#faq", "よくある質問"], ["/ai/login", "ログイン"]].map(([href, label]) => <a key={href} href={href} className="block rounded-lg px-4 py-3 text-base font-medium text-slate-800 hover:bg-blue-50">{label}</a>)}
+                    {[["/ai#why", "AI検索対策とは"], ["/ai#features", "強み"], ["/ai/sample", "レポートの見本"], ["/ai/pricing", "料金"], ["/ai/method", "進め方・計測方法"], ["/ai#faq", "よくある質問"], ["/ai/login", "ログイン"]].map(([href, label]) => <a key={href} href={href} className="block rounded-lg px-4 py-3 text-base font-medium text-slate-800 hover:bg-blue-50">{label}</a>)}
                   </nav>
                 </details>
               </div>
