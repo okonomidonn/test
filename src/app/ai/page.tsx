@@ -44,7 +44,7 @@ export default function AiLandingPage() {
         <div className="min-w-0 lg:py-6">
           <p className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-800">Webサービス向け AI検索対策</p>
           <h1 className="mt-5 text-[clamp(1.5rem,7vw,3rem)] font-bold leading-[1.4] tracking-tight text-slate-900 sm:leading-[1.35]">
-            <span className="block">AIに、</span>
+            <span className="block">AIに</span>
             <span className="block"><span className="text-brand">おすすめされる</span>サービスへ。</span>
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-700 sm:text-lg">ChatGPTやGeminiに「おすすめは？」と聞かれたとき、あなたのサービスが名前を挙げてもらえるように。今の状態を調べて、サイトの直し方までお伝えします。</p>
