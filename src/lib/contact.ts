@@ -2,5 +2,5 @@
 export const CONTACT = {
   seller: process.env.LEGAL_SELLER_NAME || "AIススメル",
   representative: process.env.LEGAL_REPRESENTATIVE || "鳥居潤",
-  email: process.env.LEGAL_EMAIL || "jun.torii@keio.jp",
+  email: process.env.LEGAL_EMAIL || "info@aisusumeru.com",
 };
