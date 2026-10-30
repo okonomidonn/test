@@ -254,25 +254,30 @@
         gate.hidden = true;
         showJoined(res.data.created);
         finish();
+        // 新しく登録した人は、そのままページ下の質問へ移り、お名前（必須）から答えてもらう。
+        if (res.data.created) openProfile();
       })
       .catch(function (x) {
         btn.disabled = false;
         err.textContent = x.message || '登録できませんでした。時間をおいてもう一度お試しください';
       });
   });
+  function openProfile() {
+    closeModal();
+    document.getElementById('signup').scrollIntoView({ behavior: rm ? 'auto' : 'smooth' });
+    var n = document.getElementById('zpname');
+    if (n) setTimeout(function () { n.focus({ preventScroll: true }); }, rm ? 0 : 500);
+    track('profile_open', { from: 'reco' });
+  }
   function showJoined(created) {
     sub.innerHTML = '';
-    sub.appendChild(document.createTextNode(created ? '登録できました。希望の条件を教えると、おすすめがあなたに合うようになります。' : '登録済みのメールアドレスでした。スワイプで保存できます。'));
+    sub.appendChild(document.createTextNode(created ? '登録できました。続けて、お名前を教えてください。' : '登録済みのメールアドレスでした。スワイプで保存できます。'));
     if (created) {
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'reco-prefs';
-      b.textContent = '希望の条件を教える';
-      b.addEventListener('click', function () {
-        closeModal();
-        document.getElementById('signup').scrollIntoView({ behavior: rm ? 'auto' : 'smooth' });
-        track('profile_open', { from: 'reco' });
-      });
+      b.textContent = 'お名前を入力する';
+      b.addEventListener('click', openProfile);
       sub.appendChild(b);
     }
   }
