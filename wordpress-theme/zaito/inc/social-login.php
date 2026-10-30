@@ -56,6 +56,8 @@ function zaito_social_buttons( $to, $verb = 'ログイン' ) {
     if ( $google ) {
         echo '<a class="sbtn sbtn-google" href="' . esc_url( zaito_social_url( 'google', $to ) ) . '" rel="nofollow"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.7 1.2 9.2 3.6l6.9-6.9C35.9 2.4 30.4 0 24 0 14.6 0 6.6 5.4 2.6 13.2l8 6.2C12.5 13.6 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.5 5.8c4.4-4 6.8-10 6.8-17.2z"/><path fill="#FBBC05" d="M10.6 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-8-6.2C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l8-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.2 0-11.5-4.1-13.4-9.9l-8 6.2C6.6 42.6 14.6 48 24 48z"/></svg>Googleで' . esc_html( $verb ) . '</a>';
     }
+    // メールアドレスの取得と使い道を、ボタンのすぐ下で伝える（LINEのメールアドレス取得権限の条件）。
+    echo '<p class="social-note">' . ( $line && $google ? 'LINE・Google' : ( $line ? 'LINE' : 'Google' ) ) . 'で登録・ログインすると、アカウントに登録されているメールアドレスと名前をzaitoが受け取ります。メールアドレスは、ログイン、応募した企業からの返信のお知らせ、新着求人のお知らせに使います（<a href="' . esc_url( home_url( '/privacy/' ) ) . '" target="_blank">プライバシーポリシー</a>）。</p>';
     echo '</div>';
     return true;
 }

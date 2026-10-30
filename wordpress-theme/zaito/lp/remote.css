@@ -761,3 +761,4 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 .sbtn-line:hover{background:#05B34C;color:#fff}
 .or-line{display:flex;align-items:center;gap:12px;margin:14px 0;font-size:12px;color:var(--z-text-4)}
 .or-line::before,.or-line::after{content:"";flex:1;height:1px;background:var(--z-line)}
+.social-note{margin:2px 0 0;font-size:12px;line-height:1.7;color:var(--z-text-3)}
