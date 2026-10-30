@@ -19,6 +19,16 @@ export type ReportData = {
   trend: { label: string; rate: number }[];
   checks: AuditCheck[];
   plans: PagePlan[];
+  // AIからの流入（GA4）。継続支援で、お客様のGA4を見て記入する
+  aiTraffic?: {
+    period: string;
+    users: number;
+    totalUsers: number;
+    keyEvents: number;
+    totalKeyEvents: number;
+    byAi: { label: string; users: number }[];
+    pages: { path: string; users: number; keyEvents: number }[];
+  };
 };
 
 const fmtDay = (d: Date) => new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "long", day: "numeric" }).format(d);
@@ -434,9 +444,63 @@ export const REPORT_SECTIONS = [
   { id: "numbers", label: "数字" },
   { id: "questions", label: "質問ごとの結果" },
   { id: "sources", label: "競合と引用元" },
+  { id: "traffic", label: "AIからの流入" },
   { id: "audit", label: "サイト診断の詳細" },
   { id: "pages", label: "作るページの案" },
 ] as const;
+
+// AIからの流入：AIに紹介されたあと、実際にサイトに来て行動した人数（GA4）
+function AiTrafficPanel({ t }: { t: NonNullable<ReportData["aiTraffic"]> }) {
+  const top = Math.max(...t.byAi.map((a) => a.users), 1);
+  return (
+    <Panel id="traffic" title="AIからの流入（AIの営業成績）" note={`AIに紹介されたあと、サイトに来て行動した人（GA4・${t.period}）`}>
+      <dl className="grid grid-cols-2 gap-3">
+        {[["AI経由のユーザー", t.users, t.totalUsers, "人"], ["AI経由のキーイベント", t.keyEvents, t.totalKeyEvents, "件"]].map(([k, v, all, u]) => (
+          <div key={k as string} className="rounded-lg bg-slate-50 p-4">
+            <dt className="text-sm font-medium text-slate-600">{k}</dt>
+            <dd className="mt-1 font-num text-[1.75rem] font-semibold leading-tight text-slate-900">
+              {v}
+              <span className="ml-0.5 text-base font-medium text-slate-500">{u}</span>
+            </dd>
+            <p className="text-sm text-slate-600">
+              全体{all as number}{u}のうち{pct(v as number, all as number)}%
+            </p>
+          </div>
+        ))}
+      </dl>
+      <div className="mt-5 grid gap-5 md:grid-cols-2">
+        <div>
+          <p className="mb-2 text-sm font-semibold text-slate-700">AIごとのユーザー</p>
+          {t.byAi.map((a) => (
+            <ShareRow key={a.label} label={a.label} share={(a.users / top) * 100} value={`${a.users}人`} />
+          ))}
+        </div>
+        <div>
+          <p className="mb-2 text-sm font-semibold text-slate-700">AIから来た人が最初に見たページ</p>
+          <table className="w-full text-left text-sm">
+            <thead className="text-slate-600">
+              <tr>
+                <th className="py-1.5 font-medium">ページ</th>
+                <th className="w-16 py-1.5 text-right font-medium">ユーザー</th>
+                <th className="w-24 py-1.5 text-right font-medium">キーイベント</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {t.pages.map((p) => (
+                <tr key={p.path}>
+                  <td className="max-w-0 truncate py-2 pr-2 font-mono text-slate-800">{p.path}</td>
+                  <td className="py-2 text-right font-num text-slate-900">{p.users}</td>
+                  <td className="py-2 text-right font-num text-slate-900">{p.keyEvents}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p className="mt-4 text-xs text-slate-500">キーイベントは「応募ページへ進む」などの操作の件数です。AIからの流入は、参照元がAIのサービスと分かる訪問だけを数えています。</p>
+    </Panel>
+  );
+}
 
 // 折りたたみ（印刷用の報告書では最初から開く）
 function Fold({ id, title, note, open, children }: { id: string; title: string; note: string; open: boolean; children: React.ReactNode }) {
@@ -609,6 +673,7 @@ export function ReportDashboard({ d, compact = false, expandDetails = false }: {
           <Panel id="sources" title="競合と引用元" note="AIが紹介の根拠にしたサイト。競合が引用されている種類のページを、自社にも用意できるかを検討します">
             {d.sources.length ? <SourcesTable d={d} /> : <p className="text-sm text-slate-600">計測すると表示されます。</p>}
           </Panel>
+          {d.aiTraffic && <AiTrafficPanel t={d.aiTraffic} />}
           {d.score !== null && (
             <Fold id="audit" title={`サイト診断の詳細（${d.score}点）`} note="技術的な内容です。4つの観点に分け、直す項目には場所・今の内容・書き換え例・確かめることを付けています" open={expandDetails}>
               <AuditGroups checks={d.checks} />

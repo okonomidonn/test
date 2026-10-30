@@ -92,6 +92,25 @@ export function sampleReport(): ReportData {
       { label: "10/20", rate: Math.round((hits / questions.length) * 100) },
     ],
     checks,
+    aiTraffic: {
+      period: "9/22〜10/19の28日間",
+      users: 62,
+      totalUsers: 540,
+      keyEvents: 31,
+      totalKeyEvents: 88,
+      byAi: [
+        { label: "ChatGPT", users: 48 },
+        { label: "Gemini", users: 9 },
+        { label: "Perplexity", users: 3 },
+        { label: "Copilot", users: 2 },
+      ],
+      pages: [
+        { path: "/", users: 21, keyEvents: 9 },
+        { path: "/jobs/remote-beginner", users: 17, keyEvents: 12 },
+        { path: "/guide/first-remote-job", users: 11, keyEvents: 4 },
+        { path: "/jobs/student", users: 8, keyEvents: 5 },
+      ],
+    },
     plans: pagePlansFor(
       questions.filter((q) => q.hits === 0).map((q) => q.text),
       SAMPLE,

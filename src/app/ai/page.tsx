@@ -13,6 +13,7 @@ const STRENGTHS = [
   ["自社サイトで実践した方法", "運営する求人サイトで、AIからの流入を測りながら改善してきた方法をそのまま使います。"],
   ["競合と同じ質問で比べる", "同じ質問・同じ条件で自社と競合を測るので、どこで負けているかがはっきりします。"],
   ["直す文章まで具体的に", "「どのページに、何を書くか」まで書き換え例つきでお渡しします。"],
+  ["AIの「営業成績」まで見える", "AIからサイトに来た人数と、申し込みにつながった行動をGA4で確かめます（継続支援）。"],
   ["始めやすい価格", "診断は49,800円（税別）から。公開料金の中央値（診断15万円）より手軽に試せます。"],
 ];
 const FAQ = [
@@ -84,13 +85,13 @@ export default function AiLandingPage() {
           <div>
             <p className="inline-flex rounded-md bg-brand/10 px-3 py-1 text-sm font-bold text-brand">Webサービス向け AI検索対策</p>
             <h1 className="mt-4 text-[2.25rem] font-bold leading-[1.3] tracking-tight text-slate-900 sm:text-[3.25rem]">
-              AIに
+              ChatGPTが、
               <br />
-              <span className="text-brand">おすすめされる</span>
+              <span className="text-brand">あなたの代わりに</span>
               <br />
-              サービスへ。
+              営業する。
             </h1>
-            <p className="mt-5 max-w-lg leading-relaxed text-slate-700 sm:text-lg">ChatGPT・Geminiで「おすすめは？」と聞かれたとき、名前が挙がるように。今の状態を調べて、直し方までお伝えします。</p>
+            <p className="mt-5 max-w-lg leading-relaxed text-slate-700 sm:text-lg">見込み客がAIに「おすすめは？」と聞いたとき、あなたのサービスを紹介してくれるように。いまAIがどう紹介しているかを調べ、直し方までお伝えします。</p>
             <div className="mt-7 max-w-md rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
               <p className="text-xs font-bold text-slate-600">AIに紹介された回数（10回答中・架空の例）</p>
               <div className="mt-3 space-y-2">
@@ -235,7 +236,7 @@ export default function AiLandingPage() {
       {/* FEATURES：強み（番号つきの大きなパネル） */}
       <Band id="features" className="bg-white">
         <Head en="AIススメルの強み">
-          <span className={em}>4つの強み</span>で、AI検索対策を確かに
+          <span className={em}>5つの強み</span>で、AIを営業担当に
         </Head>
         <div className="mt-10 space-y-6">
           {STRENGTHS.map(([t, b], i) => (
