@@ -355,7 +355,7 @@ if ( ! $zaito_cond ) :
       </form>
       <form class="profile" id="zprofile" data-steps method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
         <b>登録できました</b>
-        <p>あなたの希望に合う新着だけをメールで送るために教えてください（任意）。答えた内容に合わない求人は送りません。</p>
+        <p>あなたの希望に合う新着だけをメールで送るために教えてください（お名前以外は任意）。答えた内容に合わない求人は送りません。</p>
         <input type="hidden" name="action" value="zaito_remote_profile">
         <?php zaito_remote_profile_fields( true ); ?>
         <button type="submit" class="btn btn-p btn-lg">保存する</button>

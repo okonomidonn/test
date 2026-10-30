@@ -81,3 +81,6 @@
     transition-duration:.001ms!important;scroll-behavior:auto!important;
   }
 }
+
+/* とばせない質問（お名前）のあいだは、「答えずに閉じる」を隠す */
+.u063-lock .skip{visibility:hidden}

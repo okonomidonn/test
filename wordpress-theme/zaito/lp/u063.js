@@ -5,6 +5,7 @@
  * - 1つだけ選ぶ質問は、選ぶと自動で次へ進む。選ばずに「次へ」を押すと、欄がゆれて理由を表示する。答えたくない質問は「この質問はとばす」で進める。
  * - 最後の質問で、ページにもともとある送信ボタンを押す（保存とその後の動きはページ側の処理のまま）。
  * - 「学年・学校名」は、立場で学生を選んだときだけ質問に入る（.stu の hidden はページ側が切り替える）。
+ * - data-required の質問（お名前）は、とばせない。その質問のあいだは「答えずに閉じる」（.skip）も隠す。
  * JSが動かないときは、元のフォーム（全部の質問が並んだ形）のまま使える。
  */
 (function () {
@@ -49,6 +50,7 @@
       msg.textContent = q.getAttribute('data-hint') || '';
       q.appendChild(msg);
       q.querySelectorAll('fieldset,input[type=text]').forEach(function (el) { el.setAttribute('aria-describedby', msg.id); });
+      if (q.getAttribute('data-required')) return;
       var sk = document.createElement('button');
       sk.type = 'button';
       sk.className = 'u063-skipq';
@@ -88,6 +90,7 @@
         if (k !== -1) q.querySelector('small').textContent = (k + 1) + ' / ' + act.length;
       });
       bars(act);
+      form.classList.toggle('u063-lock', !!(act[i] && act[i].getAttribute('data-required')));
       next.querySelector('span').textContent = i === act.length - 1 ? finalText : NEXT;
       fit();
       setTimeout(function () {
@@ -101,6 +104,9 @@
       if (step === 'interests') {
         var picked = Array.prototype.map.call(q.querySelectorAll('input:checked'), function (el) { return el.value; });
         return picked.length ? picked[0] + (picked.length > 1 ? ' ほか' + (picked.length - 1) : '') : '';
+      }
+      if (step === 'name') {
+        return Array.prototype.map.call(q.querySelectorAll('input[type=text]'), function (el) { return el.value.trim(); }).join(' ').trim();
       }
       var parts = [];
       q.querySelectorAll('input:checked').forEach(function (el) { parts.push(el.value); });
@@ -150,6 +156,10 @@
       var q = active()[cur];
       if (!q) return;
       var t = answer(q);
+      if (q.getAttribute('data-required') && Array.prototype.some.call(q.querySelectorAll('input[type=text]'), function (el) { return !el.value.trim(); })) {
+        bad(q, '姓と名を入力してください');
+        return;
+      }
       if (!t && !q.getAttribute('data-optional')) {
         bad(q, (q.getAttribute('data-step') === 'interests' ? '1つ以上選んでください' : '1つ選んでください') + '（答えたくないときは「この質問はとばす」）');
         return;

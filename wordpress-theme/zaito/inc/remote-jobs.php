@@ -2128,9 +2128,16 @@ function zaito_handle_remote_profile() {
     if ( '' !== $school ) {
         update_post_meta( $member, 'school', mb_substr( $school, 0, 80 ) );
     }
-    $name = isset( $_POST['name'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['name'] ) ) ) : '';
+    // 登録直後の質問では、姓と名を分けて聞く。名前は「姓 名」の形で1つにまとめて持つ（応募フォームや管理画面はこれを使う）。
+    $last  = isset( $_POST['name_last'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name_last'] ) ) ), 0, 20 ) : '';
+    $first = isset( $_POST['name_first'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name_first'] ) ) ), 0, 20 ) : '';
+    $name  = isset( $_POST['name'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['name'] ) ) ) : trim( $last . ' ' . $first );
     if ( '' !== $name ) {
         update_post_meta( $member, 'name', mb_substr( $name, 0, 40 ) );
+    }
+    if ( '' !== $last && '' !== $first ) {
+        update_post_meta( $member, 'last_name', $last );
+        update_post_meta( $member, 'first_name', $first );
     }
     foreach ( array( 'days', 'min_pay' ) as $key ) {
         $val = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';

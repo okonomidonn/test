@@ -156,7 +156,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 
           <form class="profile" id="zprofile" data-steps method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
             <b>登録できました</b>
-            <p>確認メールを送りました。あとでメールのリンクを押すと、新着のお知らせが届くようになります。希望に合う新着だけを送るために教えてください（任意）。</p>
+            <p>確認メールを送りました。あとでメールのリンクを押すと、新着のお知らせが届くようになります。希望に合う新着だけを送るために教えてください（お名前以外は任意）。</p>
             <input type="hidden" name="action" value="zaito_remote_profile">
             <?php zaito_remote_profile_fields( true ); ?>
             <button type="submit" class="btn btn-p btn-lg">保存して応募ページへ進む</button>

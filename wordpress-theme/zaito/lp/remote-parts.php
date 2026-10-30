@@ -184,12 +184,15 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     function zaito_remote_profile_fields( $with_name = false ) {
         $opts = zaito_remote_profile_options();
         // 質問ごとの .pq は、登録直後のフォームで1問ずつ表示するときの区切り（lp/u063.js）。マイページではそのまま並べる。
-        // $with_name: 登録はメールアドレスだけなので、登録直後の質問では最初に名前を聞く（マイページは別の欄で聞く）。
+        // $with_name: 登録はメールアドレスだけなので、登録直後の質問では最初に姓と名を聞く（必須。マイページは別の欄で聞く）。
         if ( $with_name ) :
             ?>
-    <div class="pq" data-step="name" data-hint="求人に応募するとき、企業に伝わる名前です">
+    <div class="pq" data-step="name" data-required="1" data-hint="求人に応募するとき、企業に伝わる名前です">
       <fieldset><legend>お名前</legend>
-      <input type="text" id="zpname" name="name" maxlength="40" autocomplete="name" aria-label="お名前" placeholder="例：山田 花子">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <input type="text" id="zpname" name="name_last" maxlength="20" autocomplete="family-name" aria-label="姓" placeholder="姓（例：山田）">
+        <input type="text" name="name_first" maxlength="20" autocomplete="given-name" aria-label="名" placeholder="名（例：花子）">
+      </div>
       </fieldset>
     </div>
             <?php
