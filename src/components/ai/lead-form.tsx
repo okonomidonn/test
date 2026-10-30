@@ -4,7 +4,7 @@ import { useActionState, type ReactNode } from "react";
 import { createLead, type LeadField, type LeadState } from "@/app/actions/leads";
 import { btn } from "@/components/ai/ds";
 
-type Defaults = { company?: string; websiteUrl?: string; name?: string; email?: string };
+type Defaults = { company?: string; websiteUrl?: string; name?: string; email?: string; message?: string };
 
 const inputCls = (invalid: boolean) =>
   `mt-1.5 block h-11 w-full rounded-lg border bg-white px-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
@@ -29,7 +29,7 @@ function Field({ id, label, hint, error, children }: { id: string; label: string
   );
 }
 
-export function LeadForm({ kind, defaults = {} }: { kind: "CHECK" | "TRIAL"; defaults?: Defaults }) {
+export function LeadForm({ kind, defaults = {}, submitLabel }: { kind: "CHECK" | "TRIAL"; defaults?: Defaults; submitLabel?: string }) {
   const [state, formAction, isPending] = useActionState<LeadState, FormData>(createLead, {});
   const err = (k: LeadField) => state.fieldErrors?.[k];
   const val = (k: LeadField) => state.values?.[k] ?? (defaults as Record<string, string | undefined>)[k];
@@ -111,7 +111,7 @@ export function LeadForm({ kind, defaults = {} }: { kind: "CHECK" | "TRIAL"; def
 
       <div className="space-y-2">
         <button type="submit" disabled={isPending} className={`${btn("primary", "lg")} w-full`}>
-          {isPending ? "送信しています…" : kind === "TRIAL" ? "トライアルを申し込む" : "無料で診断する"}
+          {isPending ? "送信しています…" : submitLabel ?? (kind === "TRIAL" ? "トライアルを申し込む" : "無料で診断する")}
         </button>
         <p className="text-sm text-slate-600">送信の時点では料金はかかりません。</p>
       </div>

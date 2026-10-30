@@ -32,34 +32,43 @@ const COPY = {
 
 export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">) {
   const sp = await searchParams;
-  const kind = sp.plan === "trial" ? "TRIAL" : "CHECK";
-  const copy = COPY[kind];
+  const monthly = sp.plan === "standard" ? { title: "スタンダード", price: "100,000円（税別）／110,000円（税込）", scope: "毎月のAI計測・競合比較・GA4の確認・既存ページ改善・月1回の打ち合わせ" } : sp.plan === "premium" ? { title: "プレミアム", price: "200,000円（税別）／220,000円（税込）", scope: "スタンダードの内容に加え、新規ページの企画・原稿作成・CMSでの制作" } : null;
+  const kind = sp.plan === "trial" || monthly ? "TRIAL" : "CHECK";
+  const copy = monthly ? {
+    title: `継続支援：${monthly.title}のご相談`,
+    lead: "1か月単位で、AIでの紹介状況を確認しながらサイトを改善します。",
+    facts: [["月額", monthly.price], ["契約", "1か月契約・毎月更新。最低契約期間の縛りなし"], ["内容", monthly.scope], ["作業範囲", "1サービスを対象に、ページ本数・原稿量・修正回数・実装範囲を見積書で合意します"]],
+    after: ["2営業日以内に、進め方とお見積もりをメールでお送りします", "見積もりの作業範囲・更新条件をご確認いただいてから正式なご依頼となります", "銀行振込による前払いです。入金確認後、合意した日程で作業を始めます"],
+  } : COPY[kind];
   const kpis = reportKpis(sampleReport());
 
   // ログイン中なら、登録済みのサービスとアカウントの情報を入れておく
   const session = await auth();
-  let defaults: { company?: string; websiteUrl?: string; name?: string; email?: string } = {};
+  let defaults: { company?: string; websiteUrl?: string; name?: string; email?: string; message?: string } = {};
   if (session?.user?.id) {
     const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { name: true, email: true } });
     const storeId = typeof sp.store === "string" ? sp.store : undefined;
     const store = storeId ? await prisma.store.findFirst({ where: { id: storeId, ownerId: session.user.id }, select: { name: true, websiteUrl: true } }) : null;
     defaults = { name: user?.name, email: user?.email, company: store?.name, websiteUrl: store?.websiteUrl ?? undefined };
   }
+  if (monthly) defaults.message = `継続支援の${monthly.title}（月額${monthly.price}）について相談したいです。`;
   const storeQ = typeof sp.store === "string" ? `&store=${sp.store}` : "";
 
   return (
     <div className="mx-auto max-w-5xl pt-4">
       {/* 申し込みの種類の切り替え（?plan=trial） */}
-      <nav aria-label="申し込みの種類" className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1 text-sm">
+      <nav aria-label="申し込みの種類" className="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 text-sm">
         {[
           ["CHECK", "無料で診断", `/ai/apply${storeQ ? `?${storeQ.slice(1)}` : ""}`],
           ["TRIAL", "トライアル 49,800円", `/ai/apply?plan=trial${storeQ}`],
+          ["standard", "月額スタンダード", `/ai/apply?plan=standard${storeQ}`],
+          ["premium", "月額プレミアム", `/ai/apply?plan=premium${storeQ}`],
         ].map(([k, label, href]) => (
           <Link
             key={k}
             href={href}
-            aria-current={kind === k ? "page" : undefined}
-            className={`rounded-md px-3 py-1.5 font-semibold ${kind === k ? "bg-white text-slate-900 shadow-[0_1px_2px_rgba(17,24,39,0.08)] ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-900"}`}
+            aria-current={(monthly ? sp.plan === k : kind === k) ? "page" : undefined}
+            className={`rounded-md px-3 py-1.5 font-semibold ${(monthly ? sp.plan === k : kind === k) ? "bg-white text-slate-900 shadow-[0_1px_2px_rgba(17,24,39,0.08)] ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-900"}`}
           >
             {label}
           </Link>
@@ -82,7 +91,7 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
 
         {/* フォーム：スマホでは見出しのすぐ後、PCでは右の列 */}
         <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:row-span-2 lg:self-start">
-          <LeadForm kind={kind} defaults={defaults} />
+          <LeadForm key={typeof sp.plan === "string" ? sp.plan : "check"} kind={kind} defaults={defaults} submitLabel={monthly ? "継続支援を相談する" : undefined} />
         </div>
 
         <div className="min-w-0 space-y-8">

@@ -37,7 +37,7 @@ export const MARKET = {
 export function MarketCompare() {
   const rows = [
     { label: "1回の診断", market: MARKET.diagnosisMedian, ours: 49800, oursLabel: "GEO診断・改善トライアル", unit: "", note: "診断に加えて、1ページの改善と30日後の再計測まで" },
-    { label: "月額の対策支援", market: MARKET.monthlyMedian, ours: 98000, oursLabel: "継続支援（〜）", unit: "／月", note: "毎月の計測と、ページの作成・書き換え（月4ページ〜）" },
+    { label: "月額の対策支援", market: MARKET.monthlyMedian, ours: 100000, oursLabel: "スタンダード", unit: "／月", note: "既存ページの改善が中心。新規ページ制作も含むプレミアムは月200,000円（税別）。作業範囲は見積書で合意します" },
   ];
   const yen = (n: number) => `${n.toLocaleString("ja-JP")}円`;
   return (
@@ -82,7 +82,7 @@ export function MarketCompare() {
 
 // この価格でできる理由
 export const WHY_AFFORDABLE: [string, string][] = [
-  ["計測を自社のツールで自動化", "質問づくり・AIへの質問・記録・サイト診断を自社開発のツールで行い、人の作業を分析と改善に絞っています"],
+  ["作業を整理して効率化", "計測・記録・サイト診断に自社のツールと手動確認を使い分け、分析と改善に時間を使います"],
   ["対象と作業を絞っている", "中小企業のWebサービスに絞り、トライアルは既存ページ1ページの改善までと範囲を決めています"],
   ["効果を確かめてから続ける", "30日後に同じ条件で測り直し、続けるかどうかを数字を見て決められます"],
 ];
