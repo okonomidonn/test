@@ -2047,16 +2047,10 @@ function zaito_handle_remote_register() {
     if ( ! $email || ! is_email( $email ) ) {
         $fail( '正しいメールアドレスを入力してください' );
     }
-    // 名前と学校名（学生でない人は学校名なし）も、メールアドレスと一緒に聞く。
+    // 登録はメールアドレスだけでできる。名前・学校名は、登録直後の質問（zaito_handle_remote_profile）か応募のときに聞く。
     $name        = isset( $_POST['name'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name'] ) ) ), 0, 40 ) : '';
     $school      = isset( $_POST['school'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['school'] ) ) ), 0, 80 ) : '';
     $not_student = ! empty( $_POST['not_student'] );
-    if ( '' === $name ) {
-        $fail( 'お名前を入力してください' );
-    }
-    if ( ! $not_student && '' === $school ) {
-        $fail( '学校名を入力してください（学生でない方はチェックを入れてください）' );
-    }
     // 大学のWi-Fiやスマホ回線では大勢が同じIPを使うため、ふつうの登録が止まらないよう多めに許す。
     if ( zaito_lp_rate_limited( 'remote', 30 ) ) {
         $fail( '送信回数が多すぎます。しばらくしてからお試しください' );
@@ -2069,7 +2063,7 @@ function zaito_handle_remote_register() {
     }
     list( $interest_id, $created ) = $result;
     // すでに登録がある人は、記録にない項目だけ足す（他人のアドレスを入れて、名前を書き換えられないように）。
-    if ( $created || '' === (string) get_post_meta( $interest_id, 'name', true ) ) {
+    if ( $name && ( $created || '' === (string) get_post_meta( $interest_id, 'name', true ) ) ) {
         update_post_meta( $interest_id, 'name', $name );
     }
     if ( $school && ( $created || '' === (string) get_post_meta( $interest_id, 'school', true ) ) ) {
@@ -2133,6 +2127,10 @@ function zaito_handle_remote_profile() {
     $school = isset( $_POST['school'] ) ? sanitize_text_field( wp_unslash( $_POST['school'] ) ) : '';
     if ( '' !== $school ) {
         update_post_meta( $member, 'school', mb_substr( $school, 0, 80 ) );
+    }
+    $name = isset( $_POST['name'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['name'] ) ) ) : '';
+    if ( '' !== $name ) {
+        update_post_meta( $member, 'name', mb_substr( $name, 0, 40 ) );
     }
     foreach ( array( 'days', 'min_pay' ) as $key ) {
         $val = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';

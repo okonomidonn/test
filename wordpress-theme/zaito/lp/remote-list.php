@@ -345,7 +345,6 @@ if ( ! $zaito_cond ) :
         <input type="hidden" name="utm_source" value=""><input type="hidden" name="utm_medium" value=""><input type="hidden" name="utm_campaign" value=""><input type="hidden" name="referrer" value="">
         <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
         <?php if ( zaito_social_buttons( '/?signup=done#signup', '登録' ) ) : ?><div class="or-line">または</div><?php endif; ?>
-        <?php zaito_remote_basic_fields( 'ztop' ); ?>
         <label for="ztopemail">メールアドレス</label>
         <div class="sb-row">
           <input type="email" id="ztopemail" name="email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
@@ -356,9 +355,9 @@ if ( ! $zaito_cond ) :
       </form>
       <form class="profile" id="zprofile" data-steps method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
         <b>登録できました</b>
-        <p>あなたの希望に合う新着だけをメールで送るために教えてください（任意・どれも押すだけ）。答えた内容に合わない求人は送りません。</p>
+        <p>あなたの希望に合う新着だけをメールで送るために教えてください（任意）。答えた内容に合わない求人は送りません。</p>
         <input type="hidden" name="action" value="zaito_remote_profile">
-        <?php zaito_remote_profile_fields(); ?>
+        <?php zaito_remote_profile_fields( true ); ?>
         <button type="submit" class="btn btn-p btn-lg">保存する</button>
         <button type="button" class="skip" id="zskip">答えずに閉じる</button>
       </form>
@@ -547,7 +546,6 @@ if ( ! $zaito_cond ) :
     });
   });
   var isEmail = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); };
-  <?php echo zaito_remote_basic_check_js(); // 固定のJSのみ ?>
   // 下の登録欄・求人3件目のあとの登録欄のどちらからでも、同じフォーム(#ztop)で送る。
   function register(btn, err, method, after) {
     btn.disabled = true;
@@ -560,8 +558,6 @@ if ( ! $zaito_cond ) :
         if (!res.data.created) { showDone('登録済みです', 'このメールアドレスはすでに登録されています。新しい在宅求人が入ったらお知らせします。'); after(false); return; }
         track('sign_up', { method: method });
         top.hidden = true; profile.hidden = false;
-        var ps = profile.querySelector('input[name=school]');
-        if (ps && !ps.value) ps.value = top.elements.school.value;
         after(true);
       })
       .catch(function (x) {
@@ -572,8 +568,6 @@ if ( ! $zaito_cond ) :
   top.addEventListener('submit', function (e) {
     e.preventDefault();
     terr.textContent = '';
-    var bx = zbasic(top);
-    if (bx) { terr.textContent = bx; return; }
     if (!isEmail(top.elements.email.value.trim())) { terr.textContent = '正しいメールアドレスを入力してください'; return; }
     register(top.querySelector('button[type=submit]'), terr, 'top', function () {});
   });
@@ -586,13 +580,6 @@ if ( ! $zaito_cond ) :
       var v = document.getElementById('zminiemail').value.trim();
       if (!isEmail(v)) { merr.textContent = '正しいメールアドレスを入力してください'; return; }
       top.elements.email.value = v;
-      // 名前と学校名は下の登録欄で入れてもらう。
-      if (zbasic(top)) {
-        document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
-        setTimeout(function () { top.elements.name.focus({ preventScroll: true }); }, 500);
-        track('signup_inline_continue', {});
-        return;
-      }
       register(mform.querySelector('button'), merr, 'inline', function (created) {
         // 一覧を読んでいる途中なので、ページ下の登録欄へは自動で移らない（長い距離を一気にスクロールしてしまうため）。
         // 希望条件の質問は、押した人だけ下の登録欄へ案内する。
