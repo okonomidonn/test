@@ -65,6 +65,7 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
         <button class="u064-link" type="button" tabindex="-1">別のメールアドレスで送る</button>
       </div>
     </div>
+    <div style="max-width:340px;margin:16px auto 0"><?php zaito_social_buttons( '/mypage/', 'ログイン' ); ?></div>
     <p class="my-note">ログインすると、希望条件の変更や、別のスマホ・パソコンで保存した求人の確認ができます。まだ登録していない方は、<a href="<?php echo esc_url( home_url( '/#signup' ) ); ?>">トップページから無料で登録</a>できます。</p>
     <script src="<?php echo esc_url( zaito_lp_asset( 'u064.js' ) ); ?>"></script>
   </section>

@@ -10,7 +10,7 @@ $zaito_google_error = '';
 
 if ( ! zaito_google_login_is_configured() ) {
     $zaito_google_error = 'Googleログインは現在利用できません。';
-} elseif ( ! empty( $_GET['error'] ) ) {
+} elseif ( zaito_social_cancelled() ) {
     $zaito_google_error = 'Googleログインがキャンセルされました。';
 } else {
     $code  = isset( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
@@ -56,6 +56,13 @@ if ( ! zaito_google_login_is_configured() ) {
 
                     if ( ! $google_email || ! $google_verified ) {
                         $zaito_google_error = 'Googleアカウントのメールアドレスを確認できませんでした。';
+                    } elseif ( 'student' === $state_data['role'] ) {
+                        // 学生（メールアドレスの登録）は、WordPressのユーザーではなく登録（zaito_interest）でログインする（inc/social-login.php）。
+                        if ( zaito_social_sign_in( $google_email, $google_name, 'google' ) ) {
+                            wp_safe_redirect( esc_url_raw( $state_data['redirect_to'] ) );
+                            exit;
+                        }
+                        $zaito_google_error = '登録できませんでした。時間をおいてもう一度お試しください。';
                     } else {
                         $user = get_user_by( 'email', $google_email );
 
@@ -98,21 +105,22 @@ if ( ! zaito_google_login_is_configured() ) {
     }
 }
 
-get_header();
+$zaito_is_student = ! empty( $state_data['role'] ) && 'student' === $state_data['role'];
+if ( $zaito_is_student || empty( $state_data ) ) {
+    zaito_social_error_page( 'Googleでログイン', $zaito_google_error ? $zaito_google_error : 'ログインできませんでした。' );
+}
+require_once get_template_directory() . '/lp/biz-parts.php';
+zaito_biz_head( 'Googleでログイン' );
 ?>
-
-<main class="auth-main">
-  <div class="auth-container">
-    <div class="auth-card">
-      <h1>Googleログイン</h1>
-      <div class="auth-error">
-        <p><?php echo esc_html( $zaito_google_error ?: 'ログインに失敗しました。' ); ?></p>
-      </div>
-      <p class="auth-link">
-        <a href="<?php echo esc_url( home_url( '/login/' ) ); ?>">ログイン画面に戻る</a>
-      </p>
-    </div>
-  </div>
+<body>
+<?php zaito_biz_auth_header( 'login' ); ?>
+<div class="biz-auth">
+<main class="auth">
+  <h1>Googleでログイン</h1>
+  <div class="note n-err" role="alert"><span class="ms" aria-hidden="true">warning</span><div><b>ログインできませんでした</b><p><?php echo esc_html( $zaito_google_error ? $zaito_google_error : 'もう一度お試しください。' ); ?></p></div></div>
+  <a class="btn btn-p btn-lg" href="<?php echo esc_url( home_url( '/company-login/' ) ); ?>">ログイン画面に戻る</a>
 </main>
-
-<?php get_footer(); ?>
+</div>
+<?php zaito_biz_auth_footer(); ?>
+</body>
+</html>

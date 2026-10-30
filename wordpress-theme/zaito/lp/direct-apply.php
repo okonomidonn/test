@@ -87,6 +87,7 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
   <?php else : ?>
     <div class="note n-info"><span class="ms" aria-hidden="true">mail</span><div><b>メールのリンクから応募フォームを開いてください</b><p>企業からの返信は、メールでお知らせします。そのため応募の前に、登録したアドレスに届くリンクを押して、アドレスを確認してもらっています。パスワードはいりません。</p>
       <form method="post"><?php wp_nonce_field( 'zaito_apply_link' ); ?><button type="submit" name="send_link" value="1" class="btn btn-p" style="margin-top:4px">応募フォームのリンクを送る</button></form></div></div>
+    <div style="max-width:420px"><?php if ( zaito_social_buttons( wp_make_link_relative( $zaito_j['url'] ), 'ログインしてすぐ応募' ) ) : ?><p style="font-size:13px;color:var(--z-text-3);margin:8px 0 0">登録したメールアドレスと同じアカウントでログインしてください。</p><?php endif; ?></div>
   <?php endif; ?>
 <?php else : ?>
   <?php zaito_biz_errors(); ?>

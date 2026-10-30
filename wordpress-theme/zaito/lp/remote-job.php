@@ -146,6 +146,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
             <input type="hidden" name="utm_campaign" value="">
             <input type="hidden" name="referrer" value="">
             <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+            <?php if ( zaito_social_buttons( wp_make_link_relative( $zaito_go ), $zaito_direct ? '登録して応募' : 'かんたん登録' ) ) : ?><div class="or-line">またはメールアドレスで登録</div><?php endif; ?>
             <?php zaito_remote_basic_fields( 'zj' ); ?>
             <label for="zemail">メールアドレス</label>
             <input type="email" id="zemail" name="email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">

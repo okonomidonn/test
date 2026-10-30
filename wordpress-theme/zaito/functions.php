@@ -280,7 +280,7 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '18';
+    $version = '19';
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -1893,3 +1893,6 @@ require_once get_template_directory() . '/inc/apply-track.php';
 
 // 直接掲載（企業の求人掲載・応募・メッセージ・運営の管理画面）。
 require_once get_template_directory() . '/inc/direct.php';
+
+// 学生のGoogle・LINEでのログインと登録。
+require_once get_template_directory() . '/inc/social-login.php';
