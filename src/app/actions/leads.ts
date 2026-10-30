@@ -59,12 +59,13 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
     return { error: "入力内容を確認してください", fieldErrors, values };
   }
 
-  // 同じメールアドレスから10分以内の重複は保存しない
+  // 同じ内容の再送だけを抑止する。無料診断直後の月額相談や別プランは保存する。
+  const data = { ...parsed.data, message: leadMessage(plan, parsed.data.message) ?? null };
   const since = new Date(Date.now() - 10 * 60_000);
-  if (await prisma.lead.findFirst({ where: { email: parsed.data.email, createdAt: { gt: since } } })) return { done: true };
+  if (await prisma.lead.findFirst({ where: { ...data, createdAt: { gt: since } } })) return { done: true };
 
   const session = await auth();
-  const lead = await prisma.lead.create({ data: { ...parsed.data, message: leadMessage(plan, parsed.data.message), userId: session?.user?.id ?? null } });
+  const lead = await prisma.lead.create({ data: { ...data, userId: session?.user?.id ?? null } });
   after(async () => {
     try { await notifyLead(lead.id); } catch { console.error("lead_notification_failed", lead.id); }
   });
