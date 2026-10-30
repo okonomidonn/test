@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { notifyLead } from "@/lib/leads/notifications";
+import { LEAD_PLANS, leadMessage, resolveLeadPlan } from "@/lib/leads/plans";
 
 export type LeadField = "company" | "name" | "email" | "websiteUrl" | "message";
 export type LeadState = {
@@ -36,8 +37,10 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
   // 機械的な送信よけ：人には見えない欄に入力があれば、受け付けたように見せて保存しない
   if (String(formData.get("fax") ?? "")) return { done: true };
 
+  const plan = resolveLeadPlan(formData.get("plan"), formData.get("kind"));
+
   const parsed = leadSchema.safeParse({
-    kind: formData.get("kind") === "TRIAL" ? "TRIAL" : "CHECK",
+    kind: LEAD_PLANS[plan].kind,
     company: formData.get("company"),
     name: formData.get("name"),
     email: formData.get("email"),
@@ -56,12 +59,13 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
     return { error: "入力内容を確認してください", fieldErrors, values };
   }
 
-  // 同じメールアドレスから10分以内の重複は保存しない
+  // 同じ内容の再送だけを抑止する。無料診断直後の月額相談や別プランは保存する。
+  const data = { ...parsed.data, message: leadMessage(plan, parsed.data.message) ?? null };
   const since = new Date(Date.now() - 10 * 60_000);
-  if (await prisma.lead.findFirst({ where: { email: parsed.data.email, createdAt: { gt: since } } })) return { done: true };
+  if (await prisma.lead.findFirst({ where: { ...data, createdAt: { gt: since } } })) return { done: true };
 
   const session = await auth();
-  const lead = await prisma.lead.create({ data: { ...parsed.data, userId: session?.user?.id ?? null } });
+  const lead = await prisma.lead.create({ data: { ...data, userId: session?.user?.id ?? null } });
   after(async () => {
     try { await notifyLead(lead.id); } catch { console.error("lead_notification_failed", lead.id); }
   });
