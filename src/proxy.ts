@@ -8,10 +8,17 @@ const TEAM_PUBLIC = ["/login", "/register"];
 // AI検索チェック（店舗オーナー向け）の公開ページ
 const AI_PUBLIC = ["/ai", "/ai/web", "/ai/apply", "/ai/sample", "/ai/tool", "/ai/method", "/ai/login", "/ai/register", "/ai/signup", "/ai/pricing", "/ai/legal"];
 
+const AI_HOSTS = ["aisusumeru.com", "www.aisusumeru.com"];
+
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const user = req.auth?.user;
   const isAi = pathname === "/ai" || pathname.startsWith("/ai/");
+
+  // AIススメル専用ドメインでは、AIススメル以外の画面（運用ツール）を出さない
+  if (AI_HOSTS.includes((req.headers.get("host") ?? "").split(":")[0]) && !isAi) {
+    return NextResponse.redirect(new URL("/ai", req.nextUrl));
+  }
 
   if (!user) {
     if (TEAM_PUBLIC.includes(pathname) || AI_PUBLIC.includes(pathname)) return;
