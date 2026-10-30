@@ -19,7 +19,7 @@ export type ReportData = {
   trend: { label: string; rate: number }[];
   checks: AuditCheck[];
   plans: PagePlan[];
-  // AIからの流入（GA4）。継続支援で、お客様のGA4を見て記入する
+  // AIからの流入（GA4）。月額プランで、お客様のGA4を見て記入する
   aiTraffic?: {
     period: string;
     users: number;
