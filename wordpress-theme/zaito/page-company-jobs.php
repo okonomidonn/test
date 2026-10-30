@@ -22,7 +22,7 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
   <div class="biz-title"><div><h1>求人</h1><p>求人の作成・編集と、掲載の終了ができます。</p></div>
     <a class="btn btn-p" href="<?php echo esc_url( home_url( '/company-jobs/?new=1' ) ); ?>"><span class="ms" aria-hidden="true">add</span>求人を作成する</a></div>
   <?php if ( isset( $_GET['submitted'] ) ) : ?>
-    <div class="note n-ok"><span class="ms" aria-hidden="true">check_circle</span><div><b>審査に出しました</b><p>運営が内容を確認して公開します（通常1〜2営業日）。直してほしい点があるときは、メールでお知らせします。</p></div></div>
+    <div class="note n-ok"><span class="ms" aria-hidden="true">check_circle</span><div><b>審査に出しました</b><p>運営が内容を確認して公開します（通常1〜2営業日）。直してほしい点があれば、メールでお知らせします。</p></div></div>
   <?php endif; ?>
   <?php zaito_biz_account_notes( $zaito_user->ID ); ?>
 
@@ -70,7 +70,7 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
     <div class="note n-ok"><span class="ms" aria-hidden="true">check_circle</span><div><b>下書きを保存しました</b><p>公開するには、いちばん下の「審査に出す」を押してください。</p></div></div>
   <?php endif; ?>
   <?php if ( 'open' === $zaito_state[0] ) : ?>
-    <div class="note n-warn"><span class="ms" aria-hidden="true">info</span><div><b>掲載中の求人です</b><p>内容を直して保存すると、運営の確認が終わるまで一時的に非公開になります。すでに届いている応募とメッセージは、そのまま続けられます。</p></div></div>
+    <div class="note n-warn"><span class="ms" aria-hidden="true">info</span><div><b>掲載中の求人です</b><p>内容を直して保存すると、いったん非公開になります。もう一度「審査に出す」を押し、運営の確認が終わると再び公開されます。すでに届いている応募とメッセージは、そのまま続けられます。</p></div></div>
   <?php elseif ( 'returned' === $zaito_state[0] ) : ?>
     <div class="note n-warn"><span class="ms" aria-hidden="true">info</span><div><b>運営から差し戻しがありました</b><p><?php echo esc_html( get_post_meta( $zaito_edit, '_zaito_review_note', true ) ); ?></p></div></div>
   <?php endif; ?>
@@ -83,7 +83,7 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
     <div class="fcard">
       <h2>仕事の内容</h2>
       <p>求人の一覧と詳細ページに表示されます。</p>
-      <div class="fld"><label for="ztitle">求人のタイトル<span class="req">必須</span></label><input type="text" id="ztitle" name="title" maxlength="60" value="<?php echo esc_attr( $zaito_v['title'] ); ?>" placeholder="例：自社メディアの記事作成アシスタント" required><p class="hint">60文字まで。仕事の中身が分かる名前にしてください。</p></div>
+      <div class="fld"><label for="ztitle">求人のタイトル<span class="req">必須</span></label><input type="text" id="ztitle" name="title" maxlength="60" value="<?php echo esc_attr( $zaito_v['title'] ); ?>" placeholder="例：自社メディアの記事作成アシスタント" required><p class="hint">60文字まで。どんな仕事かが伝わる名前にしてください。</p></div>
       <fieldset class="fld"><legend>職種<span class="req">必須</span></legend><div class="picks">
         <?php foreach ( zaito_direct_categories() as $zaito_o ) : ?>
           <label><input type="radio" name="category" value="<?php echo esc_attr( $zaito_o ); ?>"<?php checked( $zaito_v['category'], $zaito_o ); ?>><span><?php echo esc_html( $zaito_o ); ?></span></label>
@@ -95,7 +95,7 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
 
     <div class="fcard">
       <h2>条件</h2>
-      <p>報酬の金額は必須です。学生が一番気にするところなので、できるだけ具体的に書いてください。</p>
+      <p>報酬は金額まで書いてください。学生が一番よく見る項目です。</p>
       <fieldset class="fld"><legend>契約の形<span class="req">必須</span></legend><div class="picks">
         <?php foreach ( zaito_direct_contracts() as $zaito_o ) : ?>
           <label><input type="radio" name="contract" value="<?php echo esc_attr( $zaito_o ); ?>"<?php checked( $zaito_v['contract'], $zaito_o ); ?>><span><?php echo esc_html( $zaito_o ); ?></span></label>
@@ -127,7 +127,7 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
       <h2>応募の受け付け</h2>
       <p>応募はzaitoに届き、応募者とはzaitoのメッセージでやりとりします。</p>
       <div class="fld"><label for="zquestion">応募者への質問<span class="opt">任意</span></label><input type="text" id="zquestion" name="question" maxlength="200" value="<?php echo esc_attr( $zaito_v['question'] ); ?>" placeholder="例：週に何時間くらい働けそうですか？"><p class="hint">応募フォームに1問だけ追加できます。</p></div>
-      <div class="fld"><label for="zauto">応募直後の自動メッセージ<span class="opt">任意</span></label><textarea id="zauto" name="auto_reply" rows="4" placeholder="例：ご応募ありがとうございます。2営業日以内に、面談の日程についてご連絡します。"><?php echo esc_textarea( $zaito_v['auto_reply'] ); ?></textarea><p class="hint">空欄なら、会社情報で決めた文面を使います（それも空欄なら送りません）。</p></div>
+      <div class="fld"><label for="zauto">応募直後の自動メッセージ<span class="opt">任意</span></label><textarea id="zauto" name="auto_reply" rows="4" placeholder="例：ご応募ありがとうございます。2営業日以内に、面談の日程についてご連絡します。"><?php echo esc_textarea( $zaito_v['auto_reply'] ); ?></textarea><p class="hint">空欄なら、「会社情報」で決めた文面を送ります。そちらも空欄なら、自動メッセージは送りません。</p></div>
     </div>
 
     <div class="fcard">

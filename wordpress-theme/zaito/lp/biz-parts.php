@@ -124,9 +124,9 @@ if ( ! function_exists( 'zaito_biz_head' ) ) {
     function zaito_biz_account_notes( $user_id ) {
         $st = zaito_company_status( $user_id );
         if ( 'suspended' === $st ) {
-            echo '<div class="note n-err"><span class="ms" aria-hidden="true">block</span><div><b>アカウントを停止しています</b><p>求人は公開されず、メッセージも送れません。info@zaito-work.com までご連絡ください。</p></div></div>';
+            echo '<div class="note n-err"><span class="ms" aria-hidden="true">block</span><div><b>アカウントを停止しています</b><p>求人は公開されず、メッセージも送れません。くわしくは info@zaito-work.com までお問い合わせください。</p></div></div>';
         } elseif ( 'pending' === $st ) {
-            echo '<div class="note n-info"><span class="ms" aria-hidden="true">pending</span><div><b>アカウントの審査中です（通常1〜2営業日）</b><p>審査中も求人を作成して審査に出せます。審査が終わるとメールでお知らせし、求人が公開されます。</p></div></div>';
+            echo '<div class="note n-info"><span class="ms" aria-hidden="true">pending</span><div><b>アカウントの審査中です（通常1〜2営業日）</b><p>アカウントの審査中でも、求人を作って審査に出せます。アカウントと求人の両方の確認が終わると、メールでお知らせし、求人を公開します。</p></div></div>';
         }
         if ( ! zaito_is_email_verified( $user_id ) ) {
             echo '<div class="note n-warn"><span class="ms" aria-hidden="true">mail</span><div><b>メールアドレスの確認をお願いします</b><p>登録したアドレスに届いたメールのリンクを押してください。</p>';

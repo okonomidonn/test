@@ -73,7 +73,7 @@ if ( $zaito_is_co ) {
       <div class="note n-info"><span class="ms" aria-hidden="true">visibility_off</span><div><b>運営として閲覧しています</b><p>運営は読むだけで、送ることはできません。</p></div></div>
     <?php endif; ?>
     <?php if ( $zaito_is_co && ! $zaito_can ) : ?>
-      <div class="note n-warn"><span class="ms" aria-hidden="true">pending</span><div><b>アカウントの審査が終わるまで、メッセージは送れません</b></div></div>
+      <div class="note n-warn"><span class="ms" aria-hidden="true">pending</span><div><b>アカウントの審査が終わるまで、メッセージは送れません</b><p>読むことはできます。</p></div></div>
     <?php endif; ?>
     <section class="chat-main" aria-label="メッセージ">
       <div class="chat-top">
@@ -130,8 +130,8 @@ if ( $zaito_is_co ) {
         <h3>やりとりのお願い</h3>
         <ul>
           <li>日程調整と結果の連絡は、このメッセージで</li>
-          <li>面接のZoomやGoogle MeetのURLは、ここで送れます</li>
-          <li>電話番号やLINEなどの交換は、内定のあとにしてください</li>
+          <li>面接で使うZoomやGoogle MeetのURLも、ここで送れます</li>
+          <li>電話番号やLINEの交換は、内定を出したあとにしてください</li>
         </ul>
       </div>
     <?php else : ?>
@@ -148,8 +148,8 @@ if ( $zaito_is_co ) {
       <div class="side-card">
         <h3>安心して進めるために</h3>
         <ul>
-          <li>面接はZoomなどオンラインで行われます。出社やオフィスへの訪問を求められたら、zaitoに知らせてください</li>
-          <li>電話番号やLINEなどの交換は、内定が出るまで控えてください</li>
+          <li>面接はZoomなどのオンラインで行われます。出社やオフィスへの訪問を求められたら、zaitoに知らせてください</li>
+          <li>電話番号やLINEの交換は、内定が出るまで控えてください</li>
           <li>困ったときは <a href="mailto:info@zaito-work.com?subject=<?php echo rawurlencode( 'メッセージについての相談（応募番号 ' . $zaito_app . '）' ); ?>">info@zaito-work.com</a> へ</li>
         </ul>
       </div>

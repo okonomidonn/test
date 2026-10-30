@@ -164,7 +164,7 @@ function zaito_handle_direct_admin_company() {
                 '求人を作成する',
                 home_url( '/company-jobs/?new=1' ),
                 '',
-                '学生からの応募が「内定」になった時点で、成果報酬が発生します。',
+                '応募者に内定を出し、応募の状態を「内定」にした時点で、成果報酬が発生します。',
                 zaito_direct_from()
             );
         }

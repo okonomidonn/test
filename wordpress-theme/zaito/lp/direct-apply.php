@@ -85,7 +85,7 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
   <?php if ( $zaito_sent ) : ?>
     <div class="note n-ok"><span class="ms" aria-hidden="true">mark_email_read</span><div><b>メールを送りました</b><p>登録したメールアドレスに届いたリンクを押すと、応募フォームが開きます。届かないときは迷惑メールのフォルダも見てください。</p></div></div>
   <?php else : ?>
-    <div class="note n-info"><span class="ms" aria-hidden="true">mail</span><div><b>メールのリンクから応募フォームを開いてください</b><p>企業からの返信はメールでお知らせします。そのため、登録したメールアドレスに届くリンクを押して、アドレスを確認してから応募していただいています。パスワードは不要です。</p>
+    <div class="note n-info"><span class="ms" aria-hidden="true">mail</span><div><b>メールのリンクから応募フォームを開いてください</b><p>企業からの返信は、メールでお知らせします。そのため応募の前に、登録したアドレスに届くリンクを押して、アドレスを確認してもらっています。パスワードはいりません。</p>
       <form method="post"><?php wp_nonce_field( 'zaito_apply_link' ); ?><button type="submit" name="send_link" value="1" class="btn btn-p" style="margin-top:4px">応募フォームのリンクを送る</button></form></div></div>
   <?php endif; ?>
 <?php else : ?>
@@ -97,7 +97,7 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
 
     <div class="fcard">
       <h2>あなたについて</h2>
-      <p>企業に伝わるのは、ここに書いた内容とメッセージだけです。メールアドレスは企業に伝えません。</p>
+      <p>企業に伝わるのは、ここに書いた内容とメッセージだけです。メールアドレスは企業に伝わりません。</p>
       <div class="fld"><label for="zname">お名前<span class="req">必須</span></label><input type="text" id="zname" name="name" maxlength="40" autocomplete="name" value="<?php echo esc_attr( $zaito_v['name'] ); ?>" required placeholder="例：山田 花子"></div>
       <fieldset class="fld"><legend>現在の職業<span class="req">必須</span></legend><div class="picks">
         <?php foreach ( $zaito_opts['role'] as $zaito_o ) : ?>

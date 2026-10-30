@@ -189,7 +189,7 @@ function zaito_direct_job_array( $p ) {
         'title'    => $p->post_title,
         'category' => (string) get_post_meta( $p->ID, '_job_category', true ),
         'summary'  => (string) get_post_meta( $p->ID, '_job_summary', true ),
-        'remote'   => '完全在宅（面接・研修・会議を含めて出社なし）',
+        'remote'   => '完全在宅（面接・初日・研修・会議も含めて出社なし）',
         'pay'      => zaito_direct_pay_text( $p->ID ),
         'hours'    => (string) get_post_meta( $p->ID, '_job_hours', true ),
         'target'   => (string) get_post_meta( $p->ID, '_job_target_text', true ),
@@ -628,7 +628,7 @@ function zaito_direct_notify_status( $app_id, $status ) {
     if ( 'offer' === $status ) {
         zaito_direct_mail_student( $app_id, '【zaito】' . $company . 'から内定の連絡がありました', '内定の連絡がありました', '「' . $title . '」で、' . $company . 'から内定の連絡がありました。これからの流れは、zaitoのメッセージで企業と確認してください。', 'メッセージを見る' );
     } elseif ( 'rejected' === $status ) {
-        zaito_direct_mail_student( $app_id, '【zaito】応募の結果のお知らせ', '応募の結果のお知らせ', '「' . $title . '」は、今回は見送りとなりました。ほかにも出社なしの仕事を毎日載せています。', 'メッセージを見る' );
+        zaito_direct_mail_student( $app_id, '【zaito】応募の結果のお知らせ', '応募の結果のお知らせ', '「' . $title . '」は、今回は見送りとなりました。ほかの出社なしの求人も、zaitoで探せます。', 'メッセージを見る' );
     }
 }
 
