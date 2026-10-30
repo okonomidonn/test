@@ -5,7 +5,7 @@ import { btn } from "./ds";
 const PLANS = [
   { title: "無料チェック", who: "まず今の状態を知りたい", price: "0円", unit: "", features: ["AIに紹介されているかを計測", "最初に直す3つのことをお届け"], href: "/ai/apply", cta: "無料で依頼する" },
   { title: "トライアル", who: "実際に1ページ直してみたい", price: "49,800円", unit: "1回", features: ["競合2社と比較して計測", "1ページを改善", "30日後に測り直して報告"], href: "/ai/apply?plan=trial", cta: "トライアルを相談する", recommended: true },
-  { title: "継続支援", who: "毎月改善を続けたい", price: "98,000円〜", unit: "月", features: ["毎月の計測とレポート", "毎月4ページ〜を作成・改善", "月1回の打ち合わせ"], href: "/ai/apply?plan=trial", cta: "まずトライアルから" },
+  { title: "継続支援", who: "毎月改善を続けたい", price: "98,000円〜", unit: "月", features: ["毎月の計測とレポート", "AIからの流入レポート（GA4）", "毎月4ページ〜を作成・改善", "月1回の打ち合わせ"], href: "/ai/apply?plan=trial", cta: "まずトライアルから" },
 ];
 
 export function ServicePlans() {
