@@ -42,12 +42,12 @@ export default function AiLandingPage() {
     <div className="space-y-16 pb-6 sm:space-y-24">
       <section className="grid items-start gap-8 pt-2 sm:pt-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
         <div className="min-w-0 lg:py-6">
-          <p className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-800">WebサービスのAI検索診断</p>
+          <p className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-800">Webサービス向け AI検索対策</p>
           <h1 className="mt-5 text-[clamp(1.5rem,7vw,3rem)] font-bold leading-[1.4] tracking-tight text-slate-900 sm:leading-[1.35]">
-            <span className="block">AIでの紹介状況と、</span>
-            <span className="block text-brand">直すページが分かる。</span>
+            <span className="block">AIに、</span>
+            <span className="block"><span className="text-brand">おすすめされる</span>サービスへ。</span>
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-700 sm:text-lg">ChatGPT・Geminiで自社がどう紹介されるかを調査。競合との違いを確かめ、サイトのどこを、どう直すかをご提案します。</p>
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-700 sm:text-lg">ChatGPTやGeminiに「おすすめは？」と聞かれたとき、あなたのサービスが名前を挙げてもらえるように。今の状態を調べて、サイトの直し方までお伝えします。</p>
           <div className="mt-7">
             <Link href="/ai/apply" className={`${btn("primary", "lg")} w-full sm:w-auto`}>まずは無料でチェックする <span aria-hidden>→</span></Link>
             <p className="mt-3 text-sm text-slate-600">登録不要・費用0円・3営業日以内にメールでお届け</p>
