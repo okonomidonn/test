@@ -21,7 +21,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
   const nav = "rounded-md px-1.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 sm:px-2.5";
 
   return (
-    <div className={`${latin.variable} ${jp.variable} ai-scope flex flex-1 flex-col`}>
+    <div className={`${latin.variable} ${jp.variable} ai-scope flex flex-1 flex-col overflow-x-clip`}>
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
         <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center gap-2 px-3 py-1.5 sm:h-14 sm:flex-nowrap sm:gap-6 sm:px-6 sm:py-0">
           <Link href={user ? "/ai/app" : "/ai"} className="flex min-h-11 shrink-0 items-center gap-2 text-[1.0625rem] font-bold tracking-tight text-slate-900">
