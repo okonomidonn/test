@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ServicePlans } from "@/components/ai/service-plans";
-import { LeadForm } from "@/components/ai/lead-form";
+import { HeroLeadForm } from "@/components/ai/hero-lead-form";
 
 const COMPARE = [
   ["目的", "検索結果で上位に表示される", "AIの回答で紹介・引用される"],
@@ -72,36 +72,60 @@ function Cta() {
 export default function AiLandingPage() {
   return (
     <div className="-mt-8">
-      {/* ファーストビュー：左にコピー、右に申し込みフォーム */}
-      <Band className="bg-gradient-to-r from-[#3b82f6] via-[#5b6cf0] to-[#8b5cf6]">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
-          <div className="text-center text-white lg:text-left">
-            <p className="text-lg font-bold sm:text-xl">【無料チェック受付中】</p>
-            <h1 className="mt-3 text-[2rem] font-bold leading-[1.35] sm:text-[3rem]">
-              AIに
+      {/* ファーストビュー：左に見出しと画面の見本、右に短い申し込みフォーム */}
+      <section className="ml-[calc(50%-50vw)] w-screen bg-gradient-to-r from-[#4a9be0] via-[#6a6fe0] to-[#a23fe0]">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:grid-cols-[1.15fr_1fr]">
+          <div className="text-center text-white">
+            <p className="text-xl font-bold sm:text-2xl">【無料チェック】</p>
+            <h1 className="mt-2 text-[1.5rem] font-bold leading-[1.4] sm:text-[2.5rem]">
+              AI検索<span className="text-[0.8em]">（LLMO・GEO）</span>対策の
               <br />
-              おすすめされる
-              <br />
-              サービスへ。
+              診断ならAIススメル
             </h1>
-            <p className="mx-auto mt-5 max-w-xl leading-relaxed text-blue-50 sm:text-lg lg:mx-0">ChatGPT・Geminiで「おすすめは？」と聞かれたとき、あなたのサービスが選ばれるように。今の状態を調べて、直し方までお伝えします。</p>
-            <ul className="mx-auto mt-6 grid max-w-md grid-cols-3 gap-2 text-center lg:mx-0">
-              {[["0円", "で診断"], ["3営業日", "でお届け"], ["登録", "不要"]].map(([a, b]) => (
-                <li key={a} className="rounded-xl bg-white/15 px-2 py-3 ring-1 ring-white/30">
-                  <p className="font-num text-xl font-bold">{a}</p>
-                  <p className="text-xs text-blue-50">{b}</p>
-                </li>
-              ))}
-            </ul>
+            <div className="relative mx-auto mt-6 max-w-md">
+              <div className="rounded-xl bg-white p-4 text-left shadow-lg sm:p-5">
+                <p className="border-l-4 border-brand pl-2 text-xs font-bold text-slate-700">AIに紹介された回数（10回答中）</p>
+                <div className="mt-4 flex h-36 items-end justify-around gap-3 border-b border-slate-200 px-2">
+                  {[["自社", 4, "bg-brand"], ["競合A", 7, "bg-[#a5d6a7]"], ["競合B", 5, "bg-[#c4b5fd]"], ["競合C", 2, "bg-slate-300"]].map(([n, v, c]) => (
+                    <div key={n as string} className="flex h-full flex-1 flex-col items-center justify-end">
+                      <span className="mb-1 font-num text-sm font-bold text-slate-800">{v as number}</span>
+                      <div className={`w-full max-w-10 rounded-t ${c}`} style={{ height: `${(v as number) * 12}%` }} />
+                      <span className="mt-1 text-[11px] text-slate-600">{n as string}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs text-slate-500">表示は架空の例です</p>
+              </div>
+              <p className="relative -mt-4 mx-auto w-fit rounded-full bg-[#2f6be0] px-6 py-2.5 text-base font-bold text-white shadow-md sm:text-lg">⚖ 競合との差をまとめて比較</p>
+            </div>
           </div>
-          <div id="apply" className="rounded-2xl bg-white p-5 shadow-xl sm:p-7">
-            <p className="text-center text-xl font-bold text-brand">無料チェックはこちらから</p>
-            <div className="mt-5">
-              <LeadForm kind="CHECK" />
+          <div id="apply" className="rounded-2xl bg-white/75 p-5 backdrop-blur sm:p-6">
+            <p className="text-center text-xl font-bold text-[#3b5fc7] sm:text-2xl">無料チェックはこちらから</p>
+            <div className="mt-4">
+              <HeroLeadForm />
             </div>
           </div>
         </div>
-      </Band>
+      </section>
+
+      {/* 信頼の帯 */}
+      <section className="ml-[calc(50%-50vw)] w-screen bg-[#eef3fb]">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+          <p className="text-center font-bold text-slate-800 sm:text-lg">自社の求人サイトで実践した方法で診断します</p>
+          <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
+            {[["診断費用", "0", "円"], ["結果のお届け", "3", "営業日"], ["zaitoのChatGPT経由ユーザー", "14.5", "%"]].map(([k, v, u]) => (
+              <div key={k} className="flex flex-col items-center">
+                <dt className="text-xs font-bold text-slate-700 sm:text-base">{k}</dt>
+                <dd className="font-num text-3xl font-bold text-brand sm:text-5xl">
+                  {v}
+                  <span className="ml-0.5 text-sm text-slate-800 sm:text-lg">{u}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-3 text-center text-xs text-slate-500">※ zaitoの数値はGA4・2026年9月24日〜10月21日（469人中68人）。効果を保証するものではありません。</p>
+        </div>
+      </section>
 
       {/* ABOUT：AI検索対策とは＋計測→分析→改善の流れ */}
       <Band id="about" className="bg-white">
