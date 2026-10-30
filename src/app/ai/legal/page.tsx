@@ -10,7 +10,7 @@ export default function LegalPage() {
   const env = process.env;
   const rows: [string, string][] = [
     ["販売事業者", CONTACT.seller],
-    ["運営責任者", env.LEGAL_REPRESENTATIVE || DISCLOSE],
+    ["運営責任者", CONTACT.representative],
     ["所在地", env.LEGAL_ADDRESS || DISCLOSE],
     ["電話番号", env.LEGAL_PHONE || DISCLOSE],
     ["メールアドレス", CONTACT.email],

@@ -29,7 +29,7 @@ export default async function ReportPage({ params }: PageProps<"/ai/app/stores/[
       </div>
       <ReportDashboard d={buildReportData(store, stats, audit)} expandDetails />
       <p className="border-t border-slate-200 pt-4 text-sm text-slate-600">
-        発行：{CONTACT.seller}　お問い合わせ：{CONTACT.email}
+        発行：{CONTACT.seller}（担当：{CONTACT.representative}）　お問い合わせ：{CONTACT.email}
       </p>
     </article>
   );
