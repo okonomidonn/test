@@ -32,10 +32,10 @@ export function HeroLeadForm() {
       {FIELDS.map((f) => {
         const err = state.fieldErrors?.[f.k];
         return (
-          <div key={f.k} className="grid items-center gap-1 sm:grid-cols-[9.5rem_1fr] sm:gap-3">
-            <label htmlFor={`hero-${f.k}`} className="flex items-center justify-between gap-2 whitespace-nowrap text-sm font-bold text-slate-800 sm:justify-end">
+          <div key={f.k} className="space-y-1.5">
+            <label htmlFor={`hero-${f.k}`} className="flex items-center gap-2 text-sm font-bold text-slate-800">
               {f.label}
-              <span className="rounded bg-brand px-1.5 py-0.5 text-[11px] font-bold text-white">必須</span>
+              
             </label>
             <div>
               <input
@@ -47,7 +47,7 @@ export function HeroLeadForm() {
                 placeholder={f.placeholder}
                 defaultValue={state.values?.[f.k]}
                 aria-invalid={!!err}
-                className={`h-11 w-full rounded-lg border-0 bg-[#eef2fb] px-3 text-base text-slate-900 ring-1 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand ${err ? "ring-rose-500" : "ring-transparent"}`}
+                className={`h-11 w-full rounded-lg border-0 bg-white px-3 text-base text-slate-900 ring-1 ring-inset placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand ${err ? "ring-rose-500" : "ring-slate-300"}`}
               />
               {err && <p className="mt-1 text-xs font-medium text-rose-700">{err}</p>}
             </div>
@@ -57,9 +57,8 @@ export function HeroLeadForm() {
       <p className="pt-1 text-center text-sm text-slate-700">
         <Link href="/ai/privacy" className="font-semibold text-brand underline">プライバシーポリシー</Link>に同意のうえ送信してください
       </p>
-      <button type="submit" disabled={isPending} className="mx-auto flex min-h-14 w-full max-w-xs items-center justify-center gap-2 rounded-full bg-[#ffcc4d] text-lg font-bold text-slate-900 shadow-sm transition hover:bg-[#ffc229] disabled:opacity-60">
-        <span aria-hidden className="grid h-5 w-5 place-items-center rounded-full bg-brand text-xs text-white">➜</span>
-        {isPending ? "送信しています…" : "無料で診断してみる"}
+      <button type="submit" disabled={isPending} className="flex min-h-13 w-full items-center justify-center rounded-lg bg-brand py-3.5 text-lg font-bold text-white shadow-sm transition hover:bg-brand-dark disabled:opacity-60">
+        {isPending ? "送信しています…" : "無料で診断を依頼する →"}
       </button>
     </form>
   );

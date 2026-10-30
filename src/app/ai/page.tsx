@@ -20,6 +20,7 @@ const FAQ = [
   ["無料チェックのあと、契約しないといけませんか？", "いいえ。結果を見てからご検討ください。フォーム送信だけで有料契約や自動課金は発生しません。"],
   ["結果はいつ届きますか？", "無料チェックは3営業日以内にメールでお送りします。トライアルのご相談は2営業日以内に進め方とお見積もりをご連絡します。"],
   ["改善すれば、必ずAIに紹介されますか？", "紹介や問い合わせの増加は保証していません。AIの回答は毎回変わるため、同じ条件で測り直して変化を確かめます。"],
+  ["GoogleのAIによる概要（AI Overviews）も対象ですか？", "現在の計測対象はChatGPTとGeminiです。AI Overviewsやほかの生成AIは、ご要望に応じて対象に加えるかをご相談します。"],
   ["SEO対策とは何が違いますか？", "SEOは検索結果の順位、AI検索対策はAIの回答で紹介されることが目的です。サイトの情報を整える点は共通しており、SEOにも役立つ改善が中心です。"],
   ["支払い方法は？", "銀行振込（請求書払い・前払い）です。詳しくは特定商取引法に基づく表記をご覧ください。"],
 ];
@@ -29,6 +30,11 @@ const FLOW = [
   ["結果がメールで届く", "3営業日以内に、紹介状況と最初に直す3つのことをお送りします。"],
 ];
 
+const QUESTION_TYPES = [
+  ["悩みの質問", "在宅でできる仕事の探し方は？", "サービス名を出さずに、困りごとを聞く質問。ここで名前が出ると、最初の候補に入れます。"],
+  ["比較・おすすめの質問", "未経験OKの求人サイトのおすすめは？", "候補を選ぶための質問。いちばん成果につながりやすく、診断の中心です。"],
+  ["サービス名の質問", "〇〇の評判は？", "名前を指定した質問。AIが自社を正しく説明しているかを確かめます。"],
+];
 const WORRY_NOTES = ["同じ質問で自社と競合を測り、紹介された回数で比べます。", "AIからの流入と紹介状況を数字でまとめ、社内で説明しやすくします。", "最初に直す3つを、優先順位つきでお伝えします。"];
 const CYCLE = [
   ["計測", "AIでの紹介状況を数字で見える化"],
@@ -49,7 +55,7 @@ function Band({ className = "", children, id }: { className?: string; children: 
 function Head({ en, children, sub, light }: { en: string; children: React.ReactNode; sub?: string; light?: boolean }) {
   return (
     <div className="text-center">
-      <p className={`font-num text-sm font-bold tracking-[0.2em] ${light ? "text-blue-100" : "text-brand"}`}>{en}</p>
+      <p className={`text-sm font-bold ${light ? "text-blue-100" : "text-brand"}`}>{en}</p>
       <h2 className={`mt-3 text-[1.625rem] font-bold leading-snug sm:text-[2.25rem] ${light ? "text-white" : "text-slate-900"}`}>{children}</h2>
       {sub && <p className={`mx-auto mt-4 max-w-2xl leading-relaxed ${light ? "text-blue-50" : "text-slate-700"}`}>{sub}</p>}
     </div>
@@ -61,8 +67,8 @@ const em = "text-brand";
 function Cta() {
   return (
     <div className="mt-10 text-center">
-      <Link href="/ai/apply" className="inline-flex min-h-14 w-full max-w-sm items-center justify-center rounded-full bg-[#ffcc4d] px-8 text-lg font-bold text-slate-900 shadow-sm transition hover:bg-[#ffc229] sm:w-auto">
-        無料でチェックしてみる
+      <Link href="/ai/apply" className="inline-flex min-h-14 w-full max-w-sm items-center justify-center rounded-lg bg-brand px-8 text-lg font-bold text-white shadow-sm transition hover:bg-brand-dark sm:w-auto">
+        無料で診断を依頼する
       </Link>
       <p className="mt-3 text-sm text-slate-600">3営業日以内に、結果をメールでお届けします。</p>
     </div>
@@ -73,65 +79,89 @@ export default function AiLandingPage() {
   return (
     <div className="-mt-8">
       {/* ファーストビュー：左に見出しと画面の見本、右に短い申し込みフォーム */}
-      <section className="ml-[calc(50%-50vw)] w-screen bg-gradient-to-r from-[#4a9be0] via-[#6a6fe0] to-[#a23fe0]">
-        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:grid-cols-[1.15fr_1fr]">
-          <div className="text-center text-white">
-            <p className="text-xl font-bold sm:text-2xl">【無料チェック】</p>
-            <h1 className="mt-2 text-[1.5rem] font-bold leading-[1.4] sm:text-[2.5rem]">
-              AI検索<span className="text-[0.8em]">（LLMO・GEO）</span>対策の
+      <section className="ml-[calc(50%-50vw)] w-screen border-b border-slate-200 bg-[linear-gradient(180deg,#f3f7ff_0%,#ffffff_100%)]">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[1.1fr_1fr]">
+          <div>
+            <p className="inline-flex rounded-md bg-brand/10 px-3 py-1 text-sm font-bold text-brand">Webサービス向け AI検索対策</p>
+            <h1 className="mt-4 text-[2.25rem] font-bold leading-[1.3] tracking-tight text-slate-900 sm:text-[3.25rem]">
+              AIに
               <br />
-              診断ならAIススメル
+              <span className="text-brand">おすすめされる</span>
+              <br />
+              サービスへ。
             </h1>
-            <div className="relative mx-auto mt-6 max-w-md">
-              <div className="rounded-xl bg-white p-4 text-left shadow-lg sm:p-5">
-                <p className="border-l-4 border-brand pl-2 text-xs font-bold text-slate-700">AIに紹介された回数（10回答中）</p>
-                <div className="mt-4 flex h-36 items-end justify-around gap-3 border-b border-slate-200 px-2">
-                  {[["自社", 4, "bg-brand"], ["競合A", 7, "bg-[#a5d6a7]"], ["競合B", 5, "bg-[#c4b5fd]"], ["競合C", 2, "bg-slate-300"]].map(([n, v, c]) => (
-                    <div key={n as string} className="flex h-full flex-1 flex-col items-center justify-end">
-                      <span className="mb-1 font-num text-sm font-bold text-slate-800">{v as number}</span>
-                      <div className={`w-full max-w-10 rounded-t ${c}`} style={{ height: `${(v as number) * 12}%` }} />
-                      <span className="mt-1 text-[11px] text-slate-600">{n as string}</span>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-3 text-xs text-slate-500">表示は架空の例です</p>
+            <p className="mt-5 max-w-lg leading-relaxed text-slate-700 sm:text-lg">ChatGPT・Geminiで「おすすめは？」と聞かれたとき、名前が挙がるように。今の状態を調べて、直し方までお伝えします。</p>
+            <div className="mt-7 max-w-md rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p className="text-xs font-bold text-slate-600">AIに紹介された回数（10回答中・架空の例）</p>
+              <div className="mt-3 space-y-2">
+                {[["自社", 4, "bg-brand"], ["競合A", 7, "bg-slate-400"], ["競合B", 5, "bg-slate-300"]].map(([n, v, c]) => (
+                  <div key={n as string} className="grid grid-cols-[3.5rem_1fr_2rem] items-center gap-2 text-sm">
+                    <span className="font-semibold text-slate-700">{n as string}</span>
+                    <span className="h-3 rounded-full bg-slate-100">
+                      <span className={`block h-3 rounded-full ${c}`} style={{ width: `${(v as number) * 10}%` }} />
+                    </span>
+                    <span className="text-right font-num font-bold text-slate-900">{v as number}</span>
+                  </div>
+                ))}
               </div>
-              <p className="relative -mt-4 mx-auto w-fit rounded-full bg-[#2f6be0] px-6 py-2.5 text-base font-bold text-white shadow-md sm:text-lg">⚖ 競合との差をまとめて比較</p>
             </div>
           </div>
-          <div id="apply" className="rounded-2xl bg-white/75 p-5 backdrop-blur sm:p-6">
-            <p className="text-center text-xl font-bold text-[#3b5fc7] sm:text-2xl">無料チェックはこちらから</p>
-            <div className="mt-4">
+          <div id="apply" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_12px_32px_-12px_rgba(17,24,39,0.18)] sm:p-7">
+            <p className="text-xl font-bold text-slate-900">無料で診断を依頼する</p>
+            <p className="mt-1 text-sm text-slate-600">4項目・1分で入力できます</p>
+            <div className="mt-5">
               <HeroLeadForm />
             </div>
           </div>
         </div>
       </section>
 
-      {/* 信頼の帯 */}
-      <section className="ml-[calc(50%-50vw)] w-screen bg-[#eef3fb]">
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-          <p className="text-center font-bold text-slate-800 sm:text-lg">自社の求人サイトで実践した方法で診断します</p>
-          <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
-            {[["診断費用", "0", "円"], ["結果のお届け", "3", "営業日"], ["zaitoのChatGPT経由ユーザー", "14.5", "%"]].map(([k, v, u]) => (
-              <div key={k} className="flex flex-col items-center">
-                <dt className="text-xs font-bold text-slate-700 sm:text-base">{k}</dt>
-                <dd className="font-num text-3xl font-bold text-brand sm:text-5xl">
-                  {v}
-                  <span className="ml-0.5 text-sm text-slate-800 sm:text-lg">{u}</span>
-                </dd>
+      {/* 3つの約束 */}
+      <section className="ml-[calc(50%-50vw)] w-screen bg-white">
+        <ul className="mx-auto grid max-w-6xl gap-3 px-4 py-6 sm:grid-cols-3 sm:px-6">
+          {[["費用はかかりません", "無料チェックは0円。有料プランへの自動切り替えもありません。"], ["3営業日以内にお届け", "紹介状況と、最初に直す3つのことをメールでお送りします。"], ["アカウント登録は不要", "サイトのURLとご連絡先を送るだけで始められます。"]].map(([t, b]) => (
+            <li key={t} className="flex gap-3 rounded-xl bg-[#f5f8fd] p-4">
+              <span aria-hidden className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand text-sm font-bold text-white">✓</span>
+              <div>
+                <p className="font-bold text-slate-900">{t}</p>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600">{b}</p>
               </div>
-            ))}
-          </dl>
-          <p className="mt-3 text-center text-xs text-slate-500">※ zaitoの数値はGA4・2026年9月24日〜10月21日（469人中68人）。効果を保証するものではありません。</p>
-        </div>
+            </li>
+          ))}
+        </ul>
       </section>
+
+      {/* なぜ今：サイトに来る前にAIで候補が絞られる */}
+      <Band id="why" className="bg-[#f5f8fd]">
+        <Head en="なぜ今、AI検索対策なのか" sub="見込み客は、サイトを見る前にAIへ質問し、候補を絞り込んでからやって来ます。AIの回答に名前がなければ、比べてもらうこともできません。">
+          お客さまは、<span className={em}>AIで比べてから</span>サイトに来ます
+        </Head>
+        <ol className="mt-10 grid gap-2 md:grid-cols-4">
+          {[["知る", "SNS・広告・紹介", false], ["調べる", "検索・比較サイト", false], ["AIで比べる", "「おすすめは？」と質問し、候補を絞る", true], ["申し込む", "絞った候補のサイトを見て決める", false]].map(([t, b, hot], i) => (
+            <li key={t as string} className={`relative rounded-xl p-5 ${hot ? "bg-brand text-white" : "bg-white text-slate-900 ring-1 ring-slate-200"}`}>
+              <p className={`text-sm font-bold ${hot ? "text-blue-100" : "text-slate-500"}`}>{i + 1}</p>
+              <p className="mt-1 text-lg font-bold">{t as string}</p>
+              <p className={`mt-1 text-sm leading-relaxed ${hot ? "text-blue-50" : "text-slate-600"}`}>{b as string}</p>
+            </li>
+          ))}
+        </ol>
+        <h3 className="mt-12 text-center text-xl font-bold text-slate-900">AIススメルが測る、3種類の質問</h3>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {QUESTION_TYPES.map(([t, ex, b]) => (
+            <div key={t} className="rounded-xl bg-white p-5 ring-1 ring-slate-200">
+              <p className="font-bold text-brand">{t}</p>
+              <p className="mt-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-800">例：{ex}</p>
+              <p className="mt-3 text-sm leading-relaxed text-slate-700">{b}</p>
+            </div>
+          ))}
+        </div>
+      </Band>
 
       {/* ABOUT：AI検索対策とは＋計測→分析→改善の流れ */}
       <Band id="about" className="bg-white">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <div className="text-center lg:text-left">
-            <p className="font-num text-sm font-bold tracking-[0.2em] text-brand">ABOUT</p>
+            <p className="text-sm font-bold text-brand">AI検索対策とは</p>
             <h2 className="mt-3 text-[1.625rem] font-bold leading-snug text-slate-900 sm:text-[2.25rem]">
               <span className={em}>AIに選ばれる</span>ための
               <br />
@@ -141,7 +171,7 @@ export default function AiLandingPage() {
           </div>
           <ol className="relative mx-auto grid w-full max-w-md grid-cols-2 gap-4">
             {CYCLE.map(([t, b], i) => (
-              <li key={t} className={`grid aspect-square place-items-center rounded-full p-5 text-center ${["bg-[#c7f0ee] col-span-2 mx-auto w-1/2", "bg-[#cfe2ff]", "bg-[#e5dcfb]"][i]}`}>
+              <li key={t} className={`grid aspect-square place-items-center rounded-full p-5 text-center ${["bg-[#e0f2fe] col-span-2 mx-auto w-1/2", "bg-[#cfe2ff]", "bg-[#dbeafe]"][i]}`}>
                 <div>
                   <p className="font-num text-xs font-bold text-slate-500">STEP {i + 1}</p>
                   <p className="text-xl font-bold text-brand">{t}</p>
@@ -184,16 +214,16 @@ export default function AiLandingPage() {
       </Band>
 
       {/* PROBLEMS：お悩み */}
-      <Band className="bg-[#ece6fb]">
-        <Head en="PROBLEMS" sub="ChatGPTやGeminiの中で「何が起きているか」は、検索順位を見ても分かりません。AIススメルなら数字で確かめられます。">
+      <Band className="bg-[#f1f5f9]">
+        <Head en="こんなお悩み" sub="ChatGPTやGeminiの中で「何が起きているか」は、検索順位を見ても分かりません。AIススメルなら数字で確かめられます。">
           <span className={em}>AI時代の集客の悩み</span>を解決します
         </Head>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {WORRIES.slice(0, 3).map((w, i) => (
             <div key={w} className="flex flex-col items-center rounded-2xl bg-white p-6 text-center">
-              <p className="relative w-full rounded-full bg-gradient-to-r from-[#3b82f6] to-[#8b5cf6] px-5 py-4 font-bold leading-snug text-white">
+              <p className="relative w-full rounded-full bg-[#13284f] px-5 py-4 font-bold leading-snug text-white">
                 {w}……
-                <span aria-hidden className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-[#6366f1]" />
+                <span aria-hidden className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-[#13284f]" />
               </p>
               <p className="mt-8 leading-relaxed text-slate-700">{WORRY_NOTES[i]}</p>
             </div>
@@ -204,7 +234,7 @@ export default function AiLandingPage() {
 
       {/* FEATURES：強み（番号つきの大きなパネル） */}
       <Band id="features" className="bg-white">
-        <Head en="FEATURES">
+        <Head en="AIススメルの強み">
           <span className={em}>4つの強み</span>で、AI検索対策を確かに
         </Head>
         <div className="mt-10 space-y-6">
@@ -227,7 +257,7 @@ export default function AiLandingPage() {
 
       {/* FLOW */}
       <Band id="flow" className="bg-[#e3ebf5]">
-        <Head en="FLOW">
+        <Head en="ご利用の流れ">
           あなたがするのは、<span className={em}>URLを送るだけ</span>
         </Head>
         <ol className="mt-10 grid gap-5 md:grid-cols-3">
@@ -242,8 +272,8 @@ export default function AiLandingPage() {
       </Band>
 
       {/* PRICE：青い帯に料金カード */}
-      <Band id="pricing" className="bg-[#5b86d8]">
-        <Head en="PRICE" light sub="無料チェックだけでもご利用いただけます。有料プランへの自動切り替えはありません。">
+      <Band id="pricing" className="bg-[#13284f]">
+        <Head en="料金" light sub="無料チェックだけでもご利用いただけます。有料プランへの自動切り替えはありません。">
           まず無料で。改善の依頼はそのあとで。
         </Head>
         <div className="mt-10 rounded-2xl bg-white/10 p-1">
@@ -260,7 +290,7 @@ export default function AiLandingPage() {
 
       {/* 代表と事例 */}
       <Band className="bg-white">
-        <Head en="ABOUT US">
+        <Head en="運営者">
           <span className={em}>自社サイトで実践した方法</span>をお届けします
         </Head>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
@@ -287,7 +317,7 @@ export default function AiLandingPage() {
 
       {/* FAQ */}
       <Band id="faq" className="bg-[#f5f7fb]">
-        <Head en="FAQ">よくある質問</Head>
+        <Head en="Q&A">よくある質問</Head>
         <div className="mx-auto mt-10 max-w-3xl space-y-3">
           {FAQ.map(([q, a]) => (
             <details key={q} className="group rounded-xl bg-white px-5 ring-1 ring-slate-200">
@@ -300,7 +330,7 @@ export default function AiLandingPage() {
                 <span aria-hidden className="hidden shrink-0 text-brand group-open:inline">−</span>
               </summary>
               <p className="pb-5 leading-relaxed text-slate-700">
-                <span className="mr-2 font-bold text-[#8b5cf6]">A.</span>
+                <span className="mr-2 font-bold text-slate-500">A.</span>
                 {a}
               </p>
             </details>
@@ -309,12 +339,12 @@ export default function AiLandingPage() {
       </Band>
 
       {/* 最後の申し込み */}
-      <Band className="bg-gradient-to-r from-[#3b82f6] via-[#5b6cf0] to-[#8b5cf6]">
+      <Band className="bg-[#13284f]">
         <div className="text-center text-white">
           <h2 className="text-[1.625rem] font-bold leading-snug sm:text-[2.25rem]">まずは、今の状態を知るところから。</h2>
           <p className="mt-4 text-blue-50">自社のURLを送ると、3営業日以内に診断結果が届きます。</p>
-          <Link href="/ai/apply" className="mt-8 inline-flex min-h-14 w-full max-w-sm items-center justify-center rounded-full bg-[#ffcc4d] px-8 text-lg font-bold text-slate-900 shadow-sm hover:bg-[#ffc229] sm:w-auto">
-            無料でチェックしてみる
+          <Link href="/ai/apply" className="mt-8 inline-flex min-h-14 w-full max-w-sm items-center justify-center rounded-lg bg-white px-8 text-lg font-bold text-[#13284f] shadow-sm hover:bg-blue-50 sm:w-auto">
+            無料で診断を依頼する
           </Link>
         </div>
       </Band>
