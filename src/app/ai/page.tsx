@@ -54,8 +54,8 @@ export default function AiLandingPage() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <p className="inline-flex rounded-md bg-brand/10 px-3 py-1 text-sm font-bold text-brand">Webサービス向け AI検索対策</p>
-            <h1 className="mt-4 text-[2.25rem] font-bold leading-[1.3] tracking-tight text-slate-900 sm:text-[3.25rem]">
-              AIで比較されるとき、
+            <h1 className="mt-4 text-[1.875rem] font-bold leading-[1.3] tracking-tight text-slate-900 sm:text-[3.25rem]">
+              AIで比べるとき、
               <br />
               <span className="text-brand">選択肢に入る</span>
               <br />
