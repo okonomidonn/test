@@ -24,7 +24,7 @@ export default function PricingPage() {
           <details className="group py-1"><summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-lg font-semibold text-slate-900">この価格でできる理由は？<span aria-hidden className="text-brand group-open:hidden">＋</span><span aria-hidden className="hidden text-brand group-open:inline">−</span></summary><dl className="space-y-5 pb-6">{WHY_AFFORDABLE.map(([title, body]) => <div key={title}><dt className="font-bold text-slate-900">{title}</dt><dd className="mt-1 text-slate-700">{body}</dd></div>)}</dl></details>
         </div>
       </section>
-      <div className="max-w-3xl space-y-3 text-sm text-slate-600"><p>AIの回答は毎回変わります。計測結果は目安で、紹介や問い合わせの増加をお約束するものではありません。</p><p>支払方法・支払時期・解約条件は、正式なご依頼前に見積書・契約書でご案内します。</p><Link href="/ai/legal" className="inline-block py-2 font-semibold text-brand underline underline-offset-4">特定商取引法に基づく表記 →</Link></div>
+      <div className="max-w-3xl space-y-3 text-sm text-slate-600"><p>AIの回答は毎回変わります。計測結果は目安で、紹介や問い合わせの増加をお約束するものではありません。</p><p>お支払いは銀行振込（請求書払い・前払い）です。キャンセル・解約の条件は特定商取引法に基づく表記をご覧ください。</p><Link href="/ai/legal" className="inline-block py-2 font-semibold text-brand underline underline-offset-4">特定商取引法に基づく表記 →</Link></div>
     </div>
   );
 }
