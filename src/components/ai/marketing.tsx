@@ -37,7 +37,7 @@ export const MARKET = {
 export function MarketCompare() {
   const rows = [
     { label: "1回の診断", market: MARKET.diagnosisMedian, ours: 49800, oursLabel: "GEO診断・改善トライアル", unit: "", note: "診断に加えて、1ページの改善と30日後の再計測まで" },
-    { label: "月額の対策支援", market: MARKET.monthlyMedian, ours: 98000, oursLabel: "継続支援（〜）", unit: "／月", note: "毎月の計測と、ページの作成・書き換え（月4ページ〜）" },
+    { label: "月額の対策支援", market: MARKET.monthlyMedian, ours: 100000, oursLabel: "基本プラン", unit: "／月", note: "毎月の計測と、既存ページの改善（月2件）・AIからの流入レポートまで" },
   ];
   const yen = (n: number) => `${n.toLocaleString("ja-JP")}円`;
   return (
