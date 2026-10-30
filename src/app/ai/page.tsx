@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ServicePlans } from "@/components/ai/service-plans";
 import { HeroLeadForm } from "@/components/ai/hero-lead-form";
+import { Band, Cta, Head, em } from "@/components/ai/lp";
+import { VERTICALS } from "@/lib/ai-check/verticals";
 
 const COMPARE = [
   ["目的", "検索結果で上位に表示される", "AIの回答で紹介・引用される"],
@@ -42,39 +44,6 @@ const CYCLE = [
   ["分析", "競合との差と原因を明確に"],
   ["改善", "直すページと文章をご提案・実施"],
 ];
-
-// 画面いっぱいの帯（背景色をページ幅いっぱいに敷く）
-function Band({ className = "", children, id }: { className?: string; children: React.ReactNode; id?: string }) {
-  return (
-    <section id={id} className={`ml-[calc(50%-50vw)] w-screen scroll-mt-16 ${className}`}>
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">{children}</div>
-    </section>
-  );
-}
-
-// 英字の小見出し＋中央寄せの見出し。強調したい語は青に
-function Head({ en, children, sub, light }: { en: string; children: React.ReactNode; sub?: string; light?: boolean }) {
-  return (
-    <div className="text-center">
-      <p className={`text-sm font-bold ${light ? "text-blue-100" : "text-brand"}`}>{en}</p>
-      <h2 className={`mt-3 text-[1.625rem] font-bold leading-snug sm:text-[2.25rem] ${light ? "text-white" : "text-slate-900"}`}>{children}</h2>
-      {sub && <p className={`mx-auto mt-4 max-w-2xl leading-relaxed ${light ? "text-blue-50" : "text-slate-700"}`}>{sub}</p>}
-    </div>
-  );
-}
-
-const em = "text-brand";
-
-function Cta() {
-  return (
-    <div className="mt-10 text-center">
-      <Link href="/ai/apply" className="inline-flex min-h-14 w-full max-w-sm items-center justify-center rounded-lg bg-brand px-8 text-lg font-bold text-white shadow-sm transition hover:bg-brand-dark sm:w-auto">
-        無料で診断を依頼する
-      </Link>
-      <p className="mt-3 text-sm text-slate-600">3営業日以内に、結果をメールでお届けします。</p>
-    </div>
-  );
-}
 
 export default function AiLandingPage() {
   return (
@@ -313,6 +282,22 @@ export default function AiLandingPage() {
             </dl>
             <p className="mt-4 text-xs leading-relaxed text-slate-600">GA4、2026年9月24日〜10月21日の28日間（469人中68人、95件中49件）。キーイベントは「応募ページへ進む」などの操作数で、応募完了率ではありません。サイト1件の数字で、効果を保証するものではありません。</p>
           </div>
+        </div>
+      </Band>
+
+      {/* 業種別のご案内 */}
+      <Band className="bg-white">
+        <Head en="業種別のご案内">あなたの業種に合わせて診断します</Head>
+        <div className="mx-auto mt-8 grid max-w-3xl gap-4">
+          {VERTICALS.map((v) => (
+            <Link key={v.slug} href={`/ai/for/${v.slug}`} className="flex items-center justify-between gap-4 rounded-xl bg-[#f5f8fd] p-5 ring-1 ring-slate-200 hover:ring-brand">
+              <span>
+                <span className="block text-lg font-bold text-slate-900">{v.name}のAI検索対策</span>
+                <span className="mt-1 block text-sm text-slate-600">{v.customer}がAIに聞く質問と、{v.name}ならではのチェック項目</span>
+              </span>
+              <span aria-hidden className="text-xl text-brand">→</span>
+            </Link>
+          ))}
         </div>
       </Band>
 

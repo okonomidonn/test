@@ -120,6 +120,9 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
             <Link href="/ai/pricing" className="block text-slate-600 hover:text-slate-900">
               料金
             </Link>
+            <Link href="/ai/for/jobs" className="block text-slate-600 hover:text-slate-900">
+              求人サイトのAI検索対策
+            </Link>
           </nav>
           <nav aria-label="運営" className="space-y-2 text-sm">
             <p className="font-semibold text-slate-900">運営</p>

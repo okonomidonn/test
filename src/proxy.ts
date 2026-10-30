@@ -21,7 +21,7 @@ export default auth((req) => {
   }
 
   if (!user) {
-    if (TEAM_PUBLIC.includes(pathname) || AI_PUBLIC.includes(pathname)) return;
+    if (TEAM_PUBLIC.includes(pathname) || AI_PUBLIC.includes(pathname) || pathname.startsWith("/ai/for/")) return;
     const url = new URL(isAi ? "/ai/login" : "/login", req.nextUrl);
     url.searchParams.set("callbackUrl", pathname + req.nextUrl.search);
     return NextResponse.redirect(url);
