@@ -303,6 +303,8 @@ if ( ! $zaito_cond ) :
       <?php endif; ?>
     <?php endforeach; ?>
   </ul>
+  <?php // スマホではページがとても長くなり、下の登録欄までたどり着く人が少ないため、最初は20件だけ見せる（JSが動かないときは全件）。 ?>
+  <div class="more" id="zmore" hidden><button type="button" class="btn btn-g btn-lg" id="zmorebtn">もっと見る（残り<span id="zmoren"></span>件）</button></div>
   <p class="none" id="znone" hidden>条件に合う求人がありません。<button type="button" id="znone-reset">条件をリセット</button></p>
 
   <?php if ( $zaito_closed ) : ?>
@@ -419,6 +421,8 @@ if ( ! $zaito_cond ) :
   var clearBtn = document.getElementById('zclear');
   var sortSel = document.getElementById('zsort');
   var st = { g: '', who: '', pay: 0, days: 0, newbie: 0, fav: 0 };
+  var LIMIT = 20, expanded = false;
+  var more = document.getElementById('zmore');
   function favs() { try { return JSON.parse(localStorage.getItem('zaito_favs') || '[]'); } catch (e) { return []; } }
   function match(d, s, saved) {
     return (!s.g || d.group === s.g)
@@ -450,6 +454,10 @@ if ( ! $zaito_cond ) :
       c.style.display = show ? '' : 'none';
       if (show) { n++; shown.push(c); }
     });
+    // 「もっと見る」を押すまでは、条件に合う求人のうち最初の20件だけ見せる。
+    shown.forEach(function (c, i) { if (!expanded && i >= LIMIT) c.style.display = 'none'; });
+    more.hidden = expanded || shown.length <= LIMIT;
+    document.getElementById('zmoren').textContent = Math.max(0, shown.length - LIMIT);
     // 登録の案内は、表示中の3件目のあとに置き直す（少ないときは最後）。
     var mini = document.getElementById('zmini');
     if (mini) {
@@ -486,6 +494,16 @@ if ( ! $zaito_cond ) :
   }
   groupBtns.forEach(function (b) {
     b.addEventListener('click', function () { st.g = b.getAttribute('data-filter'); apply(); });
+  });
+  document.getElementById('zmorebtn').addEventListener('click', function () {
+    var hiddenBefore = [];
+    list.querySelectorAll('.card').forEach(function (c) { if (c.style.display === 'none') hiddenBefore.push(c); });
+    expanded = true;
+    apply(false);
+    // 続きの最初の求人に移り、読み進めやすくする（キーボードで操作している人のために、そのカードのリンクを選ぶ）。
+    var next = hiddenBefore.filter(function (c) { return c.style.display !== 'none'; })[0];
+    if (next) { var a = next.querySelector('a'); if (a) a.focus({ preventScroll: true }); }
+    track('job_more', { shown: LIMIT });
   });
   chips.forEach(function (b) {
     b.addEventListener('click', function () {
