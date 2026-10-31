@@ -601,7 +601,8 @@ if ( ! $zaito_cond ) :
   if (member && mini) { mini.remove(); mini = null; }
   var closed = false;
   try { closed = sessionStorage.getItem('zaito_bar_x') === '1'; } catch (x) {}
-  if (bar && fromAd && !member && !closed) {
+  // 画面下の登録ボタンは、未登録の人全員に出す（スマホでは登録欄がページのかなり下にあり、たどり着く人が少ないため）。
+  if (bar && !member && !closed) {
     var band = document.getElementById('signup');
     var inView = false;
     var sync = function () { bar.hidden = inView || window.scrollY < 300; document.body.classList.toggle('has-sbar', !bar.hidden); };

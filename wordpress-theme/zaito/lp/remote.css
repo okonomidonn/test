@@ -590,6 +590,9 @@ body.has-sbar{padding-bottom:96px}
 .guide .g-steps b{display:block;font-size:16px;line-height:1.75;color:var(--z-navy)}
 .guide .g-steps p{margin:4px 0 0;font-size:14.5px;line-height:1.85}
 
+/* 記事のあとの登録の案内（lp/guide.php） */
+.guide .g-signup{margin:56px 0 0}
+
 /* 求人一覧への案内 */
 .guide .g-cta{margin:64px 0 0;padding:clamp(28px,5vw,40px);border-radius:20px;background:var(--z-navy);color:#fff}
 .guide .g-cta-t{margin:0;font-size:clamp(19px,2.6vw,23px);font-weight:900;line-height:1.5;color:#fff}

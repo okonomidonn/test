@@ -56,6 +56,12 @@ if ( $zaito_g ) {
   </p>
   <?php include __DIR__ . '/guides/' . $zaito_guide_slug . '.php'; ?>
 
+  <?php // 記事から来た人（ChatGPTや検索から記事に着地する人が多い）にも、登録の入口を見せる。登録欄はトップページの下にある。 ?>
+  <div class="mini-cta g-signup">
+    <div class="mc-copy"><span class="ms" aria-hidden="true">mark_email_unread</span><p><b>新しい完全在宅の求人を、<br>メールで受け取る</b>登録は無料、メールアドレスだけ。希望に合う新着だけをお知らせします。</p></div>
+    <a class="btn btn-p" href="<?php echo esc_url( home_url( '/#signup' ) ); ?>" data-track="guide_cta">無料で登録する</a>
+  </div>
+
   <?php
   $zaito_others = array_diff_key( $zaito_guides, array( $zaito_guide_slug => 1 ) );
   if ( $zaito_others ) :
@@ -78,6 +84,32 @@ if ( $zaito_g ) {
   </ul>
 <?php endif; ?>
 </main>
+<?php if ( $zaito_g ) : ?>
+<div class="sbar" id="zbar" hidden>
+  <p><b>新着の在宅求人をメールで</b>登録無料・メールアドレスだけ</p>
+  <a class="btn btn-p" href="<?php echo esc_url( home_url( '/#signup' ) ); ?>" data-track="guide_bar">登録する</a>
+  <button type="button" class="sbar-x" id="zbarx" aria-label="閉じる"><span class="ms" aria-hidden="true">close</span></button>
+</div>
+<script>
+(function () {
+  // 未登録の人が記事を少し読み進めたら、画面下に登録ボタンを出す（閉じたら、このタブでは出さない）。
+  var bar = document.getElementById('zbar');
+  if (/(?:^|;\s*)zaito_m=1/.test(document.cookie)) return;
+  try { if (sessionStorage.getItem('zaito_bar_x') === '1') return; } catch (x) {}
+  var sync = function () { bar.hidden = window.scrollY < 600; document.body.classList.toggle('has-sbar', !bar.hidden); };
+  window.addEventListener('scroll', sync, { passive: true });
+  sync();
+  document.getElementById('zbarx').addEventListener('click', function () {
+    window.removeEventListener('scroll', sync);
+    bar.hidden = true; document.body.classList.remove('has-sbar');
+    try { sessionStorage.setItem('zaito_bar_x', '1'); } catch (x) {}
+  });
+  document.querySelectorAll('[data-track]').forEach(function (a) {
+    a.addEventListener('click', function () { if (window.gtag) gtag('event', 'signup_cta_click', { from: a.getAttribute('data-track') }); });
+  });
+})();
+</script>
+<?php endif; ?>
 <?php zaito_remote_footer(); ?>
 </body>
 </html>
