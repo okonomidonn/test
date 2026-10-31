@@ -61,3 +61,22 @@ jobs:
             -e "ssh -p ${{ secrets.XSERVER_PORT }}" \
             wordpress-theme/zaito/ \
             ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:zaito-work.com/public_html/wp-content/themes/zaito/
+
+      # 反映したページを IndexNow で Bing などに知らせる（ChatGPT の検索は Bing の結果を土台にしているため）。
+      # キーは公開してよい値で、テーマの inc/indexnow.php にある。失敗しても反映そのものは成功のままにする。
+      - name: Notify search engines via IndexNow
+        continue-on-error: true
+        run: |
+          KEY=$(grep -o "ZAITO_INDEXNOW_KEY', '[0-9a-f]*" wordpress-theme/zaito/inc/indexnow.php | grep -o '[0-9a-f]*$')
+          SITE=https://zaito-work.com
+          # 確認用ファイルが本番で返るまで少し待つ。
+          for i in 1 2 3 4 5 6; do
+            [ "$(curl -s "$SITE/$KEY.txt")" = "$KEY" ] && break
+            sleep 10
+          done
+          URLS=$(curl -s "$SITE/wp-sitemap.xml" | grep -o '<loc>[^<]*' | sed 's/<loc>//' | while read -r sm; do curl -s "$sm" | grep -o '<loc>[^<]*' | sed 's/<loc>//'; done)
+          COUNT=$(printf '%s\n' "$URLS" | grep -c '^https://')
+          echo "Submitting $COUNT URLs"
+          printf '%s\n' "$URLS" | python3 -c "import json,sys; urls=[u.strip() for u in sys.stdin if u.strip().startswith('https://')]; print(json.dumps({'host':'zaito-work.com','key':sys.argv[1],'keyLocation':'https://zaito-work.com/'+sys.argv[1]+'.txt','urlList':urls}))" "$KEY" > indexnow.json
+          curl -s -o /dev/null -w "IndexNow HTTP %{http_code}\n" -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' --data @indexnow.json

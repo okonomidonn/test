@@ -1896,3 +1896,6 @@ require_once get_template_directory() . '/inc/direct.php';
 
 // 学生のGoogle・LINEでのログインと登録。
 require_once get_template_directory() . '/inc/social-login.php';
+
+// IndexNow（更新を Bing などにすぐ知らせる）の確認用ファイル。
+require_once get_template_directory() . '/inc/indexnow.php';
