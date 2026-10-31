@@ -1994,13 +1994,23 @@ function zaito_remote_go( $job ) {
     if ( empty( $job['closed'] ) ) {
         zaito_remote_record_click( $job['slug'], $member );
     }
-    // 直接掲載の求人は、zaitoの中の応募フォームへ。
+    // 直接掲載の求人は、zaitoの中の応募フォームへ。それ以外の転送先は zaito_remote_jobs() に運営が書いたURLだけ（利用者の入力は使わない）。
+    $dest = ! empty( $job['direct'] ) ? $job['url'] : esc_url_raw( zaito_remote_out_url( $job ) );
+    // Google・LINEで登録した直後にここへ来た人は、計測のタグがあるページを通らないので、
+    // 登録（sign_up）を送ってから移る短いページを返す（inc/prelaunch.php の zaito_social_joined_snippet）。
+    if ( ! empty( $_COOKIE['zaito_joined'] ) ) {
+        status_header( 200 );
+        echo '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="robots" content="noindex">'
+            . '<meta http-equiv="refresh" content="2;url=' . esc_url( $dest ) . '">' . zaito_ga4_snippet() . '<title>移動しています | zaito</title></head>'
+            . '<body><p style="font-family:sans-serif;margin:40px;text-align:center">移動しています…</p>'
+            . '<script>setTimeout(function(){location.replace(' . wp_json_encode( $dest ) . ');},700);</script></body></html>';
+        exit;
+    }
     if ( ! empty( $job['direct'] ) ) {
-        wp_safe_redirect( $job['url'], 302 );
+        wp_safe_redirect( $dest, 302 );
         return;
     }
-    // 転送先は zaito_remote_jobs() に運営が書いたURLだけ（利用者の入力は使わない）。
-    wp_redirect( esc_url_raw( zaito_remote_out_url( $job ) ), 302 );
+    wp_redirect( $dest, 302 );
 }
 
 /**

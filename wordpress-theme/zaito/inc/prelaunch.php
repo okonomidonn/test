@@ -153,9 +153,19 @@ function zaito_meta_pixel_snippet() {
         . '<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=' . esc_attr( $id ) . '&amp;ev=PageView&amp;noscript=1"></noscript>';
 }
 
+/**
+ * Google・LINEで新しく登録した人は、サーバーで登録したあとそのままページを移動するため、ページのJSが sign_up を送る機会がない。
+ * 登録のときに残した目印のCookie（zaito_joined、inc/social-login.php）を移動先のページで読み、GA と Meta に1回だけ送って消す。
+ */
+function zaito_social_joined_snippet() {
+    return '<script>(function(){var m=document.cookie.match(/(?:^|;\\s*)zaito_joined=(google|line)/);if(!m)return;'
+        . 'document.cookie="zaito_joined=; path=/; max-age=0; SameSite=Lax";'
+        . 'if(typeof window.gtag==="function")gtag("event","sign_up",{method:m[1]});if(window.zaitoFb)window.zaitoFb("sign_up");})();</script>';
+}
+
 function zaito_ga4_snippet() {
     $id    = zaito_ga4_id();
-    $extra = zaito_meta_pixel_snippet();
+    $extra = zaito_meta_pixel_snippet() . zaito_social_joined_snippet();
     if ( ! $id ) {
         return zaito_gsc_meta() . $extra;
     }

@@ -111,6 +111,16 @@ function zaito_social_sign_in( $email, $name, $source ) {
         update_post_meta( $id, 'name', mb_substr( $name, 0, 40 ) );
     }
     update_post_meta( $id, 'login_' . $source, current_time( 'Y-m-d H:i' ) );
+    if ( $created ) {
+        // 新しく登録した人だけ、移動先のページで GA の sign_up と Meta の CompleteRegistration を1回送る（inc/prelaunch.php の zaito_social_joined_snippet）。
+        setcookie( 'zaito_joined', $source, array(
+            'expires'  => time() + 10 * MINUTE_IN_SECONDS,
+            'path'     => '/',
+            'secure'   => is_ssl(),
+            'httponly' => false,
+            'samesite' => 'Lax',
+        ) );
+    }
     zaito_remote_set_member_cookie( $id );
     zaito_my_set_cookie( $id );
     do_action( 'zaito_remote_registered', $id, $created );
