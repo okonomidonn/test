@@ -1,0 +1,90 @@
+name: Configure Stats Token on Server
+
+# Manual-only: this writes to wp-config.php on the live server, so it must
+# never run automatically on push. Run it once from the Actions tab after the
+# ZAITO_STATS_TOKEN secret is set. The token unlocks the read-only stats API
+# (admin-ajax.php?action=zaito_stats, inc/stats-api.php), which returns counts only.
+# To change the token later, update the secret and run this again with "replace".
+on:
+  workflow_dispatch:
+    inputs:
+      replace:
+        description: "Replace an existing ZAITO_STATS_TOKEN in wp-config.php"
+        type: boolean
+        default: false
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Add stats token to wp-config.php (with backup + rollback)
+        env:
+          STATS_TOKEN: ${{ secrets.ZAITO_STATS_TOKEN }}
+        run: |
+          if [ "${#STATS_TOKEN}" -lt 32 ]; then
+            echo "ERROR: ZAITO_STATS_TOKEN secret is missing or shorter than 32 characters." >&2
+            exit 1
+          fi
+          TOKEN_Q=$(printf '%q' "$STATS_TOKEN")
+          REPLACE_Q=$(printf '%q' "${{ inputs.replace }}")
+
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            "TOKEN=$TOKEN_Q REPLACE=$REPLACE_Q bash -s" <<'REMOTE_SCRIPT'
+          set -euo pipefail
+          CONFIG="zaito-work.com/public_html/wp-config.php"
+
+          if [ ! -f "$CONFIG" ]; then
+            echo "ERROR: $CONFIG not found." >&2
+            exit 1
+          fi
+
+          if grep -q "ZAITO_STATS_TOKEN" "$CONFIG" && [ "$REPLACE" != "true" ]; then
+            echo "Already configured (ZAITO_STATS_TOKEN found). Skipping, no changes made. Run with replace=true to change it."
+            exit 0
+          fi
+
+          BACKUP="${CONFIG}.bak-$(date +%Y%m%d%H%M%S)"
+          cp "$CONFIG" "$BACKUP"
+
+          php -r '
+            $file    = $argv[1];
+            $token   = $argv[2];
+            $content = file_get_contents( $file );
+            // 前の合言葉の行があれば消してから、新しい行を入れる。
+            $content = preg_replace( "/^define\\( *.ZAITO_STATS_TOKEN.*\\n/m", "", $content );
+            $line    = "define( '"'"'ZAITO_STATS_TOKEN'"'"', " . var_export( $token, true ) . " );\n";
+            $marker  = "/* That'"'"'s all, stop editing! Happy publishing. */";
+            if ( strpos( $content, $marker ) !== false ) {
+                $content = str_replace( $marker, $line . $marker, $content );
+            } else {
+                $content .= "\n" . $line;
+            }
+            file_put_contents( $file, $content );
+          ' -- "$CONFIG" "$TOKEN"
+
+          if php -l "$CONFIG" > /tmp/wp_config_lint.out 2>&1; then
+            echo "wp-config.php updated successfully. Syntax check passed."
+            rm -f "$BACKUP"
+          else
+            echo "Syntax check FAILED. Rolling back to backup." >&2
+            cat /tmp/wp_config_lint.out >&2
+            cp "$BACKUP" "$CONFIG"
+            rm -f "$BACKUP"
+            exit 1
+          fi
+          REMOTE_SCRIPT
