@@ -81,6 +81,33 @@ function zaito_remote_has_tag( $job, $tag ) {
 }
 
 /**
+ * 大学生にとっての応募しやすさ（小さいほど応募しやすい）。トップページの並び順に使う。
+ * 0: 学生OKで、経験がなくても始められる / 1: 学生OKだが、経験やスキルが必要 / 2: 学生とは書いていないが、未経験から始められる /
+ * 3: 社会人・経験者向け。平日の日中に週4〜5日働く求人は、授業がある学生には難しいので2つ下げる。
+ */
+function zaito_remote_student_rank( $j ) {
+    $target  = (string) $j['target'];
+    $student = (bool) preg_match( '/学生|大学|全学年|学年不問/u', $target );
+    $skill   = (bool) preg_match( '/経験がある|経験があり|経験が必要|経験のある|実務|開発でき|できる方（|資格|ポートフォリオ/u', $target )
+        && ! preg_match( '/未経験|経験不問|経験は不問|経験は問わない/u', $target );
+    $newbie  = zaito_remote_has_tag( $j, 'mikeiken' ) || preg_match( '/未経験|経験不問|経験は不問|経験は問わない/u', $target );
+    $adult   = (bool) preg_match( '/社会人経験|社会人（|社会人・主婦|フリーランス/u', $target );
+    if ( $student && ! $skill && ! $adult ) {
+        $rank = 0;
+    } elseif ( $student && ! $adult ) {
+        $rank = 1;
+    } elseif ( $newbie && ! $skill && ! $adult ) {
+        $rank = 2;
+    } else {
+        $rank = 3;
+    }
+    if ( preg_match( '/週5日|週4〜5日|週4日以上|フルタイム|9〜18時|9〜19時のうち週4|実働8時間/u', (string) $j['hours'] ) ) {
+        $rank = min( 3, $rank + 2 );
+    }
+    return $rank;
+}
+
+/**
  * 報酬の文字から時給の下限を読む（「時給1,300〜3,000円」なら1300）。時給でなければ0。
  */
 function zaito_remote_hourly_min( $pay ) {

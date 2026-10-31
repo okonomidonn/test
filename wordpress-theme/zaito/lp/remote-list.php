@@ -19,8 +19,10 @@ $zaito_closed = array_values( array_filter( $zaito_jobs, function ( $j ) {
 } ) );
 
 // 条件の書き添えがない求人、報酬が書かれている求人を先に並べる（同じ条件の中では元の順番）。
-$zaito_rank = function ( $j ) {
-    return ( empty( $j['caution'] ) ? 0 : 2 ) + ( '' !== $j['pay'] ? 0 : 1 );
+// トップページでは、その前に大学生が応募しやすい順に並べる（社会人・経験者向けの求人は消さずに下へ）。
+$zaito_rank = function ( $j ) use ( $zaito_cond ) {
+    return ( $zaito_cond ? 0 : zaito_remote_student_rank( $j ) * 10 )
+        + ( empty( $j['caution'] ) ? 0 : 2 ) + ( '' !== $j['pay'] ? 0 : 1 );
 };
 foreach ( $zaito_open as $zaito_i => $zaito_j ) {
     $zaito_open[ $zaito_i ]['_order'] = $zaito_i;
@@ -30,11 +32,11 @@ usort( $zaito_open, function ( $a, $b ) use ( $zaito_rank ) {
     return $d ? $d : $a['_order'] - $b['_order'];
 } );
 
-// トップページでは、未経験OKで時給の高い求人を最初の3件に置く（エンジニア・営業などの「その他」と、時給が書かれていない求人は除く。1社1件まで）。
+// トップページでは、学生OK・経験なしで始められて時給の高い求人を最初の3件に置く（エンジニア・営業などの「その他」と、時給が書かれていない求人は除く。1社1件まで）。
 if ( ! $zaito_cond ) {
     $zaito_cands = array_filter( $zaito_open, function ( $j ) {
         $g = zaito_remote_group( $j['category'] );
-        return false !== strpos( zaito_remote_card_attrs( $j ), 'data-newbie="1"' )
+        return 0 === zaito_remote_student_rank( $j )
             && zaito_remote_hourly_min( $j['pay'] ) > 0
             && ! in_array( $g[0], array( 'エンジニア', 'その他' ), true );
     } );
