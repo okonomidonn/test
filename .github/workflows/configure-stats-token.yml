@@ -3,7 +3,7 @@ name: Configure Stats Token on Server
 # Manual-only: this writes to wp-config.php on the live server, so it must
 # never run automatically on push. Run it once from the Actions tab after the
 # ZAITO_STATS_TOKEN secret is set. The token unlocks the read-only stats API
-# (GET /wp-json/zaito/v1/stats, inc/stats-api.php), which returns counts only.
+# (admin-ajax.php?action=zaito_stats, inc/stats-api.php), which returns counts only.
 # To change the token later, update the secret and run this again with "replace".
 on:
   workflow_dispatch:

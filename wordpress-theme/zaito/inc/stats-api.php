@@ -1,6 +1,7 @@
 <?php
 /**
- * 運営用の集計API（GET /wp-json/zaito/v1/stats）。登録者数などの「数字だけ」を返す。
+ * 運営用の集計API（GET /wp-admin/admin-ajax.php?action=zaito_stats）。登録者数などの「数字だけ」を返す。
+ * XServer の国外IPアクセス制限で /wp-json/ は海外から開けないため、admin-ajax.php を使う。
  *
  * 名前・メールアドレス・学校名など、個人を特定できる情報は返さない（人数の集計だけ）。
  * 開けるのは、リクエストの X-Zaito-Token ヘッダーが wp-config.php の ZAITO_STATS_TOKEN と一致するときだけ。
@@ -14,28 +15,20 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-function zaito_stats_register_route() {
-    register_rest_route( 'zaito/v1', '/stats', array(
-        'methods'             => 'GET',
-        'callback'            => 'zaito_stats_response',
-        'permission_callback' => 'zaito_stats_permission',
-        'args'                => array(
-            'days' => array( 'default' => 30, 'sanitize_callback' => 'absint' ),
-        ),
-    ) );
-}
-add_action( 'rest_api_init', 'zaito_stats_register_route' );
-
-function zaito_stats_permission( WP_REST_Request $req ) {
+function zaito_stats_handle() {
+    nocache_headers();
     if ( ! defined( 'ZAITO_STATS_TOKEN' ) || strlen( (string) ZAITO_STATS_TOKEN ) < 32 ) {
-        return new WP_Error( 'zaito_stats_off', 'Not available', array( 'status' => 404 ) );
+        wp_send_json( array( 'code' => 'zaito_stats_off' ), 404 );
     }
-    $given = (string) $req->get_header( 'x-zaito-token' );
+    $given = isset( $_SERVER['HTTP_X_ZAITO_TOKEN'] ) ? (string) wp_unslash( $_SERVER['HTTP_X_ZAITO_TOKEN'] ) : '';
     if ( '' === $given || ! hash_equals( (string) ZAITO_STATS_TOKEN, $given ) ) {
-        return new WP_Error( 'zaito_stats_forbidden', 'Forbidden', array( 'status' => 403 ) );
+        wp_send_json( array( 'code' => 'zaito_stats_forbidden' ), 403 );
     }
-    return true;
+    $days = isset( $_GET['days'] ) ? absint( $_GET['days'] ) : 30;
+    wp_send_json( zaito_stats_data( $days ? $days : 30 ) );
 }
+add_action( 'wp_ajax_zaito_stats', 'zaito_stats_handle' );
+add_action( 'wp_ajax_nopriv_zaito_stats', 'zaito_stats_handle' );
 
 /** 登録（zaito_interest）のうち、あるメタがある件数。$value を渡すとその値だけ。 */
 function zaito_stats_meta_count( $key, $value = null ) {
@@ -68,10 +61,9 @@ function zaito_stats_meta_breakdown( $key, $limit = 15 ) {
     return $out;
 }
 
-function zaito_stats_response( WP_REST_Request $req ) {
+function zaito_stats_data( $days ) {
     global $wpdb;
-    nocache_headers();
-    $days = min( 180, max( 1, (int) $req->get_param( 'days' ) ) );
+    $days = min( 180, max( 1, (int) $days ) );
 
     $total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'zaito_interest' AND post_status <> 'trash'" );
 
@@ -118,7 +110,7 @@ function zaito_stats_response( WP_REST_Request $req ) {
         $apps[ $r->v ? $r->v : 'new' ] = (int) $r->n;
     }
 
-    return rest_ensure_response( array(
+    return array(
         'generated_at' => wp_date( 'c' ),
         'registrations' => array(
             'total'          => $total,
@@ -139,7 +131,7 @@ function zaito_stats_response( WP_REST_Request $req ) {
             'applications' => $apps,
             'offers'       => zaito_stats_post_meta_count( 'zaito_application', 'offer_at' ),
         ),
-    ) );
+    );
 }
 
 /** 投稿タイプ $type のうち、メタ $key が入っている件数。 */
