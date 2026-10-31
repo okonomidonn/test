@@ -67,6 +67,8 @@ function zaito_remote_job_tags() {
         'replus-ai-automation-intern'  => array( 'tanjikan' ),
         'andgo-software-engineer-intern' => array( 'tanjikan' ),
         'mediafirst-backoffice'    => array( 'mikeiken' ),
+        'writeup-ai-support-intern' => array( 'mikeiken', 'tanjikan' ),
+        'mentel-data-intern'       => array( 'mikeiken' ),
         'stocksun-hr-marketing-intern' => array( 'tanjikan' ),
     );
 }
