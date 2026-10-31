@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ga4": {
+      "type": "stdio",
+      "command": "sh",
+      "args": ["ops/ga-mcp.sh"]
+    }
+  }
+}
