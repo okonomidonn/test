@@ -20,9 +20,14 @@ $zaito_closed = array_values( array_filter( $zaito_jobs, function ( $j ) {
 
 // 条件の書き添えがない求人、報酬が書かれている求人を先に並べる（同じ条件の中では元の順番）。
 // トップページでは、その前に大学生が応募しやすい順に並べる（社会人・経験者向けの求人は消さずに下へ）。
+// 報酬が書かれていない求人（Wantedlyに多い）は、学生向けでも、報酬が書かれた学生向け・未経験OKの求人のあと（社会人向けの前）に回す。
 $zaito_rank = function ( $j ) use ( $zaito_cond ) {
-    return ( $zaito_cond ? 0 : zaito_remote_student_rank( $j ) * 10 )
-        + ( empty( $j['caution'] ) ? 0 : 2 ) + ( '' !== $j['pay'] ? 0 : 1 );
+    $unpaid = '' === $j['pay'] || false !== strpos( $j['pay'], '募集ページで確認' );
+    if ( $zaito_cond ) {
+        return ( empty( $j['caution'] ) ? 0 : 2 ) + ( $unpaid ? 1 : 0 );
+    }
+    $tier = zaito_remote_student_rank( $j );
+    return ( $tier < 3 && $unpaid ? 25 : $tier * 10 ) + ( empty( $j['caution'] ) ? 0 : 2 ) + ( $unpaid ? 1 : 0 );
 };
 foreach ( $zaito_open as $zaito_i => $zaito_j ) {
     $zaito_open[ $zaito_i ]['_order'] = $zaito_i;
