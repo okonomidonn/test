@@ -8,6 +8,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -34,19 +35,28 @@ def jobs():
         yield slug.group(1), url.group(1)
 
 
+def fetch(url):
+    out = subprocess.run(
+        ['curl', '-sL', '--max-time', '25', '-A', 'Mozilla/5.0 (zaito job check)', '-w', '\n%{http_code} %{url_effective}', url],
+        capture_output=True, timeout=40,
+    ).stdout.decode('utf-8', 'replace')
+    body, _, tail = out.rpartition('\n')
+    code, _, final = tail.partition(' ')
+    return body, code, final
+
+
 def check(item):
     slug, url = item
     try:
-        out = subprocess.run(
-            ['curl', '-sL', '--max-time', '25', '-A', 'Mozilla/5.0 (zaito job check)', '-w', '\n%{http_code} %{url_effective}', url],
-            capture_output=True, timeout=40,
-        ).stdout.decode('utf-8', 'replace')
+        body, code, final = fetch(url)
+        # ハープキャリアは、公開中の求人にもときどき一時的に404を返す。少し待って取り直し、2回とも404なら終了とみなす。
+        if code in ('404', '410'):
+            time.sleep(5)
+            body, code, final = fetch(url)
     except subprocess.TimeoutExpired:
         return slug, url, 'error', 'timeout'
-    body, _, tail = out.rpartition('\n')
-    code, _, final = tail.partition(' ')
     if code in ('404', '410'):
-        return slug, url, 'closed', 'HTTP ' + code
+        return slug, url, 'closed', 'HTTP ' + code + '（2回とも）'
     # ハープキャリアは、非公開になった求人を403で返し、本文に「現在非公開」と出す。
     if code == '403' and 'この求人は現在非公開' in body:
         return slug, url, 'closed', '「この求人は現在非公開」（HTTP 403）'
