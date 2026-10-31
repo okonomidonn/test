@@ -13,10 +13,10 @@ $zaito_jobs  = array_filter( zaito_remote_jobs(), function ( $j ) {
 } );
 $zaito_url   = home_url( '/for-companies/' );
 $zaito_title = '企業の方へ｜完全在宅の求人を無料で掲載 | zaito';
-$zaito_desc  = '出社なしの仕事だけを集めた求人サイト「zaito」。在宅で働く人の募集を、無料で掲載できます。費用は、zaitoからの応募者に内定を出したときの成果報酬だけです。';
+$zaito_desc  = '出社なしの仕事だけを集めた求人サイト「zaito」。在宅で働く人の募集を、無料で掲載できます。初期費用・掲載料・オプション料金は一切いただかず、お支払いいただくのはzaitoからの応募者に内定を出したときの成果報酬のみです。';
 
 $zaito_faqs = array(
-    array( '費用はかかりますか？', '掲載と応募の受け付けは無料です。zaitoから応募した方に内定を出した時点で、成果報酬をいただきます。金額は求人の公開前にご案内し、ご同意いただかないまま請求することはありません。' ),
+    array( '費用はかかりますか？', '初期費用・掲載料・オプション料金は、一切いただきません。zaitoから応募した方に内定を出した時点で、成果報酬をいただきます。金額は求人の公開前にご案内し、ご同意いただかないまま請求することはありません。' ),
     array( '求人原稿がなくても大丈夫ですか？', '大丈夫です。募集内容をお伺いし、zaito運営が原稿を作成します。掲載前に内容をご確認いただきます。' ),
     array( 'どんな求人を掲載できますか？', '出社なしで、自宅だけで働ける求人です。学生・社会人・主婦の方など、対象は問いません。研修期間だけ出社がある場合などは、条件として明記したうえで掲載します。' ),
     array( '応募はどこで受け付けますか？', 'zaitoの中で受け付けます。企業アカウントの画面で応募者を確認し、zaitoのメッセージでやりとりできます。面接はZoomなどのオンラインで行ってください。' ),
@@ -40,7 +40,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
       <div class="hero-copy">
         <span class="eb">FOR COMPANIES</span>
         <h1>在宅で働く人を、<br>掲載無料で募集できます。</h1>
-        <p>zaitoは、出社なしの仕事だけを集めた求人サイトです。在宅で働きたい人だけが見に来るので、「フルリモートのはずが出社の話でずれる」ことがありません。費用は、内定を出したときの成果報酬だけです。</p>
+        <p>zaitoは、出社なしの仕事だけを集めた求人サイトです。在宅で働きたい人だけが見に来るので、「フルリモートのはずが出社の話でずれる」ことがありません。初期費用・掲載料・オプション料金は一切いただかず、お支払いいただくのは内定を出したときの成果報酬のみです。</p>
         <div class="cta-row">
           <a class="btn btn-p btn-lg" href="<?php echo esc_url( home_url( '/company-register/' ) ); ?>">無料で企業アカウントを作る<span class="ms" aria-hidden="true">arrow_forward</span></a>
           <a class="btn btn-g btn-lg" href="#contact">まずは相談する</a>
@@ -49,7 +49,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
       </div>
       <dl class="stats">
         <div><dt>掲載中の求人</dt><dd><b><?php echo esc_html( count( $zaito_jobs ) ); ?></b>件</dd></div>
-        <div><dt>掲載費</dt><dd><b>無料</b></dd></div>
+        <div><dt>初期費用・掲載料</dt><dd><b>0</b>円</dd></div>
         <div><dt>費用</dt><dd><b>内定時</b>のみ</dd></div>
       </dl>
     </div>

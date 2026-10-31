@@ -44,7 +44,7 @@ zaito_biz_head( '企業ログイン' );
     <a class="forgot" href="<?php echo esc_url( home_url( '/forgot-password/' ) ); ?>">パスワードをお忘れの方</a>
 
     <div class="first">
-      <p><b style="color:var(--z-navy)">はじめてご利用の企業様</b><br>掲載は無料です。<br>費用は、内定を出したときの成果報酬だけです。</p>
+      <p><b style="color:var(--z-navy)">はじめてご利用の企業様</b><br>初期費用・掲載料・オプション料金は一切いただきません。<br>お支払いは、内定を出したときの成果報酬のみです。</p>
       <a class="btn btn-g btn-lg" href="<?php echo esc_url( home_url( '/company-register/' ) ); ?>">企業アカウントを作成する</a>
     </div>
 </main>
