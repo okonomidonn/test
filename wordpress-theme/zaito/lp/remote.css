@@ -1,7 +1,7 @@
 /* まとめ求人（/remote/）の一覧・詳細ページ。色はtokens.cssの変数を使う。 */
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-padding-top:84px}
-body{margin:0;background:#fff;color:var(--z-navy);font-family:'Noto Sans JP',system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:'palt';line-height:1.75}
+body{margin:0;background:#fff;color:var(--z-navy);font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Noto Sans CJK JP','Yu Gothic UI','Yu Gothic',Meiryo,system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:'palt';line-height:1.75}
 a{color:var(--z-blue);text-decoration:none}
 a:focus-visible,.btn:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--z-blue);outline-offset:3px;border-radius:10px}
 .ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;white-space:nowrap;font-feature-settings:'liga';display:inline-block}
@@ -718,7 +718,7 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.sw-hint,.reco-hint .ms,.reco-modal,.reco-modal-in{animation:none}}
 
 /* 選んでいる間の仮のカード */
-.reco-skel{display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:20px;background:#fff;border:1px solid var(--z-border);min-height:300px}
+.reco-skel{display:flex;flex-direction:column;gap:12px;padding:22px;border-radius:20px;background:#fff;border:1px solid var(--z-border);min-height:365px;box-sizing:border-box}
 .reco-skel span{display:block;height:16px;border-radius:8px;background:linear-gradient(90deg,var(--z-chip) 25%,#fff 50%,var(--z-chip) 75%);background-size:200% 100%;animation:reco-shine 1.2s linear infinite}
 .reco-skel span:nth-child(1){width:40%}.reco-skel span:nth-child(2){width:85%;height:22px}.reco-skel span:nth-child(3){width:60%}
 @keyframes reco-shine{to{background-position:-200% 0}}

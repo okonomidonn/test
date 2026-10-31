@@ -266,9 +266,12 @@ if ( ! function_exists( 'zaito_remote_head' ) ) {
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&amp;family=Outfit:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&amp;display=swap" rel="stylesheet">
 <?php // アイコンは使うものだけを読み込む（全部だと約540KB、使う分だけで約8KB）。新しいアイコンを使うときは、ここに名前を足す（アルファベット順）。 ?>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&amp;icon_names=add,apps,arrow_back,arrow_forward,auto_awesome,block,bookmark,business,call,campaign,chat,check_circle,close,code,description,edit_document,edit_note,emoji_people,fact_check,favorite,forum,group,home,home_work,inbox,info,insights,ios_share,lightbulb,link,logout,mail,mark_email_read,mark_email_unread,notifications,open_in_new,palette,payments,pending,person,schedule,school,search,send,support_agent,swap_vert,swipe,task_alt,timelapse,verified,visibility_off,warning,work,work_history&amp;display=block" rel="stylesheet">
+<?php // アイコンの文字が読み込まれるまでは、アイコンの名前（英字）が太字で出ないように隠しておく。 ?>
+<style>html:not(.ms-ok) .ms{visibility:hidden}</style>
+<script>(function(){var d=document.documentElement;function ok(){d.classList.add('ms-ok');}if(document.fonts&&document.fonts.load){document.fonts.load('24px "Material Symbols Rounded"').then(ok,ok);}else{ok();}})();</script>
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'tokens.css' ) ); ?>">
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'remote.css' ) ); ?>">
 <?php if ( $json_ld ) : ?>

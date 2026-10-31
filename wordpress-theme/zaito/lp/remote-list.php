@@ -224,14 +224,16 @@ if ( ! $zaito_cond ) :
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
       </div>
       <?php if ( ! $zaito_cond ) : ?>
-        <section class="reco" id="zreco" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" aria-labelledby="zreco-t" hidden>
+        <?php // 読み込み中の形を最初から出しておき、おすすめが届いたときに下の一覧がずれないようにする（JSが動かないときは隠す）。 ?>
+        <noscript><style>#zreco{display:none}</style></noscript>
+        <section class="reco is-loading" id="zreco" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" aria-labelledby="zreco-t">
           <div class="reco-hd">
             <h2 id="zreco-t"><span class="ms" aria-hidden="true">auto_awesome</span>今日のおすすめ</h2>
             <span class="reco-n" aria-live="polite"></span>
           </div>
-          <p class="reco-sub"></p>
+          <p class="reco-sub">あなたに合う求人を選んでいます…</p>
           <div class="reco-deck">
-            <div class="sw-stack"></div>
+            <div class="sw-stack"><div class="reco-skel" aria-hidden="true"><span></span><span></span><span></span></div></div>
             <div class="reco-end" hidden></div>
             <div class="reco-gate" hidden role="dialog" aria-labelledby="zrecogt">
               <span class="ms reco-gate-i" aria-hidden="true">mark_email_unread</span>

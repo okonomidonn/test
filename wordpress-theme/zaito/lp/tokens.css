@@ -31,8 +31,9 @@
   --z-success: #1A9B6C;
 
   /* Typography */
-  --z-font: 'Noto Sans JP', system-ui, sans-serif;
-  --z-font-en: 'Outfit', 'Noto Sans JP', sans-serif; /* ロゴ・数字・英字の見出し */
+  /* 日本語は端末のフォントを使う（Webフォントの日本語は読み込みが重く、表示の途中で文字が太さや形を変えてずれるため） */
+  --z-font: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Noto Sans CJK JP', 'Yu Gothic UI', 'Yu Gothic', Meiryo, system-ui, sans-serif;
+  --z-font-en: 'Outfit', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Noto Sans CJK JP', 'Yu Gothic UI', 'Yu Gothic', Meiryo, system-ui, sans-serif; /* ロゴ・数字・英字の見出し */
   --z-lh-body: 1.75;
   --z-lh-heading: 1.3;
 
