@@ -1899,3 +1899,6 @@ require_once get_template_directory() . '/inc/social-login.php';
 
 // IndexNow（更新を Bing などにすぐ知らせる）の確認用ファイル。
 require_once get_template_directory() . '/inc/indexnow.php';
+
+// 運営用の集計API（登録者数などの数字だけを返す。合言葉がないと開けない）。
+require_once get_template_directory() . '/inc/stats-api.php';
