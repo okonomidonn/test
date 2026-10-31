@@ -346,7 +346,7 @@ if ( ! $zaito_cond ) :
         <input type="hidden" name="job" value="">
         <input type="hidden" name="utm_source" value=""><input type="hidden" name="utm_medium" value=""><input type="hidden" name="utm_campaign" value=""><input type="hidden" name="referrer" value="">
         <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-        <?php if ( zaito_social_buttons( '/?signup=done#signup', '登録' ) ) : ?><div class="or-line">または</div><?php endif; ?>
+        <?php if ( zaito_social_buttons( '/?signup=done', '登録' ) ) : ?><div class="or-line">または</div><?php endif; ?>
         <label for="ztopemail">メールアドレス</label>
         <div class="sb-row">
           <input type="email" id="ztopemail" name="email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
@@ -534,6 +534,24 @@ if ( ! $zaito_cond ) :
     showDone('登録済みです', '新しい在宅求人が入ったら、登録したメールアドレスにお知らせします。');
   }
   var q = new URLSearchParams(location.search);
+  // Google・LINEで登録して戻ってきたときは、ページの上のまま「登録できました」を画面下に出す（ページ下の登録欄へは移らない）。
+  if (q.get('signup') === 'done') {
+    try { history.replaceState(null, '', location.pathname + location.search.replace(/([?&])signup=done&?/, '$1').replace(/[?&]$/, '') + location.hash); } catch (x) {}
+    var toast = document.createElement('div');
+    toast.className = 'sbar';
+    toast.setAttribute('role', 'status');
+    toast.innerHTML = '<p><b>登録できました</b>新しい在宅求人をメールでお知らせします</p><button type="button" class="btn btn-p">希望の条件を教える</button><button type="button" class="sbar-x" aria-label="閉じる"><span class="ms" aria-hidden="true">close</span></button>';
+    document.body.appendChild(toast);
+    document.body.classList.add('has-sbar');
+    var closeToast = function () { toast.remove(); document.body.classList.remove('has-sbar'); };
+    toast.querySelector('.sbar-x').addEventListener('click', closeToast);
+    toast.querySelector('.btn').addEventListener('click', function () {
+      closeToast();
+      top.hidden = true; done.hidden = true; profile.hidden = false;
+      document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+      track('profile_open', { from: 'social' });
+    });
+  }
   ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (k) { top.elements[k].value = q.get(k) || ''; });
   top.elements.referrer.value = document.referrer || '';
   var mini = document.getElementById('zmini');

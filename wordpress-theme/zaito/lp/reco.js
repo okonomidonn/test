@@ -349,6 +349,6 @@
   // 希望条件を答え終わったら、おすすめを選び直す。
   if (profile) profile.addEventListener('submit', function () { setTimeout(load, 1200); });
   // 条件を付けたURL（共有されたリンクなど）や、ページの途中への移動で来た人には、正面には出さない。
-  if (firstToday && !location.hash && !/[?&](g|who|pay|days|newbie|fav)=/.test(location.search)) openModal();
+  if (firstToday && !location.hash && !/[?&](g|who|pay|days|newbie|fav|signup)=/.test(location.search)) openModal();
   load();
 })();
