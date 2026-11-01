@@ -86,7 +86,7 @@ def site(day):
     tok = os.environ.get("ZAITO_STATS_TOKEN", "")
     if not tok:
         return {"error": "ZAITO_STATS_TOKEN が環境変数にありません"}
-    d = http(STATS_URL, headers={"X-Zaito-Token": tok, "User-Agent": "zaito-daily-numbers"})
+    d = http(STATS_URL + "&day=" + day, headers={"X-Zaito-Token": tok, "User-Agent": "zaito-daily-numbers"})
     reg = d["registrations"]
     # 「その日の終わりの累計」= 今の累計 − その日より後の新規登録（削除された登録は数えない）。
     later = sum(n for k, n in reg["new_by_day"].items() if k > day)
@@ -98,6 +98,8 @@ def site(day):
         "via_google_now": reg["via_google"],
         "via_line_now": reg["via_line"],
         "approved_companies_now": d["direct"]["companies"].get("approved", 0),
+        # その日の登録を広告（utm_campaign / utm_content）ごとに数えたもの。広告以外は「（広告以外）」。
+        "new_by_ad": reg.get("day_by_ad", {}).get("counts", {}),
         "generated_at": d.get("generated_at"),
     }
 

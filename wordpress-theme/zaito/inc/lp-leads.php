@@ -29,16 +29,65 @@ function zaito_register_lead_post_types() {
 add_action( 'init', 'zaito_register_lead_post_types' );
 
 /**
- * 流入経路（UTMパラメータ・参照元）をPOSTから取り出す。
+ * 流入経路（UTMパラメータ・参照元）を取り出す。
  * CPAを経路ごとに計測できるよう、登録データと一緒に保存する。
+ * フォームのPOSTにあればそれを使い、なければ zaito_utm クッキー（広告などから来たときに覚えたもの）を使う。
+ * クッキーがあるので、別のページに移ってから登録した人や、Google・LINEで登録した人も、どの広告から来たか分かる。
  */
 function zaito_lp_tracking_fields() {
+    $cookie = zaito_utm_cookie();
     $fields = array();
-    foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'referrer' ) as $key ) {
-        $fields[ $key ] = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';
+    foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'referrer' ) as $key ) {
+        $value = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';
+        if ( '' === $value && 'referrer' !== $key && ! empty( $cookie[ $key ] ) ) {
+            $value = $cookie[ $key ];
+        }
+        $fields[ $key ] = $value;
     }
     return $fields;
 }
+
+/** zaito_utm クッキーの中身（utm_source などの配列）。ないときは空の配列。 */
+function zaito_utm_cookie() {
+    if ( empty( $_COOKIE['zaito_utm'] ) ) {
+        return array();
+    }
+    $data = json_decode( base64_decode( (string) wp_unslash( $_COOKIE['zaito_utm'] ) ), true );
+    if ( ! is_array( $data ) ) {
+        return array();
+    }
+    $out = array();
+    foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content' ) as $key ) {
+        $out[ $key ] = isset( $data[ $key ] ) ? substr( sanitize_text_field( (string) $data[ $key ] ), 0, 100 ) : '';
+    }
+    return $out;
+}
+
+/**
+ * URLに utm_source が付いて来たとき（広告のリンクなど）、その値を30日間クッキーに覚える。
+ * 新しい utm_source で来たら上書きする（最後に見た広告を数える）。中身は流入元の名前だけで、個人情報は入れない。
+ */
+function zaito_utm_remember() {
+    if ( is_admin() || wp_doing_ajax() || empty( $_GET['utm_source'] ) ) {
+        return;
+    }
+    $data = array();
+    foreach ( array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content' ) as $key ) {
+        $data[ $key ] = isset( $_GET[ $key ] ) ? substr( sanitize_text_field( wp_unslash( $_GET[ $key ] ) ), 0, 100 ) : '';
+    }
+    $value = base64_encode( wp_json_encode( $data ) );
+    $_COOKIE['zaito_utm'] = $value;
+    if ( ! headers_sent() ) {
+        setcookie( 'zaito_utm', $value, array(
+            'expires'  => time() + 30 * DAY_IN_SECONDS,
+            'path'     => '/',
+            'secure'   => is_ssl(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ) );
+    }
+}
+add_action( 'init', 'zaito_utm_remember' );
 
 /**
  * 同じIPから短時間に大量送信されるのを防ぐ（10分間に $max 回まで。ふだんは5回）。

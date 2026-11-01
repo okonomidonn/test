@@ -25,7 +25,13 @@ function zaito_stats_handle() {
         wp_send_json( array( 'code' => 'zaito_stats_forbidden' ), 403 );
     }
     $days = isset( $_GET['days'] ) ? absint( $_GET['days'] ) : 30;
-    wp_send_json( zaito_stats_data( $days ? $days : 30 ) );
+    $data = zaito_stats_data( $days ? $days : 30 );
+    // ?day=YYYY-MM-DD を付けると、その1日の登録を広告ごとに数えて足す（毎日の数字の記録用）。
+    $day = isset( $_GET['day'] ) ? sanitize_text_field( wp_unslash( $_GET['day'] ) ) : '';
+    if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $day ) ) {
+        $data['registrations']['day_by_ad'] = array( 'day' => $day, 'counts' => zaito_stats_recent_by_ad( $day, $day ) );
+    }
+    wp_send_json( $data );
 }
 add_action( 'wp_ajax_zaito_stats', 'zaito_stats_handle' );
 add_action( 'wp_ajax_nopriv_zaito_stats', 'zaito_stats_handle' );
@@ -123,6 +129,8 @@ function zaito_stats_data( $days ) {
             'by_role'        => zaito_stats_meta_breakdown( 'role' ),
             'by_grade'       => zaito_stats_meta_breakdown( 'grade' ),
             'by_utm_source'  => zaito_stats_meta_breakdown( 'utm_source' ),
+            'by_utm_campaign' => zaito_stats_meta_breakdown( 'utm_campaign' ),
+            'recent_by_ad'   => zaito_stats_recent_by_ad( $since ),
             'new_by_day'     => $by_day,
         ),
         'direct' => array(
@@ -132,6 +140,29 @@ function zaito_stats_data( $days ) {
             'offers'       => zaito_stats_post_meta_count( 'zaito_application', 'offer_at' ),
         ),
     );
+}
+
+/**
+ * $since 以降（$until を渡すとその日まで）の登録を、広告（utm_campaign と utm_content の組み合わせ）ごとに数える。
+ * 広告の検証用。キーは「campaign / content」、どちらも空なら「（広告以外）」。
+ */
+function zaito_stats_recent_by_ad( $since, $until = '' ) {
+    global $wpdb;
+    $rows = $wpdb->get_results( $wpdb->prepare(
+        "SELECT COALESCE(c.meta_value, '') AS camp, COALESCE(t.meta_value, '') AS cont, COUNT(*) AS n FROM {$wpdb->posts} p
+         LEFT JOIN {$wpdb->postmeta} c ON c.post_id = p.ID AND c.meta_key = 'utm_campaign'
+         LEFT JOIN {$wpdb->postmeta} t ON t.post_id = p.ID AND t.meta_key = 'utm_content'
+         WHERE p.post_type = 'zaito_interest' AND p.post_status <> 'trash' AND p.post_date >= %s AND p.post_date <= %s
+         GROUP BY camp, cont ORDER BY n DESC LIMIT 30",
+        $since . ' 00:00:00',
+        ( $until ? $until : '9999-12-31' ) . ' 23:59:59'
+    ) );
+    $out = array();
+    foreach ( $rows as $r ) {
+        $key         = ( '' === $r->camp && '' === $r->cont ) ? '（広告以外）' : $r->camp . ' / ' . $r->cont;
+        $out[ $key ] = (int) $r->n;
+    }
+    return $out;
 }
 
 /** 投稿タイプ $type のうち、メタ $key が入っている件数。 */
