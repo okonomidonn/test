@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>求人サイトのAI集客はじめてBOOK｜AIススメル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root { --ink: #0f172a; --sub: #475569; --line: #e2e8f0; --brand: #2563eb; --soft: #eff6ff; --navy: #13284f; --ng: #e11d48; }
+  * { box-sizing: border-box; }
+  body { margin: 0; color: var(--ink); font-family: "Noto Sans JP", sans-serif; font-size: 10.5pt; line-height: 1.7; }
+  .page { width: 210mm; height: 297mm; padding: 18mm 18mm 16mm; position: relative; page-break-after: always; overflow: hidden; }
+  .page:last-child { page-break-after: auto; }
+  .foot { position: absolute; left: 18mm; right: 18mm; bottom: 9mm; display: flex; justify-content: space-between; font-size: 8pt; color: #94a3b8; }
+  .eyebrow { color: var(--brand); font-weight: 700; font-size: 9pt; letter-spacing: .04em; }
+  h2 { font-size: 19pt; line-height: 1.4; margin: 2mm 0 5mm; font-weight: 900; }
+  h2 em { font-style: normal; color: var(--brand); }
+  h3 { font-size: 12pt; margin: 6mm 0 2mm; }
+  p { margin: 0 0 3mm; }
+  .sub { color: var(--sub); }
+  .src { font-size: 7.8pt; color: var(--sub); line-height: 1.5; }
+  /* 表紙 */
+  .cover { background: linear-gradient(180deg, #f3f7ff 0%, #ffffff 60%); }
+  .cover .tag { display: inline-block; background: var(--brand); color: #fff; font-weight: 700; font-size: 10pt; padding: 1.5mm 4mm; border-radius: 2mm; }
+  .cover h1 { font-size: 34pt; line-height: 1.3; margin: 10mm 0 6mm; font-weight: 900; }
+  .cover h1 em { font-style: normal; color: var(--brand); }
+  .cover .lead { font-size: 13pt; color: var(--sub); }
+  .cover .chips { display: flex; gap: 3mm; margin-top: 12mm; flex-wrap: wrap; }
+  .cover .chips span { border: 1.5px solid var(--brand); color: var(--brand); border-radius: 20mm; padding: 1.5mm 5mm; font-weight: 700; font-size: 10pt; }
+  .cover .chat { margin-top: 16mm; background: #fff; border: 1px solid var(--line); border-radius: 4mm; padding: 6mm; box-shadow: 0 6mm 14mm -8mm rgba(15,23,42,.25); }
+  .cover .q { background: #f1f5f9; border-radius: 3mm; padding: 3mm 4mm; margin-left: 25mm; }
+  .cover .a { margin-top: 4mm; padding: 0 4mm; }
+  .cover .a ol { margin: 2mm 0 0; padding-left: 5mm; }
+  .cover .brand { position: absolute; left: 18mm; bottom: 16mm; font-weight: 900; font-size: 14pt; display: flex; align-items: center; gap: 2.5mm; }
+  .cover .brand i { display: inline-grid; place-items: center; width: 9mm; height: 9mm; border-radius: 2mm; background: var(--brand); color: #fff; font-style: normal; font-size: 12pt; }
+  /* 数字 */
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 4mm 0 4mm; }
+  .stat { background: var(--soft); border-radius: 3mm; padding: 5mm; }
+  .stat b { display: block; font-size: 32pt; line-height: 1.1; color: var(--brand); font-weight: 900; }
+  .stat .k { font-weight: 700; margin-top: 1mm; }
+  .box { border: 1px solid var(--line); border-radius: 3mm; padding: 5mm; margin-top: 4mm; }
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2mm; margin: 4mm 0; }
+  .flow div { background: #fff; border: 1px solid var(--line); border-radius: 3mm; padding: 3.5mm; font-size: 9.5pt; }
+  .flow div.hot { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .flow b { display: block; font-size: 11pt; }
+  .qs { display: grid; gap: 3mm; margin-top: 3mm; }
+  .qs div { border-left: 4px solid var(--brand); background: #f8fafc; padding: 3mm 4mm; }
+  .qs b { color: var(--brand); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .good, .bad { border-radius: 3mm; padding: 5mm; }
+  .good { background: var(--soft); }
+  .bad { background: #fff1f2; }
+  .good h3, .bad h3 { margin-top: 0; }
+  .good ul, .bad ul { margin: 0; padding-left: 0; list-style: none; }
+  .good li, .bad li { margin: 2mm 0; padding-left: 6mm; position: relative; }
+  .good li::before { content: "✓"; position: absolute; left: 0; color: var(--brand); font-weight: 900; }
+  .bad li::before { content: "✕"; position: absolute; left: 0; color: var(--ng); font-weight: 900; }
+  /* チェックリスト */
+  .check { width: 100%; border-collapse: collapse; margin-top: 2mm; font-size: 9.8pt; }
+  .check td { border-bottom: 1px solid var(--line); padding: 2.3mm 1.5mm; vertical-align: top; }
+  .check td.box2 { width: 8mm; }
+  .check td.box2 span { display: inline-block; width: 4.5mm; height: 4.5mm; border: 1.5px solid #94a3b8; border-radius: 1mm; margin-top: .8mm; }
+  .check .cat td { background: var(--soft); font-weight: 700; color: var(--brand); border-bottom: 0; padding-top: 2.5mm; }
+  .check .h { color: var(--sub); font-size: 8.6pt; display: block; }
+  .steps3 { counter-reset: s; display: grid; gap: 4mm; margin-top: 4mm; }
+  .steps3 div { counter-increment: s; position: relative; padding-left: 12mm; }
+  .steps3 div::before { content: counter(s); position: absolute; left: 0; top: 0; width: 8mm; height: 8mm; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 900; display: grid; place-items: center; }
+  .rec { width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 3mm; }
+  .rec th, .rec td { border: 1px solid var(--line); padding: 2mm; text-align: left; }
+  .rec th { background: #f8fafc; }
+  .plans { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5mm; margin-top: 3mm; }
+  .plan { border: 1px solid var(--line); border-radius: 3mm; padding: 3.5mm; font-size: 8.6pt; }
+  .plan.hl { border: 2px solid var(--brand); background: var(--soft); }
+  .plan .n { font-weight: 700; font-size: 10pt; }
+  .plan .p { font-size: 14pt; font-weight: 900; margin: 1mm 0; }
+  .plan .p small { font-size: 8pt; font-weight: 500; color: var(--sub); }
+  .cta { margin-top: 6mm; background: var(--navy); color: #fff; border-radius: 3mm; padding: 6mm; }
+  .cta b { font-size: 14pt; display: block; }
+  .cta .u { margin-top: 2mm; font-size: 11pt; color: #bfdbfe; }
+</style>
+</head>
+<body>
+
+<!-- 1. 表紙 -->
+<section class="page cover">
+  <span class="tag">求人サイト運営者のための無料ガイド</span>
+  <h1>求人サイトの<br><em>AI集客</em>はじめてBOOK</h1>
+  <p class="lead">求職者がChatGPTで求人を探す時代に、<br>「AIに紹介される求人サイト」になるための対策ガイド</p>
+  <div class="chips"><span>AIが求人サイトを選ぶ仕組み</span><span>選ばれるサイトの共通点</span><span>実践チェックリスト付き</span></div>
+  <div class="chat">
+    <div class="q">大学生が在宅でできるアルバイトを探せる求人サイトのおすすめは？</div>
+    <div class="a">
+      <span class="sub">AIの回答（イメージ）</span>
+      <ol><li>〇〇バイト ― 在宅・リモート求人に特化…</li><li>△△ナビ ― 大学生向けの求人が多い…</li><li>……</li></ol>
+      <p class="src" style="margin-top:3mm">この「数件」に入るかどうかで、求職者に見つけてもらえるかが変わります。</p>
+    </div>
+  </div>
+  <div class="brand"><i>ス</i>AIススメル</div>
+</section>
+
+<!-- 2. いま何が起きているか -->
+<section class="page">
+  <div class="eyebrow">1. いま何が起きているか</div>
+  <h2>求職者は、<em>AIに相談しながら</em><br>仕事を探しはじめています</h2>
+  <div class="stats">
+    <div class="stat"><b>46.5%</b><div class="k">20代の転職希望者のうち、就職・転職活動で生成AIを利用している人</div><p class="src" style="margin-top:2mm">「よく利用」19.8%＋「時々利用」26.7%。出典：株式会社学情「20代転職希望者の生成AI活用に関する調査」（2025年8月2日〜18日、20代専門転職サイト「Re就活」来訪者、n=303）</p></div>
+    <div class="stat"><b>84.5%</b><div class="k">生成AIを「継続して利用している」大学生。利用サービスはChatGPTが90.4%</div><p class="src" style="margin-top:2mm">出典：産業能率大学コンテンツビジネス研究所「学生メディア・コンテンツ利用調査2026 −生成AI編−」（2026年4月7日〜7月3日、同大学の在学生、n=2,607）</p></div>
+  </div>
+  <p>学情の調査では、生成AIの使いみちは「自己PRの作成・添削」（61.7%）が最も多く、「業界・企業研究」は24.8%でした。いまはまだ書類づくりが中心ですが、若い世代ほどAIを日常的に使っており、<b>「どこで探せばいいか」をAIに聞く場面も増えていく</b>と考えられます。</p>
+  <h3>仕事探しの流れに「AIで比べる」が加わった</h3>
+  <div class="flow">
+    <div><b>知る</b>SNS・広告・紹介</div>
+    <div><b>調べる</b>検索・比較サイト</div>
+    <div class="hot"><b>AIで比べる</b>「おすすめは？」と聞いて候補を絞る</div>
+    <div><b>応募する</b>絞った候補のサイトで決める</div>
+  </div>
+  <div class="box">
+    <b>運営元の求人サイト「zaito」の例</b>
+    <p style="margin:1mm 0 0">GA4で28日間（2026年9月24日〜10月21日）を見ると、ユーザー469人のうち68人（14.5%）がChatGPT経由で訪れていました。</p>
+    <p class="src" style="margin:1mm 0 0">サイト1件の数字で、対策の効果を示すものではありません。</p>
+  </div>
+  <div class="foot"><span>求人サイトのAI集客はじめてBOOK</span><span>2</span></div>
+</section>
+
+<!-- 3. 仕組み -->
+<section class="page">
+  <div class="eyebrow">2. AIが求人サイトを紹介する仕組み</div>
+  <h2>AIは、<em>Web上の情報を読んで</em><br>おすすめを決めています</h2>
+  <p>ChatGPTやGeminiは、質問を受けるとWebを検索し、公式サイト・比較記事・口コミなどを読んで答えをまとめます。つまり、<b>AIが読める場所に、正しく分かりやすい情報があるか</b>が紹介されるかどうかを左右します。</p>
+  <h3>AIが参考にしている主な情報</h3>
+  <div class="two">
+    <div class="box" style="margin:0"><b>自社で整えられる情報</b><ul style="margin:2mm 0 0;padding-left:5mm"><li>公式サイトのトップページ・説明文</li><li>求人一覧・特集ページの文章</li><li>運営会社・掲載基準のページ</li><li>よくある質問（FAQ）</li></ul></div>
+    <div class="box" style="margin:0"><b>外部の情報</b><ul style="margin:2mm 0 0;padding-left:5mm"><li>「おすすめ求人サイト〇選」などの比較記事</li><li>口コミ・評判のサイト</li><li>プレスリリース・ニュース記事</li><li>SNSでの言及</li></ul></div>
+  </div>
+  <h3>求職者がAIに聞く、3種類の質問</h3>
+  <div class="qs">
+    <div><b>悩みの質問</b>　「未経験から在宅でできる仕事を探すには？」<br><span class="sub">サイト名を出さずに困りごとを聞く。ここで名前が出ると、最初の候補に入れます。</span></div>
+    <div><b>比較・おすすめの質問</b>　「大学生向けの在宅バイトが探せる求人サイトのおすすめは？」<br><span class="sub">条件つきでサイトを選ぶ質問。応募にいちばん近く、対策の中心になります。</span></div>
+    <div><b>サイト名の質問</b>　「〇〇（サイト名）の評判は？怪しくない？」<br><span class="sub">AIが自社を正しく説明しているかを確かめる質問です。</span></div>
+  </div>
+  <p style="margin-top:5mm"><b>ポイント：</b>「おすすめの求人サイトは？」のような広い質問では大手が強くなりがちです。<b>「地方の大学生向け」「完全在宅」「ブランクOK」など、条件のついた質問</b>こそ、専門の求人サイトが選ばれるチャンスです。</p>
+  <div class="foot"><span>求人サイトのAI集客はじめてBOOK</span><span>3</span></div>
+</section>
+
+<!-- 4. 共通点 -->
+<section class="page">
+  <div class="eyebrow">3. 選ばれるサイト・選ばれないサイト</div>
+  <h2>AIに紹介される求人サイトには<br><em>共通点</em>があります</h2>
+  <div class="two">
+    <div class="good">
+      <h3>紹介されやすいサイト</h3>
+      <ul>
+        <li>トップページの最初の一文で「誰向けの、どんな求人サイトか」が分かる</li>
+        <li>在宅可・未経験OK・時給・勤務地などの強みが、文章で書かれている</li>
+        <li>掲載件数と更新日が書かれていて、情報の新しさが分かる</li>
+        <li>運営会社・連絡先・掲載基準が見つけやすい</li>
+        <li>求職者の疑問に答えるFAQやガイド記事がある</li>
+        <li>比較記事やニュースで、サイト名と特徴が紹介されている</li>
+      </ul>
+    </div>
+    <div class="bad">
+      <h3>紹介されにくいサイト</h3>
+      <ul>
+        <li>トップページが検索窓と求人の一覧だけで、サイトの説明文がない</li>
+        <li>強みが絞り込みボタンや画像の中にしか書かれていない</li>
+        <li>大手と同じ言葉で説明していて、違いが伝わらない</li>
+        <li>運営会社のページが薄く、AIが説明に使える情報がない</li>
+        <li>古いキャンペーンや終わった求人が残っている</li>
+        <li>サイト名で検索しても、外部の紹介がほとんど見つからない</li>
+      </ul>
+    </div>
+  </div>
+  <div class="box">
+    <b>まず直すなら、トップページの「最初の一文」から</b>
+    <p style="margin:1mm 0 0">例：「求人を探すならここ」→「地方在住の大学生が、完全在宅でできるアルバイトを探せる求人サイトです。」<br><span class="sub">AIは、この一文をそのまま使ってサイトを説明することがあります。誰向けで、何が違うのかを具体的に書きます。</span></p>
+  </div>
+  <div class="foot"><span>求人サイトのAI集客はじめてBOOK</span><span>4</span></div>
+</section>
+
+<!-- 5. チェックリスト -->
+<section class="page">
+  <div class="eyebrow">4. 実践チェックリスト</div>
+  <h2>今日から確かめられる<br><em>12のチェック</em></h2>
+  <table class="check">
+    <tr class="cat"><td colspan="2">サイトの説明</td></tr>
+    <tr><td class="box2"><span></span></td><td>トップページの最初に、誰向けの求人サイトかを一文で書いている<span class="h">例：「〇〇な人が、〇〇の求人を探せるサイトです」</span></td></tr>
+    <tr><td class="box2"><span></span></td><td>タイトルと説明文（meta description）に、対象と特徴が入っている</td></tr>
+    <tr><td class="box2"><span></span></td><td>大手の求人サイトと何が違うかを、言葉で説明している</td></tr>
+    <tr class="cat"><td colspan="2">求人の情報</td></tr>
+    <tr><td class="box2"><span></span></td><td>在宅可・未経験OK・時給・勤務地などの条件が、画像やボタンだけでなく文章になっている</td></tr>
+    <tr><td class="box2"><span></span></td><td>掲載件数と最終更新日をサイト内に書いている</td></tr>
+    <tr><td class="box2"><span></span></td><td>募集が終わった求人や古いキャンペーンを残していない</td></tr>
+    <tr class="cat"><td colspan="2">信頼の情報</td></tr>
+    <tr><td class="box2"><span></span></td><td>運営会社・所在地・連絡先のページがあり、全ページからたどれる</td></tr>
+    <tr><td class="box2"><span></span></td><td>求人の掲載基準（どんな求人を載せ、どんな求人を載せないか）を書いている</td></tr>
+    <tr><td class="box2"><span></span></td><td>求職者のよくある質問（FAQ）に答えるページがある</td></tr>
+    <tr class="cat"><td colspan="2">外からの見え方</td></tr>
+    <tr><td class="box2"><span></span></td><td>「〇〇 求人サイト おすすめ」の比較記事に、自社が載っているか確認した</td></tr>
+    <tr><td class="box2"><span></span></td><td>robots.txtで、AIのクローラーを拒否していない</td></tr>
+    <tr><td class="box2"><span></span></td><td>ChatGPTに自社が紹介されるか、実際に聞いて確かめた（次のページ）</td></tr>
+  </table>
+  <div class="foot"><span>求人サイトのAI集客はじめてBOOK</span><span>5</span></div>
+</section>
+
+<!-- 6. 自分で確かめる -->
+<section class="page">
+  <div class="eyebrow">5. 自分で確かめる方法</div>
+  <h2>ChatGPTに聞いて、<br><em>今の紹介状況</em>を確かめる</h2>
+  <div class="steps3">
+    <div><b>質問を3〜5個つくる</b><br>求職者が聞きそうな「悩み」「比較・おすすめ」「サイト名」の質問を、自社の強みに合わせて作ります。条件をつけた質問を必ず入れてください。</div>
+    <div><b>同じ質問を3回ずつ聞く</b><br>AIの回答は毎回変わります。1回の結果で判断せず、新しい会話で3回ずつ聞き、何回紹介されたかを数えます。</div>
+    <div><b>表に記録する</b><br>自社が出たか、代わりに紹介されたサイト、AIが参考にしたページを書き残します。月に1回同じ質問で測ると、変化が分かります。</div>
+  </div>
+  <table class="rec">
+    <tr><th style="width:40%">質問</th><th>自社が出た回数</th><th>代わりに出たサイト</th><th>参考にされたページ</th></tr>
+    <tr><td>例：大学生向けの在宅バイトが探せる求人サイトは？</td><td>1 / 3回</td><td>△△ナビ、□□ワーク</td><td>比較記事「在宅バイトサイト10選」</td></tr>
+    <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+    <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+    <tr><td>&nbsp;</td><td></td><td></td><td></td></tr>
+  </table>
+  <div class="box">
+    <b>注意すること</b>
+    <ul style="margin:1mm 0 0;padding-left:5mm">
+      <li>ログイン中のChatGPTは、過去の会話の影響を受けることがあります。できれば新しい会話で聞いてください。</li>
+      <li>紹介された順番は毎回入れ替わります。順位より「何回中、何回紹介されたか」を見てください。</li>
+      <li>AIの回答に誤りがあれば、その元になっていそうな自社ページや外部記事を確認します。</li>
+    </ul>
+  </div>
+  <div class="foot"><span>求人サイトのAI集客はじめてBOOK</span><span>6</span></div>
+</section>
+
+<!-- 7. AIススメル -->
+<section class="page">
+  <div class="eyebrow">6. 手間をかけずに確かめたい方へ</div>
+  <h2>AIススメルが、<em>計測から改善まで</em><br>お手伝いします</h2>
+  <p>AIススメルは、求人サイトを運営する私たちが自社サイトで実践している方法で、ChatGPT・Geminiでの紹介状況を測り、直すページと文章までご提案するサービスです。</p>
+  <div class="plans">
+    <div class="plan"><div class="n">無料チェック</div><div class="p">0<small>円</small></div>AIでの紹介状況と、最初に直す3つのこと</div>
+    <div class="plan hl"><div class="n">トライアル</div><div class="p">49,800<small>円</small></div>競合2社との比較、既存1ページの改善、30日後の再計測</div>
+    <div class="plan"><div class="n">基本プラン</div><div class="p">10<small>万円/月</small></div>毎月の計測、既存ページの改善 月2件、AIからの流入レポート</div>
+    <div class="plan"><div class="n">制作プラン</div><div class="p">20<small>万円/月</small></div>基本プラン＋新規ページの制作 月2本、改善 月4件</div>
+  </div>
+  <p class="src" style="margin-top:2mm">価格は税別です。月額プランは1か月単位で、最低契約期間はありません。</p>
+  <div class="cta">
+    <b>まずは無料チェックから</b>
+    サイトのURLを送るだけで、3営業日以内にAIでの紹介状況をメールでお届けします。アカウント登録は不要です。
+    <div class="u">https://www.aisusumeru.com/ai/apply</div>
+  </div>
+  <div class="box">
+    <b>お問い合わせ</b>
+    <p style="margin:1mm 0 0">AIススメル（運営責任者：鳥居潤）　info@aisusumeru.com</p>
+    <p class="src" style="margin:1mm 0 0">AIの回答は毎回変わるため、計測結果は目安です。AIでの紹介や応募の増加を保証するものではありません。本資料の調査データは各出典の公表内容によります。</p>
+  </div>
+  <div class="foot"><span>求人サイトのAI集客はじめてBOOK　©2026 AIススメル</span><span>7</span></div>
+</section>
+
+</body>
+</html>

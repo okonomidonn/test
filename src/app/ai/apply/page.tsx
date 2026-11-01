@@ -33,7 +33,9 @@ const COPY = {
 
 export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">) {
   const sp = await searchParams;
-  const plan = resolveLeadPlan(sp.plan);
+  // 資料請求は専用ページ（/ai/for/jobs/book）で受け付ける
+  const resolved = resolveLeadPlan(sp.plan);
+  const plan = resolved === "book" ? "check" : resolved;
   const kind = LEAD_PLANS[plan].kind;
   const monthly = plan === "basic" || plan === "production";
   const copy = monthly ? {

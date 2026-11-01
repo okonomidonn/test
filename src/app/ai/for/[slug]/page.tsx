@@ -87,6 +87,15 @@ export default async function VerticalPage({ params }: PageProps<"/ai/for/[slug]
           </ul>
         </div>
         <Cta />
+        {v.slug === "jobs" && (
+          <p className="mt-4 text-center text-sm">
+            まずは情報収集から、という方は
+            <Link href="/ai/for/jobs/book" className="font-semibold text-brand underline underline-offset-4">
+              「求人サイトのAI集客はじめてBOOK」（無料）
+            </Link>
+            をどうぞ。
+          </p>
+        )}
       </Band>
 
       {v.proof && (

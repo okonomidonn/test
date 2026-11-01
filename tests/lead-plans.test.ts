@@ -22,3 +22,10 @@ test("以前のフォーム・既存データと不正なクエリ値は月額�
   assert.equal(leadLabel("TRIAL", "以前の相談"), "トライアル");
   assert.equal(leadLabel("CHECK", "【制作プランのご相談】"), "無料チェック");
 });
+
+test("資料請求は無料チェックの種別で保存し、見出しで見分ける", () => {
+  const stored = leadMessage("book");
+  assert.equal(LEAD_PLANS.book.kind, "CHECK");
+  assert.equal(leadLabel("CHECK", stored), "資料請求");
+  assert.equal(leadLabel("CHECK", "ふつうの相談"), "無料チェック");
+});

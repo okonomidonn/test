@@ -31,6 +31,14 @@ const leadSchema = z.object({
     .refine((v) => /^https?:\/\/[^\s]+\.[^\s]+/.test(v), "サイトのURLは https:// から入力してください"),
   message: z.string().trim().max(2000).optional(),
 });
+// 資料請求ではサイトのURLを任意にする（入力されたときだけ形式を確かめる）
+const bookSchema = leadSchema.extend({
+  websiteUrl: z
+    .string()
+    .trim()
+    .max(300)
+    .refine((v) => v === "" || /^https?:\/\/[^\s]+\.[^\s]+/.test(v), "サイトのURLは https:// から入力してください"),
+});
 
 // 無料チェック・トライアルの申し込みを受け付ける（ログインは不要）
 export async function createLead(_prev: LeadState, formData: FormData): Promise<LeadState> {
@@ -39,12 +47,12 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
 
   const plan = resolveLeadPlan(formData.get("plan"), formData.get("kind"));
 
-  const parsed = leadSchema.safeParse({
+  const parsed = (plan === "book" ? bookSchema : leadSchema).safeParse({
     kind: LEAD_PLANS[plan].kind,
     company: formData.get("company"),
     name: formData.get("name"),
     email: formData.get("email"),
-    websiteUrl: formData.get("websiteUrl"),
+    websiteUrl: formData.get("websiteUrl") ?? "",
     message: formData.get("message") || undefined,
   });
   if (!parsed.success) {
