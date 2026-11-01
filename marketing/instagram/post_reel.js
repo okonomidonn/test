@@ -1,5 +1,5 @@
 // リール動画を1本、zaito_work に投稿する。
-// 使い方: node post_reel.js <A|B|C>
+// 使い方: node post_reel.js <ID> [--reels-only]（IDは A/B/C や commute150_A など。--reels-only でフィードに出さない）
 // 動画は wordpress-theme/zaito/sns/reels/<ID>.mp4（サイトに置いたもの）、投稿文は marketing/ads/phone/リール投稿文.md から取る。
 // トークンは環境の「ネットワークシークレット」が付けるので、ここでは curl で普通に呼ぶだけ。
 const cp = require('child_process');
@@ -10,7 +10,8 @@ const crypto = require('crypto');
 const API = 'https://graph.instagram.com/v21.0';
 const ROOT = path.join(__dirname, '..', '..');
 const id = process.argv[2];
-if (!/^[ABC]$/.test(id || '')) { console.error('使い方: node post_reel.js <A|B|C>'); process.exit(1); }
+if (!/^[A-Za-z0-9_]+$/.test(id || '')) { console.error('使い方: node post_reel.js <ID> [--reels-only]'); process.exit(1); }
+const shareToFeed = process.argv.includes('--reels-only') ? 'false' : 'true';
 
 function curl(args) {
   const out = cp.execFileSync('curl', ['-sS', '--max-time', '120', ...args], { encoding: 'utf8' });
@@ -40,7 +41,7 @@ if (!/^200 video\/mp4/.test(head)) throw new Error('動画が開けません: ' 
 
 const me = get('/me', { fields: 'user_id,username' });
 console.log('アカウント: ' + me.username + ' / リール' + id);
-const box = post('/' + me.user_id + '/media', { media_type: 'REELS', video_url: url, caption, share_to_feed: 'true' }).id;
+const box = post('/' + me.user_id + '/media', { media_type: 'REELS', video_url: url, caption, share_to_feed: shareToFeed }).id;
 
 let status = '';
 for (let i = 0; i < 60; i++) {
