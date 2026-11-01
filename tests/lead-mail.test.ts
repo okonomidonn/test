@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { leadMailConfig, sendLeadNotice } from "../src/lib/leads/mail";
+import { leadMailConfig, sendBookMail, sendLeadNotice } from "../src/lib/leads/mail";
 
 function configure(t: test.TestContext, overrides: Record<string, string> = {}) {
   const values = { LEAD_NOTIFICATIONS_ENABLED: "1", RESEND_API_KEY: "local-test-key", MAIL_FROM: "notice@example.com", LEAD_NOTIFY_EMAIL: "team@example.com", APP_URL: "https://example.com", VERCEL_ENV: "production", ...overrides };
@@ -48,4 +48,22 @@ test("配信エラー・不正な成功レスポンスは送信済みにしな�
   const lead = { id: "local-456", kind: "CHECK" as const, company: "テスト" };
   await assert.rejects(sendLeadNotice(lead, async () => new Response("provider error", { status: 500 })), /mail_http_500/);
   await assert.rejects(sendLeadNotice(lead, async () => Response.json({})), /mail_invalid_response/);
+});
+
+test("資料メールは請求した本人だけに、資料のURLを送る", async (t) => {
+  configure(t);
+  let body: { to: string[]; text: string } | null = null;
+  await sendBookMail({ email: "reader@example.com", name: "鈴木", company: "テスト求人" }, async (_url, init) => {
+    body = JSON.parse(String(init?.body));
+    return new Response(JSON.stringify({ id: "m1" }), { status: 200 });
+  });
+  assert.deepEqual(body!.to, ["reader@example.com"]);
+  assert.ok(body!.text.includes("https://example.com/ai/jobs-ai-book.pdf"));
+});
+
+test("資料メールも、Previewや未設定のときは送らない", async (t) => {
+  configure(t, { VERCEL_ENV: "preview" });
+  let called = false;
+  await assert.rejects(sendBookMail({ email: "reader@example.com", name: "鈴木", company: "テスト求人" }, async () => { called = true; return new Response(); }));
+  assert.equal(called, false);
 });

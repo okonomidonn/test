@@ -86,3 +86,54 @@ export const WHY_AFFORDABLE: [string, string][] = [
   ["対象と作業を絞っている", "中小企業のWebサービスに絞り、トライアルは既存ページ1ページの改善までと範囲を決めています"],
   ["効果を確かめてから続ける", "30日後に同じ条件で測り直し、続けるかどうかを数字を見て決められます"],
 ];
+
+// 他社との比較（各社の公式サイトに公開されている料金だけを使い、社名は出さない）
+const COMPETITORS = {
+  checked: "2026年11月1日",
+  cols: ["AIススメル", "A社（AI検索対策のコンサルティング）", "B社（AI検索の分析ツール）", "公開料金の中央値"],
+  rows: [
+    { label: "1回の診断", cells: ["49,800円（改善1ページ・再計測込み）", "200,000円", "—", "150,000円"] },
+    { label: "月額", cells: ["100,000円〜", "200,000円〜", "49,800円〜（ツールのみ）", "225,000円"] },
+    { label: "初期費用", cells: ["0円", "記載なし", "別途必要", "—"] },
+    { label: "最低契約期間", cells: ["なし（月単位）", "記載なし", "記載なし", "—"] },
+    { label: "サイトを直す作業", cells: ["料金に含む", "含む", "含まない（自社で対応）", "—"] },
+  ],
+};
+
+export function CompetitorTable() {
+  return (
+    <div>
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+        <table className="w-full min-w-[640px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-slate-200">
+              <th className="w-28 bg-slate-50 p-3" />
+              {COMPETITORS.cols.map((c, i) => (
+                <th key={c} className={`p-3 align-bottom font-bold ${i === 0 ? "bg-brand text-white" : "bg-slate-50 text-slate-700"}`}>
+                  {c}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200">
+            {COMPETITORS.rows.map((r) => (
+              <tr key={r.label}>
+                <th scope="row" className="bg-slate-50 p-3 font-semibold text-slate-700">
+                  {r.label}
+                </th>
+                {r.cells.map((c, i) => (
+                  <td key={i} className={`p-3 ${i === 0 ? "bg-blue-50 font-bold text-brand" : "text-slate-700"}`}>
+                    {c}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-slate-600">
+        A社・B社は各社の公式サイトに公開されている料金（{COMPETITORS.checked}確認）。A社は税の表示なし、B社とAIススメルは税別です。中央値は{MARKET.source}（{MARKET.checked}）。各社で作業範囲・対象が異なり、同じ内容・同じ成果を比べたものではありません。
+      </p>
+    </div>
+  );
+}

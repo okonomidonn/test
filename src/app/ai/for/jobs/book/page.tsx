@@ -41,7 +41,7 @@ export default function JobsBookPage() {
           </div>
           <div id="download" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_12px_32px_-12px_rgba(17,24,39,0.18)] sm:p-7">
             <p className="text-xl font-bold text-slate-900">無料でダウンロード</p>
-            <p className="mt-1 mb-5 text-sm text-slate-600">送信後、すぐにダウンロードできます</p>
+            <p className="mt-1 mb-5 text-sm text-slate-600">入力したメールアドレスに、資料をお送りします</p>
             <BookForm pdf={PDF} />
           </div>
         </div>
