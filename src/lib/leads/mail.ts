@@ -13,7 +13,7 @@ export function leadMailConfig() {
   if (!key || !from.success || !to.success) return null;
   let origin: URL;
   try {
-    origin = new URL(process.env.APP_URL || "https://test-one-xi-90.vercel.app");
+    origin = new URL(process.env.APP_URL || "https://www.aisusumeru.com");
   } catch {
     return null;
   }
