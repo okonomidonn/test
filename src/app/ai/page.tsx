@@ -3,6 +3,7 @@ import { ServicePlans } from "@/components/ai/service-plans";
 import { HeroLeadForm } from "@/components/ai/hero-lead-form";
 import { Band, Cta, Head, em } from "@/components/ai/lp";
 import { VERTICALS } from "@/lib/ai-check/verticals";
+import { CompetitorTable } from "@/components/ai/marketing";
 import { ImprovementExample } from "@/components/ai/improvement-example";
 
 const COMPARE = [
@@ -253,6 +254,10 @@ export default function AiLandingPage() {
           <div className="rounded-2xl bg-white p-4 sm:p-6">
             <ServicePlans />
           </div>
+        </div>
+        <div className="mt-8 rounded-2xl bg-white p-4 sm:p-6">
+          <p className="mb-4 text-lg font-bold text-slate-900">他社と比べると</p>
+          <CompetitorTable />
         </div>
         <div className="mt-8 text-center">
           <Link href="/ai/pricing" className="inline-flex min-h-12 items-center rounded-full bg-white px-8 font-bold text-brand hover:bg-blue-50">

@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { notifyLead } from "@/lib/leads/notifications";
+import { sendBookMail } from "@/lib/leads/mail";
 import { LEAD_PLANS, leadMessage, resolveLeadPlan } from "@/lib/leads/plans";
 
 export type LeadField = "company" | "name" | "email" | "websiteUrl" | "message";
@@ -17,6 +18,8 @@ export type LeadState = {
   // 入力エラーのとき、入力した内容を戻すため
   values?: Partial<Record<LeadField, string>>;
   done?: boolean;
+  // 資料請求で、資料をメールで送れたか（送れなかったときは画面からダウンロードしてもらう）
+  mailed?: boolean;
 };
 
 const leadSchema = z.object({
@@ -70,13 +73,22 @@ export async function createLead(_prev: LeadState, formData: FormData): Promise<
   // 同じ内容の再送だけを抑止する。無料診断直後の月額相談や別プランは保存する。
   const data = { ...parsed.data, message: leadMessage(plan, parsed.data.message) ?? null };
   const since = new Date(Date.now() - 10 * 60_000);
-  if (await prisma.lead.findFirst({ where: { ...data, createdAt: { gt: since } } })) return { done: true };
+  if (await prisma.lead.findFirst({ where: { ...data, createdAt: { gt: since } } })) return { done: true, mailed: plan === "book" ? false : undefined };
 
   const session = await auth();
   const lead = await prisma.lead.create({ data: { ...data, userId: session?.user?.id ?? null } });
   after(async () => {
     try { await notifyLead(lead.id); } catch { console.error("lead_notification_failed", lead.id); }
   });
+  if (plan === "book") {
+    try {
+      await sendBookMail({ email: data.email, name: data.name, company: data.company });
+      return { done: true, mailed: true };
+    } catch {
+      // 配信の設定前・失敗時は、画面からそのままダウンロードしてもらう
+      return { done: true, mailed: false };
+    }
+  }
   return { done: true };
 }
 

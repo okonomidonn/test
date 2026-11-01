@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MarketCompare, WHY_AFFORDABLE } from "@/components/ai/marketing";
+import { CompetitorTable, MarketCompare, WHY_AFFORDABLE } from "@/components/ai/marketing";
 import { ServicePlans } from "@/components/ai/service-plans";
 import { ImprovementExample, ImprovementScope } from "@/components/ai/improvement-example";
 
@@ -16,6 +16,11 @@ export default function PricingPage() {
       <section aria-label="無料チェック・トライアルと月額2プラン"><h2 className="sr-only">無料チェック・トライアルと月額2プラン</h2><ServicePlans /></section>
       <ImprovementScope />
       <ImprovementExample />
+      <section>
+        <h2 className="text-2xl font-bold text-slate-900">他社と比べて、ここまで始めやすい</h2>
+        <p className="mt-2 text-slate-700">AI検索対策の診断は15万〜20万円、継続支援は月20万円以上が一般的です。AIススメルは、改善作業を含めてその半額以下から始められます。</p>
+        <div className="mt-5"><CompetitorTable /></div>
+      </section>
       <section className="grid gap-6 rounded-xl bg-slate-50 p-5 sm:grid-cols-2 sm:p-7">
         <div><h2 className="text-lg font-bold text-slate-900">トライアルで行う改善</h2><p className="mt-3 leading-relaxed text-slate-700">CMSで編集できる既存ページを1ページ改善します。変更案をご確認いただいてから作業します。</p><p className="mt-2 text-sm text-slate-600">新規ページ制作・外部媒体への掲載・大規模な実装は含みません。</p></div>
         <div><h2 className="text-lg font-bold text-slate-900">ご相談から契約まで</h2><p className="mt-3 leading-relaxed text-slate-700">トライアル・月額プランのご相談には、2営業日以内に進め方と見積もりをご連絡します。対象ページ・原稿量・修正回数・実装範囲をご確認いただいてから正式なご依頼となります。</p><p className="mt-2 text-sm text-slate-600">フォームの送信だけでは、契約や自動課金は発生しません。</p></div>

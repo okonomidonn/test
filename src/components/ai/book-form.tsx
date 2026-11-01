@@ -19,10 +19,19 @@ export function BookForm({ pdf }: { pdf: string }) {
     return (
       <div role="status" className="text-center">
         <p className="text-xl font-bold text-slate-900">お申し込みありがとうございます</p>
-        <p className="mt-2 text-slate-700">下のボタンから資料をダウンロードできます。</p>
-        <a href={pdf} download className="mt-5 inline-flex min-h-13 w-full items-center justify-center rounded-lg bg-brand py-3.5 text-lg font-bold text-white hover:bg-brand-dark">
-          資料をダウンロードする（PDF）
-        </a>
+        {state.mailed ? (
+          <>
+            <p className="mt-3 text-slate-700">ご入力のメールアドレスに、資料のダウンロードURLをお送りしました。</p>
+            <p className="mt-2 text-sm text-slate-600">数分たっても届かない場合は、迷惑メールのフォルダをご確認いただくか、info@aisusumeru.com までご連絡ください。</p>
+          </>
+        ) : (
+          <>
+            <p className="mt-2 text-slate-700">下のボタンから資料をダウンロードできます。</p>
+            <a href={pdf} download className="mt-5 inline-flex min-h-13 w-full items-center justify-center rounded-lg bg-brand py-3.5 text-lg font-bold text-white hover:bg-brand-dark">
+              資料をダウンロードする（PDF）
+            </a>
+          </>
+        )}
         <p className="mt-4 text-sm text-slate-600">
           自社の状況をすぐ知りたい方は、
           <Link href="/ai/apply" className="font-semibold text-brand underline">
