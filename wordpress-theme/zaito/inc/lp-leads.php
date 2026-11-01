@@ -430,6 +430,7 @@ function zaito_lead_export_columns( $post_type ) {
         'interests'    => '興味のある仕事',
         'days'         => '週に働けそうな日数',
         'min_pay'      => '希望の時給',
+        'heard_from'   => '何で知ったか',
         'favorites'    => '保存した求人',
         'hours'        => '稼働可能時間',
         'source'       => '登録元',
@@ -546,6 +547,7 @@ function zaito_interest_admin_columns( $columns ) {
     unset( $columns['date'] );
     $columns['zaito_profile']   = '名前・立場・学校';
     $columns['zaito_interests'] = '興味のある仕事';
+    $columns['zaito_heard']     = '何で知ったか';
     $columns['date']            = $date;
     return $columns;
 }
@@ -574,6 +576,9 @@ function zaito_lead_admin_column_value( $column, $post_id ) {
     } elseif ( 'zaito_interests' === $column ) {
         $interests = get_post_meta( $post_id, 'interests', true );
         echo esc_html( ! empty( $interests ) ? implode( '、', (array) $interests ) : '—' );
+    } elseif ( 'zaito_heard' === $column ) {
+        $heard = get_post_meta( $post_id, 'heard_from', true );
+        echo esc_html( $heard ? $heard : '—' );
     }
 }
 add_action( 'manage_zaito_interest_posts_custom_column', 'zaito_lead_admin_column_value', 10, 2 );
