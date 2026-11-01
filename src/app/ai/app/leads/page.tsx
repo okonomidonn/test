@@ -60,9 +60,11 @@ export default async function LeadsPage({ searchParams }: PageProps<"/ai/app/lea
                   </td>
                   <td className="px-4 py-3">
                     <p className="font-semibold text-slate-900">{l.company}</p>
-                    <a href={l.websiteUrl} target="_blank" rel="noopener noreferrer nofollow" className="break-all text-brand hover:underline">
-                      {l.websiteUrl}
-                    </a>
+                    {l.websiteUrl && (
+                      <a href={l.websiteUrl} target="_blank" rel="noopener noreferrer nofollow" className="break-all text-brand hover:underline">
+                        {l.websiteUrl}
+                      </a>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <p className="text-slate-900">{l.name}</p>
