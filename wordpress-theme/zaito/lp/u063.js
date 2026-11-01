@@ -204,7 +204,7 @@
     form.addEventListener('change', function (e) {
       var q = e.target.closest('.u063-q');
       if (q && q.classList.contains('bad')) ok(q);
-      // 1つだけ選ぶ質問（立場・日数・時給）は、選んだら少し待って自動で次へ進む。
+      // 1つだけ選ぶ質問（何で知ったか・立場・日数・時給）は、選んだら少し待って自動で次へ進む。
       // 学年は学校名も入力するので進めない。複数選べる「やってみたい仕事」も進めない。
       if (q && e.target.type === 'radio' && q.getAttribute('data-step') !== 'stu' && active()[cur] === q) {
         clearTimeout(autoT);

@@ -130,6 +130,7 @@ function zaito_stats_data( $days ) {
             'by_grade'       => zaito_stats_meta_breakdown( 'grade' ),
             'by_utm_source'  => zaito_stats_meta_breakdown( 'utm_source' ),
             'by_utm_campaign' => zaito_stats_meta_breakdown( 'utm_campaign' ),
+            'by_heard_from'  => zaito_stats_meta_breakdown( 'heard_from' ),
             'recent_by_ad'   => zaito_stats_recent_by_ad( $since ),
             'new_by_day'     => $by_day,
         ),

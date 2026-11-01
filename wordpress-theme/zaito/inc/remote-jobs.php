@@ -2140,6 +2140,8 @@ function zaito_remote_profile_options() {
         'interests' => array( 'SNS運用', 'Webマーケティング', 'ライティング・編集', '動画編集', 'デザイン', 'エンジニア', '事務・アシスタント', '教育・学習サポート', 'カスタマーサポート', 'リサーチ・データ入力' ),
         'days'      => array( '週1〜2日', '週3〜4日', '週5日' ),
         'min_pay'   => array( 'こだわらない', '時給1,200円以上', '時給1,500円以上', '時給2,000円以上' ),
+        // zaitoを何で知ったか。登録直後の質問でだけ聞き、広告の効果を登録した人の答えで確かめる（GAでは、インスタで知ってあとから検索やChatGPTで来た人を見分けられないため）。
+        'heard'     => array( 'Instagram', 'TikTok', 'X（旧Twitter）', 'ChatGPTなどのAI', 'Google・Yahoo!で検索', '友達・知り合い', '学校・大学', 'その他' ),
     );
 }
 
@@ -2184,6 +2186,11 @@ function zaito_handle_remote_profile() {
         if ( in_array( $val, $opts[ $key ], true ) ) {
             update_post_meta( $member, $key, $val );
         }
+    }
+    // 何で知ったかは最初の答えを残す（あとから選び直しても上書きしない）。
+    $heard = isset( $_POST['heard'] ) ? sanitize_text_field( wp_unslash( $_POST['heard'] ) ) : '';
+    if ( in_array( $heard, $opts['heard'], true ) && '' === (string) get_post_meta( $member, 'heard_from', true ) ) {
+        update_post_meta( $member, 'heard_from', $heard );
     }
     $picked = isset( $_POST['interests'] ) && is_array( $_POST['interests'] )
         ? array_values( array_intersect( array_map( 'sanitize_text_field', wp_unslash( $_POST['interests'] ) ), $opts['interests'] ) )

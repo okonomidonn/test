@@ -178,6 +178,7 @@ if ( ! function_exists( 'zaito_share_box' ) ) {
 if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     /**
      * 登録直後に聞く任意の希望条件（立場・学年・学校名・やってみたい仕事・働ける日数・希望の時給）の入力欄。
+     * 登録直後（$with_name）だけ、お名前と「zaitoを何で知りましたか」も聞く。
  * 新着メールは、この答えに合う求人だけを送る（inc/newsletter.php）。
      * 求人詳細とトップページの登録フォームで共通。学年・学校名は学生を選んだときだけJSで表示する。
      */
@@ -194,6 +195,14 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
         <input type="text" name="name_first" maxlength="20" autocomplete="given-name" aria-label="名" placeholder="名（例：花子）">
       </div>
       </fieldset>
+    </div>
+    <?php // 広告の効果を確かめるための質問。押すだけで答えられ、名前のすぐあとに置いて答えてもらいやすくする。 ?>
+    <div class="pq" data-step="heard" data-hint="サービスをよくするために使います">
+    <fieldset><legend>zaitoを何で知りましたか</legend><div class="chips">
+      <?php foreach ( $opts['heard'] as $o ) : ?>
+        <label><input type="radio" name="heard" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
+      <?php endforeach; ?>
+    </div></fieldset>
     </div>
             <?php
         endif;
