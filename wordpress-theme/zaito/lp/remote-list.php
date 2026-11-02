@@ -218,8 +218,8 @@ if ( ! $zaito_cond ) :
             <p><?php echo esc_html( $zaito_para ); ?></p>
           <?php endforeach; ?>
         <?php else : ?>
-        <h1><em>完全在宅</em>のバイト・インターンで、<br>どこにいても経験を積む。</h1>
-        <p>研修も会議も出社なし。地方の大学生でも、東京の会社の仕事ができます。運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
+        <h1><em>完全在宅</em>の仕事だけを、<br>集めました。</h1>
+        <p><b>研修も会議も、出社なし。</b>「在宅OK」で探すと出社ありの求人が混ざるため、zaitoは運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
         <p class="by"><span class="ms" aria-hidden="true">school</span>運営：鳥居 潤（慶應義塾大学 商学部2年）</p>
         <form class="ksearch" role="search" onsubmit="return false">
           <label class="sr" for="zq">キーワードで探す</label>
