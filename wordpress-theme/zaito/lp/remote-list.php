@@ -163,6 +163,7 @@ $zaito_card = function ( $j ) {
             <?php endif; ?>
             <span class="tg"><?php echo esc_html( $j['target'] ); ?></span>
           </div>
+          <span class="go">詳細を見る</span>
         </div>
       </a>
       <?php if ( empty( $j['closed'] ) ) : ?>
@@ -217,9 +218,14 @@ if ( ! $zaito_cond ) :
             <p><?php echo esc_html( $zaito_para ); ?></p>
           <?php endforeach; ?>
         <?php else : ?>
-        <span class="eb">REMOTE JOBS</span>
-        <h1>完全在宅の仕事だけを、<br>集めました。</h1>
-        <p><b>研修も会議も、出社なし。</b>「在宅OK」で探すと出社ありの求人が混ざるため、zaitoは運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
+        <h1><em>完全在宅</em>のバイト・インターンで、<br>どこにいても経験を積む。</h1>
+        <p>研修も会議も出社なし。地方の大学生でも、東京の会社の仕事ができます。運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
+        <p class="by"><span class="ms" aria-hidden="true">school</span>運営：鳥居 潤（慶應義塾大学 商学部2年）</p>
+        <form class="ksearch" role="search" onsubmit="return false">
+          <label class="sr" for="zq">キーワードで探す</label>
+          <input type="search" id="zq" placeholder="キーワードで探す　例：SNS運用" autocomplete="off" enterkeyhint="search">
+          <button type="submit" aria-label="検索"><span class="ms" aria-hidden="true">search</span></button>
+        </form>
         <?php endif; ?>
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
       </div>
@@ -425,7 +431,10 @@ if ( ! $zaito_cond ) :
   var none = document.getElementById('znone');
   var clearBtn = document.getElementById('zclear');
   var sortSel = document.getElementById('zsort');
-  var st = { g: '', who: '', pay: 0, days: 0, newbie: 0, fav: 0 };
+  var st = { g: '', who: '', pay: 0, days: 0, newbie: 0, fav: 0, q: '' };
+  var qIn = document.getElementById('zq');
+  // キーワード検索のために、各カードの文字（職種・タイトル・会社名・条件）を小文字で持っておく。
+  cards.forEach(function (c) { c.dataset.text = c.textContent.replace(/\s+/g, ' ').toLowerCase(); });
   function favs() { try { return JSON.parse(localStorage.getItem('zaito_favs') || '[]'); } catch (e) { return []; } }
   function match(d, s, saved) {
     return (!s.g || d.group === s.g)
@@ -433,7 +442,8 @@ if ( ! $zaito_cond ) :
       && (!s.pay || +d.pay >= s.pay)
       && (!s.days || (+d.days > 0 && +d.days <= s.days))
       && (!s.newbie || d.newbie === '1')
-      && (!s.fav || saved.indexOf(d.slug) !== -1);
+      && (!s.fav || saved.indexOf(d.slug) !== -1)
+      && (!s.q || s.q.split(' ').every(function (w) { return !w || (d.text || '').indexOf(w) !== -1; }));
   }
   function countWith(patch, saved) {
     var s = Object.assign({}, st, patch), n = 0;
@@ -481,7 +491,7 @@ if ( ! $zaito_cond ) :
       b.querySelector('small').textContent = c;
       b.classList.toggle('zero', !on && c === 0);
     });
-    var active = st.g || st.who || st.pay || st.days || st.newbie || st.fav;
+    var active = st.g || st.who || st.pay || st.days || st.newbie || st.fav || st.q;
     clearBtn.hidden = !active;
     if (push !== false && window.history.replaceState) {
       var q = new URLSearchParams(location.search);
@@ -504,7 +514,12 @@ if ( ! $zaito_cond ) :
     });
   });
   sortSel.addEventListener('change', function () { sortCards(); apply(); track('job_sort', { sort: sortSel.value || 'default' }); });
-  function reset() { st = { g: '', who: '', pay: 0, days: 0, newbie: 0, fav: 0 }; apply(); }
+  function reset() { st = { g: '', who: '', pay: 0, days: 0, newbie: 0, fav: 0, q: '' }; if (qIn) qIn.value = ''; apply(); }
+  if (qIn) {
+    var qT;
+    qIn.addEventListener('input', function () { clearTimeout(qT); qT = setTimeout(function () { st.q = qIn.value.trim().toLowerCase().replace(/\s+/g, ' '); apply(); }, 150); });
+    qIn.form.addEventListener('submit', function () { st.q = qIn.value.trim().toLowerCase().replace(/\s+/g, ' '); apply(); if (st.q) { track('job_search', { q: st.q.slice(0, 40) }); document.querySelector('.count-bar').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+  }
   clearBtn.addEventListener('click', reset);
   document.getElementById('znone-reset').addEventListener('click', reset);
   // ♡を押したら、保存した求人の件数・絞り込みを更新する。
