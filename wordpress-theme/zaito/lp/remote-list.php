@@ -78,6 +78,15 @@ foreach ( $zaito_open as $zaito_j ) {
     }
     $zaito_groups[ $zaito_g[0] ]['n']++;
 }
+// 時給の中央値（「地方から働ける理由」に出す）。時給の表示がある募集中の求人だけで数える。
+$zaito_hourly = array();
+foreach ( $zaito_open as $zaito_j ) {
+    if ( preg_match( '/時給\s*([0-9,]+)/u', $zaito_j['pay'], $zaito_m ) ) {
+        $zaito_hourly[] = (int) str_replace( ',', '', $zaito_m[1] );
+    }
+}
+sort( $zaito_hourly );
+$zaito_median = $zaito_hourly ? $zaito_hourly[ intdiv( count( $zaito_hourly ), 2 ) ] : 0;
 $zaito_checked  = max( array_map( function ( $j ) {
     return $j['checked'];
 }, $zaito_jobs ) );
@@ -87,8 +96,8 @@ if ( $zaito_cond ) {
     $zaito_desc  = mb_substr( $zaito_cond['body'][0], 0, 110 ) . '（' . count( $zaito_jobs ) . '件・運営が在宅の条件を確認済み）';
     $zaito_canon = zaito_remote_condition_url( $zaito_list_cond );
 } else {
-    $zaito_title = '在宅バイト・完全在宅の求人｜出社なしの仕事だけを集めたzaito';
-    $zaito_desc  = '「在宅バイト」で探しても出社ありが混ざる。zaitoは、自宅だけで働ける完全在宅のバイト・パート・長期インターンを、運営が1件ずつ確認してまとめています。学生OK・未経験OKの求人も。事務、カスタマーサポート、SNS運用、ライター、エンジニアなど。';
+    $zaito_title = '在宅バイト・完全在宅の求人｜地方の大学生も出社なしで働けるzaito';
+    $zaito_desc  = '地方に住む大学生のための完全在宅バイト。「在宅バイト」で探しても出社ありが混ざるため、zaitoは、自宅だけで働ける完全在宅のバイト・パート・長期インターンを、運営が1件ずつ確認してまとめています。学生OK・未経験OKの求人も。事務、カスタマーサポート、SNS運用、ライター、エンジニアなど。';
     $zaito_canon = zaito_remote_url();
 }
 
@@ -218,8 +227,9 @@ if ( ! $zaito_cond ) :
             <p><?php echo esc_html( $zaito_para ); ?></p>
           <?php endforeach; ?>
         <?php else : ?>
+        <p class="eb-jp">地方の大学生のための、完全在宅バイト</p>
         <h1><em>完全在宅</em>の仕事だけを、<br>集めました。</h1>
-        <p><b>研修も会議も、出社なし。</b>「在宅OK」で探すと出社ありの求人が混ざるため、zaitoは運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
+        <p><b>地元にいながら、東京などの会社の仕事を。</b>研修も会議も出社なし。「在宅OK」で探すと出社ありの求人が混ざるため、zaitoは運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
         <form class="ksearch" role="search" onsubmit="return false">
           <label class="sr" for="zq">キーワードで探す</label>
           <input type="search" id="zq" placeholder="キーワードで探す　例：SNS運用" autocomplete="off" enterkeyhint="search">
@@ -344,6 +354,17 @@ if ( ! $zaito_cond ) :
       <?php endforeach; ?>
       </div>
     </nav>
+  <?php endif; ?>
+
+  <?php if ( ! $zaito_cond ) : ?>
+  <section class="local" aria-labelledby="local-title">
+    <h2 id="local-title">地方の大学生こそ、完全在宅</h2>
+    <ul>
+      <li><span class="ms" aria-hidden="true">payments</span><b>時給は、会社のある地域の水準</b><span>在宅で働くときも、最低賃金は住んでいる県ではなく、会社の事業場がある都道府県の額で決まります。<?php if ( $zaito_median ) : ?>zaitoの求人の時給は、まん中の値で<?php echo esc_html( number_format( $zaito_median ) ); ?>円です。<?php endif; ?></span></li>
+      <li><span class="ms" aria-hidden="true">home</span><b>移動の時間も交通費もゼロ</b><span>バイト先まで車やバスで通う必要がありません。授業の合間や夜の時間も、そのまま働く時間にできます。</span></li>
+      <li><span class="ms" aria-hidden="true">work_history</span><b>地元から、都市の会社で経験を</b><span>IT・Web・教育などの会社の仕事に、地元にいながら関われます。就活で話せる経験にもなります。</span></li>
+    </ul>
+  </section>
   <?php endif; ?>
 
   <section class="signup-band" id="signup" aria-labelledby="signup-title">
