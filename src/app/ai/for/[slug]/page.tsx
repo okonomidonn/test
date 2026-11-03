@@ -39,7 +39,7 @@ export default async function VerticalPage({ params }: PageProps<"/ai/for/[slug]
             <p className="text-xl font-bold text-slate-900">{v.name}の無料診断</p>
             <p className="mt-1 text-sm text-slate-600">費用0円・3営業日以内にメールでお届け</p>
             <div className="mt-5">
-              <HeroLeadForm />
+              {v.slug === "kunitachi" ? <HeroLeadForm urlLabel="お店のURL（Googleマップ・Instagramでも可）" urlPlaceholder="例）https://maps.app.goo.gl/…" /> : <HeroLeadForm />}
             </div>
           </div>
         </div>
@@ -101,7 +101,16 @@ export default async function VerticalPage({ params }: PageProps<"/ai/for/[slug]
       {v.proof && (
         <Band className="bg-white">
           <Head en="実例">
-            <span className={em}>{v.name}を運営する私たち</span>が、自分のサイトで試しています
+            {v.proof.heading ? (
+              <>
+                <span className={em}>{v.proof.heading[0]}</span>
+                {v.proof.heading[1]}
+              </>
+            ) : (
+              <>
+                <span className={em}>{v.name}を運営する私たち</span>が、自分のサイトで試しています
+              </>
+            )}
           </Head>
           <div className="mx-auto mt-10 max-w-3xl rounded-2xl bg-[#e3ebf5] p-6 sm:p-8">
             <p className="font-bold text-slate-900">{v.proof.title}</p>
