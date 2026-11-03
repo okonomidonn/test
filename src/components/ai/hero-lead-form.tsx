@@ -12,7 +12,7 @@ const FIELDS: { k: LeadField; label: string; type?: string; placeholder: string;
   { k: "email", label: "メールアドレス", type: "email", placeholder: "例）taro@example.com", auto: "email" },
 ];
 
-export function HeroLeadForm() {
+export function HeroLeadForm({ urlLabel, urlPlaceholder }: { urlLabel?: string; urlPlaceholder?: string } = {}) {
   const [state, formAction, isPending] = useActionState<LeadState, FormData>(createLead, {});
 
   if (state.done) {
@@ -29,7 +29,8 @@ export function HeroLeadForm() {
       <input type="hidden" name="kind" value="CHECK" />
       <input type="text" name="fax" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
       {state.error && <p role="alert" className="rounded-md bg-rose-50 px-3 py-2 text-sm font-medium text-rose-800">{state.error}</p>}
-      {FIELDS.map((f) => {
+      {FIELDS.map((f0) => {
+        const f = f0.k === "websiteUrl" ? { ...f0, label: urlLabel ?? f0.label, placeholder: urlPlaceholder ?? f0.placeholder } : f0;
         const err = state.fieldErrors?.[f.k];
         return (
           <div key={f.k} className="space-y-1.5">
