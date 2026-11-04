@@ -163,9 +163,18 @@ function zaito_social_joined_snippet() {
         . 'if(typeof window.gtag==="function")gtag("event","sign_up",{method:m[1]});if(window.zaitoFb)window.zaitoFb("sign_up");})();</script>';
 }
 
+/**
+ * バリューコマースのLinkSwitch。ページの中の提携先（アルバイトEXなど）へのリンクを、押したときにアフィリエイトのリンクに変える。
+ * vc_pid はサイトに埋め込む公開用の番号（秘密の値ではない）。
+ */
+define( 'ZAITO_VC_PID', '892740930' );
+function zaito_linkswitch_snippet() {
+    return '<script>var vc_pid = ' . wp_json_encode( ZAITO_VC_PID ) . ';</script><script src="//aml.valuecommerce.com/vcdal.js" async></script>';
+}
+
 function zaito_ga4_snippet() {
     $id    = zaito_ga4_id();
-    $extra = zaito_meta_pixel_snippet() . zaito_social_joined_snippet();
+    $extra = zaito_meta_pixel_snippet() . zaito_social_joined_snippet() . zaito_linkswitch_snippet();
     if ( ! $id ) {
         return zaito_gsc_meta() . $extra;
     }

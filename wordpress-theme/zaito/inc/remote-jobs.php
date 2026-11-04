@@ -50,6 +50,81 @@ function zaito_remote_student_ok( $j ) {
 function zaito_remote_jobs() {
     $jobs = array(
         array(
+            'slug'     => 'chronos-online-tutor',
+            'company'  => 'クロノス教育株式会社',
+            'title'    => '私立の中高生に教えるオンライン塾講師',
+            'category' => '教育・学習サポート',
+            'summary'  => '私立中学・高校に通う生徒に、オンラインで授業をします。担当する生徒の授業の時間に合わせて働きます。研修があります。',
+            'remote'   => '在宅（オンライン授業）',
+            'pay'      => '時給1,600円〜',
+            'hours'    => '18〜22時のうち、担当する生徒の授業の時間',
+            'target'   => '大学生・大学院生・大学卒業以上の方',
+            'contract' => 'アルバイト',
+            'url'      => 'https://arubaito-ex.jp/jobs/302834799',
+            'listed'   => '2026-11-04',
+            'checked'  => '2026-11-04',
+        ),
+        array(
+            'slug'     => 'kannon-online-tutor',
+            'company'  => '個別学習指導 観音学習センター大志',
+            'title'    => '小学生〜高校生のオンライン個別指導講師',
+            'category' => '教育・学習サポート',
+            'summary'  => '小学1年生〜高校3年生（小・中学生が中心）に、英語と数学を中心にオンラインで個別指導をします。塾講師が初めてでも始められ、研修があります。',
+            'remote'   => '在宅（勤務場所は自宅など、静かな場所ならどこでも）',
+            'pay'      => '時給1,250円〜',
+            'hours'    => '週1日1コマから（平日16時〜・土曜14時〜）',
+            'target'   => '大学生・短大生・高専生（未経験OK）',
+            'contract' => 'アルバイト',
+            'url'      => 'https://arubaito-ex.jp/jobs/170775325',
+            'listed'   => '2026-11-04',
+            'checked'  => '2026-11-04',
+        ),
+        array(
+            'slug'     => 'reva-remote-call',
+            'company'  => '株式会社REVA',
+            'title'    => '完全在宅のコールスタッフ（週2日・1日3時間から）',
+            'category' => 'カスタマーサポート',
+            'summary'  => '電話でのご案内をします。マニュアルと研修があり、パソコンと社用の携帯電話は貸してもらえます。面接から採用後まで、一度も出社しません。',
+            'remote'   => '完全在宅（面接から採用後まで出社なし）',
+            'pay'      => '時給1,400円',
+            'hours'    => '週2日・1日3時間から（9〜20時の中で自由）',
+            'target'   => '学生OK。接客・販売・電話対応などの経験がある方（アルバイトの経験でOK）',
+            'contract' => 'アルバイト',
+            'url'      => 'https://arubaito-ex.jp/jobs/405774045',
+            'listed'   => '2026-11-04',
+            'checked'  => '2026-11-04',
+        ),
+        array(
+            'slug'     => 'aftercallnavi-remote-inbound',
+            'company'  => 'アフターコールナビ株式会社',
+            'title'    => '完全在宅の受電スタッフ（お問い合わせの引き継ぎ・6か月）',
+            'category' => 'カスタマーサポート',
+            'summary'  => '不動産や車のサービスについてのお客様からの電話を受け、内容をマニュアルどおりに企業へ引き継ぎます。自分から電話をかける営業はありません。面接も電話で完結します。',
+            'remote'   => '完全在宅（全国どこからでも可）',
+            'pay'      => '時給1,280〜1,600円',
+            'hours'    => '週3日以上・1日3時間以上（朝・昼・夜・深夜のシフト。土日どちらかの勤務が必要）',
+            'target'   => '未経験OK（コールセンターの経験があれば優遇）',
+            'contract' => 'アルバイト（6か月の短期）',
+            'url'      => 'https://arubaito-ex.jp/jobs/405843349',
+            'listed'   => '2026-11-04',
+            'checked'  => '2026-11-04',
+        ),
+        array(
+            'slug'     => 'corelink-remote-office',
+            'company'  => '合同会社コアリンク',
+            'title'    => '建物管理を支える完全在宅の事務スタッフ',
+            'category' => '事務・アシスタント',
+            'summary'  => '建物の管理会社や業者とのメール・チャットでの連絡、作業の進み具合の確認などをします。オンラインの研修とマニュアルがあり、パソコンは貸してもらえます。',
+            'remote'   => '完全在宅（全国どこからでも可）',
+            'pay'      => '時給1,150円〜',
+            'hours'    => '週2日から・1日3時間から',
+            'target'   => '未経験OK（ブラウザでのシステム操作などパソコンの基本操作ができる方）',
+            'contract' => 'パート・アルバイト',
+            'url'      => 'https://arubaito-ex.jp/jobs/404602313',
+            'listed'   => '2026-11-04',
+            'checked'  => '2026-11-04',
+        ),
+        array(
             'slug'     => 'kishiho-recruit-marketing',
             'company'  => '岸保産業株式会社',
             'title'    => '採用マーケティング・採用広報のアシスタント',
@@ -2036,7 +2111,28 @@ function zaito_remote_go( $job ) {
         wp_safe_redirect( $dest, 302 );
         return;
     }
+    // 提携サイト（アルバイトEX）の求人は、サーバーから転送するとLinkSwitchがリンクを変えられないため、
+    // 短い案内ページを返し、ページの中のリンクを押して（自動でも押して）移る。報酬をもらう紹介なので「PR」と書く。
+    if ( zaito_remote_is_affiliate( $job ) ) {
+        status_header( 200 );
+        nocache_headers();
+        echo '<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">'
+            . zaito_ga4_snippet() . '<title>アルバイトEXへ移動します | zaito</title>'
+            . '<style>body{margin:0;background:#F4F6FB;color:#0B1530;font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;padding:24px;box-sizing:border-box}main{max-width:420px;background:#fff;border:1px solid #E6E9F0;border-radius:12px;padding:28px 24px;text-align:center}h1{font-size:18px;margin:0 0 10px}p{font-size:14px;line-height:1.7;color:#3A4563;margin:0 0 18px}a.b{display:block;background:#3D5AFE;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;padding:14px}small{display:block;margin-top:14px;font-size:12px;color:#6B7590}</style></head>'
+            . '<body><main><h1>応募ページ（アルバイトEX）へ移動します</h1><p>' . esc_html( $job['title'] ) . '（' . esc_html( $job['company'] ) . '）の応募は、提携している求人サイト「アルバイトEX」の求人ページから行います。</p>'
+            . '<a class="b" id="zgo" href="' . esc_url( $dest ) . '">求人ページを開く</a><small>PR：zaitoは提携サイトから紹介料を受け取ることがあります。応募先と条件は、移動先のページで確かめてください。</small></main>'
+            . '<script>setTimeout(function(){var a=document.getElementById("zgo");if(a)a.click();},1500);</script></body></html>';
+        exit;
+    }
     wp_redirect( $dest, 302 );
+}
+
+/**
+ * 提携（アフィリエイト）の求人サイトの求人か。今はアルバイトEX（arubaito-ex.jp）だけ。
+ */
+function zaito_remote_is_affiliate( $job ) {
+    $host = (string) wp_parse_url( (string) $job['url'], PHP_URL_HOST );
+    return in_array( $host, array( 'arubaito-ex.jp', 'www.arubaito-ex.jp' ), true );
 }
 
 /**
