@@ -5,7 +5,9 @@
  * - 送り先: 配信停止していない登録者（メールの確認がまだの人も含む）。1人に送るのは3日に1回まで（週2回ほど）。
  *   確認がまだの人がメールのリンクを開いたら、本人のアドレスだと分かったので確認済みにする（zaito_nl_returned）。
  *   1日に送るのは ZAITO_NLA_DAILY 人までにして、少しずつ順に送る（一度に大量に送って迷惑メール扱いされないように）。
+ * - 送り先から外す人: 立場が「社会人」「主婦・主夫」の人（zaitoは学生向け）、動作確認用の登録。
  * - 中身: その人の希望（やってみたい仕事・働ける日数・希望時給・立場）と、保存した求人の職種に合う求人を最大4件。
+ *   反応から学ぶ：応募ページへ進んだ求人・メールから開いた求人と同じ職種を、次の配信で上に出す。
  *   点数は「今日のおすすめ」と同じ（inc/reco.php の zaito_reco_score）。提携サイト（アルバイトEX）の求人は、
  *   その人の興味に合うときだけ少し上に出す（zaito_reco_affiliate_bonus）。前に送った求人・保存済みの求人・募集終了は除く。
  * - 合う求人が2件に満たない人には、その週は送らない。
@@ -36,11 +38,26 @@ function zaito_nla_pick( $id ) {
             $fav_g[ zaito_remote_group( $fj['category'] )[0] ] = true;
         }
     }
+    // 反応から学ぶ：応募ページへ進んだ求人（remote_clicks）と、メールから開いた求人（nla_viewed）の職種を上に出す。
+    $clicked = get_post_meta( $id, 'remote_clicks', true );
+    $clicked = is_array( $clicked ) ? array_keys( $clicked ) : array();
+    $viewed  = get_post_meta( $id, 'nla_viewed', true );
+    $viewed  = is_array( $viewed ) ? $viewed : array();
+    $like_g  = array();
+    foreach ( array( array( $clicked, 4 ), array( $viewed, 2 ) ) as $src ) {
+        foreach ( $src[0] as $cs ) {
+            $cj = zaito_remote_job( $cs );
+            if ( $cj ) {
+                $g            = zaito_remote_group( $cj['category'] )[0];
+                $like_g[ $g ] = min( 8, ( isset( $like_g[ $g ] ) ? $like_g[ $g ] : 0 ) + $src[1] );
+            }
+        }
+    }
     $has  = $p && ( $p['interests'] || $p['role'] || $p['days'] || $p['min_pay'] );
     $now  = time();
     $rows = array();
     foreach ( zaito_remote_jobs() as $i => $j ) {
-        if ( ! empty( $j['closed'] ) || ! zaito_remote_student_ok( $j ) || in_array( $j['slug'], $sent, true ) || in_array( $j['slug'], $favs, true ) ) {
+        if ( ! empty( $j['closed'] ) || ! zaito_remote_student_ok( $j ) || in_array( $j['slug'], $sent, true ) || in_array( $j['slug'], $favs, true ) || in_array( $j['slug'], $clicked, true ) ) {
             continue;
         }
         if ( $p && function_exists( 'zaito_nl_job_matches' ) && ! zaito_nl_job_matches( zaito_nl_member_prefs( $id ), $j ) ) {
@@ -48,8 +65,12 @@ function zaito_nla_pick( $id ) {
         }
         list( $s, ) = zaito_reco_score( $j, $has ? $p : null, $now );
         $s += zaito_reco_affiliate_bonus( $j, $has ? $p : null );
-        if ( isset( $fav_g[ zaito_remote_group( $j['category'] )[0] ] ) ) {
+        $jg = zaito_remote_group( $j['category'] )[0];
+        if ( isset( $fav_g[ $jg ] ) ) {
             $s += 3; // 保存した求人と同じ職種
+        }
+        if ( isset( $like_g[ $jg ] ) ) {
+            $s += $like_g[ $jg ]; // 応募ページへ進んだ・メールから開いた求人と同じ職種
         }
         $rows[] = array( 'slug' => $j['slug'], 's' => $s, 'i' => $i, 'co' => $j['company'] );
     }
@@ -97,6 +118,10 @@ function zaito_nla_recipients() {
         if ( preg_match( '/テスト|test|^qa-/iu', $name . ' ' . $email ) || false !== strpos( $email, '@zaito-work.com' ) ) {
             continue;
         }
+        // zaitoは学生向けなので、立場が「社会人」「主婦・主夫」の人には送らない（学生・未回答・その他には送る）。
+        if ( in_array( (string) get_post_meta( $id, 'role', true ), array( '社会人', '主婦・主夫' ), true ) ) {
+            continue;
+        }
         $seen[ $email ] = true;
         $out[]          = (int) $id;
     }
@@ -110,6 +135,19 @@ add_action( 'zaito_nl_returned', function ( $id ) {
     if ( get_post_meta( $id, 'needs_verify', true ) && ! get_post_meta( $id, 'verified', true ) ) {
         update_post_meta( $id, 'verified', 1 );
         update_post_meta( $id, 'verified_via', 'newsletter_link' );
+    }
+} );
+
+/**
+ * メールのリンクから求人ページを開いたら、その求人を記録する（次の配信で、同じ職種を上に出すため）。
+ */
+add_action( 'zaito_nl_returned', function ( $member ) {
+    $path = (string) wp_parse_url( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '', PHP_URL_PATH );
+    if ( preg_match( '#/remote/([a-z0-9-]+)/?$#', $path, $m ) && zaito_remote_job( $m[1] ) ) {
+        $viewed   = get_post_meta( $member, 'nla_viewed', true );
+        $viewed   = is_array( $viewed ) ? $viewed : array();
+        $viewed[] = $m[1];
+        update_post_meta( $member, 'nla_viewed', array_slice( array_values( array_unique( $viewed ) ), -50 ) );
     }
 } );
 
