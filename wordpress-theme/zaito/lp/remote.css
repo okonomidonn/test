@@ -811,3 +811,15 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 .local li .ms{font-size:24px;color:var(--z-blue)}
 .local li b{font-size:16px;color:var(--z-navy)}
 @media (max-width:860px){.local{margin-top:56px}.local ul{grid-template-columns:minmax(0,1fr)}}
+
+/* 経験者・社会人向けの求人（トップの一覧の下に折りたたむ） */
+.others{margin:56px 0 0;border:1px solid var(--z-border);border-radius:12px;background:#fff}
+.others>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;padding:18px 20px}
+.others>summary::-webkit-details-marker{display:none}
+.others>summary .ms{grid-row:span 2;font-size:24px;color:var(--z-text-3);transition:transform .2s}
+.others[open]>summary .ms{transform:rotate(180deg)}
+.others>summary b{font-size:16px;color:var(--z-navy)}
+.others>summary small{font-size:13px;color:var(--z-text-3);line-height:1.6}
+.others>.cards{margin:0;padding:0 20px 20px}
+.card .tags .lvl{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#FFF4E5;color:#9A5B00;font-size:12px;font-weight:700}
+@media (prefers-reduced-motion:reduce){.others>summary .ms{transition:none}}

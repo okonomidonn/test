@@ -14,6 +14,10 @@ $zaito_actives = zaito_remote_active_conditions();
 $zaito_open   = array_values( array_filter( $zaito_jobs, function ( $j ) {
     return empty( $j['closed'] ) && zaito_remote_student_ok( $j );
 } ) );
+// 大学生には条件が合いにくい求人（社会人経験・実務経験・資格が条件、フルタイム、正社員）。トップでは消さずに、一覧の下に折りたたんで置く。
+$zaito_others = $zaito_cond ? array() : array_values( array_filter( $zaito_jobs, function ( $j ) {
+    return empty( $j['closed'] ) && ! zaito_remote_student_ok( $j );
+} ) );
 $zaito_closed = array_values( array_filter( $zaito_jobs, function ( $j ) {
     return ! empty( $j['closed'] );
 } ) );
@@ -166,6 +170,9 @@ $zaito_card = function ( $j ) {
               <span class="warn">募集終了</span>
             <?php else : ?>
               <span class="ok"><span class="ms" aria-hidden="true">verified</span>完全在宅</span>
+              <?php if ( ! zaito_remote_student_ok( $j ) ) : ?>
+                <span class="lvl"><?php echo preg_match( '/週5日|週4〜5日|週4日以上|フルタイム|週30時間以上|実働8時間/u', (string) $j['hours'] ) ? 'フルタイム' : '経験者・社会人向け'; ?></span>
+              <?php endif; ?>
             <?php endif; ?>
             <?php if ( ! empty( $j['contract'] ) ) : ?>
               <span class="kt"><?php echo esc_html( $j['contract'] ); ?></span>
@@ -326,6 +333,15 @@ if ( ! $zaito_cond ) :
     <?php endforeach; ?>
   </ul>
   <p class="none" id="znone" hidden>条件に合う求人がありません。<button type="button" id="znone-reset">条件をリセット</button></p>
+
+  <?php if ( $zaito_others ) : ?>
+    <details class="others">
+      <summary><span class="ms" aria-hidden="true">expand_more</span><b>経験者・社会人向けの求人（<?php echo esc_html( count( $zaito_others ) ); ?>件）</b><small>社会人経験や実務経験が条件のもの、フルタイムのものです。学生は応募の条件に合わないことが多いので、分けて載せています。</small></summary>
+      <ul class="cards">
+        <?php foreach ( $zaito_others as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
+      </ul>
+    </details>
+  <?php endif; ?>
 
   <?php if ( $zaito_closed ) : ?>
     <h2 class="sub">募集が終了した求人</h2>
