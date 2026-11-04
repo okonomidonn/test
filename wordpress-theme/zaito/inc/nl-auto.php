@@ -2,7 +2,8 @@
 /**
  * 一人ひとりに合わせた求人メールの自動配信（サーバーのCronで毎日。cron/send-mail.php）。
  *
- * - 送り先: メール確認済みで、配信停止していない登録者。1人に送るのは7日に1回まで。
+ * - 送り先: 配信停止していない登録者（メールの確認がまだの人も含む）。1人に送るのは3日に1回まで（週2回ほど）。
+ *   確認がまだの人がメールのリンクを開いたら、本人のアドレスだと分かったので確認済みにする（zaito_nl_returned）。
  *   1日に送るのは ZAITO_NLA_DAILY 人までにして、少しずつ順に送る（一度に大量に送って迷惑メール扱いされないように）。
  * - 中身: その人の希望（やってみたい仕事・働ける日数・希望時給・立場）と、保存した求人の職種に合う求人を最大4件。
  *   点数は「今日のおすすめ」と同じ（inc/reco.php の zaito_reco_score）。提携サイト（アルバイトEX）の求人は、
@@ -16,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'ZAITO_NLA_DAILY', 40 );   // 1日に送る人数の上限
-define( 'ZAITO_NLA_EVERY', 7 );    // 同じ人に送る間隔（日）
+define( 'ZAITO_NLA_EVERY', 3 );    // 同じ人に送る間隔（日）。3なら週2回ほど
 define( 'ZAITO_NLA_JOBS', 4 );     // 1通に載せる求人の数
 define( 'ZAITO_NLA_MIN', 2 );      // これより少なければ送らない
 
@@ -77,11 +78,42 @@ function zaito_nla_pick( $id ) {
 }
 
 /**
- * 今日送る人（7日以上送っていない人を、前回送った日が古い順に）。
+ * 自動配信の送り先。配信停止していない登録者全員（メールの確認がまだの人も含む。同じアドレスは1人として数える）。
+ */
+function zaito_nla_recipients() {
+    $ids  = get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'orderby' => 'ID', 'order' => 'ASC' ) );
+    $seen = array();
+    $out  = array();
+    foreach ( $ids as $id ) {
+        if ( get_post_meta( $id, 'unsubscribed', true ) ) {
+            continue;
+        }
+        $email = strtolower( trim( (string) get_post_meta( $id, 'email', true ) ) );
+        if ( ! is_email( $email ) || isset( $seen[ $email ] ) ) {
+            continue;
+        }
+        $seen[ $email ] = true;
+        $out[]          = (int) $id;
+    }
+    return $out;
+}
+
+/**
+ * メールの確認がまだの人が、自動配信のリンク（本人あての署名つき）を開いたら、確認済みにする。
+ */
+add_action( 'zaito_nl_returned', function ( $id ) {
+    if ( get_post_meta( $id, 'needs_verify', true ) && ! get_post_meta( $id, 'verified', true ) ) {
+        update_post_meta( $id, 'verified', 1 );
+        update_post_meta( $id, 'verified_via', 'newsletter_link' );
+    }
+} );
+
+/**
+ * 今日送る人（ZAITO_NLA_EVERY 日以上送っていない人を、前回送った日が古い順に）。
  */
 function zaito_nla_due( $limit ) {
     $due = array();
-    foreach ( zaito_nl_recipients() as $id ) {
+    foreach ( zaito_nla_recipients() as $id ) {
         $last = (int) get_post_meta( $id, 'nla_last', true );
         if ( $last && ( time() - $last ) < ZAITO_NLA_EVERY * DAY_IN_SECONDS ) {
             continue;
