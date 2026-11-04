@@ -13,22 +13,18 @@ export function ServicePlans() {
   return (
     <div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {PLANS.map((p, i) => (
-          <section key={p.title} className={`relative flex min-w-0 flex-col rounded-xl border p-5 sm:p-6 ${p.recommended ? "border-brand bg-blue-50/60" : "border-slate-200 bg-white"}`}>
-            {p.recommended && <span className="absolute -top-3 left-5 rounded-full bg-brand px-3 py-0.5 text-xs font-bold text-white">おすすめ</span>}
-            <p className="font-num text-sm font-semibold text-slate-500">{i < 2 ? `STEP ${i + 1}` : "月額プラン"}</p>
+        {PLANS.map((p) => (
+          <section key={p.title} className={`flex min-w-0 flex-col rounded-lg border p-5 sm:p-6 ${p.recommended ? "border-2 border-brand" : "border-slate-300"} bg-white`}>
+            <p className={`text-sm font-bold ${p.recommended ? "text-brand" : "text-slate-500"}`}>{p.recommended ? "はじめての方に" : p.unit === "月" ? "月額" : "無料"}</p>
             <h3 className="mt-1 text-xl font-bold text-slate-900">{p.title}</h3>
             <p className="mt-1 text-sm text-slate-600">{p.who}方に</p>
-            <p className="mt-4 font-num text-[2rem] font-bold leading-none tracking-tight text-slate-900">
+            <p className="mt-4 whitespace-nowrap font-num text-[1.75rem] font-bold leading-none text-slate-900">
               {p.price}
-              {p.unit && <span className="ml-1 text-base font-medium tracking-normal text-slate-600">/ {p.unit}</span>}
+              {p.unit && <span className="ml-1 text-base font-medium text-slate-600">/ {p.unit}</span>}
             </p>
-            <ul className="mt-5 space-y-2 border-t border-slate-200 pt-5">
+            <ul className="mt-5 list-disc space-y-1.5 border-t border-slate-200 pl-5 pt-5 text-sm leading-relaxed text-slate-800 marker:text-slate-400">
               {p.features.map((f) => (
-                <li key={f} className="flex gap-2 text-sm text-slate-800">
-                  <span aria-hidden className="font-bold text-brand">✓</span>
-                  {f}
-                </li>
+                <li key={f}>{f}</li>
               ))}
             </ul>
             <div className="mt-auto pt-6">

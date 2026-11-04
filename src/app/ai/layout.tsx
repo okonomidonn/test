@@ -68,7 +68,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                   AI検索対策とは
                 </Link>
                 <Link href="/ai#features" className={nav}>
-                  強み
+                  やること
                 </Link>
                 <Link href="/ai/sample" className={nav}>
                   レポートの見本
