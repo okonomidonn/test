@@ -46,9 +46,9 @@ export default function AiLandingPage() {
           <div>
             <p className="text-sm text-slate-600">WebサービスのAI検索対策</p>
             <h1 className="mt-3 text-[2rem] font-bold leading-[1.35] text-slate-900 sm:text-[2.75rem]">
-              AIで比べるとき、
+              ChatGPTに、
               <br />
-              選択肢に入るために。
+              御社をおすすめしてもらう。
             </h1>
             <p className="mt-6 max-w-lg leading-loose text-slate-700">
               ChatGPTやGeminiに「おすすめは？」と聞かれたとき、御社の名前は出ているでしょうか。実際に質問して数え、競合との差と、直すページをお伝えします。
