@@ -138,7 +138,7 @@ function zaito_handle_reco() {
     }
     // 生成AIの順位があれば、それを先に使う（見終わった・保存済みの求人は除く）。
     $open = array_values( array_filter( zaito_remote_jobs(), function ( $j ) {
-        return empty( $j['closed'] );
+        return empty( $j['closed'] ) && zaito_remote_student_ok( $j );
     } ) );
     $ai   = function_exists( 'zaito_reco_ai_rank' ) ? zaito_reco_ai_rank( $open, $has ? $p : null ) : null;
     if ( $ai ) {

@@ -333,7 +333,7 @@ function zaito_nl_render_admin() {
     $announced  = get_option( 'zaito_nl_announced', array() );
     $announced  = is_array( $announced ) ? $announced : array();
     $jobs       = array_filter( zaito_remote_jobs(), function ( $j ) {
-        return empty( $j['closed'] );
+        return empty( $j['closed'] ) && zaito_remote_student_ok( $j );
     } );
     $recipients = count( zaito_nl_recipients() );
     $unverified = count( array_filter( get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids' ) ), function ( $id ) {

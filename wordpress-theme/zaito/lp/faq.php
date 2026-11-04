@@ -10,7 +10,7 @@ require_once __DIR__ . '/remote-parts.php';
 
 $zaito_total = 0;
 foreach ( zaito_remote_jobs() as $zaito_job ) {
-    if ( empty( $zaito_job['closed'] ) ) {
+    if ( empty( $zaito_job['closed'] ) && zaito_remote_student_ok( $zaito_job ) ) {
         $zaito_total++;
     }
 }
@@ -48,8 +48,8 @@ $zaito_faq = array(
         '<p>できます。学生の応募を受け付けている出社なしの求人が' . (int) $zaito_n( 'gakusei' ) . '件あります（' . $zaito_link( 'gakusei', '学生OKの在宅求人' ) . '）。長期インターンやアルバイトが中心で、授業の合間に働けるものもあります。</p><p>エンジニアやデータ分析など、経験が必要な求人もあるので、応募できる人の条件を確かめてください。</p>',
     ),
     array(
-        '主婦・子育て中でも、短い時間で働けますか？',
-        '<p>働けます。週3日以下や1日数時間から始められる出社なしの求人が' . (int) $zaito_n( 'tanjikan' ) . '件あります（' . $zaito_link( 'tanjikan', '短時間OKの在宅求人' ) . '）。社会人・主婦の方が応募できる求人は' . (int) $zaito_n( 'shakaijin' ) . '件です（' . $zaito_link( 'shakaijin', '社会人・主婦OKの在宅求人' ) . '）。</p><p>短時間の仕事でも、平日の日中に連絡がとれることを条件にしている求人があります。働ける曜日と時間帯を先に決めて、募集ページの条件と合うかを確かめてから応募してください。</p>',
+        '授業やサークルがあっても、短い時間で働けますか？',
+        '<p>働けます。週3日以下や1日数時間から始められる出社なしの求人が' . (int) $zaito_n( 'tanjikan' ) . '件あります（' . $zaito_link( 'tanjikan', '短時間OKの在宅求人' ) . '）。</p><p>短時間の仕事でも、平日の日中に連絡がとれることを条件にしている求人があります。働ける曜日と時間帯を先に決めて、募集ページの条件と合うかを確かめてから応募してください。</p>',
     ),
     array(
         'アルバイトと業務委託は何が違いますか？',
@@ -87,7 +87,7 @@ foreach ( $zaito_faq as $zaito_qa ) {
 }
 zaito_remote_head(
     'よくある質問｜完全在宅の仕事探し・在宅ワークの疑問に答えます｜zaito',
-    '「在宅OK」と「完全在宅」の違い、在宅ワークの詐欺の見分け方、未経験・学生・主婦でもできる在宅の仕事など、在宅の仕事探しでよくある質問に答えます。',
+    '「在宅OK」と「完全在宅」の違い、在宅ワークの詐欺の見分け方、未経験の大学生でもできる在宅の仕事など、在宅の仕事探しでよくある質問に答えます。',
     $zaito_canon,
     array(
         '@context' => 'https://schema.org',

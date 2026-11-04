@@ -12,7 +12,7 @@ $zaito_cond    = isset( $zaito_list_cond ) ? zaito_remote_conditions()[ $zaito_l
 $zaito_jobs    = $zaito_cond ? zaito_remote_condition_jobs( $zaito_list_cond ) : zaito_remote_jobs();
 $zaito_actives = zaito_remote_active_conditions();
 $zaito_open   = array_values( array_filter( $zaito_jobs, function ( $j ) {
-    return empty( $j['closed'] );
+    return empty( $j['closed'] ) && zaito_remote_student_ok( $j );
 } ) );
 $zaito_closed = array_values( array_filter( $zaito_jobs, function ( $j ) {
     return ! empty( $j['closed'] );
@@ -283,10 +283,10 @@ if ( ! $zaito_cond ) :
     <div class="refine" id="zrefine" role="group" aria-label="条件で絞り込む">
       <span class="rl">条件</span>
       <div class="qchips">
-        <button type="button" data-k="who" data-v="student" aria-pressed="false">学生OK<small></small></button>
-        <button type="button" data-k="who" data-v="adult" aria-pressed="false">社会人・主婦OK<small></small></button>
         <button type="button" data-k="newbie" data-v="1" aria-pressed="false">未経験OK<small></small></button>
         <button type="button" data-k="days" data-v="2" aria-pressed="false">週1〜2日でOK<small></small></button>
+        <button type="button" data-k="days" data-v="3" aria-pressed="false">週3日以下<small></small></button>
+        <button type="button" data-k="who" data-v="student" aria-pressed="false">学生歓迎<small></small></button>
         <button type="button" data-k="pay" data-v="1200" aria-pressed="false">時給1,200円〜<small></small></button>
         <button type="button" data-k="pay" data-v="1500" aria-pressed="false">時給1,500円〜<small></small></button>
         <button type="button" data-k="pay" data-v="2000" aria-pressed="false">時給2,000円〜<small></small></button>
@@ -552,7 +552,7 @@ if ( ! $zaito_cond ) :
     var q = new URLSearchParams(location.search);
     var groups = Array.prototype.map.call(groupBtns, function (b) { return b.getAttribute('data-filter'); });
     if (q.get('g') && groups.indexOf(q.get('g')) !== -1) st.g = q.get('g');
-    if (q.get('who') === 'student' || q.get('who') === 'adult') st.who = q.get('who');
+    if (q.get('who') === 'student') st.who = 'student';
     ['pay', 'days', 'newbie', 'fav'].forEach(function (k) {
       var v = +q.get(k);
       if (document.querySelector('.qchips [data-k="' + k + '"][data-v="' + v + '"]')) st[k] = v;

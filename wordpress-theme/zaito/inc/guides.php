@@ -49,15 +49,6 @@ function zaito_guides() {
             'published'   => '2026-10-18',
             'updated'     => '2026-10-22',
         ),
-        'shufu-zaitaku-work' => array(
-            'title'       => '主婦・子育て中の在宅ワーク｜家事や育児と両立しやすい仕事と、探すときのポイント',
-            'kicker'      => '主婦・子育て中',
-            'icon'        => 'home',
-            'h1'          => '主婦・子育て中の在宅ワーク',
-            'description' => '主婦・子育て中の人が家で働ける在宅ワークを、職種ごとの仕事内容・時給・働く時間で紹介します。扶養や子どもの急な体調不良など、探すときに確かめたいポイントもまとめました。',
-            'published'   => '2026-10-18',
-            'updated'     => '2026-10-22',
-        ),
         'zaitaku-ok-kanzen-zaitaku' => array(
             'title'       => '「在宅OK」と「完全在宅」の違い｜求人の書き方で分かる、出社がある・ないの見分け方',
             'kicker'      => '求人の見方',
@@ -128,7 +119,7 @@ add_action( 'template_redirect', 'zaito_guide_template_redirect', -1 );
  */
 function zaito_guide_jobs( $filter ) {
     return array_values( array_filter( zaito_remote_jobs(), function ( $j ) use ( $filter ) {
-        return empty( $j['closed'] ) && $filter( $j );
+        return empty( $j['closed'] ) && zaito_remote_student_ok( $j ) && $filter( $j );
     } ) );
 }
 

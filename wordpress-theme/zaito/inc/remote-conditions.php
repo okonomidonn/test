@@ -173,21 +173,6 @@ function zaito_remote_conditions() {
                 return (bool) preg_match( '/学生|大学|全学年/u', $j['target'] );
             },
         ),
-        'shakaijin' => array(
-            'label' => '社会人・主婦OK',
-            'icon'  => 'work_history',
-            'h1'    => '社会人・主婦の方が応募できる在宅求人',
-            'title' => '社会人・主婦（主夫）向けの在宅・リモート求人一覧（出社なし）',
-            'body'  => array(
-                '社会人の方や、子育て中・ブランクのある方も応募できる、出社なしの求人です。事務やオンライン秘書、カスタマーサポートなど、これまでの仕事の経験を活かせるものが多くあります。',
-                '業務委託の募集が多く、働く時間を自分で調整しやすい反面、報酬は稼働した時間や件数で決まります。契約の形（業務委託かアルバイトか）と、報酬の計算のしかたを応募前に確かめておくと安心です。',
-            ),
-            'match' => function ( $j ) {
-                // 対象に学生が書かれていない求人（経験で条件を決めているものなど）と、社会人・主婦などを明記した求人。
-                return ! preg_match( '/学生|大学|全学年/u', $j['target'] )
-                    || preg_match( '/社会人|主婦|既卒|副業|フリーランス/u', $j['target'] );
-            },
-        ),
         'jimu'      => array(
             'label' => '事務・サポート',
             'icon'  => 'support_agent',
@@ -270,7 +255,7 @@ function zaito_remote_condition_jobs( $slug ) {
         return array();
     }
     return array_values( array_filter( zaito_remote_jobs(), function ( $j ) use ( $conds, $slug ) {
-        return empty( $j['closed'] ) && call_user_func( $conds[ $slug ]['match'], $j );
+        return empty( $j['closed'] ) && zaito_remote_student_ok( $j ) && call_user_func( $conds[ $slug ]['match'], $j );
     } ) );
 }
 
