@@ -92,6 +92,11 @@ function zaito_nla_recipients() {
         if ( ! is_email( $email ) || isset( $seen[ $email ] ) ) {
             continue;
         }
+        // 動作確認のために作った登録（名前やアドレスに「テスト」「test」「qa-」が入ったもの）には送らない。
+        $name = (string) get_post_meta( $id, 'name', true );
+        if ( preg_match( '/テスト|test|^qa-/iu', $name . ' ' . $email ) || false !== strpos( $email, '@zaito-work.com' ) ) {
+            continue;
+        }
         $seen[ $email ] = true;
         $out[]          = (int) $id;
     }
@@ -200,8 +205,7 @@ function zaito_nla_intro( $id, $n ) {
     $name = zaito_nla_name( $id );
     return ( '' !== $name ? $name . "さん\n\n" : '' )
         . "こんにちは、zaitoです。\n"
-        . ( '' !== $name ? $name . 'さん' : 'あなた' ) . 'におすすめの在宅バイトを' . $n . "件お届けします。どれも、研修や会議も含めて出社のない、自宅だけで働ける仕事です。\n\n"
-        . '気になる求人があれば、早めにチェックしてみてください。募集は予告なく終わることがあります。';
+        . ( '' !== $name ? $name . 'さん' : 'あなた' ) . 'におすすめの在宅バイトを' . $n . '件選びました。どれも出社なしで、家から働けます。';
 }
 
 /**
