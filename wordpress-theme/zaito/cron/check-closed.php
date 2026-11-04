@@ -8,6 +8,9 @@ if ( 'cli' !== PHP_SAPI ) {
     http_response_code( 404 );
     exit;
 }
+// コマンドラインでは https で動いていると分からないため、メールのリンクが http になる。本番と同じく https として動かす。
+$_SERVER['HTTPS']     = 'on';
+$_SERVER['HTTP_HOST'] = 'zaito-work.com';
 define( 'WP_USE_THEMES', false );
 require dirname( __DIR__, 4 ) . '/wp-load.php';
 set_time_limit( 0 );

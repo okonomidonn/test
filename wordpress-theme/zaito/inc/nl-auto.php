@@ -150,7 +150,7 @@ function zaito_nla_run( $dry = false, $limit = ZAITO_NLA_DAILY ) {
         }
         $email   = (string) get_post_meta( $id, 'email', true );
         $subject = '【zaito】あなたに合いそうな在宅バイトが' . count( $slugs ) . '件あります';
-        $body    = zaito_nl_build_body( $intro, $slugs, $campaign, $id );
+        $body    = zaito_nla_body( $intro, $slugs, $campaign, $id );
         if ( zaito_nl_send_one( $email, $subject, $body, zaito_nl_unsub_url( $id, $campaign ) ) ) {
             $res['sent']++;
             $sent = get_post_meta( $id, 'nla_sent', true );
@@ -178,4 +178,11 @@ function zaito_nla_run( $dry = false, $limit = ZAITO_NLA_DAILY ) {
     }
     update_option( 'zaito_nla_last', array( 'at' => wp_date( 'c' ), 'sent' => $res['sent'], 'skipped' => $res['skipped'], 'failed' => $res['failed'], 'dry' => $dry ), false );
     return $res;
+}
+
+/**
+ * 自動配信の本文。手動の配信と同じ本文を使い、見出しだけ「あなたに合いそうな在宅求人」に変える。
+ */
+function zaito_nla_body( $intro, $slugs, $campaign, $id ) {
+    return str_replace( "新しく載った在宅求人\n", "あなたに合いそうな在宅求人\n", zaito_nl_build_body( $intro, $slugs, $campaign, $id ) );
 }

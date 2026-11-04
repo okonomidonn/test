@@ -9,6 +9,9 @@ if ( 'cli' !== PHP_SAPI ) {
     http_response_code( 404 );
     exit;
 }
+// コマンドラインでは https で動いていると分からないため、メールのリンクが http になる。本番と同じく https として動かす。
+$_SERVER['HTTPS']     = 'on';
+$_SERVER['HTTP_HOST'] = 'zaito-work.com';
 define( 'WP_USE_THEMES', false );
 require dirname( __DIR__, 4 ) . '/wp-load.php';
 set_time_limit( 0 );
@@ -22,7 +25,7 @@ if ( in_array( '--sample', $argv, true ) ) {
         }
         $p    = zaito_reco_prefs_for( $id );
         $note = '【見本】登録ID ' . $id . '（やってみたい仕事：' . ( $p['interests'] ? implode( '・', $p['interests'] ) : '未回答' ) . '／保存：' . count( $p['favorites'] ) . "件）あての内容です。本人には送っていません。\n\n";
-        $body = $note . zaito_nl_build_body( 'zaitoです。登録のときに教えていただいた希望と、保存した求人をもとに、あなたに合いそうな出社なしの在宅バイトを選びました。', $slugs, 'sample', 0 );
+        $body = $note . zaito_nla_body( 'zaitoです。登録のときに教えていただいた希望と、保存した求人をもとに、あなたに合いそうな出社なしの在宅バイトを選びました。', $slugs, 'sample', 0 );
         zaito_nl_send_one( 'info@zaito-work.com', '【見本】あなたに合いそうな在宅バイトが' . count( $slugs ) . '件あります', $body, home_url( '/' ) );
         if ( ++$n >= 3 ) {
             break;
