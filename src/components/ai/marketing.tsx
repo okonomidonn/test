@@ -103,13 +103,13 @@ const COMPETITORS = {
 export function CompetitorTable() {
   return (
     <div>
-      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-slate-300 bg-white">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
             <tr className="border-b border-slate-200">
-              <th className="w-28 bg-slate-50 p-3" />
+              <th className="w-28 p-3" />
               {COMPETITORS.cols.map((c, i) => (
-                <th key={c} className={`p-3 align-bottom font-bold ${i === 0 ? "bg-brand text-white" : "bg-slate-50 text-slate-700"}`}>
+                <th key={c} className={`p-3 align-bottom font-bold ${i === 0 ? "text-brand" : "text-slate-600"}`}>
                   {c}
                 </th>
               ))}
@@ -118,11 +118,11 @@ export function CompetitorTable() {
           <tbody className="divide-y divide-slate-200">
             {COMPETITORS.rows.map((r) => (
               <tr key={r.label}>
-                <th scope="row" className="bg-slate-50 p-3 font-semibold text-slate-700">
+                <th scope="row" className="p-3 font-medium text-slate-600">
                   {r.label}
                 </th>
                 {r.cells.map((c, i) => (
-                  <td key={i} className={`p-3 ${i === 0 ? "bg-blue-50 font-bold text-brand" : "text-slate-700"}`}>
+                  <td key={i} className={`p-3 ${i === 0 ? "font-bold text-slate-900" : "text-slate-600"}`}>
                     {c}
                   </td>
                 ))}

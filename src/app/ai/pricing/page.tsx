@@ -9,7 +9,7 @@ export default function PricingPage() {
   return (
     <div className="space-y-12 pt-2 sm:space-y-16 sm:pt-6">
       <header className="max-w-3xl">
-        <p className="text-sm font-semibold text-brand">料金とサポート</p>
+        <p className="text-sm text-slate-600">料金とサポート</p>
         <h1 className="mt-3 text-3xl font-bold leading-snug text-slate-900 sm:text-[2.75rem]">まず無料で調べて、<br />必要なら改善まで。</h1>
         <p className="mt-5 text-lg leading-relaxed text-slate-700">無料チェックだけのご利用もできます。<br className="hidden sm:block" />有料プランへの自動切り替えはありません。</p>
       </header>

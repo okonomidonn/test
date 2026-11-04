@@ -18,7 +18,7 @@ export function HeroLeadForm({ urlLabel, urlPlaceholder }: { urlLabel?: string; 
   if (state.done) {
     return (
       <div role="status" className="py-10 text-center">
-        <p className="text-xl font-bold text-brand">受け付けました</p>
+        <p className="text-xl font-bold text-slate-900">受け付けました</p>
         <p className="mt-3 text-slate-800">3営業日以内に、診断結果をメールでお送りします。</p>
       </div>
     );
@@ -36,7 +36,6 @@ export function HeroLeadForm({ urlLabel, urlPlaceholder }: { urlLabel?: string; 
           <div key={f.k} className="space-y-1.5">
             <label htmlFor={`hero-${f.k}`} className="flex items-center gap-2 text-sm font-bold text-slate-800">
               {f.label}
-              
             </label>
             <div>
               <input
@@ -55,11 +54,11 @@ export function HeroLeadForm({ urlLabel, urlPlaceholder }: { urlLabel?: string; 
           </div>
         );
       })}
-      <p className="pt-1 text-center text-sm text-slate-700">
+      <p className="pt-1 text-sm text-slate-600">
         <Link href="/ai/privacy" className="font-semibold text-brand underline">プライバシーポリシー</Link>に同意のうえ送信してください
       </p>
-      <button type="submit" disabled={isPending} className="flex min-h-13 w-full items-center justify-center rounded-lg bg-brand py-3.5 text-lg font-bold text-white shadow-sm transition hover:bg-brand-dark disabled:opacity-60">
-        {isPending ? "送信しています…" : "無料で診断を依頼する →"}
+      <button type="submit" disabled={isPending} className="flex min-h-13 w-full items-center justify-center rounded-lg bg-brand py-3.5 text-lg font-bold text-white transition hover:bg-brand-dark disabled:opacity-60">
+        {isPending ? "送信しています…" : "無料で診断を依頼する"}
       </button>
     </form>
   );
