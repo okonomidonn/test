@@ -133,7 +133,6 @@ function zaito_nla_due( $limit ) {
  */
 function zaito_nla_run( $dry = false, $limit = ZAITO_NLA_DAILY ) {
     $campaign = 'auto' . wp_date( 'Ymd' );
-    $intro    = "zaitoです。登録のときに教えていただいた希望と、保存した求人をもとに、あなたに合いそうな出社なしの在宅バイトを選びました。";
     $res      = array( 'campaign' => $campaign, 'sent' => 0, 'skipped' => 0, 'failed' => 0, 'plan' => array() );
     foreach ( zaito_nla_due( $limit ) as $id ) {
         $slugs = zaito_nla_pick( $id );
@@ -149,8 +148,8 @@ function zaito_nla_run( $dry = false, $limit = ZAITO_NLA_DAILY ) {
             continue;
         }
         $email   = (string) get_post_meta( $id, 'email', true );
-        $subject = '【zaito】あなたに合いそうな在宅バイトが' . count( $slugs ) . '件あります';
-        $body    = zaito_nla_body( $intro, $slugs, $campaign, $id );
+        $subject = zaito_nla_subject( $id, count( $slugs ) );
+        $body    = zaito_nla_body( zaito_nla_intro( $id, count( $slugs ) ), $slugs, $campaign, $id );
         if ( zaito_nl_send_one( $email, $subject, $body, zaito_nl_unsub_url( $id, $campaign ) ) ) {
             $res['sent']++;
             $sent = get_post_meta( $id, 'nla_sent', true );
@@ -181,8 +180,39 @@ function zaito_nla_run( $dry = false, $limit = ZAITO_NLA_DAILY ) {
 }
 
 /**
- * 自動配信の本文。手動の配信と同じ本文を使い、見出しだけ「あなたに合いそうな在宅求人」に変える。
+ * 宛名に使う名前（姓。なければ登録した名前の最初の部分）。分からなければ空。
+ */
+function zaito_nla_name( $id ) {
+    $last = trim( (string) get_post_meta( $id, 'last_name', true ) );
+    if ( '' === $last ) {
+        $name = trim( (string) get_post_meta( $id, 'name', true ) );
+        $last = '' !== $name ? preg_split( '/[\s　]+/u', $name )[0] : '';
+    }
+    return mb_substr( $last, 0, 10 );
+}
+
+function zaito_nla_subject( $id, $n ) {
+    $name = zaito_nla_name( $id );
+    return '【zaito】' . ( '' !== $name ? $name . 'さんに' : '' ) . 'おすすめの在宅バイト（' . $n . '件）';
+}
+
+function zaito_nla_intro( $id, $n ) {
+    $name = zaito_nla_name( $id );
+    return ( '' !== $name ? $name . "さん\n\n" : '' )
+        . "こんにちは、zaitoです。\n"
+        . ( '' !== $name ? $name . 'さん' : 'あなた' ) . 'におすすめの在宅バイトを' . $n . "件お届けします。どれも、研修や会議も含めて出社のない、自宅だけで働ける仕事です。\n\n"
+        . '気になる求人があれば、早めにチェックしてみてください。募集は予告なく終わることがあります。';
+}
+
+/**
+ * 自動配信の本文。手動の配信と同じ本文を使い、見出しと、おすすめの選び方の説明だけ変える。
  */
 function zaito_nla_body( $intro, $slugs, $campaign, $id ) {
-    return str_replace( "新しく載った在宅求人\n", "あなたに合いそうな在宅求人\n", zaito_nl_build_body( $intro, $slugs, $campaign, $id ) );
+    $body = zaito_nl_build_body( $intro, $slugs, $campaign, $id );
+    $body = str_replace( "新しく載った在宅求人\n", "今回のおすすめ\n", $body );
+    return str_replace(
+        "このメールは、zaitoに登録したメールアドレスに、登録時に答えていただいた希望に合う求人をお送りしています。\n",
+        "このメールは、zaitoに登録したメールアドレスにお送りしています。おすすめは、登録のときに選んでいただいた「やってみたい仕事」や「働ける日数」をもとに選んでいます。希望はマイページからいつでも変えられます。\n",
+        $body
+    );
 }

@@ -25,8 +25,8 @@ if ( in_array( '--sample', $argv, true ) ) {
         }
         $p    = zaito_reco_prefs_for( $id );
         $note = '【見本】登録ID ' . $id . '（やってみたい仕事：' . ( $p['interests'] ? implode( '・', $p['interests'] ) : '未回答' ) . '／保存：' . count( $p['favorites'] ) . "件）あての内容です。本人には送っていません。\n\n";
-        $body = $note . zaito_nla_body( 'zaitoです。登録のときに教えていただいた希望と、保存した求人をもとに、あなたに合いそうな出社なしの在宅バイトを選びました。', $slugs, 'sample', 0 );
-        zaito_nl_send_one( 'info@zaito-work.com', '【見本】あなたに合いそうな在宅バイトが' . count( $slugs ) . '件あります', $body, home_url( '/' ) );
+        $body = $note . zaito_nla_body( zaito_nla_intro( $id, count( $slugs ) ), $slugs, 'sample', 0 );
+        zaito_nl_send_one( 'info@zaito-work.com', '【見本】' . zaito_nla_subject( $id, count( $slugs ) ), $body, home_url( '/' ) );
         if ( ++$n >= 3 ) {
             break;
         }
