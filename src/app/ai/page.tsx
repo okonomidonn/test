@@ -45,10 +45,12 @@ export default function AiLandingPage() {
         <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pt-16 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
           <div>
             <p className="text-sm text-slate-600">WebサービスのAI検索対策</p>
-            <h1 className="mt-3 text-[2rem] font-bold leading-[1.35] text-slate-900 sm:text-[2.75rem]">
+            <h1 className="mt-3 text-[1.75rem] font-bold leading-[1.4] text-slate-900 sm:text-[2.5rem]">
               ChatGPTに、
               <br />
-              御社をおすすめしてもらう。
+              御社を
+              <br className="sm:hidden" />
+              おすすめしてもらう。
             </h1>
             <p className="mt-6 max-w-lg leading-loose text-slate-700">
               ChatGPTやGeminiに「おすすめは？」と聞かれたとき、御社の名前は出ているでしょうか。実際に質問して数え、競合との差と、直すページをお伝えします。

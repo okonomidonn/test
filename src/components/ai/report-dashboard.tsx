@@ -124,11 +124,11 @@ export function TrendLine({ points }: { points: { label: string; rate: number }[
           </text>
         </g>
       ))}
-      <path d={`${path} L${x(points.length - 1)},${y(0)} L${x(0)},${y(0)} Z`} fill="#2563eb" fillOpacity="0.07" />
-      <path d={path} fill="none" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+      <path d={`${path} L${x(points.length - 1)},${y(0)} L${x(0)},${y(0)} Z`} fill="var(--brand)" fillOpacity="0.07" />
+      <path d={path} fill="none" stroke="var(--brand)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
       {points.map((p, i) => (
         <g key={p.label}>
-          <circle cx={x(i)} cy={y(p.rate)} r={i === points.length - 1 ? 5 : 3.5} fill="#ffffff" stroke="#2563eb" strokeWidth="2">
+          <circle cx={x(i)} cy={y(p.rate)} r={i === points.length - 1 ? 5 : 3.5} fill="#ffffff" stroke="var(--brand)" strokeWidth="2">
             <title>{`${p.label}：${p.rate}%`}</title>
           </circle>
           <text x={x(i)} y={H - 8} textAnchor="middle" fontSize="13" fill="#6b7280">
