@@ -1877,6 +1877,9 @@ require_once get_template_directory() . '/inc/prelaunch.php';
 require_once get_template_directory() . '/inc/sales-preview.php';
 // まとめ求人（/remote/）: 公開されている完全在宅の求人を運営が確認してまとめたもの
 require_once get_template_directory() . '/inc/remote-jobs.php';
+
+// まとめ求人の募集終了チェック（サーバーのCronで毎日。cron/check-closed.php）
+require_once get_template_directory() . '/inc/job-check.php';
 // 条件別の求人一覧（/zaitaku/{slug}/）
 require_once get_template_directory() . '/inc/remote-conditions.php';
 
