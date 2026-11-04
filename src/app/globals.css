@@ -29,16 +29,16 @@ body {
 
 /*
  * AIススメルの見た目（SocialDeskの画面には影響しない）
- * お手本：才流（sairu.co.jp）とベイジ（baigie.me）。実際に測った数字に合わせている。
- * 色：差し色は紺1色。文字は「濃い紺・灰」の2色、罫線と背景の灰はそれぞれ2段階まで。
+ * お手本：才流（sairu.co.jp）とベイジ（baigie.me）。実際に測った数字に合わせている（色だけは青のまま）。
+ * 色：差し色は青1色。文字は「濃い紺・灰」の2色、罫線と背景の灰はそれぞれ2段階まで。
  * 角の丸みは4pxの1種類（丸いのは棒グラフなど rounded-full だけ）。字間は標準のまま詰めない。
  * 書体：Noto Sans JP（数字だけ Inter で桁をそろえる）。本文16px。
  */
 .ai-scope {
-  --brand: #1d2550;
-  --brand-dark: #121836;
-  --brand-soft: #eef0f6;
-  --mark: #e3e6f0;
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
+  --brand-soft: #eff6ff;
+  --mark: #dbeafe;
 
   /* 文字・罫線・背景のグレー（Tailwindのslateを上書き）。文字は2色にまとめる */
   --color-slate-50: #f7f7f8;
@@ -46,20 +46,20 @@ body {
   --color-slate-200: #e4e4e8;
   --color-slate-300: #d2d2d8;
   --color-slate-400: #a3a4ad;
-  --color-slate-500: #686a76;
-  --color-slate-600: #686a76;
-  --color-slate-700: #16182b;
-  --color-slate-800: #16182b;
-  --color-slate-900: #16182b;
+  --color-slate-500: #696c75;
+  --color-slate-600: #696c75;
+  --color-slate-700: #1a1d26;
+  --color-slate-800: #1a1d26;
+  --color-slate-900: #1a1d26;
 
   /* 以前の紫（indigo）・青（blue）の指定も差し色にそろえる */
   --color-indigo-50: var(--brand-soft);
   --color-indigo-100: var(--brand-soft);
-  --color-indigo-200: #c9cde0;
+  --color-indigo-200: #bfdbfe;
   --color-indigo-700: var(--brand-dark);
   --color-blue-50: var(--brand-soft);
   --color-blue-100: var(--brand-soft);
-  --color-blue-200: #c9cde0;
+  --color-blue-200: #bfdbfe;
 
   --radius-md: 4px;
   --radius-lg: 4px;
