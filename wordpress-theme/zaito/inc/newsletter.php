@@ -272,6 +272,7 @@ function zaito_nl_build_body( $intro, $slugs, $campaign, $member = 0 ) {
             . '　報酬：' . ( $j['pay'] ? $j['pay'] : '募集ページで確認' ) . "\n"
             . ( $j['hours'] ? '　働き方：' . $j['hours'] . "\n" : '' )
             . ( ! empty( $j['caution'] ) ? '　※' . $j['caution'] . "\n" : '' )
+            . ( function_exists( 'zaito_remote_is_affiliate' ) && zaito_remote_is_affiliate( $j ) ? "　※提携している求人サイト（アルバイトEX）の求人です（PR）\n" : '' )
             . '　' . zaito_nl_job_url( $slug, $campaign, $member ) . "\n\n";
     }
     $body .= "すべての在宅求人を見る\n"

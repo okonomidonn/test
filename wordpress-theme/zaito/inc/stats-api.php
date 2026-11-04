@@ -119,6 +119,7 @@ function zaito_stats_data( $days ) {
     return array(
         'generated_at' => wp_date( 'c' ),
         'job_check'     => get_option( 'zaito_job_check_last', null ),
+        'mail_auto'     => get_option( 'zaito_nla_last', null ),
         'registrations' => array(
             'total'          => $total,
             'verified'       => zaito_stats_meta_count( 'verified' ),

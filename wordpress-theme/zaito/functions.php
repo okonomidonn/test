@@ -1891,6 +1891,9 @@ require_once get_template_directory() . '/inc/mypage.php';
 // トップページの「今日のおすすめ」（5件）
 require_once get_template_directory() . '/inc/reco.php';
 require_once get_template_directory() . '/inc/reco-ai.php';
+
+// 一人ひとりに合わせた求人メールの自動配信（サーバーのCronで毎日。cron/send-mail.php）
+require_once get_template_directory() . '/inc/nl-auto.php';
 // zaito経由の応募・採用を、本人にあとで聞いて数える
 require_once get_template_directory() . '/inc/apply-track.php';
 

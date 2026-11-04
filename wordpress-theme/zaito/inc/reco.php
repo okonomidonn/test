@@ -42,9 +42,13 @@ function zaito_reco_prefs() {
     if ( ! $id ) {
         $id = zaito_remote_member_id();
     }
-    if ( ! $id ) {
-        return null;
-    }
+    return $id ? zaito_reco_prefs_for( $id ) : null;
+}
+
+/**
+ * 登録者（zaito_interest のID）の希望条件と保存した求人。メールの自動配信（inc/nl-auto.php）でも使う。
+ */
+function zaito_reco_prefs_for( $id ) {
     $interests = get_post_meta( $id, 'interests', true );
     $favs      = function_exists( 'zaito_fav_get' ) ? zaito_fav_get( $id ) : array();
     return array(
@@ -118,6 +122,72 @@ function zaito_reco_score( $j, $p, $today ) {
 }
 
 /**
+ * 提携サイト（アルバイトEX）の求人を少し上に出すための点数。
+ * やってみたい仕事を答えている人には、その仕事に合うときだけ足す（興味のない職種を押しつけないため）。
+ */
+function zaito_reco_affiliate_bonus( $j, $p ) {
+    if ( ! function_exists( 'zaito_remote_is_affiliate' ) || ! zaito_remote_is_affiliate( $j ) ) {
+        return 0;
+    }
+    if ( ! $p || empty( $p['interests'] ) ) {
+        return 4;
+    }
+    $words = zaito_reco_interest_words();
+    $text  = $j['category'] . ' ' . $j['title'];
+    foreach ( $p['interests'] as $it ) {
+        if ( isset( $words[ $it ] ) && preg_match( $words[ $it ], $text ) ) {
+            return 4;
+        }
+    }
+    return 0;
+}
+
+/**
+ * おすすめ（AIでも点数でも）の先頭に、その人に合う提携サイトの求人を2件まで置く。
+ * $items は array( 'slug', 'why' ) の並び。合う提携の求人がなければ、そのまま返す。
+ */
+function zaito_reco_put_affiliate_first( $items, $p, $skip ) {
+    $now   = time();
+    $cands = array();
+    foreach ( zaito_remote_jobs() as $j ) {
+        if ( ! empty( $j['closed'] ) || ! zaito_remote_student_ok( $j ) || in_array( $j['slug'], $skip, true ) ) {
+            continue;
+        }
+        if ( zaito_reco_affiliate_bonus( $j, $p ) <= 0 ) {
+            continue;
+        }
+        list( $s, $why ) = zaito_reco_score( $j, $p, $now );
+        if ( $p && $s < 3 ) {
+            continue; // 希望（時給・日数・立場）に合わないものは出さない
+        }
+        $cands[] = array( 'slug' => $j['slug'], 's' => $s, 'why' => $why );
+    }
+    usort( $cands, function ( $a, $b ) {
+        return $b['s'] - $a['s'];
+    } );
+    $front = array();
+    $have  = wp_list_pluck( $items, 'slug' );
+    foreach ( $items as $it ) { // AI・点数がすでに選んでいる提携の求人を先に
+        $j = zaito_remote_job( $it['slug'] );
+        if ( $j && zaito_remote_is_affiliate( $j ) && zaito_reco_affiliate_bonus( $j, $p ) > 0 && count( $front ) < 2 ) {
+            $front[] = $it;
+        }
+    }
+    foreach ( $cands as $c ) {
+        if ( count( $front ) >= 2 ) {
+            break;
+        }
+        if ( ! in_array( $c['slug'], wp_list_pluck( $front, 'slug' ), true ) ) {
+            $front[] = array( 'slug' => $c['slug'], 'why' => $c['why'] );
+        }
+    }
+    $rest = array_values( array_filter( $items, function ( $it ) use ( $front ) {
+        return ! in_array( $it['slug'], wp_list_pluck( $front, 'slug' ), true );
+    } ) );
+    return array_slice( array_merge( $front, $rest ), 0, ZAITO_RECO_N );
+}
+
+/**
  * おすすめを返す。POST seen[]: このブラウザで見終わった求人。
  */
 function zaito_handle_reco() {
@@ -130,10 +200,11 @@ function zaito_handle_reco() {
 
     $rows = array();
     foreach ( zaito_remote_jobs() as $i => $j ) { // $i は zaito_remote_jobs() の並び順（同点のときに使う）
-        if ( ! empty( $j['closed'] ) ) {
+        if ( ! empty( $j['closed'] ) || ! zaito_remote_student_ok( $j ) ) {
             continue;
         }
         list( $s, $why ) = zaito_reco_score( $j, $has ? $p : null, $now );
+        $s     += zaito_reco_affiliate_bonus( $j, $has ? $p : null );
         $rows[] = array( 'slug' => $j['slug'], 's' => $s, 'i' => $i, 'why' => $why );
     }
     // 生成AIの順位があれば、それを先に使う（見終わった・保存済みの求人は除く）。
@@ -150,7 +221,7 @@ function zaito_handle_reco() {
                 'mode'     => $has ? 'member' : ( $p ? 'member_noprefs' : 'guest' ),
                 'ai'       => true,
                 'all_seen' => false,
-                'items'    => array_slice( $picked, 0, ZAITO_RECO_N ),
+                'items'    => zaito_reco_put_affiliate_first( array_slice( $picked, 0, ZAITO_RECO_N ), $has ? $p : null, $skip ),
             ) );
         }
     }
@@ -174,6 +245,11 @@ function zaito_handle_reco() {
         if ( ( isset( $by_g[ $g ] ) && $by_g[ $g ] >= 2 ) || isset( $by_co[ $co ] ) ) {
             continue;
         }
+        if ( zaito_remote_is_affiliate( $j ) && count( array_filter( $pick, function ( $x ) use ( $jobs ) {
+            return zaito_remote_is_affiliate( $jobs[ $x['i'] ] );
+        } ) ) >= 3 ) {
+            continue; // 提携サイトの求人は5件のうち3件まで
+        }
         $pick[]       = $r;
         $by_g[ $g ]   = isset( $by_g[ $g ] ) ? $by_g[ $g ] + 1 : 1;
         $by_co[ $co ] = 1;
@@ -194,9 +270,9 @@ function zaito_handle_reco() {
         'mode'     => $has ? 'member' : ( $p ? 'member_noprefs' : 'guest' ),
         'ai'       => false,
         'all_seen' => $all_seen,
-        'items'    => array_map( function ( $r ) {
+        'items'    => zaito_reco_put_affiliate_first( array_map( function ( $r ) {
             return array( 'slug' => $r['slug'], 'why' => $r['why'] );
-        }, $pick ),
+        }, $pick ), $has ? $p : null, $all_seen ? array() : $skip ),
     ) );
 }
 add_action( 'wp_ajax_zaito_reco', 'zaito_handle_reco' );
