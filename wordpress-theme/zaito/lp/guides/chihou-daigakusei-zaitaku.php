@@ -13,7 +13,7 @@ $zaito_zenkoku = array_values( array_filter( $zaito_sjobs, function ( $j ) {
     return (bool) preg_match( '/全国|どこからでも|遠方|地方/u', $j['remote'] . $j['summary'] );
 } ) );
 $zaito_intern = array_values( array_filter( $zaito_sjobs, function ( $j ) {
-    return false !== mb_strpos( $j['contract'] . $j['title'], 'インターン' );
+    return false !== mb_strpos( ( isset( $j['contract'] ) ? $j['contract'] : '' ) . $j['title'], 'インターン' );
 } ) );
 $zaito_by = zaito_guide_by_group( $zaito_sjobs );
 // 地元では見つけにくいことが多い職種。掲載中の求人がある職種だけを、読みやすい名前で並べる。
