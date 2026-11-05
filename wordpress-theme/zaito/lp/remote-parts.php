@@ -90,16 +90,22 @@ if ( ! function_exists( 'zaito_remote_job_posting' ) ) {
             'directApply'        => false,
             'url'                => zaito_remote_url( $j['slug'] ),
         );
-        // 「時給1,300〜1,500円」の形のときだけ、金額をGoogleに渡す（成果報酬などは渡さない）。
-        if ( preg_match( '/^時給([\d,]+)(?:〜([\d,]+))?円/u', $j['pay'], $m ) ) {
+        // 「時給1,300〜1,500円」「日給8,000円〜」「月給20万円」の形のときだけ、金額をGoogleに渡す。
+        // 1件・1文字あたりの成果報酬や、金額が募集ページにしかない求人は、Googleの単位（時間・日・月）に合わないので渡さない。
+        $units = array( '時給' => 'HOUR', '日給' => 'DAY', '月給' => 'MONTH' );
+        if ( preg_match( '/^(時給|日給|月給)\s*([\d,]+)(万)?(?:\s*[〜~]\s*([\d,]+)(万)?)?\s*円/u', $j['pay'], $m ) ) {
+            $to_yen = function ( $num, $man ) {
+                return (int) str_replace( ',', '', $num ) * ( $man ? 10000 : 1 );
+            };
             // 上限がある「1,300〜1,500円」は範囲で、上限のない「1,300円〜」は金額1つで渡す（minValue だけだと maxValue がないと警告されるため）。
-            $min   = (int) str_replace( ',', '', $m[1] );
-            $value = array( '@type' => 'QuantitativeValue', 'unitText' => 'HOUR' );
-            if ( ! empty( $m[2] ) ) {
-                $value['minValue'] = $min;
-                $value['maxValue'] = (int) str_replace( ',', '', $m[2] );
+            $value = array( '@type' => 'QuantitativeValue', 'unitText' => $units[ $m[1] ] );
+            if ( ! empty( $m[4] ) ) {
+                // 「20〜25万円」のように、万が上限の側にだけ付く書き方にも合わせる。
+                $man_max           = ! empty( $m[5] );
+                $value['minValue'] = $to_yen( $m[2], ! empty( $m[3] ) || $man_max );
+                $value['maxValue'] = $to_yen( $m[4], $man_max );
             } else {
-                $value['value'] = $min;
+                $value['value'] = $to_yen( $m[2], ! empty( $m[3] ) );
             }
             $data['baseSalary'] = array( '@type' => 'MonetaryAmount', 'currency' => 'JPY', 'value' => $value );
         }
