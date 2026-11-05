@@ -67,6 +67,33 @@ function zaito_guides() {
             'published'   => '2026-10-22',
             'updated'     => '2026-10-22',
         ),
+        'chihou-daigakusei-zaitaku' => array(
+            'title'       => '地方の大学生の在宅バイト・長期インターン｜地元にいながら東京の会社で働く選び方',
+            'kicker'      => '地方の大学生',
+            'icon'        => 'home_work',
+            'h1'          => '地方の大学生の在宅バイト・長期インターン',
+            'description' => '地方の大学生が、地元に住んだまま東京などの会社で働ける在宅バイト・長期インターンを紹介します。全国から応募できる求人や、応募前に確かめたい「出社の有無」などの注意点もまとめました。',
+            'published'   => '2026-11-05',
+            'updated'     => '2026-11-05',
+        ),
+        'online-katei-kyoushi-baito' => array(
+            'title'       => 'オンライン家庭教師・塾講師の在宅バイト｜大学生向けの時給・働く時間・必要なもの',
+            'kicker'      => 'オンライン講師',
+            'icon'        => 'school',
+            'h1'          => 'オンライン家庭教師・塾講師の在宅バイト',
+            'description' => '家からオンラインで生徒に教える家庭教師・塾講師のバイトを、時給・働く時間帯・必要なもので紹介します。授業の準備や報告書の時間に給料が出るかなど、応募前に確かめたいこともまとめました。',
+            'published'   => '2026-11-05',
+            'updated'     => '2026-11-05',
+        ),
+        'zaitaku-call-baito' => array(
+            'title'       => '在宅でできるコールセンター・電話のバイト｜受電とテレアポの違い、時給、必要な環境',
+            'kicker'      => 'コールセンター',
+            'icon'        => 'call',
+            'h1'          => '在宅でできるコールセンター・電話のバイト',
+            'description' => '家からできるコールセンター・電話のバイトを、電話を受ける仕事とかける仕事に分けて、時給・必要な環境・応募前に確かめたいことと一緒に紹介します。',
+            'published'   => '2026-11-05',
+            'updated'     => '2026-11-05',
+        ),
         'zaitaku-baito-sagi' => array(
             'title'       => '在宅バイトの詐欺の見分け方｜応募前に確かめる7つのポイントと相談先',
             'kicker'      => '安全に働く',
@@ -101,6 +128,14 @@ function zaito_guide_template_redirect() {
     }
     $slug   = (string) get_query_var( 'zaito_guide' );
     $guides = zaito_guides();
+    // やめた記事のURLは、検索から来た人が迷わないよう、近い記事へ転送する（301）。
+    $retired = array(
+        'shufu-zaitaku-work' => 'mikeiken-zaitaku-baito',
+    );
+    if ( isset( $retired[ $slug ] ) ) {
+        wp_safe_redirect( zaito_guide_url( $retired[ $slug ] ), 301 );
+        exit;
+    }
     // 存在しない記事は、404を返して記事一覧を見せる（テーマの古いトップが200で出ないように）。
     $found = '' === $slug || isset( $guides[ $slug ] );
     if ( ! $found ) {
