@@ -257,7 +257,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
 }
 
 if ( ! function_exists( 'zaito_remote_head' ) ) {
-    function zaito_remote_head( $title, $description, $canonical, $json_ld = null ) {
+    function zaito_remote_head( $title, $description, $canonical, $json_ld = null, $robots = '' ) {
         ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -267,6 +267,9 @@ if ( ! function_exists( 'zaito_remote_head' ) ) {
 <title><?php echo esc_html( $title ); ?></title>
 <meta name="description" content="<?php echo esc_attr( $description ); ?>">
 <link rel="canonical" href="<?php echo esc_url( $canonical ); ?>">
+<?php if ( $robots ) : ?>
+<meta name="robots" content="<?php echo esc_attr( $robots ); ?>">
+<?php endif; ?>
 <meta property="og:site_name" content="zaito">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">

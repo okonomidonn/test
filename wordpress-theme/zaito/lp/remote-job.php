@@ -49,10 +49,12 @@ $zaito_posting = zaito_remote_job_posting( $zaito_j );
 if ( $zaito_posting ) {
     $zaito_ld[] = $zaito_posting;
 }
+// 募集が終わった求人のページは、URLは残したまま検索結果から外す（応募できないページが検索に残ると、薄いページとみなされるため）。
+// 求人ページからほかの求人へのリンクはたどってもらうので follow は残す。
 zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug'] ), array(
     '@context' => 'https://schema.org',
     '@graph'   => $zaito_ld,
-) );
+), $zaito_closed ? 'noindex, follow' : '' );
 ?>
 <body class="has-spbar">
 <?php zaito_remote_header(); ?>
