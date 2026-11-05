@@ -120,6 +120,7 @@ function zaito_stats_data( $days ) {
         'generated_at' => wp_date( 'c' ),
         'job_check'     => get_option( 'zaito_job_check_last', null ),
         'mail_auto'     => get_option( 'zaito_nla_last', null ),
+        'mail_campaigns' => zaito_stats_mail_campaigns(),
         'registrations' => array(
             'total'          => $total,
             'verified'       => zaito_stats_meta_count( 'verified' ),
@@ -177,4 +178,29 @@ function zaito_stats_post_meta_count( $type, $key ) {
         $type,
         $key
     ) );
+}
+
+/**
+ * 最近のメール配信ごとの数（送った数・リンクから来た人・応募ページへ進んだ人・配信停止）。人数だけで、だれかは返さない。
+ * 開封（メールを開いたか）は記録していないので、リンクから来た人の割合で反応を見る。
+ */
+function zaito_stats_mail_campaigns() {
+    $history = get_option( 'zaito_nl_history', array() );
+    $stats   = get_option( 'zaito_nl_stats', array() );
+    $out     = array();
+    foreach ( array_slice( is_array( $history ) ? $history : array(), -10 ) as $h ) {
+        if ( empty( $h['id'] ) ) {
+            continue;
+        }
+        $st    = isset( $stats[ $h['id'] ] ) && is_array( $stats[ $h['id'] ] ) ? $stats[ $h['id'] ] : array();
+        $out[] = array(
+            'id'       => (string) $h['id'],
+            'date'     => isset( $h['date'] ) ? (string) $h['date'] : '',
+            'sent'     => isset( $h['sent'] ) ? (int) $h['sent'] : 0,
+            'returned' => isset( $st['returns'] ) ? count( (array) $st['returns'] ) : 0,
+            'applied'  => isset( $st['clicks'] ) ? count( (array) $st['clicks'] ) : 0,
+            'unsub'    => isset( $st['unsub'] ) ? count( (array) $st['unsub'] ) : 0,
+        );
+    }
+    return $out;
 }
