@@ -329,7 +329,7 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 </div>
 
 <footer class="ft"><div class="wrap">
-  <div class="ft-top"><p>大学生・若手向け<br>完全在宅求人サービス</p>
+  <div class="ft-top"><p>大学生専門の<br>完全在宅バイト求人サイト</p>
     <nav aria-label="フッターナビゲーション"><a href="<?php echo esc_url( $zaito_lp_url ); ?>">zaitoについて</a><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a><a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></nav></div>
   <div class="ft-b"><span>運営：zaito 運営事務局</span><small>Copyright © zaito</small></div>
   <div class="logo ft-big" aria-hidden="true">za<span>i</span>to</div>

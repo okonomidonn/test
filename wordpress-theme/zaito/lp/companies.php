@@ -13,7 +13,7 @@ $zaito_jobs  = array_filter( zaito_remote_jobs(), function ( $j ) {
 } );
 $zaito_url   = home_url( '/for-companies/' );
 $zaito_title = '企業の方へ｜完全在宅の求人を無料で掲載 | zaito';
-$zaito_desc  = '出社なしの仕事だけを集めた求人サイト「zaito」。在宅で働く人の募集を、無料で掲載できます。初期費用・掲載料・オプション料金は一切いただかず、お支払いいただくのはzaitoからの応募者に内定を出したときの成果報酬のみです。';
+$zaito_desc  = '大学生専門の完全在宅バイト求人サイト「zaito」。在宅で働く人の募集を、無料で掲載できます。初期費用・掲載料・オプション料金は一切いただかず、お支払いいただくのはzaitoからの応募者に内定を出したときの成果報酬のみです。';
 
 $zaito_faqs = array(
     array( '費用はかかりますか？', '初期費用・掲載料・オプション料金は、一切いただきません。zaitoから応募した方に内定を出した時点で、成果報酬をいただきます。金額は求人の公開前にご案内し、ご同意いただかないまま請求することはありません。' ),
@@ -40,7 +40,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
       <div class="hero-copy">
         <span class="eb">FOR COMPANIES</span>
         <h1>在宅で働く人を、<br>掲載無料で募集できます。</h1>
-        <p>zaitoは、出社なしの仕事だけを集めた求人サイトです。在宅で働きたい人だけが見に来るので、「フルリモートのはずが出社の話でずれる」ことがありません。初期費用・掲載料・オプション料金は一切いただかず、お支払いいただくのは内定を出したときの成果報酬のみです。</p>
+        <p>zaitoは、出社なしの仕事だけを集めた、大学生専門の求人サイトです。在宅で働きたい学生だけが見に来るので、「フルリモートのはずが出社の話でずれる」ことがありません。初期費用・掲載料・オプション料金は一切いただかず、お支払いいただくのは内定を出したときの成果報酬のみです。</p>
         <div class="cta-row">
           <a class="btn btn-p btn-lg" href="<?php echo esc_url( home_url( '/company-register/' ) ); ?>">無料で企業アカウントを作る<span class="ms" aria-hidden="true">arrow_forward</span></a>
           <a class="btn btn-g btn-lg" href="#contact">まずは相談する</a>

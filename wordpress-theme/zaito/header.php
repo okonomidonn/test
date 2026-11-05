@@ -7,7 +7,7 @@
   // LINE・メール・SNS等でURLを共有した際にプレビューカード(OGP)が出るようにする。
   // job_listingの単一ページはLoop開始前(the_post()実行前)にheader.phpが呼ばれるため、
   // グローバル$postに依存せずget_queried_object_id()経由で安全に値を取得する。
-  $zaito_meta_desc = 'zaitoは「完全在宅」にこだわった在宅ワーク専門の求人サイトです。データ入力・SNS運用・カスタマーサポートなど、主婦・学生向けの在宅ワークを掲載しています。';
+  $zaito_meta_desc = 'zaitoは、大学生専門の完全在宅バイト・長期インターン求人サイトです。研修や会議も含めて出社のない求人だけを掲載しています。';
   if ( is_singular( 'job_listing' ) ) {
       $zaito_ogp_job_id = get_queried_object_id();
       $zaito_ogp_company = get_post_meta( $zaito_ogp_job_id, '_company_name', true );
@@ -19,7 +19,7 @@
   $zaito_ogp_url = ( is_ssl() ? 'https://' : 'http://' ) . ( $_SERVER['HTTP_HOST'] ?? '' ) . ( $_SERVER['REQUEST_URI'] ?? '' );
   ?>
   <meta name="description" content="<?php echo esc_attr( $zaito_meta_desc ); ?>">
-  <meta property="og:site_name" content="ZAITO">
+  <meta property="og:site_name" content="zaito">
   <meta property="og:type" content="website">
   <meta property="og:title" content="<?php echo esc_attr( wp_get_document_title() ); ?>">
   <meta property="og:description" content="<?php echo esc_attr( $zaito_meta_desc ); ?>">

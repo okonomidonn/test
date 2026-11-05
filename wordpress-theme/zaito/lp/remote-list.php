@@ -100,8 +100,8 @@ if ( $zaito_cond ) {
     $zaito_desc  = mb_substr( $zaito_cond['body'][0], 0, 110 ) . '（' . count( $zaito_jobs ) . '件・運営が在宅の条件を確認済み）';
     $zaito_canon = zaito_remote_condition_url( $zaito_list_cond );
 } else {
-    $zaito_title = '在宅バイト・完全在宅の求人｜地方の大学生も出社なしで働けるzaito';
-    $zaito_desc  = '地方に住む大学生のための完全在宅バイト。「在宅バイト」で探しても出社ありが混ざるため、zaitoは、自宅だけで働ける完全在宅のバイト・パート・長期インターンを、運営が1件ずつ確認してまとめています。学生OK・未経験OKの求人も。事務、カスタマーサポート、SNS運用、ライター、エンジニアなど。';
+    $zaito_title = '大学生専門の在宅バイト・長期インターン求人｜完全在宅だけのzaito';
+    $zaito_desc  = 'zaitoは、大学生専門の完全在宅バイト・長期インターン求人サイトです。研修や会議も含めて出社のない求人だけを載せているので、地方に住んでいても、東京などの会社の仕事に家から応募できます。未経験OK・週1〜2日OKの求人も。事務、カスタマーサポート、SNS運用、ライター、エンジニアなど。';
     $zaito_canon = zaito_remote_url();
 }
 
@@ -139,6 +139,39 @@ if ( $zaito_faq ) {
     );
 } else {
     $zaito_ld = array( '@context' => 'https://schema.org' ) + $zaito_ld;
+}
+// トップページには、zaitoがどんなサイトかを伝える Organization と WebSite も入れる（AIや検索エンジンがサイトの説明に使う）。
+if ( ! $zaito_cond ) {
+    $zaito_site = array(
+        array(
+            '@type'         => 'Organization',
+            '@id'           => home_url( '/#organization' ),
+            'name'          => 'zaito',
+            'alternateName' => 'ザイト',
+            'url'           => home_url( '/' ),
+            'logo'          => get_template_directory_uri() . '/lp/apple-touch-icon.png',
+            'image'         => get_template_directory_uri() . '/lp/ogp-student.png',
+            'description'   => ZAITO_TAGLINE . '。研修や会議も含めて出社のない、完全在宅の求人だけを掲載しています。',
+            'email'         => 'info@zaito-work.com',
+        ),
+        array(
+            '@type'       => 'WebSite',
+            '@id'         => home_url( '/#website' ),
+            'name'        => 'zaito',
+            'alternateName' => 'ザイト',
+            'url'         => home_url( '/' ),
+            'description' => ZAITO_TAGLINE,
+            'inLanguage'  => 'ja',
+            'audience'    => array( '@type' => 'EducationalAudience', 'educationalRole' => 'student', 'audienceType' => '大学生' ),
+            'publisher'   => array( '@id' => home_url( '/#organization' ) ),
+        ),
+    );
+    if ( isset( $zaito_ld['@graph'] ) ) {
+        $zaito_ld['@graph'] = array_merge( $zaito_site, $zaito_ld['@graph'] );
+    } else {
+        unset( $zaito_ld['@context'] );
+        $zaito_ld = array( '@context' => 'https://schema.org', '@graph' => array_merge( $zaito_site, array( $zaito_ld ) ) );
+    }
 }
 zaito_remote_head( $zaito_title, $zaito_desc, $zaito_canon, $zaito_ld );
 
@@ -418,7 +451,7 @@ if ( ! $zaito_cond ) :
         <span class="ms" aria-hidden="true">check_circle</span>
         <b id="zdonetitle">登録が完了しました</b>
         <p id="zdonetext">確認メールを送りました。メールのリンクを押すと、新しい在宅求人のお知らせが届くようになります。気になる求人は「応募ページへ進む」からそのまま応募できます。</p>
-        <?php zaito_share_box( '出社なしの在宅バイト・インターンだけを集めたサイト。学生OKの求人もあるよ', home_url( '/' ), '在宅バイトを探している友達に教える' ); ?>
+        <?php zaito_share_box( '大学生専門の、出社なしの在宅バイト・インターンだけを集めたサイト', home_url( '/' ), '在宅バイトを探している友達に教える' ); ?>
       </div>
     </div>
   </section>

@@ -2,7 +2,7 @@
     <div class="wrap site-footer-inner">
       <div class="site-footer-brand">
         <strong>zaito</strong>
-        <p>完全在宅にこだわった在宅ワーク専門の求人サイトです。</p>
+        <p>大学生専門の完全在宅バイト・長期インターン求人サイトです。</p>
       </div>
 
       <nav class="site-footer-links">
@@ -15,7 +15,7 @@
 
       <div class="site-footer-meta">
         <p>運営: ZAITO運営事務局</p>
-        <p>在宅ワーク求人サイト　© zaito <?php echo esc_html( date( 'Y' ) ); ?></p>
+        <p>大学生専門の在宅バイト求人サイト　© zaito <?php echo esc_html( date( 'Y' ) ); ?></p>
       </div>
     </div>
   </footer>

@@ -29,7 +29,7 @@ if ( $zaito_g ) {
                 'datePublished'    => $zaito_g['published'],
                 'dateModified'     => $zaito_g['updated'],
                 'mainEntityOfPage' => $zaito_canon,
-                'image'            => get_template_directory_uri() . '/lp/ogp.png',
+                'image'            => get_template_directory_uri() . '/lp/ogp-student.png',
                 'author'           => array( '@type' => 'Organization', 'name' => 'zaito運営事務局', 'url' => home_url( '/' ) ),
                 'publisher'        => array( '@type' => 'Organization', 'name' => 'zaito', 'url' => home_url( '/' ) ),
             ),

@@ -82,7 +82,8 @@ function zaito_lp_json_ld() {
                 'url'          => home_url( '/' ),
                 'logo'         => get_template_directory_uri() . '/lp/apple-touch-icon.png',
                 'email'        => 'info@zaito-work.com',
-                'description'  => '大学生・若手向けの完全在宅求人サービス',
+                'alternateName' => 'ザイト',
+                'description'  => ZAITO_TAGLINE,
                 'contactPoint' => array(
                     '@type'       => 'ContactPoint',
                     'contactType' => 'customer support',
@@ -168,6 +169,20 @@ function zaito_social_joined_snippet() {
  * vc_pid はサイトに埋め込む公開用の番号（秘密の値ではない）。
  */
 define( 'ZAITO_VC_PID', '892740930' );
+
+/**
+ * zaitoを一言で説明する文。タイトル・説明文・構造化データ・llms.txt・WordPressのサイト名の説明に使う。
+ * ChatGPTなどのAIや検索エンジンが「zaitoとは何か」をここから読むので、言い方を変えるときはここだけを直す。
+ */
+define( 'ZAITO_TAGLINE', '大学生専門の完全在宅バイト・長期インターン求人サイト' );
+
+/** WordPressのサイト名とキャッチフレーズ（管理画面の古い設定「在宅ワーク専門の求人サイト」をコードで上書きする）。 */
+add_filter( 'option_blogname', function () {
+    return 'zaito';
+} );
+add_filter( 'option_blogdescription', function () {
+    return ZAITO_TAGLINE;
+} );
 function zaito_linkswitch_snippet() {
     return '<script>var vc_pid = ' . wp_json_encode( ZAITO_VC_PID ) . ';</script><script src="//aml.valuecommerce.com/vcdal.js" async></script>';
 }
@@ -420,9 +435,9 @@ function zaito_render_lp( $canonical = '' ) {
         return;
     }
 
-    $title       = 'zaito | 大学生・若手向け完全在宅求人サービス';
-    $description = '大学生・若手向けの完全在宅求人サービス「zaito」。SNS運用、動画編集、Webマーケティング、AI、オンライン事務など、自宅から働ける仕事を掲載。現在、先行登録・先行掲載企業を募集中。';
-    $og_desc     = '大学生・若手向けの完全在宅求人サービス。現在、先行登録・先行掲載企業を募集中。';
+    $title       = 'zaito | ' . ZAITO_TAGLINE;
+    $description = '大学生専門の完全在宅求人サイト「zaito」。SNS運用、動画編集、Webマーケティング、AI、オンライン事務など、自宅から働ける仕事を掲載。現在、先行登録・先行掲載企業を募集中。';
+    $og_desc     = ZAITO_TAGLINE . '。現在、先行登録・先行掲載企業を募集中。';
     $config      = array(
         'ajaxUrl' => admin_url( 'admin-ajax.php' ),
     );
@@ -438,7 +453,7 @@ function zaito_render_lp( $canonical = '' ) {
 <meta property="og:title" content="<?php echo esc_attr( $title ); ?>">
 <meta property="og:description" content="<?php echo esc_attr( $og_desc ); ?>">
 <meta property="og:url" content="<?php echo esc_url( $canonical ); ?>">
-<meta property="og:image" content="<?php echo esc_url( get_template_directory_uri() . '/lp/ogp.png' ); ?>">
+<meta property="og:image" content="<?php echo esc_url( get_template_directory_uri() . '/lp/ogp-student.png' ); ?>">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -485,7 +500,7 @@ function zaito_render_lp( $canonical = '' ) {
     $html = str_replace( '<!--ZAITO_FAQ-->', zaito_lp_faq_html(), $html );
     $html = str_replace(
         '<body>',
-        '<body><noscript><p style="padding:24px;font-family:sans-serif">zaitoは大学生・若手向けの完全在宅求人サービスです。ページを表示するにはJavaScriptを有効にしてください。お問い合わせ: info@zaito-work.com</p></noscript>',
+        '<body><noscript><p style="padding:24px;font-family:sans-serif">zaitoは大学生専門の完全在宅求人サイトです。ページを表示するにはJavaScriptを有効にしてください。お問い合わせ: info@zaito-work.com</p></noscript>',
         $html
     );
 
@@ -508,7 +523,7 @@ function zaito_llms_txt() {
     $lines   = array();
     $lines[] = '# zaito（ザイト）';
     $lines[] = '';
-    $lines[] = '> 完全在宅の仕事だけを集めた日本の求人サイト。運営が企業の募集ページを読み、入社初日・研修・会議を含めて出社がないことを確かめた求人だけを掲載している（掲載中 ' . $total . ' 件）。大手求人サイトでは見つけにくい、企業の採用ページやSNSだけで募集している求人も載せている。登録・利用は無料で、応募は各企業の募集ページで行う。';
+    $lines[] = '> ' . ZAITO_TAGLINE . '（日本）。大学生、とくに地方に住む大学生が、家から東京などの会社で働けるように、完全在宅の仕事だけを集めている。運営が企業の募集ページを読み、入社初日・研修・会議を含めて出社がないことを確かめた求人だけを掲載している（掲載中 ' . $total . ' 件）。大手求人サイトでは見つけにくい、企業の採用ページやSNSだけで募集している求人も載せている。登録・利用は無料で、応募は各企業の募集ページで行う。';
     $lines[] = '';
     $lines[] = '## 主なページ';
     $lines[] = '- [完全在宅の求人一覧](' . home_url( '/' ) . '): 掲載中のすべての求人。職種・時給・学生OK・未経験OK・週の日数で絞り込める';

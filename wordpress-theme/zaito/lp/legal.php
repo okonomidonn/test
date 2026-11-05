@@ -82,7 +82,7 @@ a:hover{color:var(--z-blue-hover)}
 <footer class="ft">
   <div class="ft-in">
     <div class="ft-top">
-      <div style="display:flex;flex-direction:column;gap:14px"><p>出社なしの仕事だけを<br>集めた求人サイト</p><?php echo zaito_sns_links_html(); // SVGと固定URLのみ ?></div>
+      <div style="display:flex;flex-direction:column;gap:14px"><p>大学生専門の<br>完全在宅バイト求人サイト</p><?php echo zaito_sns_links_html(); // SVGと固定URLのみ ?></div>
       <nav aria-label="フッターナビゲーション">
         <ul>
           <li><a href="<?php echo esc_url( home_url( '/' ) ); ?>">求人を探す</a></li>

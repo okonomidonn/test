@@ -246,7 +246,7 @@ function zaito_mail_button( $email, $subject, $title, $lead, $button, $url, $not
         . ( $note ? $note . "\n\n" : '' )
         . $foot . "\n\n"
         . "──────────\n"
-        . "zaito（ザイト）出社なしの仕事だけを集めた求人サイト\n"
+        . "zaito（ザイト）大学生専門の完全在宅バイト求人サイト\n"
         . home_url( '/' ) . "\n"
         . ( ZAITO_INFO_MAILBOX_READY ? 'お問い合わせ: info@' . $host . "\n" : '' );
 
@@ -266,7 +266,7 @@ function zaito_mail_button( $email, $subject, $title, $lead, $button, $url, $not
         . '<tr><td style="padding:24px 28px 0;font-size:12px;line-height:1.7;color:#6B7590;">ボタンが押せないときは、このURLをブラウザに貼り付けてください。<br><a href="' . esc_url( $url ) . '" style="color:#3D5AFE;word-break:break-all;">' . $e( $url ) . '</a></td></tr>'
         . '<tr><td style="padding:20px 28px 28px;font-size:12px;line-height:1.7;color:#6B7590;border-top:0;">' . $e( $foot ) . '</td></tr>'
         . '</table>'
-        . '<p style="margin:16px 0 0;font-family:sans-serif;font-size:12px;line-height:1.7;color:#6B7590;">zaito（ザイト）出社なしの仕事だけを集めた求人サイト<br><a href="' . esc_url( home_url( '/' ) ) . '" style="color:#6B7590;">' . $e( home_url( '/' ) ) . '</a></p>'
+        . '<p style="margin:16px 0 0;font-family:sans-serif;font-size:12px;line-height:1.7;color:#6B7590;">zaito（ザイト）大学生専門の完全在宅バイト求人サイト<br><a href="' . esc_url( home_url( '/' ) ) . '" style="color:#6B7590;">' . $e( home_url( '/' ) ) . '</a></p>'
         . '</td></tr></table></body></html>';
 
     return zaito_mail_html( $email, $subject, $html, $text, $from );

@@ -18,7 +18,7 @@ get_header();
       <div>
         <div class="hero-badge">
           <span class="hero-badge-dot"></span>
-          在宅ワーク専門求人サイト
+          大学生専門の在宅バイト求人サイト
         </div>
 
         <h1>

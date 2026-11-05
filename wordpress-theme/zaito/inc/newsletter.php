@@ -282,7 +282,7 @@ function zaito_nl_build_body( $intro, $slugs, $campaign, $member = 0 ) {
         . ( $member ? "希望条件の変更・保存した求人（マイページ）\n" . zaito_nl_mypage_url( $campaign, $member ) . "\n" : '' )
         . "配信を停止する: {UNSUB}\n"
         . "（このメールに「配信停止」と返信していただいても停止できます）\n\n"
-        . "zaito（ザイト）出社なしの仕事だけを集めた求人サイト\n"
+        . "zaito（ザイト）大学生専門の完全在宅バイト求人サイト\n"
         . "運営：zaito 運営事務局\n"
         . home_url( '/' ) . "\n"
         . 'お問い合わせ: info@' . $host . "\n";
