@@ -84,6 +84,7 @@ body {
 .ai-scope h3 {
   text-wrap: balance;
   line-height: 1.35;
+  word-break: auto-phrase; /* 日本語の見出しを文節で折り返す */
 }
 
 /* 見出しは日本語の字間を詰める（palt）。企業サイトの見出しらしい締まった見た目にする */

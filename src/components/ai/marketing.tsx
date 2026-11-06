@@ -42,7 +42,7 @@ export function MarketCompare() {
     <div className="space-y-4">
       <div className="grid max-w-xl gap-4">
         {rows.map((r) => (
-          <div key={r.label} className="min-w-0 rounded-xl border border-slate-200 bg-white p-5">
+          <div key={r.label} className="min-w-0 rounded-md bg-[#F5F8FD] p-5">
             <p className="font-semibold text-slate-900">{r.label}</p>
             <dl className="mt-4 space-y-3">
               {[
@@ -57,7 +57,7 @@ export function MarketCompare() {
                       {r.unit}
                     </dd>
                   </div>
-                  <div className="mt-1 h-2.5 rounded-full bg-slate-100">
+                  <div className="mt-1 h-2.5 rounded-full bg-white">
                     <div className={`h-2.5 rounded-full ${x.cls}`} style={{ width: `${(x.v / r.market) * 100}%` }} />
                   </div>
                 </div>
@@ -100,13 +100,13 @@ const COMPETITORS = {
 export function CompetitorTable() {
   return (
     <div>
-      <div className="overflow-x-auto rounded-lg border border-slate-300 bg-white">
+      <div className="overflow-x-auto rounded-md bg-white">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
-            <tr className="border-b border-slate-200">
-              <th className="w-28 p-3" />
+            <tr className="bg-[#F1F6FE]">
+              <th className="w-28 p-4" />
               {COMPETITORS.cols.map((c, i) => (
-                <th key={c} className={`p-3 align-bottom font-bold ${i === 0 ? "text-brand" : "text-slate-600"}`}>
+                <th key={c} className={`p-4 align-bottom font-bold ${i === 0 ? "bg-brand text-white" : "text-slate-600"}`}>
                   {c}
                 </th>
               ))}
@@ -115,11 +115,11 @@ export function CompetitorTable() {
           <tbody className="divide-y divide-slate-200">
             {COMPETITORS.rows.map((r) => (
               <tr key={r.label}>
-                <th scope="row" className="p-3 font-medium text-slate-600">
+                <th scope="row" className="p-4 font-medium text-slate-600">
                   {r.label}
                 </th>
                 {r.cells.map((c, i) => (
-                  <td key={i} className={`p-3 ${i === 0 ? "font-bold text-slate-900" : "text-slate-600"}`}>
+                  <td key={i} className={`p-4 ${i === 0 ? "bg-[#F1F6FE] font-bold text-slate-900" : "text-slate-600"}`}>
                     {c}
                   </td>
                 ))}
@@ -128,7 +128,7 @@ export function CompetitorTable() {
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-xs leading-relaxed text-slate-600">
+      <p className="mt-3 text-xs leading-relaxed text-slate-500">
         A社・B社は各社の公式サイトに公開されている料金（{COMPETITORS.checked}確認）。A社は税の表示なし、B社とAIススメルは税別です。中央値は{MARKET.source}（{MARKET.checked}）。各社で作業範囲・対象が異なり、同じ内容・同じ成果を比べたものではありません。
       </p>
     </div>
