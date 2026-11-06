@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 // 画面いっぱいの帯
 export function Section({ children, id, tone = "white" }: { children: ReactNode; id?: string; tone?: "white" | "soft" | "blue" | "navy" }) {
-  const bg = tone === "soft" ? "bg-[#F5F8FD]" : tone === "blue" ? "bg-brand text-white" : tone === "navy" ? "bg-[linear-gradient(160deg,#0A2463_0%,#123A9C_100%)] text-white" : "bg-white";
+  const bg = tone === "soft" ? "bg-[#F5F8FD]" : tone === "blue" ? "bg-brand text-white" : tone === "navy" ? "bg-[#0F2559] text-white" : "bg-white";
   return (
     <section id={id} className={`ml-[calc(50%-50vw)] w-screen scroll-mt-16 ${bg}`}>
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">{children}</div>
@@ -39,7 +39,7 @@ export function Head({ title, desc, light, center }: { title: ReactNode; desc?: 
 export function CtaBand({ title }: { title?: string }) {
   const card = "group flex min-h-24 items-center justify-between gap-4 rounded-md bg-white px-6 py-5 transition hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.18)] sm:px-8";
   return (
-    <section className="ml-[calc(50%-50vw)] w-screen bg-[linear-gradient(110deg,#0A2463_0%,#1D4ED8_70%,#2563EB_100%)]">
+    <section className="ml-[calc(50%-50vw)] w-screen bg-brand">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-14">
         {title && <p className="palt mb-7 text-center text-2xl font-bold text-white sm:text-3xl">{title}</p>}
         <div className="grid gap-4 md:grid-cols-2">

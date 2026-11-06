@@ -32,8 +32,7 @@ export function JobsLanding() {
   return (
     <div className="-mb-8 -mt-8">
       {/* ファーストビュー */}
-      <section className="relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-[linear-gradient(135deg,#0A2463_0%,#1442B8_60%,#2563EB_100%)] text-white">
-        <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-[radial-gradient(closest-side,rgba(147,197,253,0.35),transparent)]" />
+      <section className="relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-brand text-white">
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:grid-cols-[1.05fr_1fr]">
           <div>
             <p className="palt text-sm font-bold text-blue-200">求人サイト・人材サービス専門のAI検索対策</p>
@@ -177,9 +176,9 @@ export function JobsLanding() {
             </div>
           ))}
         </div>
-        <div className="mt-3 grid overflow-hidden rounded-md sm:grid-cols-3">
-          {[["1か月目", "直す・働きかける", "bg-[#9DBCF5]"], ["2か月目", "測り直して、足りない所を直す", "bg-[#5B8FEA]"], ["3か月目", "同じ条件で測り、効果を報告", "bg-brand"]].map(([m, t, c]) => (
-            <div key={m} className={`${c} p-5 text-white`}><p className="text-sm font-bold">{m}</p><p className="palt mt-1 font-bold">{t}</p></div>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          {[["1か月目", "直す・働きかける"], ["2か月目", "測り直して、足りない所を直す"], ["3か月目", "同じ条件で測り、効果を報告"]].map(([m, t]) => (
+            <div key={m} className="rounded-md border border-slate-200 bg-white p-5"><p className="text-sm font-bold text-brand">{m}</p><p className="palt mt-1 font-bold text-slate-900">{t}</p></div>
           ))}
         </div>
       </Section>
