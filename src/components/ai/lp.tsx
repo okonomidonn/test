@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 // 紹介ページ（トップ・料金・資料ページ）で共用する部品。
 // 見た目のきまり（打ち合わせ資料と同じ）：白地に青1色、見出しは「ふつうの一文」＋「青い太字の一文」を中央に、
-// 数字は Montserrat、線で区切る、角の丸みは小さく、飾りの図形やアイコンは使わない。
+// 文字は数字も含めて Noto Sans JP、線で区切る、角の丸みは小さく、飾りの図形やアイコンは使わない。
 
 // 画面いっぱいの帯
 export function Section({ children, id, tone = "white" }: { children: ReactNode; id?: string; tone?: "white" | "soft" | "blue" | "navy" }) {
@@ -76,14 +76,14 @@ export function Stat({ value, unit, pre, className = "text-brand" }: { value: st
   return (
     <span className={`inline-flex items-baseline leading-none ${className}`}>
       {pre && <span className="mr-1 text-lg font-bold">{pre}</span>}
-      <span className="font-num text-[2.25rem] font-extrabold tracking-tight sm:text-[3.25rem]">{value}</span>
+      <span className="font-num text-[2.5rem] font-bold sm:text-[3.5rem]">{value}</span>
       {unit && <span className="ml-1 whitespace-nowrap text-xl font-bold">{unit}</span>}
     </span>
   );
 }
 
 export function Num({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <span className={`font-num font-extrabold ${className}`}>{children}</span>;
+  return <span className={`font-num font-bold ${className}`}>{children}</span>;
 }
 
 export function Cta({ light }: { light?: boolean }) {
