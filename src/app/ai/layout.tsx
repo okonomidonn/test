@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Montserrat, Noto_Sans_JP } from "next/font/google";
 import { auth, signOut } from "@/auth";
 import { btn } from "@/components/ai/ds";
+import { Logo } from "@/components/ai/logo";
 import { CONTACT } from "@/lib/contact";
 
 // 数字は Montserrat、文章は Noto Sans JP（日本語は文字数が多いため先読みせず、使う文字だけ読み込む）
@@ -24,11 +25,8 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
     <div className={`${latin.variable} ${jp.variable} ai-scope flex flex-1 flex-col overflow-x-clip`}>
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
         <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center gap-2 px-3 py-1.5 sm:h-14 sm:flex-nowrap sm:gap-6 sm:px-6 sm:py-0">
-          <Link href={user ? "/ai/app" : "/ai"} className="flex min-h-11 shrink-0 items-center gap-2 text-[1.0625rem] font-bold text-slate-900">
-            <span className="hidden h-7 w-7 place-items-center rounded-md bg-brand text-sm font-bold text-white min-[360px]:grid" aria-hidden>
-              ス
-            </span>
-            AIススメル
+          <Link href={user ? "/ai/app" : "/ai"} aria-label="AIススメル" className="flex min-h-11 shrink-0 items-center">
+            <Logo />
           </Link>
           {user ? (
             <nav className="ml-auto flex items-center gap-0.5 whitespace-nowrap sm:gap-1">
@@ -81,6 +79,9 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                 </Link>
               </nav>
               <div className="ml-auto flex items-center gap-1 whitespace-nowrap sm:gap-2">
+                <Link href="/ai/apply?plan=production" className="hidden min-h-9 items-center rounded-md border border-slate-300 px-4 text-sm font-bold text-slate-800 transition hover:bg-slate-50 lg:inline-flex">
+                  ご相談
+                </Link>
                 <Link href="/ai/apply" className={`${btn("primary")} min-h-11 max-[359px]:px-2 lg:min-h-9`} aria-label="無料で診断">
                   無料で診断
                 </Link>
@@ -99,12 +100,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
       <footer className="bg-[#0B1530] text-slate-300 print:hidden">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-[1fr_auto_auto] sm:gap-16 sm:px-6">
           <div>
-            <p className="flex items-center gap-2 text-lg font-bold text-white">
-              <span className="grid h-6 w-6 place-items-center rounded bg-brand text-xs font-bold text-white" aria-hidden>
-                ス
-              </span>
-              AIススメル
-            </p>
+            <Logo light />
             <p className="mt-3 text-sm text-slate-400">求人サイト・人材サービスのAI検索対策</p>
             <p className="mt-3 text-sm text-slate-400">お問い合わせ：{CONTACT.email}</p>
             <p className="mt-8 text-xs text-slate-500">© 2026 AIススメル</p>

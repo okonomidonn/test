@@ -462,11 +462,11 @@ async function ImproveTab({ storeId, hasUrl, kind, isOwner }: { storeId: string;
         <section className="flex flex-col gap-4 rounded-xl border-2 border-brand bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="text-sm font-bold text-brand">直すところまで任せたい方へ</p>
-            <p className="mt-1 font-semibold text-slate-900">GEO診断・改善トライアル 49,800円（税別・30日間）</p>
-            <p className="mt-1 text-sm text-slate-700">2つのAIで計測し、直す点を3つ決めて1ページを実際に直し、30日後に同じ条件で測り直します。</p>
+            <p className="mt-1 font-semibold text-slate-900">基本プラン 月100,000円（税別・最低契約期間なし）</p>
+            <p className="mt-1 text-sm text-slate-700">毎月2つのAIで計測し、既存ページを月2件直して、同じ条件で測り直します。</p>
           </div>
-          <Link href={`/ai/apply?plan=trial&store=${storeId}`} className="shrink-0 rounded-lg bg-brand px-5 py-3 text-center font-bold text-white hover:bg-brand-dark">
-            トライアルを申し込む
+          <Link href={`/ai/apply?plan=basic&store=${storeId}`} className="shrink-0 rounded-lg bg-brand px-5 py-3 text-center font-bold text-white hover:bg-brand-dark">
+            基本プランを相談する
           </Link>
         </section>
       )}

@@ -113,7 +113,7 @@ export function LeadForm({ kind, defaults = {}, plan, submitLabel }: { kind: "CH
 
       <div className="space-y-2">
         <button type="submit" disabled={isPending} className={`${btn("primary", "lg")} w-full`}>
-          {isPending ? "送信しています…" : submitLabel ?? (kind === "TRIAL" ? "トライアルの見積もりを依頼する" : "無料で診断する")}
+          {isPending ? "送信しています…" : submitLabel ?? (kind === "TRIAL" ? "プランを相談する" : "無料で診断する")}
         </button>
         <p className="text-sm text-slate-600">送信の時点では料金はかかりません。</p>
       </div>

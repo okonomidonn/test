@@ -19,23 +19,14 @@ const COPY = {
     ],
     after: ["3営業日以内に、診断結果をメールでお送りします", "電話での営業はしません。ご連絡は診断とご相談への対応に必要な範囲に限ります", "続けるかどうかは、結果を見てから決めてください"],
   },
-  TRIAL: {
-    title: "トライアル（診断＋1ページ改善）",
-    lead: "現状を数字で確かめ、改善を1つ実際に行い、30日後に同じ条件で測り直します。",
-    facts: [
-      ["料金", "49,800円（税別・1回）"],
-      ["期間", "30日間"],
-      ["内容", "2つのAIで計測・競合2社と比較・直す点を3つ特定・1ページ改善・再計測"],
-    ],
-    after: ["2営業日以内に、進め方とお見積もりをメールでお送りします", "内容を確認してから正式にご依頼ください。申し込みの時点では料金はかかりません", "ご依頼後、30分のヒアリングから始めます"],
-  },
 } as const;
 
 export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">) {
   const sp = await searchParams;
   // 資料請求は専用ページ（/ai/for/jobs/book）で受け付ける
   const resolved = resolveLeadPlan(sp.plan);
-  const plan = resolved === "book" ? "check" : resolved;
+  // トライアルは提供を終了したため、以前のリンク（?plan=trial）は基本プランのご相談として受け付ける
+  const plan = resolved === "book" ? "check" : resolved === "trial" ? "basic" : resolved;
   const kind = LEAD_PLANS[plan].kind;
   const monthly = plan === "basic" || plan === "production";
   const copy = monthly ? {
@@ -47,8 +38,8 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
       ["契約", "1か月単位・最低契約期間なし。当月20日までのメール連絡で当月末終了"],
       ["対象範囲", "CMSで編集できる範囲。制作本数・文字量・修正回数・実装範囲は契約前に見積書で確定"],
     ],
-    after: ["2営業日以内に、ご希望のプランの進め方とお見積もりをメールでお送りします", "対象ページ・作業範囲・支払条件に合意してから正式なご依頼となります", "銀行振込による前払いです。入金確認後、合意した日程で始めます。トライアルは必須ではありません"],
-  } : COPY[kind];
+    after: ["2営業日以内に、ご希望のプランの進め方とお見積もりをメールでお送りします", "対象ページ・作業範囲・支払条件に合意してから正式なご依頼となります", "銀行振込による前払いです。入金確認後、合意した日程で始めます"],
+  } : COPY.CHECK;
   const kpis = reportKpis(sampleReport());
 
   // ログイン中なら、登録済みのサービスとアカウントの情報を入れておく
@@ -64,11 +55,10 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
 
   return (
     <div className="mx-auto max-w-5xl pt-4">
-      {/* 申し込みの種類の切り替え（?plan=trial） */}
+      {/* 申し込みの種類の切り替え（?plan=basic など） */}
       <nav aria-label="申し込みの種類" className="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 text-sm">
         {[
           ["check", "無料で診断", `/ai/apply${storeQ ? `?${storeQ.slice(1)}` : ""}`],
-          ["trial", "トライアル", `/ai/apply?plan=trial${storeQ}`],
           ["basic", "基本プラン", `/ai/apply?plan=basic${storeQ}`],
           ["production", "制作プラン", `/ai/apply?plan=production${storeQ}`],
         ].map(([k, label, href]) => (
