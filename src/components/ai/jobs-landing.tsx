@@ -14,13 +14,6 @@ const SEEKER_STATS = [
 ];
 const SEEKER_SOURCES = "左から 学情「20代転職意識調査」2026年8月・n=186／マイナビ転職「転職者の生成AI活用に関する実態調査」2026年4月・n=700（直近1年に転職した20代）／Itera「転職活動における企業情報の収集方法に関する調査」2026年8月・n=880／産業能率大学「学生メディア・コンテンツ利用調査2026」・n=2,607";
 
-const QUESTION_TYPES = [
-  { title: "地域で探す", ex: "大阪で未経験OKの求人を探すならどのサイト？" },
-  { title: "条件で探す", ex: "在宅でできるバイトを探せる求人サイトは？" },
-  { title: "企業が媒体を探す", ex: "アルバイト採用におすすめの求人媒体は？" },
-  { title: "サイト名で聞く", ex: "〇〇（サイト名）の評判は？使っても大丈夫？" },
-];
-
 const WORK = [
   { title: "サイトの中", body: "説明文やよくある質問を、AIが読み取りやすい形に直します。" },
   { title: "サイトの外", body: "AIが参考にする比較記事へ、御社の情報を届けます。" },
@@ -133,55 +126,25 @@ export function JobsLanding() {
 
       <CtaBand title="まずは、今の紹介のされ方を知る。" />
 
-      {/* 診断の内容：調査の丁寧さを見せる */}
+      {/* 診断の内容：丁寧さは伝えるが、やり方の細部は書かない */}
       <Section id="features">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <Head title={<>1つの求人サイトのために、<br />AIに<span className="font-num px-1 text-brand">162</span>回聞きます。</>} desc="AIの答えは毎回変わります。だから、同じ質問を何度も聞いて、全部の答えを読みます。" />
+          <Head title={<>1つの求人サイトのために、<br />AIに<span className="font-num px-1 text-brand">162</span>回聞きました。</>} desc="1回聞いて終わり、ではありません。何度も聞いて、全部の答えを読みます。" />
           <ArrowLink href="/ai/sample">レポートの見本を見る</ArrowLink>
         </div>
-        <div className="mt-10 grid grid-cols-3 items-stretch gap-2 sm:gap-3 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1.2fr]">
+        <div className="mt-10 grid gap-3 lg:grid-cols-3">
           {[
-            { label: "求職者が聞きそうな質問", value: "27", unit: "問" },
-            { op: "×" },
-            { label: "同じ質問をくり返す", value: "3", unit: "回" },
-            { op: "×" },
-            { label: "ChatGPTとGemini", value: "2", unit: "つのAI" },
-            { op: "=" },
-            { label: "読んで記録した答え", value: "162", unit: "回", em: true },
-          ].map((c, i) =>
-            "op" in c ? (
-              <span key={i} aria-hidden className="hidden place-items-center px-1 text-3xl font-bold text-slate-400 lg:grid">{c.op}</span>
-            ) : (
-              <div key={i} className={`rounded-md px-3 py-5 sm:px-6 sm:py-6 ${c.em ? "col-span-3 bg-brand text-white lg:col-span-1" : "bg-[#F1F6FE]"}`}>
-                <p className={`palt text-xs font-bold sm:text-sm ${c.em ? "text-blue-100" : "text-slate-700"}`}>{c.label}</p>
-                <div className="mt-3"><Stat value={c.value!} unit={c.unit} className={c.em ? "text-white" : "text-brand"} /></div>
-              </div>
-            ),
-          )}
-        </div>
-        <p className="mt-3 text-xs text-slate-500">ある求人サイトの診断（2026年11月）の例です。質問の数はサイトに合わせて決めます。無料診断は、質問とAIを絞った簡易版です。</p>
-
-        <ol className="mt-14 grid gap-3 lg:grid-cols-4">
-          {[
-            { t: "質問をつくる", b: "地域・職種・働き方・採用企業・サイト名。求職者と採用担当者が実際に聞きそうな形にします。" },
-            { t: "何度も聞く", b: "1問を3回ずつ、ChatGPTとGeminiの両方に。たまたまの結果に左右されないようにします。" },
-            { t: "答えを全部読む", b: "紹介されたか、何番目か、一緒に出た競合、AIが根拠にしたサイト、説明の誤りを1件ずつ記録します。" },
-            { t: "直す順番を決める", b: "なぜ紹介されないのかを突き止め、効果が大きく、すぐできることから並べます。" },
-          ].map((s) => (
-            <li key={s.t} className="rounded-md border border-slate-200 p-6">
-              <p className="palt text-xl font-bold text-slate-900">{s.t}</p>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{s.b}</p>
-            </li>
+            { t: "どの質問で、紹介されるか", b: "紹介される場面と、されない場面がわかります。" },
+            { t: "どの競合が、先に出るか", b: "AIの答えの中での立ち位置がわかります。" },
+            { t: "なぜ、紹介されないのか", b: "原因と、最初に直すことがわかります。" },
+          ].map((c) => (
+            <div key={c.t} className="rounded-md bg-[#F1F6FE] p-7">
+              <p className="palt text-xl font-bold text-slate-900">{c.t}</p>
+              <p className="mt-2 text-slate-600">{c.b}</p>
+            </div>
           ))}
-        </ol>
-        <div className="mt-8 rounded-md bg-[#F5F8FD] p-6 sm:p-8">
-          <p className="palt font-bold text-slate-900">たとえば、こんな質問を聞きます</p>
-          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-            {QUESTION_TYPES.map((q) => (
-              <li key={q.title} className="flex items-center gap-4 rounded-md bg-white px-5 py-4"><span className="w-24 shrink-0 text-xs font-bold text-brand">{q.title}</span><span className="palt text-sm font-medium text-slate-900">「{q.ex}」</span></li>
-            ))}
-          </ul>
         </div>
+        <p className="mt-3 text-xs text-slate-500">162回は、ある求人サイトの診断（2026年11月）での回数です。回数はサイトに合わせて決めます。無料診断は簡易版です。</p>
       </Section>
 
       {/* 改善の進め方 */}
