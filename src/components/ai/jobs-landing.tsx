@@ -181,7 +181,7 @@ export function JobsLanding() {
           {[
             { name: "無料診断", price: "0", unit: "円", body: "AIでの紹介のされ方と、最初に直す3つをお届けします。", href: "/ai/apply", cta: "無料で診断する" },
             { name: "基本プラン", price: "10", unit: "万円／月", body: "毎月の計測と、既存ページの改善（月2件）。", href: "/ai/apply?plan=basic", cta: "基本プランを相談する" },
-            { name: "制作プラン", price: "20", unit: "万円／月", body: "基本プランに加えて、新しいページの制作（月2本）。", href: "/ai/apply?plan=production", cta: "制作プランを相談する", em: true, badge: "おすすめ" },
+            { name: "制作プラン", price: "20", unit: "万円／月", body: "基本プランに加えて、選ばれる理由を伝えるページを毎月2本。", href: "/ai/apply?plan=production", cta: "制作プランを相談する", em: true, badge: "おすすめ" },
           ].map((p) => (
             <Link key={p.name} href={p.href} className={`group flex flex-col rounded-md p-7 transition hover:-translate-y-0.5 ${p.em ? "bg-brand text-white" : "bg-[#F1F6FE] text-slate-900"}`}>
               <p className="palt flex items-center gap-2 text-lg font-bold">{p.name}{"badge" in p && p.badge && <span className="rounded-sm bg-white px-2 py-0.5 text-xs font-bold text-brand">{p.badge}</span>}</p>
