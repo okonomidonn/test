@@ -35,7 +35,7 @@ export function BookForm({ pdf }: { pdf: string }) {
         <p className="mt-4 text-sm text-slate-600">
           自社の状況をすぐ知りたい方は、
           <Link href="/ai/apply" className="font-semibold text-brand underline">
-            無料チェック
+            無料診断
           </Link>
           もご利用ください。
         </p>

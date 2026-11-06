@@ -6,7 +6,7 @@ import { createLead, type LeadField, type LeadState } from "@/app/actions/leads"
 
 // ファーストビュー用の短い申し込みフォーム（項目名を左、入力欄を右に並べる）
 const FIELDS: { k: LeadField; label: string; type?: string; placeholder: string; auto?: string }[] = [
-  { k: "company", label: "会社・サービス名", placeholder: "例）株式会社ススメル", auto: "organization" },
+  { k: "company", label: "会社名・サイト名", placeholder: "例）株式会社ススメル", auto: "organization" },
   { k: "websiteUrl", label: "サイトのURL", type: "url", placeholder: "例）https://example.com" },
   { k: "name", label: "お名前", placeholder: "例）鈴木 太郎", auto: "name" },
   { k: "email", label: "メールアドレス", type: "email", placeholder: "例）taro@example.com", auto: "email" },
