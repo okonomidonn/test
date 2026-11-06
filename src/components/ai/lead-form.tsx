@@ -61,10 +61,10 @@ export function LeadForm({ kind, defaults = {}, plan, submitLabel }: { kind: "CH
 
       <fieldset className="space-y-4">
         <legend className="text-sm font-semibold text-slate-500">1. 診断するサービス</legend>
-        <Field id="lead-company" label="会社名・サービス名" error={err("company")}>
+        <Field id="lead-company" label="会社名・サイト名" error={err("company")}>
           <input id="lead-company" name="company" required defaultValue={val("company")} autoComplete="organization" className={inputCls(!!err("company"))} {...aria("company")} />
         </Field>
-        <Field id="lead-websiteUrl" label="サービスのサイト" hint="トップページのURL" error={err("websiteUrl")}>
+        <Field id="lead-websiteUrl" label="求人サイトのURL" hint="トップページのURL" error={err("websiteUrl")}>
           <input
             id="lead-websiteUrl"
             type="url"
@@ -103,7 +103,7 @@ export function LeadForm({ kind, defaults = {}, plan, submitLabel }: { kind: "CH
         <legend className="text-sm font-semibold text-slate-500">3. 任意</legend>
         <Field
           id="lead-message"
-          label={kind === "TRIAL" ? "気になっていること" : "見込み客がAIに聞きそうな質問"}
+          label={kind === "TRIAL" ? "気になっていること" : "求職者がAIに聞きそうな質問"}
           hint={kind === "TRIAL" ? "例：ChatGPTに聞くと、競合ばかり紹介される" : "例：地方在住の大学生が利用できる、完全在宅の求人サイトは？"}
           error={err("message")}
         >
