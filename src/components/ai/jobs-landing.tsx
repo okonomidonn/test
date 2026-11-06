@@ -72,13 +72,13 @@ export function JobsLanding() {
             <p className="mt-6 max-w-xl leading-loose text-blue-50 sm:text-lg">ChatGPT・Geminiに「おすすめの求人サイトは？」と聞いたとき、御社は何番目に紹介されるか。実際に聞いて数え、どこを直せば紹介されるかまでお伝えします。</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link href="/ai/apply" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-md bg-white px-8 text-lg font-bold text-brand shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition hover:bg-blue-50">無料で診断する<span aria-hidden>→</span></Link>
-              <Link href="/ai/for/jobs/book" className="inline-flex min-h-14 items-center justify-center rounded-md border border-white/60 px-8 font-bold text-white transition hover:bg-white/10">資料をダウンロード</Link>
+              <Link href="/ai/sample" className="inline-flex min-h-14 items-center justify-center rounded-md border border-white/60 px-8 font-bold text-white transition hover:bg-white/10">レポートの見本を見る</Link>
             </div>
             <p className="mt-5 text-sm text-blue-100">費用0円　｜　結果は3営業日以内　｜　登録不要</p>
           </div>
           <figure>
             <div className="rounded-lg bg-white/10 p-2 ring-1 ring-white/20 backdrop-blur-sm sm:p-3">
-              <Image src="/ai/img/report-sample.jpg" alt="AIススメルの診断レポートの画面（見本）" width={1600} height={1000} priority className="w-full rounded-md shadow-[0_24px_60px_rgba(0,0,0,0.35)]" />
+              <Image src="/ai/img/report-v2.jpg" alt="AIススメルの診断レポートの画面（見本）" width={1600} height={1209} priority className="w-full rounded-md shadow-[0_24px_60px_rgba(0,0,0,0.35)]" />
             </div>
             <figcaption className="mt-3 text-center text-xs text-blue-100">診断レポートの見本（架空の求人サイト）</figcaption>
           </figure>

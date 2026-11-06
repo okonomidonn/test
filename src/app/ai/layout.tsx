@@ -81,16 +81,13 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                 </Link>
               </nav>
               <div className="ml-auto flex items-center gap-1 whitespace-nowrap sm:gap-2">
-                <Link href="/ai/for/jobs/book" className="hidden min-h-9 items-center rounded-md border border-brand px-4 text-sm font-bold text-brand transition hover:bg-blue-50 lg:inline-flex">
-                  資料ダウンロード
-                </Link>
                 <Link href="/ai/apply" className={`${btn("primary")} min-h-11 max-[359px]:px-2 lg:min-h-9`} aria-label="無料で診断">
                   無料で診断
                 </Link>
                 <details className="relative lg:hidden">
                   <summary aria-label="メニュー" className="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-lg px-2 text-sm font-semibold text-slate-700 focus-visible:outline-2 focus-visible:outline-brand"><span className="hidden min-[400px]:inline">メニュー</span><span aria-hidden className="text-lg min-[400px]:ml-1">☰</span></summary>
                   <nav aria-label="メインメニュー" className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
-                    {[["/ai#why", "求職者のAI利用"], ["/ai#case", "実例"], ["/ai#features", "診断の内容"], ["/ai/pricing", "料金"], ["/ai/for/jobs/book", "資料ダウンロード"], ["/ai#faq", "よくある質問"]].map(([href, label]) => <a key={href} href={href} className="block rounded-lg px-4 py-3 text-base font-medium text-slate-800 hover:bg-blue-50">{label}</a>)}
+                    {[["/ai#why", "求職者のAI利用"], ["/ai#case", "実例"], ["/ai#features", "診断の内容"], ["/ai/pricing", "料金"], ["/ai#faq", "よくある質問"]].map(([href, label]) => <a key={href} href={href} className="block rounded-lg px-4 py-3 text-base font-medium text-slate-800 hover:bg-blue-50">{label}</a>)}
                   </nav>
                 </details>
               </div>
@@ -114,9 +111,6 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
           </div>
           <nav aria-label="サービス" className="space-y-2 text-sm">
             <p className="font-semibold text-white">サービス</p>
-            <Link href="/ai/for/jobs/book" className="block text-slate-400 hover:text-white">
-              資料ダウンロード
-            </Link>
             <Link href="/ai/sample" className="block text-slate-400 hover:text-white">
               レポートの見本
             </Link>

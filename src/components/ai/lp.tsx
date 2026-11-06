@@ -37,18 +37,14 @@ export function Head({ title, desc, light, center }: { title: ReactNode; desc?: 
 
 // 申し込みへの帯（ページの途中に挟む）
 export function CtaBand() {
-  const card = "group flex min-h-24 items-center justify-between gap-4 rounded-md bg-white px-6 py-5 text-left shadow-[0_8px_24px_rgba(10,36,99,0.18)] transition hover:-translate-y-0.5 sm:px-8";
   return (
-    <section className="ml-[calc(50%-50vw)] w-screen bg-[linear-gradient(110deg,#0A2463_0%,#1D4ED8_100%)]">
-      <div className="mx-auto grid max-w-6xl gap-4 px-4 py-10 sm:px-6 md:grid-cols-2 md:py-12">
-        <Link href="/ai/apply" className={card}>
-          <span><span className="block text-xl font-bold text-brand sm:text-2xl">無料で診断する</span><span className="mt-1 block text-sm text-slate-600">求人サイトのURLを送るだけ。3営業日以内に結果をお送りします</span></span>
-          <span aria-hidden className="text-2xl font-bold text-brand transition group-hover:translate-x-1">→</span>
-        </Link>
-        <Link href="/ai/for/jobs/book" className={card}>
-          <span><span className="block text-xl font-bold text-slate-900 sm:text-2xl">資料をダウンロード</span><span className="mt-1 block text-sm text-slate-600">求人サイトのAI集客はじめてBOOK（全7ページ）</span></span>
-          <span aria-hidden className="text-2xl font-bold text-slate-900 transition group-hover:translate-x-1">→</span>
-        </Link>
+    <section className="ml-[calc(50%-50vw)] w-screen bg-[linear-gradient(110deg,#0A2463_0%,#1D4ED8_100%)] text-white">
+      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-12 sm:px-6 md:flex-row md:items-center">
+        <div>
+          <p className="text-2xl font-bold sm:text-3xl">まずは、今の紹介のされ方を知る。</p>
+          <p className="mt-2 text-blue-100">求人サイトのURLを送るだけ。費用0円、3営業日以内に結果をお送りします。</p>
+        </div>
+        <Link href="/ai/apply" className="inline-flex min-h-14 w-full shrink-0 items-center justify-center gap-3 rounded-md bg-white px-10 text-lg font-bold text-brand shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition hover:bg-blue-50 md:w-auto">無料で診断する<span aria-hidden>→</span></Link>
       </div>
     </section>
   );
@@ -63,9 +59,6 @@ export function Cta({ light }: { light?: boolean }) {
     <div className="mt-12 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
       <Link href="/ai/apply" className={`inline-flex min-h-13 w-full items-center justify-center rounded-md px-8 font-bold transition sm:w-auto ${light ? "bg-white text-brand hover:bg-blue-50" : "bg-brand text-white hover:bg-brand-dark"}`}>
         無料で診断する
-      </Link>
-      <Link href="/ai/for/jobs/book" className={`inline-flex min-h-13 w-full items-center justify-center rounded-md border px-8 font-bold transition sm:w-auto ${light ? "border-white/70 text-white hover:bg-white/10" : "border-slate-300 bg-white text-slate-900 hover:bg-slate-50"}`}>
-        資料をダウンロード
       </Link>
     </div>
   );
