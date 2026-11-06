@@ -15,7 +15,7 @@ const WORK = [
 
 const NEWS = [
   ["2026.11.06", "求人サイト・人材サービス専門のAI検索対策として、サイトをリニューアルしました。"],
-  ["2026.11", "求人サイトを対象に、ChatGPT・Geminiへ計162回質問する調査を行いました。"],
+  ["2026.11", "求人サイトを対象に、ChatGPT・Geminiでの紹介のされ方を調べる調査を行いました。"],
 ];
 
 const FAQ: [string, string][] = [
@@ -129,10 +129,10 @@ export function JobsLanding() {
 
       <CtaBand title="まずは、今の紹介のされ方を知る。" />
 
-      {/* 診断の内容：丁寧さは伝えるが、やり方の細部は書かない */}
+      {/* 診断の内容：丁寧さは伝えるが、やり方の細部や回数は書かない */}
       <Section id="features">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <Head title={<>1つの求人サイトのために、<br />AIに<span className="font-num px-1 text-brand">162</span>回聞きました。</>} desc="1回聞いて終わり、ではありません。何度も聞いて、全部の答えを読みます。" />
+          <Head title={<>1回聞いて、<br />終わりにしない。</>} desc="同じ質問を何度もAIに聞き、全部の答えを読んで分析します。" />
           <ArrowLink href="/ai/sample">レポートの見本を見る</ArrowLink>
         </div>
         <div className="mt-10 grid gap-3 lg:grid-cols-3">
@@ -147,7 +147,7 @@ export function JobsLanding() {
             </div>
           ))}
         </div>
-        <p className="mt-3 text-xs text-slate-500">162回は、ある求人サイトの診断（2026年11月）での回数です。回数はサイトに合わせて決めます。無料診断は簡易版です。</p>
+        <p className="mt-3 text-xs text-slate-500">無料診断は、質問の数を絞った簡易版です。</p>
       </Section>
 
       {/* 改善の進め方 */}
