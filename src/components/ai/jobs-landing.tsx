@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { HeroLeadForm } from "@/components/ai/hero-lead-form";
-import { ServicePlans } from "@/components/ai/service-plans";
 import { ArrowLink, CtaBand, Faq, Head, Section, Stat } from "@/components/ai/lp";
 
 // 求人サイト・人材サービス専門のAIススメル（トップ /ai と /ai/for/jobs で同じ中身を出す）
@@ -20,14 +19,6 @@ const QUESTION_TYPES = [
   { title: "条件で探す", ex: "在宅でできるバイトを探せる求人サイトは？" },
   { title: "企業が媒体を探す", ex: "アルバイト採用におすすめの求人媒体は？" },
   { title: "サイト名で聞く", ex: "〇〇（サイト名）の評判は？使っても大丈夫？" },
-];
-
-const FINDINGS = [
-  ["紹介された回数と順位", "同じ質問を何度も聞いて数えます"],
-  ["一緒に紹介される競合", "1番目はどこか、差はどれくらいか"],
-  ["AIの説明は事実どおりか", "評判・求人数・特徴を公式情報と照合"],
-  ["紹介されない理由", "AIが根拠にしている記事やサイト"],
-  ["最初に直す3つ", "効果が大きく、すぐできる順に"],
 ];
 
 const WORK = [
@@ -98,31 +89,6 @@ export function JobsLanding() {
         <p className="mt-4 text-xs leading-relaxed text-slate-500">{SEEKER_SOURCES}</p>
       </Section>
 
-      {/* AIの答えは平均6件 */}
-      <Section tone="soft">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <div className="flex items-center gap-4 rounded-md bg-white p-5 shadow-[0_8px_30px_rgba(30,60,120,0.08)] sm:gap-6 sm:p-8">
-            <div className="flex flex-1 flex-col gap-2.5">
-              <p className="text-sm font-bold text-slate-500">検索結果</p>
-              {Array.from({ length: 10 }, (_, i) => <span key={i} className="block h-3 rounded-sm bg-slate-200" />)}
-              <p className="text-xs text-slate-500">何十件から選ぶ</p>
-            </div>
-            <span aria-hidden className="text-2xl font-bold text-blue-300">→</span>
-            <div className="flex flex-1 flex-col gap-2.5 rounded-md border-2 border-brand bg-[#EEF4FE] p-4">
-              <p className="text-sm font-bold text-brand">AIの答え</p>
-              {["bg-brand", "bg-[#5B8FEA]", "bg-[#8FB2F1]", "bg-[#BCD0F6]", "bg-[#BCD0F6]", "bg-[#BCD0F6]"].map((c, i) => (
-                <span key={i} className="flex items-center gap-2"><span className="font-num w-4 text-xs font-bold text-brand">{i + 1}</span><span className={`block h-5 flex-1 rounded-sm ${c}`} /></span>
-              ))}
-              <p className="text-xs font-bold text-slate-900">最初から絞られて届く</p>
-            </div>
-          </div>
-          <div>
-            <Head title={<>AIの答えに載るのは、<br />平均<span className="font-num px-1 text-brand">6</span>件だけ。</>} desc="6件に入れなければ、求職者に比べてもらうこともできません。" />
-            <p className="mt-8 text-xs leading-relaxed text-slate-500">当社調査（2026年11月、求人サイトについてChatGPT・Geminiに計162回質問）で、1回の答えに挙がったサイト数の平均。</p>
-          </div>
-        </div>
-      </Section>
-
       {/* zaitoの実例 */}
       <Section id="case" tone="navy">
         <Head light title={<>私たちの求人サイトでは、<br />3人に1人がChatGPTから。</>} desc="運営する大学生向け在宅求人サイト「zaito」の直近28日間" />
@@ -167,29 +133,54 @@ export function JobsLanding() {
 
       <CtaBand title="まずは、今の紹介のされ方を知る。" />
 
-      {/* 診断の内容 */}
+      {/* 診断の内容：調査の丁寧さを見せる */}
       <Section id="features">
-        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <div>
-            <Head title={<>AIに実際に聞いて、<br />数えます。</>} desc="求職者や採用担当者が聞きそうな質問を、ChatGPT・Geminiに何度も聞きます。" />
-            <ul className="mt-8 grid gap-2">
-              {QUESTION_TYPES.map((q) => (
-                <li key={q.title} className="flex items-center gap-4 rounded-md border border-slate-200 px-5 py-4"><span className="w-28 shrink-0 text-xs font-bold text-brand">{q.title}</span><span className="palt font-medium text-slate-900">「{q.ex}」</span></li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="palt text-lg font-bold text-slate-900">診断でわかること</p>
-            <ul className="mt-4 divide-y divide-slate-200 rounded-md bg-[#F5F8FD]">
-              {FINDINGS.map(([t, b]) => (
-                <li key={t} className="flex flex-col gap-1 px-6 py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                  <p className="palt text-lg font-bold text-slate-900">{t}</p>
-                  <p className="text-sm text-slate-600">{b}</p>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-6"><ArrowLink href="/ai/sample">レポートの見本を見る</ArrowLink></div>
-          </div>
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <Head title={<>1つの求人サイトのために、<br />AIに<span className="font-num px-1 text-brand">162</span>回聞きます。</>} desc="AIの答えは毎回変わります。だから、同じ質問を何度も聞いて、全部の答えを読みます。" />
+          <ArrowLink href="/ai/sample">レポートの見本を見る</ArrowLink>
+        </div>
+        <div className="mt-10 grid grid-cols-3 items-stretch gap-2 sm:gap-3 lg:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1.2fr]">
+          {[
+            { label: "求職者が聞きそうな質問", value: "27", unit: "問" },
+            { op: "×" },
+            { label: "同じ質問をくり返す", value: "3", unit: "回" },
+            { op: "×" },
+            { label: "ChatGPTとGemini", value: "2", unit: "つのAI" },
+            { op: "=" },
+            { label: "読んで記録した答え", value: "162", unit: "回", em: true },
+          ].map((c, i) =>
+            "op" in c ? (
+              <span key={i} aria-hidden className="hidden place-items-center px-1 text-3xl font-bold text-slate-400 lg:grid">{c.op}</span>
+            ) : (
+              <div key={i} className={`rounded-md px-3 py-5 sm:px-6 sm:py-6 ${c.em ? "col-span-3 bg-brand text-white lg:col-span-1" : "bg-[#F1F6FE]"}`}>
+                <p className={`palt text-xs font-bold sm:text-sm ${c.em ? "text-blue-100" : "text-slate-700"}`}>{c.label}</p>
+                <div className="mt-3"><Stat value={c.value!} unit={c.unit} className={c.em ? "text-white" : "text-brand"} /></div>
+              </div>
+            ),
+          )}
+        </div>
+        <p className="mt-3 text-xs text-slate-500">ある求人サイトの診断（2026年11月）の例です。質問の数はサイトに合わせて決めます。無料診断は、質問とAIを絞った簡易版です。</p>
+
+        <ol className="mt-14 grid gap-3 lg:grid-cols-4">
+          {[
+            { t: "質問をつくる", b: "地域・職種・働き方・採用企業・サイト名。求職者と採用担当者が実際に聞きそうな形にします。" },
+            { t: "何度も聞く", b: "1問を3回ずつ、ChatGPTとGeminiの両方に。たまたまの結果に左右されないようにします。" },
+            { t: "答えを全部読む", b: "紹介されたか、何番目か、一緒に出た競合、AIが根拠にしたサイト、説明の誤りを1件ずつ記録します。" },
+            { t: "直す順番を決める", b: "なぜ紹介されないのかを突き止め、効果が大きく、すぐできることから並べます。" },
+          ].map((s) => (
+            <li key={s.t} className="rounded-md border border-slate-200 p-6">
+              <p className="palt text-xl font-bold text-slate-900">{s.t}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">{s.b}</p>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-8 rounded-md bg-[#F5F8FD] p-6 sm:p-8">
+          <p className="palt font-bold text-slate-900">たとえば、こんな質問を聞きます</p>
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {QUESTION_TYPES.map((q) => (
+              <li key={q.title} className="flex items-center gap-4 rounded-md bg-white px-5 py-4"><span className="w-24 shrink-0 text-xs font-bold text-brand">{q.title}</span><span className="palt text-sm font-medium text-slate-900">「{q.ex}」</span></li>
+            ))}
+          </ul>
         </div>
       </Section>
 
@@ -214,29 +205,27 @@ export function JobsLanding() {
         </div>
       </Section>
 
-      {/* 料金 */}
+      {/* 料金（3つだけ大きく見せる） */}
       <Section id="pricing">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <Head title="改善のご依頼は、結果を見てから。" desc="無料診断だけのご利用もできます。" />
+          <Head title="まずは無料診断から。" desc="改善のご依頼は、結果を見てから決めてください。" />
           <ArrowLink href="/ai/pricing">料金の詳細・他社との比較</ArrowLink>
         </div>
-        <div className="mt-10">
-          <ServicePlans />
+        <div className="mt-10 grid gap-3 lg:grid-cols-3">
+          {[
+            { name: "無料診断", price: "0", unit: "円", body: "AIでの紹介のされ方と、最初に直す3つをお届けします。", href: "/ai/apply", cta: "無料で診断する", em: true },
+            { name: "トライアル", price: "49,800", unit: "円／1回", body: "診断と競合2社の比較、1ページの改善、30日後の測り直しまで。", href: "/ai/apply?plan=trial", cta: "トライアルを相談する" },
+            { name: "月額プラン", price: "10", unit: "万円〜／月", body: "毎月の計測と、既存ページの改善。最低契約期間はありません。", href: "/ai/pricing", cta: "プランを見る" },
+          ].map((p) => (
+            <Link key={p.name} href={p.href} className={`group flex flex-col rounded-md p-7 transition hover:-translate-y-0.5 ${p.em ? "bg-brand text-white" : "bg-[#F1F6FE] text-slate-900"}`}>
+              <p className="palt text-lg font-bold">{p.name}</p>
+              <div className="mt-4"><Stat value={p.price} unit={p.unit} className={p.em ? "text-white" : "text-slate-900"} /></div>
+              <p className={`mt-4 flex-1 text-sm leading-relaxed ${p.em ? "text-blue-50" : "text-slate-600"}`}>{p.body}</p>
+              <span className={`mt-6 inline-flex items-center justify-between border-t pt-4 text-sm font-bold ${p.em ? "border-white/30" : "border-slate-300"}`}>{p.cta}<span aria-hidden className="transition group-hover:translate-x-1">→</span></span>
+            </Link>
+          ))}
         </div>
-      </Section>
-
-      <CtaBand />
-
-      {/* 運営者 */}
-      <Section>
-        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <Head title={<>求人サイトを運営しながら、<br />AI検索対策を試してきました。</>} />
-          <div className="rounded-md bg-[#F5F8FD] p-7 sm:p-9">
-            <p className="palt text-2xl font-black text-slate-900">鳥居 潤</p>
-            <p className="mt-1 text-sm font-bold text-brand">AIススメル 代表</p>
-            <p className="mt-5 leading-loose text-slate-700">大学生専門の在宅求人サイト「zaito」を運営。自分のサイトで、AIでの紹介のされ方を測り、直し、また測ってきました。その手順を、ほかの求人サイトでも使えるようにしたのがAIススメルです。</p>
-          </div>
-        </div>
+        <p className="mt-3 text-xs text-slate-500">価格は税別です（税込：トライアル54,780円、月額プラン110,000円〜）。月額プランは1か月単位で、いつでも終了できます。</p>
       </Section>
 
       {/* よくある質問・お知らせ */}

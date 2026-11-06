@@ -77,7 +77,7 @@ export function Stat({ value, unit, pre, className = "text-brand" }: { value: st
     <span className={`inline-flex items-baseline leading-none ${className}`}>
       {pre && <span className="mr-1 text-lg font-bold">{pre}</span>}
       <span className="font-num text-[2.25rem] font-extrabold tracking-tight sm:text-[3.25rem]">{value}</span>
-      {unit && <span className="ml-1 text-xl font-bold">{unit}</span>}
+      {unit && <span className="ml-1 whitespace-nowrap text-xl font-bold">{unit}</span>}
     </span>
   );
 }
