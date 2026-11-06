@@ -91,8 +91,21 @@ export function JobsLanding() {
         <div className="mt-10 grid gap-8 rounded-lg bg-white p-6 text-slate-900 sm:p-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
           <figure>
             <div className="relative pb-10">
-              <Image src="/ai/img/zaito-pc.jpg" alt="求人サイトzaitoのトップページ（パソコン）" width={1800} height={1125} className="w-[86%] rounded-md border border-slate-200 shadow-[0_16px_40px_rgba(30,60,120,0.14)]" />
-              <Image src="/ai/img/zaito-sp.jpg" alt="求人サイトzaitoのトップページ（スマホ）" width={700} height={1191} className="absolute bottom-0 right-0 w-[27%] rounded-xl border-4 border-slate-800 shadow-[0_16px_40px_rgba(30,60,120,0.22)]" />
+              {/* パソコン：ブラウザの枠に入れる */}
+              <div className="w-[86%] overflow-hidden rounded-lg bg-white shadow-[0_16px_40px_rgba(30,60,120,0.16)] ring-1 ring-slate-200">
+                <div aria-hidden className="flex items-center gap-1.5 border-b border-slate-200 bg-slate-100 px-3 py-2">
+                  <span className="h-2 w-2 rounded-full bg-slate-300" /><span className="h-2 w-2 rounded-full bg-slate-300" /><span className="h-2 w-2 rounded-full bg-slate-300" />
+                  <span className="ml-2 h-3 flex-1 rounded-full bg-white" />
+                </div>
+                <Image src="/ai/img/zaito-pc.jpg" alt="求人サイトzaitoのトップページ（パソコン）" width={1800} height={1125} className="block w-full" />
+              </div>
+              {/* スマホ：角の丸い端末の枠に入れる */}
+              <div className="absolute bottom-0 right-0 w-[28%] rounded-[1.6rem] bg-slate-900 p-[5px] shadow-[0_20px_44px_rgba(15,30,70,0.32)]">
+                <div className="relative overflow-hidden rounded-[1.3rem] bg-white">
+                  <span aria-hidden className="absolute left-1/2 top-1.5 z-10 h-[7px] w-[34%] -translate-x-1/2 rounded-full bg-slate-900" />
+                  <Image src="/ai/img/zaito-sp.jpg" alt="求人サイトzaitoのトップページ（スマホ）" width={700} height={1191} className="block w-full pt-4" />
+                </div>
+              </div>
             </div>
           </figure>
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
