@@ -4,8 +4,8 @@ import { btn } from "./ds";
 // 料金はこの3つ。1枚に「誰向け・いくら・何をするか」を並べ、細かい条件はカードの下にまとめる
 const PLANS = [
   { title: "無料診断", who: "まず今の状態を知りたい", price: "0円", unit: "", features: ["AIに紹介されているかを計測", "最初に直す3つのことをお届け"], href: "/ai/apply", cta: "無料で依頼する" },
-  { title: "基本プラン", who: "毎月、既存ページを直していきたい", price: "100,000円", unit: "月", features: ["毎月の計測（30問を2つのAIで・競合3社と比較）", "優先課題の整理", "既存ページの改善 月2件", "AIから来た人数のレポート（GA4）", "月1回の報告・打ち合わせ"], href: "/ai/apply?plan=basic", cta: "基本プランを相談する", recommended: true },
-  { title: "制作プラン", who: "新しいページも作って攻めたい", price: "200,000円", unit: "月", features: ["基本プランの内容すべて", "新規ページの制作 月2本（各3,000字まで）", "既存ページの改善を月4件に", "よくある質問・構造化データの作成"], href: "/ai/apply?plan=production", cta: "制作プランを相談する" },
+  { title: "基本プラン", who: "毎月、既存ページを直していきたい", price: "100,000円", unit: "月", features: ["毎月の計測（30問を2つのAIで・競合3社と比較）", "優先課題の整理", "既存ページの改善 月2件", "AIから来た人数のレポート（GA4）", "月1回の報告・打ち合わせ"], href: "/ai/apply?plan=basic", cta: "基本プランを相談する" },
+  { title: "制作プラン", who: "新しいページも作って攻めたい", price: "200,000円", unit: "月", features: ["基本プランの内容すべて", "新規ページの制作 月2本（各3,000字まで）", "既存ページの改善を月4件に", "よくある質問・構造化データの作成"], href: "/ai/apply?plan=production", cta: "制作プランを相談する", recommended: true },
 ];
 
 export function ServicePlans() {

@@ -47,7 +47,7 @@ export function CtaBand({ title }: { title?: string }) {
             <span><span className="palt block text-xl font-bold text-brand sm:text-2xl">無料で診断する</span><span className="mt-1 block text-sm text-slate-600">URLを送るだけ。3営業日以内にお届け</span></span>
             <ArrowBox />
           </Link>
-          <Link href="/ai/apply?plan=basic" className={card}>
+          <Link href="/ai/apply?plan=production" className={card}>
             <span><span className="palt block text-xl font-bold text-slate-900 sm:text-2xl">改善を相談する</span><span className="mt-1 block text-sm text-slate-600">月額プランのご相談</span></span>
             <ArrowBox dark />
           </Link>
