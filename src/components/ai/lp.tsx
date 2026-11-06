@@ -35,18 +35,50 @@ export function Head({ title, desc, light, center }: { title: ReactNode; desc?: 
   );
 }
 
-// 申し込みへの帯（ページの途中に挟む）
-export function CtaBand() {
+// 申し込みへの帯（ページの途中に挟む）。白い大きなボタン2つ
+export function CtaBand({ title }: { title?: string }) {
+  const card = "group flex min-h-24 items-center justify-between gap-4 rounded-md bg-white px-6 py-5 transition hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.18)] sm:px-8";
   return (
-    <section className="ml-[calc(50%-50vw)] w-screen bg-[linear-gradient(110deg,#0A2463_0%,#1D4ED8_100%)] text-white">
-      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-12 sm:px-6 md:flex-row md:items-center">
-        <div>
-          <p className="text-2xl font-bold sm:text-3xl">まずは、今の紹介のされ方を知る。</p>
-          <p className="mt-2 text-blue-100">求人サイトのURLを送るだけ。費用0円、3営業日以内に結果をお送りします。</p>
+    <section className="ml-[calc(50%-50vw)] w-screen bg-[linear-gradient(110deg,#0A2463_0%,#1D4ED8_70%,#2563EB_100%)]">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-14">
+        {title && <p className="palt mb-7 text-center text-2xl font-bold text-white sm:text-3xl">{title}</p>}
+        <div className="grid gap-4 md:grid-cols-2">
+          <Link href="/ai/apply" className={card}>
+            <span><span className="palt block text-xl font-bold text-brand sm:text-2xl">無料で診断する</span><span className="mt-1 block text-sm text-slate-600">URLを送るだけ。3営業日以内にお届け</span></span>
+            <ArrowBox />
+          </Link>
+          <Link href="/ai/apply?plan=trial" className={card}>
+            <span><span className="palt block text-xl font-bold text-slate-900 sm:text-2xl">改善を相談する</span><span className="mt-1 block text-sm text-slate-600">トライアル・月額プランのご相談</span></span>
+            <ArrowBox dark />
+          </Link>
         </div>
-        <Link href="/ai/apply" className="inline-flex min-h-14 w-full shrink-0 items-center justify-center gap-3 rounded-md bg-white px-10 text-lg font-bold text-brand shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition hover:bg-blue-50 md:w-auto">無料で診断する<span aria-hidden>→</span></Link>
       </div>
     </section>
+  );
+}
+
+function ArrowBox({ dark }: { dark?: boolean }) {
+  return <span aria-hidden className={`grid h-11 w-11 shrink-0 place-items-center rounded-full text-lg font-bold text-white transition group-hover:translate-x-1 ${dark ? "bg-slate-900" : "bg-brand"}`}>→</span>;
+}
+
+// 黒いボタン（右に矢印）。「詳しく見る」などの寄り道のリンクに使う
+export function ArrowLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className="group inline-flex min-h-12 shrink-0 items-center gap-6 self-start rounded-md md:self-end bg-slate-900 pl-6 pr-2 text-sm font-bold text-white transition hover:bg-black">
+      {children}
+      <span aria-hidden className="grid h-8 w-8 place-items-center rounded border-l border-white/20 transition group-hover:translate-x-0.5">→</span>
+    </Link>
+  );
+}
+
+// 大きな数字（単位は小さく）
+export function Stat({ value, unit, pre, className = "text-brand" }: { value: string; unit?: string; pre?: string; className?: string }) {
+  return (
+    <span className={`inline-flex items-baseline leading-none ${className}`}>
+      {pre && <span className="mr-1 text-lg font-bold">{pre}</span>}
+      <span className="font-num text-[2.25rem] font-extrabold tracking-tight sm:text-[3.25rem]">{value}</span>
+      {unit && <span className="ml-1 text-xl font-bold">{unit}</span>}
+    </span>
   );
 }
 
