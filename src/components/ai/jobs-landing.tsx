@@ -9,7 +9,7 @@ import { Cta, Faq, Lead, Num, Section, ZAITO } from "@/components/ai/lp";
 const SEEKER_STATS = [
   { n: "63.5%", text: "20代の求職者のうち、就職・転職活動で生成AIを利用", src: "学情「20代転職意識調査」2026年8月・n=186（前年は46.5%）" },
   { n: "53.7%", text: "直近1年に転職した20代のうち、生成AIを活用", src: "マイナビ転職「転職者の生成AI活用に関する実態調査」2026年4月・n=700" },
-  { n: "26.0%", text: "応募先の企業を、生成AIに質問して調べた転職活動者（口コミサイトの約2倍）", src: "Itera「転職活動における企業情報の収集方法に関する調査」2026年8月・n=880" },
+  { n: "26.0%", text: "応募先の企業を調べるときに、生成AIに質問した転職活動者", src: "Itera「転職活動における企業情報の収集方法に関する調査」2026年8月・n=880" },
   { n: "84.5%", text: "生成AIを使い続けている大学生（うちChatGPTが90.4%）", src: "産業能率大学「学生メディア・コンテンツ利用調査2026」・n=2,607" },
 ];
 
@@ -23,14 +23,14 @@ const QUESTION_TYPES = [
 const FINDINGS = [
   ["紹介された回数と、何番目か", "同じ質問を、ChatGPT・Geminiで条件をそろえて何度も聞き、数えます。"],
   ["一緒に紹介される競合", "1番目に挙がっているのはどこか。分野ごとに、競合との差が分かります。"],
-  ["AIの説明が、事実どおりか", "評判・料金・求人数など、名前で聞かれたときの説明を、公式の情報と照らし合わせます。"],
+  ["AIの説明が、事実どおりか", "評判・求人数・特徴など、サイト名で聞かれたときの説明を、公式の情報と照らし合わせます。"],
   ["弱い分野と、その原因", "紹介されない質問で、AIが何を根拠に答えているか（検索の上位にある記事など）を調べます。"],
   ["最初に直すこと", "効果が大きく、すぐ取りかかれることから、3つに絞ってお伝えします。"],
 ];
 
 const WORK = [
-  { title: "サイトの中", body: "求人一覧・特集ページの説明文、よくある質問、構造化データの原稿をお渡しします。反映は御社のご担当者さま、またはCMSの範囲でこちらが行います。" },
-  { title: "サイトの外", body: "AIが根拠にしている比較記事の運営元への情報提供、求人データをもとにしたレポートの発信、口コミを増やす仕組みづくりを進めます。" },
+  { title: "サイトの中", body: "トップページや特集ページの説明文、よくある質問など、AIが読み取りやすい文章をつくります。管理画面（CMS）から更新できる部分は、こちらで反映もできます。" },
+  { title: "サイトの外", body: "AIが参考にしている「おすすめ求人サイト」の比較記事へ、御社の情報を届けます。あわせて、求人データをもとにした調査記事の発信や、利用者の口コミが集まる仕組みづくりを進めます。" },
   { title: "毎月の計測", body: "同じ質問で測り直し、紹介された回数・順番の変化と、AIからの流入（GA4）をご報告します。" },
 ];
 
@@ -39,7 +39,7 @@ const FAQ: [string, string][] = [
   ["無料診断のあと、契約しないといけませんか？", "いいえ。結果を見てからご検討ください。フォームの送信だけで、有料の契約や自動の課金は発生しません。"],
   ["結果はいつ届きますか？", "無料診断は3営業日以内にメールでお送りします。"],
   ["必ずAIに紹介されるようになりますか？", "紹介や応募の増加はお約束できません。AIの回答は毎回変わるため、同じ条件で測り直して、変化を数字でお見せします。"],
-  ["応募数が増えたかは分かりますか？", "月額プランでは、GA4でAIから来た人数と「応募ページへ進む」などの行動を毎月確かめます。"],
+  ["応募数が増えたかは分かりますか？", "月額プランでは、GA4でAIから来た人数と、そのうち「応募ページへ進む」などの行動をした数を毎月お伝えします。応募完了まで数えられるかは、御社の応募の仕組みによります。"],
   ["サイトの外の作業とは、何をしますか？", "AIが根拠にしている比較記事の運営元への情報提供、求人データのレポート発信、口コミを増やす仕組みづくりなどです。御社の名前で外に出るものは、すべて事前にご確認いただきます。偽の口コミなど、ステルスマーケティングにあたることは一切行いません。"],
   ["支払い方法は？", "銀行振込（請求書払い・前払い）です。詳しくは特定商取引法に基づく表記をご覧ください。"],
 ];
@@ -62,7 +62,7 @@ export function JobsLanding() {
               <Link href="/ai/apply" className="inline-flex min-h-13 items-center justify-center rounded-md bg-brand px-8 font-bold text-white transition hover:bg-brand-dark">無料で診断する</Link>
               <Link href="/ai/for/jobs/book" className="inline-flex min-h-13 items-center justify-center rounded-md border border-slate-300 bg-white px-8 font-bold text-slate-900 transition hover:bg-slate-50">資料をダウンロード</Link>
             </div>
-            <p className="mt-5 text-sm text-slate-500">費用0円　｜　3営業日以内にお届け　｜　登録不要</p>
+            <p className="mt-5 text-sm text-slate-500">費用0円　｜　結果は3営業日以内　｜　登録不要</p>
           </div>
           <figure>
             <Image src="/ai/img/report-sample.jpg" alt="AIススメルの診断レポートの画面（見本）" width={1600} height={1000} priority className="w-full rounded-md border border-slate-200 shadow-[0_24px_60px_rgba(30,60,120,0.16)]" />
@@ -106,15 +106,15 @@ export function JobsLanding() {
           </div>
           <div className="divide-y divide-slate-200 border-y-2 border-t-slate-800 border-b-slate-200">
             <div className="py-6"><p className="text-lg font-bold text-slate-900">6件に入るか、何番目か</p><p className="mt-2 leading-relaxed text-slate-700">ここに入れないと、求職者に比べてもらうこともできません。</p></div>
-            <div className="py-6"><p className="text-lg font-bold text-slate-900">サイト名で聞かれたときの説明も</p><p className="mt-2 leading-relaxed text-slate-700">評判・料金・求人数をどう説明するかも、AIが読んでいる情報で決まります。</p></div>
-            <p className="py-4 text-xs leading-relaxed text-slate-500">「平均6件」は、当社が求人サイトを対象に行った調査（2026年11月、ChatGPT・Geminiに計162回質問）での、1回の答えに挙がったサービスの数の平均です。</p>
+            <div className="py-6"><p className="text-lg font-bold text-slate-900">サイト名で聞かれたときの説明も、AIしだい</p><p className="mt-2 leading-relaxed text-slate-700">「〇〇ってどんなサイト？」と聞かれたときの評判や特徴の説明も、AIが読んでいる情報で決まります。</p></div>
+            <p className="py-4 text-xs leading-relaxed text-slate-500">「平均6件」は、当社が求人サイトを対象に行った調査（2026年11月、ChatGPT・Geminiに計162回質問）での、1回の答えに挙がった求人サイト・サービスの数の平均です。</p>
           </div>
         </div>
       </Section>
 
       {/* zaitoの実例 */}
       <Section id="case" tone="soft">
-        <Lead line="運営する求人サイト「zaito」では、ChatGPTから来た人が全体の約3分の1。" em="応募に近い操作では、約半分を占めています" />
+        <Lead line="私たちが運営する求人サイト「zaito」では、ChatGPTから来た人が全体の約3分の1。" em="応募ページへ進む人に限ると、約半分がChatGPTからです" />
         <div className="mt-12 grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <figure className="mx-auto w-full max-w-xl">
             <div className="relative pb-10">
@@ -126,7 +126,7 @@ export function JobsLanding() {
           <div className="flex flex-col gap-8">
             {[
               { label: "サイトに来た人のうち、ChatGPTから", v: ZAITO.users, w: "35.5%", color: "bg-[#8FB2F1]", tc: "text-[#5B8FEA]" },
-              { label: "「応募ページへ進む」などの操作のうち、ChatGPTから", v: ZAITO.events, w: "48.7%", color: "bg-brand", tc: "text-brand" },
+              { label: "「応募ページへ進む」などの行動のうち、ChatGPTから", v: ZAITO.events, w: "48.7%", color: "bg-brand", tc: "text-brand" },
             ].map((b) => (
               <div key={b.label}>
                 <div className="flex items-baseline justify-between gap-4"><p className="font-bold text-slate-900">{b.label}</p><Num className={`text-4xl ${b.tc}`}>{b.v.rate}</Num></div>
@@ -135,7 +135,7 @@ export function JobsLanding() {
               </div>
             ))}
             <div className="grid border-t-2 border-slate-800 sm:grid-cols-3">
-              {[["約7倍", "ChatGPTから来た人", ZAITO.growthUsers], ["約6倍", "ChatGPTからの操作", ZAITO.growthEvents], ["約4割", "登録した人のうちChatGPTから", ZAITO.signups]].map(([n, k, d], i) => (
+              {[["約7倍", "ChatGPTから来た人（前の28日間と比べて）", ZAITO.growthUsers], ["約6倍", "ChatGPTからの応募ページへ進むなどの行動（同）", ZAITO.growthEvents], ["約4割", "登録した人のうちChatGPTから", ZAITO.signups]].map(([n, k, d], i) => (
                 <div key={k} className={`py-4 sm:pb-0 sm:pt-5 ${i ? "border-t border-slate-200 sm:border-l sm:border-t-0 sm:pl-4" : "sm:pr-4"}`}><Num className="text-3xl text-brand">{n}</Num><p className="mt-1 text-sm font-bold text-slate-900">{k}</p><p className="text-xs text-slate-500">{d}</p></div>
               ))}
             </div>
@@ -146,7 +146,7 @@ export function JobsLanding() {
 
       {/* 診断の内容 */}
       <Section id="features">
-        <Lead line="求職者や採用担当者がAIに聞きそうな質問を、" em="ChatGPT・Geminiに実際に聞いて、数えます" />
+        <Lead line="求職者や採用担当者がAIに聞きそうな質問を、" em="ChatGPT・Geminiに実際に聞いて、紹介された回数を数えます" />
         <div className="mt-12 grid gap-px overflow-hidden rounded-md border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4">
           {QUESTION_TYPES.map((q) => (
             <div key={q.title} className="bg-white p-6"><p className="font-bold text-brand">{q.title}</p><p className="mt-3 leading-relaxed text-slate-900">「{q.ex}」</p></div>
@@ -178,7 +178,7 @@ export function JobsLanding() {
           ))}
         </div>
         <div className="mt-10 grid overflow-hidden rounded-md sm:grid-cols-3">
-          {[["1か月目", "原稿をつくり、外への働きかけを始める", "bg-[#9DBCF5]"], ["2か月目", "測り直して、弱い所を直し、足す", "bg-[#5B8FEA]"], ["3か月目", "同じ条件で測り直し、効果を報告", "bg-brand"]].map(([m, t, c]) => (
+          {[["1か月目", "サイトの文章を直し、比較記事などへの働きかけを始める", "bg-[#9DBCF5]"], ["2か月目", "測り直し、まだ紹介されない質問を重点的に直す", "bg-[#5B8FEA]"], ["3か月目", "同じ条件で測り直し、効果を報告", "bg-brand"]].map(([m, t, c]) => (
             <div key={m} className={`${c} p-5 text-white`}><p className="text-sm font-bold">{m}</p><p className="mt-1 font-bold">{t}</p></div>
           ))}
         </div>
