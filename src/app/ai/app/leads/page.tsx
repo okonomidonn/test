@@ -28,8 +28,8 @@ export default async function LeadsPage({ searchParams }: PageProps<"/ai/app/lea
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-black text-slate-900">申し込み一覧</h1>
-        <p className="mt-1 text-slate-700">無料チェック・トライアル・月額プランのご相談です（新しい順）。</p>
-        <p className="mt-2 text-sm text-slate-600">無料チェックは3営業日以内に結果を、トライアル・月額プランは2営業日以内に進め方と見積もりを連絡します。通知メールは運営向けです。申し込み者への結果送付は手動で行ってください。</p>
+        <p className="mt-1 text-slate-700">無料診断・月額プランのご相談です（新しい順）。</p>
+        <p className="mt-2 text-sm text-slate-600">無料チェックは3営業日以内に結果を、月額プランのご相談は2営業日以内に進め方と見積もりを連絡します。通知メールは運営向けです。申し込み者への結果送付は手動で行ってください。</p>
       </div>
       {!mailEnabled && <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">通知メールは未設定、またはこの環境では停止中です。申し込みは保存されるため、この一覧を毎営業日確認してください。</p>}
       {typeof notification === "string" && messages[notification] && <p role="status" className="rounded-lg border border-slate-200 bg-slate-50 p-4">{messages[notification]}</p>}

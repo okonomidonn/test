@@ -79,7 +79,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                 </Link>
               </nav>
               <div className="ml-auto flex items-center gap-1 whitespace-nowrap sm:gap-2">
-                <Link href="/ai/apply?plan=trial" className="hidden min-h-9 items-center rounded-md border border-slate-300 px-4 text-sm font-bold text-slate-800 transition hover:bg-slate-50 lg:inline-flex">
+                <Link href="/ai/apply?plan=basic" className="hidden min-h-9 items-center rounded-md border border-slate-300 px-4 text-sm font-bold text-slate-800 transition hover:bg-slate-50 lg:inline-flex">
                   ご相談
                 </Link>
                 <Link href="/ai/apply" className={`${btn("primary")} min-h-11 max-[359px]:px-2 lg:min-h-9`} aria-label="無料で診断">

@@ -44,7 +44,7 @@ export default function PricingPage() {
       <Section tone="soft">
         <Lead em="内容と範囲を確認してから、正式なご依頼に" />
         <div className="mx-auto mt-10 grid max-w-5xl gap-8 sm:grid-cols-2">
-          <div className="border-t-4 border-brand bg-white p-7"><p className="text-lg font-bold text-slate-900">トライアルで行う改善</p><p className="mt-3 leading-relaxed text-slate-700">CMSで編集できる既存ページを1ページ改善します。変更案をご確認いただいてから作業します。新規ページの制作・外部媒体への掲載・大規模な実装は含みません。</p></div>
+          <div className="border-t-4 border-brand bg-white p-7"><p className="text-lg font-bold text-slate-900">月額プランで行う改善</p><p className="mt-3 leading-relaxed text-slate-700">CMSで編集できる既存ページを、変更案をご確認いただいてから改善します。大規模な実装や、範囲を超える制作は別途お見積もりです。</p></div>
           <div className="border-t-4 border-brand bg-white p-7"><p className="text-lg font-bold text-slate-900">ご相談から契約まで</p><p className="mt-3 leading-relaxed text-slate-700">2営業日以内に進め方とお見積もりをご連絡します。対象ページ・作業範囲・支払条件に合意してから正式なご依頼です。フォームの送信だけでは、契約や課金は発生しません。</p></div>
         </div>
         <div className="mx-auto mt-10 max-w-5xl space-y-2 text-sm text-slate-600">

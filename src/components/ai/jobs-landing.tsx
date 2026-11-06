@@ -177,8 +177,8 @@ export function JobsLanding() {
         <div className="mt-10 grid gap-3 lg:grid-cols-3">
           {[
             { name: "無料診断", price: "0", unit: "円", body: "AIでの紹介のされ方と、最初に直す3つをお届けします。", href: "/ai/apply", cta: "無料で診断する", em: true },
-            { name: "トライアル", price: "49,800", unit: "円／1回", body: "診断と競合2社の比較、1ページの改善、30日後の測り直しまで。", href: "/ai/apply?plan=trial", cta: "トライアルを相談する" },
-            { name: "月額プラン", price: "10", unit: "万円〜／月", body: "毎月の計測と、既存ページの改善。最低契約期間はありません。", href: "/ai/pricing", cta: "プランを見る" },
+            { name: "基本プラン", price: "10", unit: "万円／月", body: "毎月の計測と、既存ページの改善（月2件）。", href: "/ai/apply?plan=basic", cta: "基本プランを相談する" },
+            { name: "制作プラン", price: "20", unit: "万円／月", body: "基本プランに加えて、新しいページの制作（月2本）。", href: "/ai/apply?plan=production", cta: "制作プランを相談する" },
           ].map((p) => (
             <Link key={p.name} href={p.href} className={`group flex flex-col rounded-md p-7 transition hover:-translate-y-0.5 ${p.em ? "bg-brand text-white" : "bg-[#F1F6FE] text-slate-900"}`}>
               <p className="palt text-lg font-bold">{p.name}</p>
@@ -188,7 +188,7 @@ export function JobsLanding() {
             </Link>
           ))}
         </div>
-        <p className="mt-3 text-xs text-slate-500">価格は税別です（税込：トライアル54,780円、月額プラン110,000円〜）。月額プランは1か月単位で、いつでも終了できます。</p>
+        <p className="mt-3 text-xs text-slate-500">価格は税別です（税込：基本プラン110,000円、制作プラン220,000円）。1か月単位の契約で、最低契約期間はありません。</p>
       </Section>
 
       {/* よくある質問・お知らせ */}

@@ -35,13 +35,12 @@ export const MARKET = {
 
 export function MarketCompare() {
   const rows = [
-    { label: "1回の診断", market: MARKET.diagnosisMedian, ours: 49800, oursLabel: "トライアル", unit: "", note: "診断に加えて、1ページの改善と30日後の再計測まで" },
     { label: "月額の対策支援", market: MARKET.monthlyMedian, ours: 100000, oursLabel: "基本プラン", unit: "／月", note: "毎月の計測と、既存ページの改善（月2件）・AIからの流入レポートまで" },
   ];
   const yen = (n: number) => `${n.toLocaleString("ja-JP")}円`;
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid max-w-xl gap-4">
         {rows.map((r) => (
           <div key={r.label} className="min-w-0 rounded-xl border border-slate-200 bg-white p-5">
             <p className="font-semibold text-slate-900">{r.label}</p>
@@ -82,8 +81,8 @@ export function MarketCompare() {
 // この価格でできる理由
 export const WHY_AFFORDABLE: [string, string][] = [
   ["計測と作業を整理して効率化", "自社のツールと手動確認を使い分けて記録・診断を進め、分析と改善に時間を使います"],
-  ["対象と作業を絞っている", "求人サイト・人材サービスに絞り、トライアルは既存ページ1ページの改善までと範囲を決めています"],
-  ["効果を確かめてから続ける", "30日後に同じ条件で測り直し、続けるかどうかを数字を見て決められます"],
+  ["対象と作業を絞っている", "求人サイト・人材サービスに絞り、作業の範囲を契約前に決めています"],
+  ["効果を確かめてから続ける", "毎月同じ条件で測り直し、続けるかどうかを数字を見て決められます（最低契約期間なし）"],
 ];
 
 // 他社との比較（各社の公式サイトに公開されている料金だけを使い、社名は出さない）
@@ -91,7 +90,6 @@ const COMPETITORS = {
   checked: "2026年11月1日",
   cols: ["AIススメル", "A社（AI検索対策のコンサルティング）", "B社（AI検索の分析ツール）", "公開料金の中央値"],
   rows: [
-    { label: "1回の診断", cells: ["49,800円（改善1ページ・再計測込み）", "200,000円", "—", "150,000円"] },
     { label: "月額", cells: ["100,000円〜", "200,000円〜", "49,800円〜（ツールのみ）", "225,000円"] },
     { label: "初期費用", cells: ["0円", "記載なし", "別途必要", "—"] },
     { label: "最低契約期間", cells: ["なし（月単位）", "記載なし", "記載なし", "—"] },
