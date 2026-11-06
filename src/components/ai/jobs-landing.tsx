@@ -6,13 +6,6 @@ import { ArrowLink, CtaBand, Faq, Head, Section, Stat } from "@/components/ai/lp
 // 求人サイト・人材サービス専門のAIススメル（トップ /ai と /ai/for/jobs で同じ中身を出す）
 // 文章は短く、数字は大きく。出典や条件は各セクションの下に小さくまとめる
 
-const SEEKER_STATS = [
-  { label: "転職活動で生成AIを使う20代", value: "63.5", unit: "%" },
-  { label: "生成AIを使って転職した20代", value: "53.7", unit: "%" },
-  { label: "応募先をAIで調べた転職者", value: "26.0", unit: "%" },
-  { label: "生成AIを使い続ける大学生", value: "84.5", unit: "%" },
-];
-const SEEKER_SOURCES = "左から 学情「20代転職意識調査」2026年8月・n=186／マイナビ転職「転職者の生成AI活用に関する実態調査」2026年4月・n=700（直近1年に転職した20代）／Itera「転職活動における企業情報の収集方法に関する調査」2026年8月・n=880／産業能率大学「学生メディア・コンテンツ利用調査2026」・n=2,607";
 
 const WORK = [
   { title: "サイトの中", body: "説明文やよくある質問を、AIが読み取りやすい形に直します。" },
@@ -65,21 +58,31 @@ export function JobsLanding() {
         </div>
       </section>
 
-      {/* 求職者のAI利用 */}
+      {/* 求職者のAI利用：数字は1つに絞り、1年での伸びを見せる */}
       <Section id="why">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <Head title={<>求職者の仕事探しは、<br />検索からAIへ。</>} />
-          <ArrowLink href="/ai/method">調べ方と数字の見方</ArrowLink>
-        </div>
-        <div className="mt-10 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
-          {SEEKER_STATS.map((s) => (
-            <div key={s.label} className="rounded-md bg-[#F1F6FE] px-4 py-5 sm:px-6 sm:py-7">
-              <p className="palt text-[0.9375rem] font-bold text-slate-800">{s.label}</p>
-              <div className="mt-4"><Stat value={s.value} unit={s.unit} /></div>
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+          <Head title={<>求職者の仕事探しは、<br />検索からAIへ。</>} desc="転職活動で生成AIを使う20代は、1年で17ポイント増えました。" />
+          <div className="rounded-md bg-[#F1F6FE] p-7 sm:p-9">
+            <p className="palt font-bold text-slate-800">転職活動で生成AIを使った20代の求職者</p>
+            <div className="mt-4 flex items-baseline gap-4">
+              <Stat value="63.5" unit="%" />
+              <span className="palt rounded-sm bg-brand px-2 py-1 text-sm font-bold text-white">1年で＋17.0ポイント</span>
             </div>
-          ))}
+            <dl className="mt-8 space-y-4">
+              {[
+                { k: "前年の調査", v: 46.5, cls: "bg-slate-300", tc: "text-slate-500" },
+                { k: "今年の調査", v: 63.5, cls: "bg-brand", tc: "text-brand" },
+              ].map((r) => (
+                <div key={r.k} className="grid grid-cols-[5.5rem_1fr_3.5rem] items-center gap-3">
+                  <dt className="text-sm font-bold text-slate-600">{r.k}</dt>
+                  <dd className="h-7 rounded-sm bg-white"><div className={`h-7 rounded-sm ${r.cls}`} style={{ width: `${r.v}%` }} /></dd>
+                  <dd className={`font-num text-right text-lg font-bold ${r.tc}`}>{r.v}%</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
-        <p className="mt-4 text-xs leading-relaxed text-slate-500">{SEEKER_SOURCES}</p>
+        <p className="mt-4 text-xs leading-relaxed text-slate-500 lg:text-right">出典：学情「20代転職意識調査」2026年8月・n=186（前年の同調査との比較）</p>
       </Section>
 
       {/* zaitoの実例 */}
