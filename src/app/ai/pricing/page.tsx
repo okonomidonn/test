@@ -10,8 +10,7 @@ export const metadata = { title: "料金 | AIススメル（求人サイトのAI
 export default function PricingPage() {
   return (
     <div className="-mb-8 -mt-8">
-      <section className="relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-[linear-gradient(135deg,#0A2463_0%,#1442B8_60%,#2563EB_100%)] text-white">
-        <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(closest-side,rgba(147,197,253,0.35),transparent)]" />
+      <section className="relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-brand text-white">
         <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
           <p className="palt text-sm font-bold text-blue-200">料金</p>
           <h1 className="mt-4 text-[2.25rem] font-black leading-[1.25] sm:text-[3.25rem]">まずは無料診断から。</h1>

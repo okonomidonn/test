@@ -20,7 +20,7 @@ const FAQ: [string, string][] = [
 export default function JobsBookPage() {
   return (
     <div className="-mt-8">
-      <section className="ml-[calc(50%-50vw)] w-screen border-b border-slate-200 bg-[linear-gradient(120deg,#FFFFFF_0%,#FFFFFF_50%,#EAF2FE_100%)]">
+      <section className="ml-[calc(50%-50vw)] w-screen border-b border-slate-200 bg-[#F5F8FD]">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <p className="text-sm font-bold text-brand">求人サイト運営者のための無料ガイド</p>
