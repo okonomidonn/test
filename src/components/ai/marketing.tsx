@@ -3,16 +3,15 @@
 // 計測の流れ（3ステップの図）
 export function MethodSteps() {
   const steps = [
-    { title: "AIに質問する", body: "見込み客が聞きそうな質問を作り、ChatGPT・Geminiに聞きます" },
+    { title: "AIに質問する", body: "求職者や採用担当者が聞きそうな質問を作り、ChatGPT・Geminiに聞きます" },
     { title: "競合と比べる", body: "紹介されたか・何番目か・どのサイトが根拠かを、競合と並べて記録します" },
     { title: "直す点を整理する", body: "直すページと優先順位、事前に確かめることを提案します" },
   ];
   return (
-    <ol className="grid overflow-hidden rounded-xl border border-slate-200 md:grid-cols-3">
+    <ol className="grid overflow-hidden rounded-md border border-slate-200 md:grid-cols-3">
       {steps.map((s, i) => (
         <li key={s.title} className={`relative min-w-0 bg-white p-5 ${i ? "border-t border-slate-200 md:border-l md:border-t-0" : ""}`}>
-          <p className="font-num text-sm font-semibold text-brand">STEP {i + 1}</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">{s.title}</p>
+          <p className="text-lg font-bold text-slate-900">{s.title}</p>
           <p className="mt-1 text-slate-700">{s.body}</p>
           {i < steps.length - 1 && (
             <span className="absolute -right-3 top-1/2 z-10 hidden h-6 w-6 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white text-sm text-slate-500 md:grid" aria-hidden>
@@ -83,7 +82,7 @@ export function MarketCompare() {
 // この価格でできる理由
 export const WHY_AFFORDABLE: [string, string][] = [
   ["計測と作業を整理して効率化", "自社のツールと手動確認を使い分けて記録・診断を進め、分析と改善に時間を使います"],
-  ["対象と作業を絞っている", "中小企業のWebサービスに絞り、トライアルは既存ページ1ページの改善までと範囲を決めています"],
+  ["対象と作業を絞っている", "求人サイト・人材サービスに絞り、トライアルは既存ページ1ページの改善までと範囲を決めています"],
   ["効果を確かめてから続ける", "30日後に同じ条件で測り直し、続けるかどうかを数字を見て決められます"],
 ];
 

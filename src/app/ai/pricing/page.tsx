@@ -2,37 +2,57 @@ import Link from "next/link";
 import { CompetitorTable, MarketCompare, WHY_AFFORDABLE } from "@/components/ai/marketing";
 import { ServicePlans } from "@/components/ai/service-plans";
 import { ImprovementExample, ImprovementScope } from "@/components/ai/improvement-example";
+import { Cta, Lead, Section } from "@/components/ai/lp";
 
-export const metadata = { title: "料金 | AIススメル" };
+export const metadata = { title: "料金 | AIススメル（求人サイトのAI検索対策）" };
 
 export default function PricingPage() {
   return (
-    <div className="space-y-12 pt-2 sm:space-y-16 sm:pt-6">
-      <header className="max-w-3xl">
-        <p className="text-sm text-slate-600">料金とサポート</p>
-        <h1 className="mt-3 text-3xl font-bold leading-snug text-slate-900 sm:text-[2.75rem]">まず無料で調べて、<br />必要なら改善まで。</h1>
-        <p className="mt-5 text-lg leading-relaxed text-slate-700">無料チェックだけのご利用もできます。<br className="hidden sm:block" />有料プランへの自動切り替えはありません。</p>
-      </header>
-      <section aria-label="無料チェック・トライアルと月額2プラン"><h2 className="sr-only">無料チェック・トライアルと月額2プラン</h2><ServicePlans /></section>
-      <ImprovementScope />
-      <ImprovementExample />
-      <section>
-        <h2 className="text-2xl font-bold text-slate-900">他社と比べて、ここまで始めやすい</h2>
-        <p className="mt-2 text-slate-700">AI検索対策の診断は15万〜20万円、継続支援は月20万円以上が一般的です。AIススメルは、改善作業を含めてその半額以下から始められます。</p>
-        <div className="mt-5"><CompetitorTable /></div>
-      </section>
-      <section className="grid gap-6 rounded-xl bg-slate-50 p-5 sm:grid-cols-2 sm:p-7">
-        <div><h2 className="text-lg font-bold text-slate-900">トライアルで行う改善</h2><p className="mt-3 leading-relaxed text-slate-700">CMSで編集できる既存ページを1ページ改善します。変更案をご確認いただいてから作業します。</p><p className="mt-2 text-sm text-slate-600">新規ページ制作・外部媒体への掲載・大規模な実装は含みません。</p></div>
-        <div><h2 className="text-lg font-bold text-slate-900">ご相談から契約まで</h2><p className="mt-3 leading-relaxed text-slate-700">トライアル・月額プランのご相談には、2営業日以内に進め方と見積もりをご連絡します。対象ページ・原稿量・修正回数・実装範囲をご確認いただいてから正式なご依頼となります。</p><p className="mt-2 text-sm text-slate-600">フォームの送信だけでは、契約や自動課金は発生しません。</p></div>
-      </section>
-      <section className="max-w-4xl">
-        <h2 className="text-2xl font-bold text-slate-900">料金について、もう少し詳しく</h2>
-        <div className="mt-5 divide-y divide-slate-200 border-y border-slate-200">
-          <details className="group py-1"><summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-lg font-semibold text-slate-900">他社の料金と比べたい<span aria-hidden className="text-brand group-open:hidden">＋</span><span aria-hidden className="hidden text-brand group-open:inline">−</span></summary><div className="pb-6"><p className="mb-4 text-slate-700">公開されている料金の中央値と比べています。各社で作業範囲は異なります。</p><MarketCompare /></div></details>
-          <details className="group py-1"><summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-lg font-semibold text-slate-900">この価格でできる理由は？<span aria-hidden className="text-brand group-open:hidden">＋</span><span aria-hidden className="hidden text-brand group-open:inline">−</span></summary><dl className="space-y-5 pb-6">{WHY_AFFORDABLE.map(([title, body]) => <div key={title}><dt className="font-bold text-slate-900">{title}</dt><dd className="mt-1 text-slate-700">{body}</dd></div>)}</dl></details>
+    <div className="-mt-8">
+      <Section>
+        <Lead line="無料診断だけのご利用もできます。有料プランへの自動切り替えはありません。" em="無料診断から、月額の改善支援まで" />
+        <div className="mt-12">
+          <ServicePlans />
         </div>
-      </section>
-      <div className="max-w-3xl space-y-3 text-sm text-slate-600"><p>AIの回答は毎回変わります。計測結果は目安で、紹介や問い合わせの増加をお約束するものではありません。</p><p>お支払いは銀行振込（請求書払い・前払い）です。キャンセル・解約の条件は特定商取引法に基づく表記をご覧ください。</p><Link href="/ai/legal" className="inline-block py-2 font-semibold text-brand underline underline-offset-4">特定商取引法に基づく表記 →</Link></div>
+      </Section>
+
+      <Section tone="soft">
+        <Lead line="何をどこまで行うかは、契約前に決めます。" em="作業の範囲と、直し方の例" />
+        <div className="mx-auto mt-10 max-w-4xl space-y-8">
+          <ImprovementScope />
+          <ImprovementExample />
+        </div>
+      </Section>
+
+      <Section>
+        <Lead line="AI検索対策の継続支援は、月20万円以上が一般的です。" em="改善作業を含めて、月10万円から始められます" />
+        <div className="mt-10">
+          <CompetitorTable />
+        </div>
+        <div className="mx-auto mt-14 max-w-4xl divide-y divide-slate-200 border-y-2 border-t-slate-800 border-b-slate-200">
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-6 text-lg font-bold text-slate-900">公開されている料金の中央値と比べたい<span aria-hidden className="text-slate-400 transition group-open:rotate-45">＋</span></summary>
+            <div className="pb-6"><p className="mb-4 text-slate-700">各社で作業範囲は異なります。</p><MarketCompare /></div>
+          </details>
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-6 text-lg font-bold text-slate-900">この価格でできる理由は？<span aria-hidden className="text-slate-400 transition group-open:rotate-45">＋</span></summary>
+            <dl className="space-y-5 pb-6">{WHY_AFFORDABLE.map(([title, body]) => <div key={title}><dt className="font-bold text-slate-900">{title}</dt><dd className="mt-1 text-slate-700">{body}</dd></div>)}</dl>
+          </details>
+        </div>
+      </Section>
+
+      <Section tone="soft">
+        <Lead em="内容と範囲を確認してから、正式なご依頼に" />
+        <div className="mx-auto mt-10 grid max-w-5xl gap-8 sm:grid-cols-2">
+          <div className="border-t-4 border-brand bg-white p-7"><p className="text-lg font-bold text-slate-900">トライアルで行う改善</p><p className="mt-3 leading-relaxed text-slate-700">CMSで編集できる既存ページを1ページ改善します。変更案をご確認いただいてから作業します。新規ページの制作・外部媒体への掲載・大規模な実装は含みません。</p></div>
+          <div className="border-t-4 border-brand bg-white p-7"><p className="text-lg font-bold text-slate-900">ご相談から契約まで</p><p className="mt-3 leading-relaxed text-slate-700">2営業日以内に進め方とお見積もりをご連絡します。対象ページ・作業範囲・支払条件に合意してから正式なご依頼です。フォームの送信だけでは、契約や課金は発生しません。</p></div>
+        </div>
+        <div className="mx-auto mt-10 max-w-5xl space-y-2 text-sm text-slate-600">
+          <p>AIの回答は毎回変わります。計測結果は目安で、紹介や応募の増加をお約束するものではありません。</p>
+          <p>お支払いは銀行振込（請求書払い・前払い）です。キャンセル・解約の条件は<Link href="/ai/legal" className="font-bold text-brand underline underline-offset-4">特定商取引法に基づく表記</Link>をご覧ください。</p>
+        </div>
+        <Cta />
+      </Section>
     </div>
   );
 }
