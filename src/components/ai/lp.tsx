@@ -6,8 +6,8 @@ import type { ReactNode } from "react";
 // 数字は Montserrat、線で区切る、角の丸みは小さく、飾りの図形やアイコンは使わない。
 
 // 画面いっぱいの帯
-export function Section({ children, id, tone = "white" }: { children: ReactNode; id?: string; tone?: "white" | "soft" | "blue" }) {
-  const bg = tone === "soft" ? "bg-[#F5F8FD]" : tone === "blue" ? "bg-brand text-white" : "bg-white";
+export function Section({ children, id, tone = "white" }: { children: ReactNode; id?: string; tone?: "white" | "soft" | "blue" | "navy" }) {
+  const bg = tone === "soft" ? "bg-[#F5F8FD]" : tone === "blue" ? "bg-brand text-white" : tone === "navy" ? "bg-[linear-gradient(160deg,#0A2463_0%,#123A9C_100%)] text-white" : "bg-white";
   return (
     <section id={id} className={`ml-[calc(50%-50vw)] w-screen scroll-mt-16 ${bg}`}>
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">{children}</div>
@@ -22,6 +22,35 @@ export function Lead({ line, em, light }: { line?: ReactNode; em: ReactNode; lig
       {line && <p className={`text-base leading-relaxed sm:text-xl ${light ? "text-blue-50" : "text-slate-600"}`}>{line}</p>}
       <h2 className={`${line ? "mt-2" : ""} text-balance text-[1.625rem] font-bold leading-snug sm:text-[2.25rem] ${light ? "text-white" : "text-[#1E66E0]"}`}>{em}</h2>
     </div>
+  );
+}
+
+// 左寄せの見出し（大きな見出し＋説明文）。トップページでは中央寄せの Lead と混ぜて使う
+export function Head({ title, desc, light, center }: { title: ReactNode; desc?: ReactNode; light?: boolean; center?: boolean }) {
+  return (
+    <div className={`[word-break:auto-phrase] ${center ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}`}>
+      <h2 className={`text-balance text-[1.75rem] font-bold leading-snug sm:text-[2.5rem] ${light ? "text-white" : "text-slate-900"}`}>{title}</h2>
+      {desc && <p className={`mt-4 leading-relaxed sm:text-lg ${light ? "text-blue-100" : "text-slate-600"}`}>{desc}</p>}
+    </div>
+  );
+}
+
+// 申し込みへの帯（ページの途中に挟む）
+export function CtaBand() {
+  const card = "group flex min-h-24 items-center justify-between gap-4 rounded-md bg-white px-6 py-5 text-left shadow-[0_8px_24px_rgba(10,36,99,0.18)] transition hover:-translate-y-0.5 sm:px-8";
+  return (
+    <section className="ml-[calc(50%-50vw)] w-screen bg-[linear-gradient(110deg,#0A2463_0%,#1D4ED8_100%)]">
+      <div className="mx-auto grid max-w-6xl gap-4 px-4 py-10 sm:px-6 md:grid-cols-2 md:py-12">
+        <Link href="/ai/apply" className={card}>
+          <span><span className="block text-xl font-bold text-brand sm:text-2xl">無料で診断する</span><span className="mt-1 block text-sm text-slate-600">求人サイトのURLを送るだけ。3営業日以内に結果をお送りします</span></span>
+          <span aria-hidden className="text-2xl font-bold text-brand transition group-hover:translate-x-1">→</span>
+        </Link>
+        <Link href="/ai/for/jobs/book" className={card}>
+          <span><span className="block text-xl font-bold text-slate-900 sm:text-2xl">資料をダウンロード</span><span className="mt-1 block text-sm text-slate-600">求人サイトのAI集客はじめてBOOK（全7ページ）</span></span>
+          <span aria-hidden className="text-2xl font-bold text-slate-900 transition group-hover:translate-x-1">→</span>
+        </Link>
+      </div>
+    </section>
   );
 }
 
