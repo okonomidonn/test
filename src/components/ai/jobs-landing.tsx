@@ -7,12 +7,6 @@ import { ArrowLink, CtaBand, Faq, Head, Section, Stat } from "@/components/ai/lp
 // 文章は短く、数字は大きく。出典や条件は各セクションの下に小さくまとめる
 
 
-const WORK = [
-  { title: "サイトの中", body: "説明文やよくある質問を、AIが読み取りやすい形に直します。" },
-  { title: "サイトの外", body: "AIが参考にする比較記事へ、御社の情報を届けます。" },
-  { title: "毎月の計測", body: "同じ質問で測り直し、変化とAIからの流入を報告します。" },
-];
-
 const NEWS = [
   ["2026.11.06", "求人サイト・人材サービス専門のAI検索対策として、サイトをリニューアルしました。"],
   ["2026.11", "求人サイトを対象に、ChatGPT・Geminiでの紹介のされ方を調べる調査を行いました。"],
@@ -162,24 +156,55 @@ export function JobsLanding() {
         <p className="mt-3 text-xs text-slate-500">無料診断は、質問の数を絞った簡易版です。</p>
       </Section>
 
-      {/* 改善の進め方 */}
+      {/* 改善の進め方：3つの取り組みを、イメージ図つきで見せる（やり方の細部は書かない） */}
       <Section tone="soft">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <Head title={<>サイトの中だけでなく、<br />「サイトの外」まで。</>} />
+          <Head title={<>AIに選ばれる理由を、<br />つくる。</>} desc="ページを直すだけでは、AIは推薦しません。伝え方と、外での紹介のされ方まで整えます。" />
           <ArrowLink href="/ai/pricing">作業の範囲を見る</ArrowLink>
         </div>
-        <div className="mt-10 grid gap-3 lg:grid-cols-3">
-          {WORK.map((w) => (
-            <div key={w.title} className="rounded-md bg-white p-7">
-              <p className="palt text-2xl font-bold text-brand">{w.title}</p>
-              <p className="mt-3 leading-relaxed text-slate-700">{w.body}</p>
+
+        <div className="mt-12 space-y-3">
+          {/* 1. 伝え方を直す */}
+          <div className="grid items-center gap-8 rounded-md bg-white p-7 sm:p-10 lg:grid-cols-[1fr_1.1fr]">
+            <div>
+              <p className="palt text-2xl font-bold text-slate-900">何のサイトか、一文で伝わるように</p>
+              <p className="mt-3 leading-relaxed text-slate-700">誰の、どんな仕事探しに強いサイトなのか。AIにも求職者にも伝わる言葉に直します。</p>
             </div>
-          ))}
-        </div>
-        <div className="mt-3 grid gap-3 sm:grid-cols-3">
-          {[["1か月目", "直す・働きかける"], ["2か月目", "測り直して、足りない所を直す"], ["3か月目", "同じ条件で測り、効果を報告"]].map(([m, t]) => (
-            <div key={m} className="rounded-md border border-slate-200 bg-white p-5"><p className="text-sm font-bold text-brand">{m}</p><p className="palt mt-1 font-bold text-slate-900">{t}</p></div>
-          ))}
+            <div className="space-y-2">
+              <div className="rounded-md bg-[#F5F6F8] p-5"><p className="text-xs font-bold text-slate-500">よくある説明</p><p className="palt mt-1 font-bold text-slate-500">あなたにぴったりの仕事が見つかる求人サイト。</p></div>
+              <div className="rounded-md border-2 border-brand bg-[#F1F6FE] p-5"><p className="text-xs font-bold text-brand">伝わる説明</p><p className="palt mt-1 font-bold text-slate-900">関西の飲食店で、未経験から始められるアルバイトを集めた求人サイト。</p></div>
+              <p className="text-xs text-slate-500">架空の求人サイトの例です。</p>
+            </div>
+          </div>
+
+          {/* 2. 外での紹介を増やす */}
+          <div className="grid items-center gap-8 rounded-md bg-white p-7 sm:p-10 lg:grid-cols-[1fr_1.1fr]">
+            <div>
+              <p className="palt text-2xl font-bold text-slate-900">AIが参考にする記事に、正しく載るように</p>
+              <p className="mt-3 leading-relaxed text-slate-700">AIは、比較記事や紹介ページを読んで答えをつくります。そこに御社が正しく載るよう、運営元への情報提供などを進めます。</p>
+            </div>
+            <div className="rounded-md bg-[#F5F8FD] p-5">
+              <p className="text-xs font-bold text-slate-500">AIが答えのもとにしたページ（イメージ）</p>
+              <ul className="mt-3 space-y-2 text-sm">
+                {[["おすすめ求人サイトの比較記事", "掲載なし → 掲載"], ["地域の求人情報まとめ", "情報が古い → 更新"], ["働き方別の求人サイト紹介", "掲載なし → 掲載"]].map(([t, v]) => (
+                  <li key={t} className="flex items-center justify-between gap-3 rounded-md bg-white px-4 py-3"><span className="font-medium text-slate-800">{t}</span><span className="shrink-0 text-xs font-bold text-brand">{v}</span></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* 3. 毎月測る */}
+          <div className="grid items-center gap-8 rounded-md bg-white p-7 sm:p-10 lg:grid-cols-[1fr_1.1fr]">
+            <div>
+              <p className="palt text-2xl font-bold text-slate-900">毎月測って、次の手を決める</p>
+              <p className="mt-3 leading-relaxed text-slate-700">同じ条件で測り直し、紹介のされ方の変化と、AIから来た人数を毎月ご報告します。</p>
+            </div>
+            <ol className="grid gap-2 sm:grid-cols-3">
+              {[["1か月目", "直す・働きかける"], ["2か月目", "測り直して、足りない所を直す"], ["3か月目", "同じ条件で測り、効果を報告"]].map(([m, t]) => (
+                <li key={m} className="rounded-md bg-[#F1F6FE] p-4"><p className="text-sm font-bold text-brand">{m}</p><p className="palt mt-1 text-sm font-bold text-slate-900">{t}</p></li>
+              ))}
+            </ol>
+          </div>
         </div>
       </Section>
 
