@@ -16,8 +16,9 @@
   --color-brand-dark: var(--brand-dark);
   --color-brand-soft: var(--brand-soft);
   --color-mark: var(--mark);
-  --font-display: var(--font-ai-latin), var(--font-ai-jp), sans-serif;
-  --font-num: var(--font-ai-latin), var(--font-ai-jp), sans-serif;
+  /* 数字・英字も本文と同じ Noto Sans JP にそろえる（別の書体を混ぜると統一感がなくなる） */
+  --font-display: var(--font-ai-jp), var(--font-noto-sans-jp), "Hiragino Sans", sans-serif;
+  --font-num: var(--font-ai-jp), var(--font-noto-sans-jp), "Hiragino Sans", sans-serif;
   --font-sans: var(--font-noto-sans-jp);
 }
 
@@ -100,6 +101,7 @@ body {
 /* 数字は桁をそろえる */
 .ai-scope .font-num {
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
 }
 
 /* 以前の蛍光ペン表現は使わない（残っている指定を無効にする） */

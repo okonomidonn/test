@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Montserrat, Noto_Sans_JP } from "next/font/google";
+import { Noto_Sans_JP } from "next/font/google";
 import { auth, signOut } from "@/auth";
 import { btn } from "@/components/ai/ds";
 import { Logo } from "@/components/ai/logo";
 import { CONTACT } from "@/lib/contact";
 
-// 数字は Montserrat、文章は Noto Sans JP（日本語は文字数が多いため先読みせず、使う文字だけ読み込む）
-const latin = Montserrat({ variable: "--font-ai-latin", subsets: ["latin"], weight: ["600", "700", "800"], display: "swap" });
+// 文章・見出し・数字はすべて Noto Sans JP（日本語は文字数が多いため先読みせず、使う文字だけ読み込む）
 const jp = Noto_Sans_JP({ variable: "--font-ai-jp", weight: ["400", "500", "700", "900"], preload: false, display: "swap" });
 
 export const metadata: Metadata = {
@@ -22,7 +21,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
   const nav = "rounded-md px-1.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 sm:px-2.5";
 
   return (
-    <div className={`${latin.variable} ${jp.variable} ai-scope flex flex-1 flex-col overflow-x-clip`}>
+    <div className={`${jp.variable} ai-scope flex flex-1 flex-col overflow-x-clip`}>
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur print:hidden">
         <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center gap-2 px-3 py-1.5 sm:h-14 sm:flex-nowrap sm:gap-6 sm:px-6 sm:py-0">
           <Link href={user ? "/ai/app" : "/ai"} aria-label="AIススメル" className="flex min-h-11 shrink-0 items-center">

@@ -19,7 +19,7 @@ export function Logo({ light, size = "md" }: { light?: boolean; size?: "md" | "s
     <span className="inline-flex items-center gap-2">
       <LogoMark className={size === "sm" ? "h-7 w-7" : "h-8 w-8"} />
       <span className={`palt whitespace-nowrap font-black leading-none ${size === "sm" ? "text-lg" : "text-[1.3rem]"} ${light ? "text-white" : "text-slate-900"}`}>
-        <span className={`font-num font-extrabold ${light ? "text-blue-300" : "text-brand"}`}>AI</span>ススメル
+        <span className={`font-num font-black ${light ? "text-blue-300" : "text-brand"}`}>AI</span>ススメル
       </span>
     </span>
   );
