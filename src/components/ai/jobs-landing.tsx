@@ -42,7 +42,6 @@ export function JobsLanding() {
               <span className="whitespace-nowrap">AIで探す時代へ。</span>
             </h1>
             <p className="palt mt-6 text-lg font-bold leading-relaxed text-blue-50 sm:text-xl">ChatGPTに、御社をおすすめしてもらう。</p>
-            <p className="mt-3 max-w-xl leading-relaxed text-blue-100">求職者が聞きそうな質問をAIにくり返し聞き、御社が何番目に紹介されるかを調べます。</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link href="/ai/apply" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-md bg-white px-8 text-lg font-bold text-brand shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition hover:bg-blue-50">無料で診断する<span aria-hidden>→</span></Link>
               <Link href="/ai/sample" className="inline-flex min-h-14 items-center justify-center rounded-md border border-white/60 px-8 font-bold text-white transition hover:bg-white/10">レポートの見本を見る</Link>
