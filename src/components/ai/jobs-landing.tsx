@@ -174,11 +174,24 @@ export function JobsLanding() {
           <div className="grid items-center gap-8 rounded-md bg-white p-7 sm:p-10 lg:grid-cols-[1fr_1.1fr]">
             <div>
               <p className="palt text-2xl font-bold text-slate-900">何のサイトか、一文で伝わるように</p>
-              <p className="mt-3 leading-relaxed text-slate-700">誰の、どんな仕事探しに強いサイトなのか。AIにも求職者にも伝わる言葉に直します。</p>
+              <p className="mt-3 leading-relaxed text-slate-700">AIは、質問の条件に合うサイトを選んで紹介します。地域・職種・条件・働き方がはっきり書かれていないと、どんな質問にも選ばれません。</p>
             </div>
             <div className="space-y-2">
-              <div className="rounded-md bg-[#F5F6F8] p-5"><p className="text-xs font-bold text-slate-500">よくある説明</p><p className="palt mt-1 font-bold text-slate-500">あなたにぴったりの仕事が見つかる求人サイト。</p></div>
-              <div className="rounded-md border-2 border-brand bg-[#F1F6FE] p-5"><p className="text-xs font-bold text-brand">伝わる説明</p><p className="palt mt-1 font-bold text-slate-900">関西の飲食店で、未経験から始められるアルバイトを集めた求人サイト。</p></div>
+              <div className="rounded-md bg-[#F5F6F8] p-5">
+                <p className="text-xs font-bold text-slate-500">よくある説明</p>
+                <p className="palt mt-1 font-bold text-slate-500">あなたにぴったりの仕事が見つかる求人サイト。</p>
+                <p className="mt-2 text-sm text-slate-600">誰向けで、どんな仕事があるのかが分からない。AIが紹介する理由がない。</p>
+              </div>
+              <div className="rounded-md border-2 border-brand bg-[#F1F6FE] p-5">
+                <p className="text-xs font-bold text-brand">伝わる説明</p>
+                <p className="palt mt-1 font-bold text-slate-900">関西の飲食店で、未経験から始められるアルバイトを集めた求人サイト。</p>
+                <ul className="mt-3 flex flex-wrap gap-1.5 text-xs font-bold">
+                  {[["地域", "関西"], ["職種", "飲食店"], ["条件", "未経験OK"], ["働き方", "アルバイト"]].map(([k, v]) => (
+                    <li key={k} className="rounded-sm bg-white px-2 py-1 text-slate-700"><span className="text-brand">{k}</span>：{v}</li>
+                  ))}
+                </ul>
+                <p className="mt-3 text-sm text-slate-700">「関西で、未経験からできる飲食のバイトは？」と聞かれたとき、AIが紹介する理由になる。</p>
+              </div>
               <p className="text-xs text-slate-500">架空の求人サイトの例です。</p>
             </div>
           </div>
