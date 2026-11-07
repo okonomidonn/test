@@ -104,13 +104,15 @@ echo $result . "\n";
 // 本人への知らせ。消し残りがないときだけ送る。
 $sent_note = '';
 if ( '' !== $notify && ! $left && $ids ) {
-    $body  = $notify . "様\n\n";
-    $body .= "zaito運営です。ご連絡いただきありがとうございます。\n";
-    $body .= "ご依頼のとおり、zaitoの登録を削除し、お預かりしていた個人情報（メールアドレス・ご登録内容など）をすべて削除いたしました。今後、zaitoからメールが届くことはありません。\n\n";
-    $body .= "退会の方法がわかりにくく、お手数をおかけして申し訳ありませんでした。\n";
-    $body .= "これまでzaitoをご利用いただき、ありがとうございました。\n\n";
-    $body .= "zaito運営\ninfo@zaito-work.com\n";
-    $ok        = wp_mail( $email, '【zaito】登録の削除が完了しました', $body, array( 'From: zaito <info@zaito-work.com>', 'Content-Type: text/plain; charset=UTF-8' ) );
+    $body  = $notify . " 様\n\n";
+    $body .= "いつもzaitoをご利用いただき、誠にありがとうございます。\n";
+    $body .= "zaito運営事務局です。\n\n";
+    $body .= "ご依頼いただきました退会のお手続きが完了いたしましたので、お知らせいたします。\n";
+    $body .= "ご登録いただいていたメールアドレスをはじめとする個人情報は、すべて削除いたしました。今後、zaitoからメールをお送りすることはございません。\n\n";
+    $body .= "また、退会のお手続き方法がわかりにくく、ご不便をおかけしましたことをお詫び申し上げます。\n\n";
+    $body .= "これまでzaitoをご利用いただき、誠にありがとうございました。\n\n";
+    $body .= "――――――――――――\nzaito運営事務局\ninfo@zaito-work.com\nhttps://zaito-work.com/\n";
+    $ok        = wp_mail( $email, '【zaito】退会手続き完了のお知らせ', $body, array( 'From: zaito <info@zaito-work.com>', 'Content-Type: text/plain; charset=UTF-8' ) );
     $sent_note = $ok ? '本人に削除完了のメールを送りました。' : '本人へのメールの送信に失敗しました。';
     echo $sent_note . "\n";
 }
