@@ -4,7 +4,7 @@ import { ServicePlans } from "@/components/ai/service-plans";
 import { ImprovementExample, ImprovementScope } from "@/components/ai/improvement-example";
 import { CtaBand, Head, Section } from "@/components/ai/lp";
 
-export const metadata = { title: "料金 | AIススメル（求人サイトのAI検索対策）" };
+export const metadata = { title: "料金 | AIススメル（求人サイトのAI検索対策）", description: "AIススメルの料金。無料診断0円、基本プラン月10万円、制作プラン月20万円（税別）。最低契約期間はありません。", alternates: { canonical: "/ai/pricing" } };
 
 // トップと同じ作り：濃い青の帯で始め、見出しは左寄せ、カードは薄い青、最後に申し込みの帯
 export default function PricingPage() {

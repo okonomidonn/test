@@ -28,9 +28,45 @@ const FAQ: [string, string][] = [
   ["支払い方法は？", "銀行振込（請求書払い・前払い）です。詳しくは特定商取引法に基づく表記をご覧ください。"],
 ];
 
+
+// 検索エンジンとAIに、会社・サービス・料金・よくある質問を機械で読める形でも伝える
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.aisusumeru.com/#org",
+      name: "AIススメル",
+      url: "https://www.aisusumeru.com/ai",
+      logo: "https://www.aisusumeru.com/icon.png",
+      email: "info@aisusumeru.com",
+      description: "求人サイト・人材サービス専門のAI検索対策（GEO・LLMO）",
+    },
+    {
+      "@type": "Service",
+      name: "求人サイトのAI検索対策",
+      serviceType: "AI検索対策（GEO・LLMO）",
+      provider: { "@id": "https://www.aisusumeru.com/#org" },
+      areaServed: "JP",
+      audience: { "@type": "BusinessAudience", name: "求人サイト・人材サービスの運営会社" },
+      description: "ChatGPT・Geminiで求職者や採用担当者に求人サイトが紹介されるよう、紹介のされ方を調べ、伝え方と外での紹介のされ方を整えます。",
+      offers: [
+        { "@type": "Offer", name: "無料診断", price: 0, priceCurrency: "JPY" },
+        { "@type": "Offer", name: "基本プラン（月額・税別）", price: 100000, priceCurrency: "JPY" },
+        { "@type": "Offer", name: "制作プラン（月額・税別）", price: 200000, priceCurrency: "JPY" },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: FAQ.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+    },
+  ],
+};
+
 export function JobsLanding() {
   return (
     <div className="-mb-8 -mt-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
       {/* ファーストビュー */}
       <section className="relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-brand text-white">
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20 lg:grid-cols-[1.05fr_1fr]">

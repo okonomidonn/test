@@ -10,8 +10,16 @@ import { CONTACT } from "@/lib/contact";
 const jp = Noto_Sans_JP({ variable: "--font-ai-jp", weight: ["400", "500", "700", "900"], preload: false, display: "swap" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.aisusumeru.com"),
   title: "AIススメル | 求人サイトのAI検索対策",
-  description: "求人サイト・人材サービス専門のAI検索対策。ChatGPT・Geminiでの紹介状況を調べ、サイトの中と外の直し方までご提案します。",
+  description: "求人サイト・人材サービス専門のAI検索対策。ChatGPT・Geminiでの紹介状況を調べ、選ばれる理由づくりまでご支援します。",
+  openGraph: {
+    siteName: "AIススメル",
+    locale: "ja_JP",
+    type: "website",
+    images: [{ url: "/ai/img/og.png", width: 1200, height: 630, alt: "求人は、AIで探す時代へ。AIススメル" }],
+  },
+  twitter: { card: "summary_large_image", images: ["/ai/img/og.png"] },
 };
 
 export default async function AiLayout({ children }: LayoutProps<"/ai">) {

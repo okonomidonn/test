@@ -39,7 +39,7 @@ export default auth((req) => {
   }
 });
 
-// ブラウザのタブのアイコン（favicon.ico・icon.png・apple-icon.png）はログインなしで返す
+// ブラウザのタブのアイコンと、クローラー向けの robots.txt・sitemap.xml はログインなしで返す
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon\\.ico|icon\\.png|apple-icon\\.png).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon\\.ico|icon\\.png|apple-icon\\.png|robots\\.txt|sitemap\\.xml).*)"],
 };
