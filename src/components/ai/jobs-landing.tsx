@@ -245,7 +245,7 @@ export function JobsLanding() {
           {[
             { t: "フォームに入力", b: "会社名・求人サイトのURL・お名前・メールアドレスだけ。1分で終わります。", tag: "1分" },
             { t: "診断結果をお届け", b: "AIでの紹介のされ方と、最初に直す3つを、メールでお送りします。", tag: "3営業日以内" },
-            { t: "ご希望なら改善のご相談", b: "結果をもとに、進め方とお見積もりをご案内します。お断りいただいても構いません。", tag: "無料" },
+            { t: "ご希望なら改善のご相談", b: "結果をもとに、進め方とお見積もりをご案内します。", tag: "無料" },
           ].map((x) => (
             <li key={x.t} className="rounded-md bg-[#F1F6FE] p-7">
               <span className="palt inline-block rounded-sm bg-white px-2 py-0.5 text-xs font-bold text-brand">{x.tag}</span>
