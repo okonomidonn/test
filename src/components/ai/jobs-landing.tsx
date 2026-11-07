@@ -13,12 +13,18 @@ const NEWS = [
 ];
 
 const FAQ: [string, string][] = [
+  ["AI検索対策とは、何をすることですか？", "ChatGPTやGeminiに「おすすめの求人サイトは？」と聞かれたとき、御社が候補として紹介されるように整える取り組みです。GEO・LLMOとも呼ばれます。"],
+  ["SEO対策とは何が違いますか？", "SEOは検索結果での順位を上げる取り組みです。AI検索対策は、AIが答えをつくるときに参考にする情報を整え、答えの中で紹介されることを目指します。重なる部分も多いので、今のSEOを活かしながら進めます。"],
   ["大手の求人サイトがある中で、紹介されるようになりますか？", "大手は「おすすめの求人サイトは？」のような広い質問で強いため、地域・職種・働き方など、条件のついた質問で紹介されることを目指します。条件が細かいほど、専門の求人サイトが選ばれやすくなります。"],
   ["無料診断だけでも大丈夫ですか？", "はい、無料診断だけのご利用も歓迎です。結果をご覧になってから、改善をお任せいただくかどうかを決めてください。費用がかかるのは、作業の内容と金額にご納得いただき、正式にご依頼いただいてからです。"],
-  ["結果はいつ届きますか？", "無料診断は3営業日以内にメールでお送りします。"],
-  ["必ずAIに紹介されるようになりますか？", "紹介や応募の増加はお約束できません。AIの回答は毎回変わるため、同じ条件で測り直して、変化を数字でお見せします。"],
+  ["準備するものはありますか？", "無料診断は、求人サイトのURLだけで始められます。資料の準備はいりません。月額プランでは、サイトを更新するための権限や、強み・実績などの情報をご共有いただきます。"],
+  ["どのAIを調べますか？", "ChatGPTとGeminiです。無料診断は、ChatGPTだけで質問の数を絞った簡易版です。"],
+  ["必ずAIに紹介されるようになりますか？", "AIでの表示や順位、応募数の保証はできません。AIの答えは毎回変わるため、同じ条件で測り直し、変化を数字でご報告します。"],
+  ["効果が出るまで、どれくらいかかりますか？", "AIや検索に反映されるまで、数週間〜数か月かかります。3か月を目安に、毎月測りながら進めることをおすすめしています。"],
   ["応募数が増えたかは分かりますか？", "月額プランでは、GA4でAIから来た人数と、そのうち「応募ページへ進む」などの行動をした数を毎月お伝えします。応募完了まで数えられるかは、御社の応募の仕組みによります。"],
-  ["サイトの外の作業とは、何をしますか？", "AIが根拠にしている比較記事の運営元への情報提供、求人データのレポート発信、口コミを増やす仕組みづくりなどです。御社の名前で外に出るものは、すべて事前にご確認いただきます。偽の口コミなど、ステルスマーケティングにあたることは一切行いません。"],
+  ["比較記事への働きかけでは、何をしますか？", "AIが参考にしている比較記事や紹介ページの運営元へ、御社の正しい情報をお届けします。掲載するかどうかは各媒体の判断です。御社の名前で外に出るものは、すべて事前にご確認いただきます。偽の口コミなど、ステルスマーケティングにあたることは一切行いません。"],
+  ["追加の費用はかかりますか？", "月額料金の範囲を超える作業（新しい機能の開発や大きな改修など）が必要なときだけ、先にお見積もりをお出しします。合意なしに費用が増えることはありません。"],
+  ["解約はいつでもできますか？", "はい。最低契約期間はありません。当月20日までにご連絡いただくと、当月末で終了します。"],
   ["支払い方法は？", "銀行振込（請求書払い・前払い）です。詳しくは特定商取引法に基づく表記をご覧ください。"],
 ];
 
@@ -36,11 +42,12 @@ export function JobsLanding() {
               <span className="whitespace-nowrap">AIで探す時代へ。</span>
             </h1>
             <p className="palt mt-6 text-lg font-bold leading-relaxed text-blue-50 sm:text-xl">ChatGPTに、御社をおすすめしてもらう。</p>
+            <p className="mt-3 max-w-xl leading-relaxed text-blue-100">求職者が聞きそうな質問をAIにくり返し聞き、御社が何番目に紹介されるかを調べます。</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link href="/ai/apply" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-md bg-white px-8 text-lg font-bold text-brand shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition hover:bg-blue-50">無料で診断する<span aria-hidden>→</span></Link>
               <Link href="/ai/sample" className="inline-flex min-h-14 items-center justify-center rounded-md border border-white/60 px-8 font-bold text-white transition hover:bg-white/10">レポートの見本を見る</Link>
             </div>
-            <p className="mt-5 text-sm text-blue-100">費用0円　｜　3営業日以内にお届け　｜　登録不要</p>
+            <p className="mt-5 text-sm text-blue-100">入力は1分　｜　資料の準備は不要　｜　3営業日以内にお届け</p>
           </div>
           <figure>
             <div className="rounded-lg bg-white/10 p-2 ring-1 ring-white/20 backdrop-blur-sm sm:p-3">
@@ -228,7 +235,25 @@ export function JobsLanding() {
             </Link>
           ))}
         </div>
-        <p className="mt-3 text-xs text-slate-500">価格は税別です（税込：基本プラン110,000円、制作プラン220,000円）。1か月単位の契約で、最低契約期間はありません。</p>
+        <p className="mt-3 text-xs leading-relaxed text-slate-500">価格は税別です（税込：基本プラン110,000円、制作プラン220,000円）。1か月単位の契約で、最低契約期間はありません。AIでの表示・順位や応募数を保証するものではありません。</p>
+      </Section>
+
+      {/* お申し込みの流れ */}
+      <Section>
+        <Head title="お申し込みの流れ" desc="無料診断から、改善のご依頼まで。どこで止めても費用はかかりません。" />
+        <ol className="mt-10 grid gap-3 lg:grid-cols-3">
+          {[
+            { t: "フォームに入力", b: "会社名・求人サイトのURL・お名前・メールアドレスだけ。1分で終わります。", tag: "1分" },
+            { t: "診断結果をお届け", b: "AIでの紹介のされ方と、最初に直す3つを、メールでお送りします。", tag: "3営業日以内" },
+            { t: "ご希望なら改善のご相談", b: "結果をもとに、進め方とお見積もりをご案内します。お断りいただいても構いません。", tag: "無料" },
+          ].map((x) => (
+            <li key={x.t} className="rounded-md bg-[#F1F6FE] p-7">
+              <span className="palt inline-block rounded-sm bg-white px-2 py-0.5 text-xs font-bold text-brand">{x.tag}</span>
+              <p className="palt mt-3 text-xl font-bold text-slate-900">{x.t}</p>
+              <p className="mt-2 leading-relaxed text-slate-700">{x.b}</p>
+            </li>
+          ))}
+        </ol>
       </Section>
 
       {/* よくある質問・お知らせ */}
@@ -251,7 +276,7 @@ export function JobsLanding() {
 
       {/* 申し込み */}
       <Section tone="navy">
-        <Head light center title="3営業日以内に、診断結果をお送りします。" desc="求人サイトのURLを送るだけ。費用はかかりません。" />
+        <Head light center title="3営業日以内に、診断結果をお送りします。" desc="求人サイトのURLを送るだけ。資料の準備も、費用もいりません。" />
         <div id="apply" className="mx-auto mt-10 max-w-xl rounded-md bg-white p-6 text-slate-900 shadow-[0_24px_60px_rgba(0,0,0,0.25)] sm:p-8">
           <HeroLeadForm urlLabel="求人サイトのURL" />
         </div>

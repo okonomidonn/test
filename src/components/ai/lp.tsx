@@ -44,11 +44,11 @@ export function CtaBand({ title }: { title?: string }) {
         {title && <p className="palt mb-7 text-center text-2xl font-bold text-white sm:text-3xl">{title}</p>}
         <div className="grid gap-4 md:grid-cols-2">
           <Link href="/ai/apply" className={card}>
-            <span><span className="palt block text-xl font-bold text-brand sm:text-2xl">無料で診断する</span><span className="mt-1 block text-sm text-slate-600">URLを送るだけ。3営業日以内にお届け</span></span>
+            <span><span className="palt block text-xl font-bold text-brand sm:text-2xl">無料で診断する</span><span className="mt-1 block text-sm text-slate-600">入力は1分。3営業日以内に結果をお届け</span></span>
             <ArrowBox />
           </Link>
           <Link href="/ai/apply?plan=production" className={card}>
-            <span><span className="palt block text-xl font-bold text-slate-900 sm:text-2xl">改善を相談する</span><span className="mt-1 block text-sm text-slate-600">月額プランのご相談</span></span>
+            <span><span className="palt block text-xl font-bold text-slate-900 sm:text-2xl">改善を相談する</span><span className="mt-1 block text-sm text-slate-600">2営業日以内に、進め方とお見積もりをご連絡</span></span>
             <ArrowBox dark />
           </Link>
         </div>
