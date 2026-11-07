@@ -1,12 +1,11 @@
-// AIススメルのロゴ「ダブルス」：「ス」と矢じり「›」を並べ、薦める・進めるの動きを表す
+// AIススメルのロゴ：線の太さをそろえた、シンプルな「ス」
 export function LogoMark({ className = "h-8 w-8", light }: { className?: string; light?: boolean }) {
   const c = light ? "#FFFFFF" : "#2563EB";
   return (
     <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <g transform="translate(16 16) skewX(-10) translate(-16 -16)" fill="none" stroke={c}>
-        <path d="M3.8 10H13.6L7.4 22.6" strokeWidth="4" strokeLinejoin="miter" />
-        <path d="M10.2 16.6L13.6 20" strokeWidth="3.6" />
-        <path d="M17.4 10L25.4 16.3L17.4 22.6" strokeWidth="4" strokeLinejoin="miter" />
+      <g fill="none" stroke={c} strokeWidth="3.6">
+        <path d="M7 9.6H24.6C20.6 16.6 14.6 21.8 7.2 25.6" strokeLinejoin="miter" />
+        <path d="M17.2 18.4L24.8 25.8" />
       </g>
     </svg>
   );
