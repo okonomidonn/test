@@ -9,11 +9,11 @@ export function LogoMark({ className = "h-8 w-8", light }: { className?: string;
   );
 }
 
+// サイトのロゴは文字だけ（「ス」のマークはブラウザのタブ・ホーム画面のアイコンにだけ使う）
 export function Logo({ light, size = "md" }: { light?: boolean; size?: "md" | "sm" }) {
   return (
-    <span className="inline-flex items-center gap-2">
-      <LogoMark light={light} className={size === "sm" ? "h-7 w-7" : "h-8 w-8"} />
-      <span className={`palt whitespace-nowrap font-black leading-none ${size === "sm" ? "text-lg" : "text-[1.3rem]"} ${light ? "text-white" : "text-slate-900"}`}>
+    <span className="inline-flex items-center">
+      <span className={`palt whitespace-nowrap font-black leading-none ${size === "sm" ? "text-lg" : "text-[1.4rem]"} ${light ? "text-white" : "text-slate-900"}`}>
         <span className={`font-num font-black ${light ? "text-blue-300" : "text-brand"}`}>AI</span>ススメル
       </span>
     </span>
