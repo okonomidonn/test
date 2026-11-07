@@ -25,7 +25,7 @@ export default function SamplePage() {
           </nav>
           <div className="space-y-2 border-t border-slate-200 pt-4">
             <p className="text-sm text-slate-700">御社のサービスで、この報告書を作ります。</p>
-            <Link href="/ai/apply" className={`${btn("primary")} w-full`}>
+            <Link href="/ai#apply" className={`${btn("primary")} w-full`}>
               無料で診断する
             </Link>
           </div>
@@ -48,7 +48,7 @@ export default function SamplePage() {
             <span className="font-semibold text-slate-900">これはデモです。</span>
             架空の求人サイトで作りました。無料診断では、この中の「紹介率」と「最初に直すこと」をお送りします。
           </p>
-          <Link href="/ai/apply" className={`${btn("primary")} shrink-0 lg:hidden`}>
+          <Link href="/ai#apply" className={`${btn("primary")} shrink-0 lg:hidden`}>
             無料で診断する
           </Link>
         </div>

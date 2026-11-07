@@ -81,7 +81,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
                 <Link href="/ai/apply?plan=production" className="hidden min-h-9 items-center rounded-md border border-slate-300 px-4 text-sm font-bold text-slate-800 transition hover:bg-slate-50 lg:inline-flex">
                   ご相談
                 </Link>
-                <Link href="/ai/apply" className={`${btn("primary")} min-h-11 max-[359px]:px-2 lg:min-h-9`} aria-label="無料で診断">
+                <Link href="/ai#apply" className={`${btn("primary")} min-h-11 max-[359px]:px-2 lg:min-h-9`} aria-label="無料で診断">
                   無料で診断
                 </Link>
                 <details className="relative lg:hidden">
@@ -115,7 +115,7 @@ export default async function AiLayout({ children }: LayoutProps<"/ai">) {
           </nav>
           <nav aria-label="運営" className="space-y-2 text-sm">
             <p className="font-semibold text-white">運営</p>
-            <Link href="/ai/apply" className="block text-slate-400 hover:text-white">
+            <Link href="/ai#apply" className="block text-slate-400 hover:text-white">
               お申し込み
             </Link>
             <Link href="/ai/method" className="block text-slate-400 hover:text-white">

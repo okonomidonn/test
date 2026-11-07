@@ -60,7 +60,7 @@ export function LeadForm({ kind, defaults = {}, plan, submitLabel }: { kind: "CH
       <input type="text" name="fax" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
       <fieldset className="space-y-4">
-        <legend className="text-sm font-semibold text-slate-500">1. 診断する求人サイト</legend>
+        <legend className="text-sm font-semibold text-slate-500">1. 求人サイト</legend>
         <Field id="lead-company" label="会社名・サイト名" error={err("company")}>
           <input id="lead-company" name="company" required defaultValue={val("company")} autoComplete="organization" className={inputCls(!!err("company"))} {...aria("company")} />
         </Field>

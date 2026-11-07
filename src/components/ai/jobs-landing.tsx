@@ -43,7 +43,7 @@ export function JobsLanding() {
             </h1>
             <p className="palt mt-6 text-lg font-bold leading-relaxed text-blue-50 sm:text-xl">ChatGPTに、御社をおすすめしてもらう。</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/ai/apply" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-md bg-white px-8 text-lg font-bold text-brand shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition hover:bg-blue-50">無料で診断する<span aria-hidden>→</span></Link>
+              <Link href="/ai#apply" className="inline-flex min-h-14 items-center justify-center gap-3 rounded-md bg-white px-8 text-lg font-bold text-brand shadow-[0_8px_24px_rgba(0,0,0,0.18)] transition hover:bg-blue-50">無料で診断する<span aria-hidden>→</span></Link>
               <Link href="/ai/sample" className="inline-flex min-h-14 items-center justify-center rounded-md border border-white/60 px-8 font-bold text-white transition hover:bg-white/10">レポートの見本を見る</Link>
             </div>
             <p className="mt-5 text-sm text-blue-100">入力は1分　｜　資料の準備は不要　｜　3営業日以内にお届け</p>
@@ -235,7 +235,7 @@ export function JobsLanding() {
         </div>
         <div className="mt-10 grid gap-3 lg:grid-cols-3">
           {[
-            { name: "無料診断", price: "0", unit: "円", body: "AIでの紹介のされ方と、最初に直す3つをお届けします。", href: "/ai/apply", cta: "無料で診断する" },
+            { name: "無料診断", price: "0", unit: "円", body: "AIでの紹介のされ方と、最初に直す3つをお届けします。", href: "/ai#apply", cta: "無料で診断する" },
             { name: "基本プラン", price: "10", unit: "万円／月", body: "毎月の計測と、既存ページの改善（月2件）。", href: "/ai/apply?plan=basic", cta: "基本プランを相談する" },
             { name: "制作プラン", price: "20", unit: "万円／月", body: "基本プランに加えて、選ばれる理由を伝えるページを毎月2本。", href: "/ai/apply?plan=production", cta: "制作プランを相談する", em: true, badge: "おすすめ" },
           ].map((p) => (
@@ -287,9 +287,9 @@ export function JobsLanding() {
       </Section>
 
       {/* 申し込み */}
-      <Section tone="navy">
+      <Section id="apply" tone="navy">
         <Head light center title="3営業日以内に、診断結果をお送りします。" desc="求人サイトのURLを送るだけ。資料の準備も、費用もいりません。" />
-        <div id="apply" className="mx-auto mt-10 max-w-xl rounded-md bg-white p-6 text-slate-900 shadow-[0_24px_60px_rgba(0,0,0,0.25)] sm:p-8">
+        <div className="mx-auto mt-10 max-w-xl rounded-md bg-white p-6 text-slate-900 shadow-[0_24px_60px_rgba(0,0,0,0.25)] sm:p-8">
           <HeroLeadForm urlLabel="求人サイトのURL" />
         </div>
       </Section>
