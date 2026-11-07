@@ -125,7 +125,7 @@ export default function MethodPage() {
         </Block>
 
         <div className="flex flex-wrap gap-3 border-t border-slate-200 pt-8">
-          <Link href="/ai/apply" className={btn("primary", "lg")}>
+          <Link href="/ai#apply" className={btn("primary", "lg")}>
             無料で診断する
           </Link>
           <Link href="/ai/sample" className={btn("secondary", "lg")}>

@@ -1,9 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { LeadForm } from "@/components/ai/lead-form";
-import { sampleReport } from "@/lib/ai-check/sample";
-import { reportKpis } from "@/components/ai/report-dashboard";
+import { Section } from "@/components/ai/lp";
 import { LEAD_PLANS, resolveLeadPlan } from "@/lib/leads/plans";
 
 export const metadata = { title: "申し込み | AIススメル" };
@@ -27,6 +27,8 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
   const resolved = resolveLeadPlan(sp.plan);
   // トライアルは提供を終了したため、以前のリンク（?plan=trial）は基本プランのご相談として受け付ける
   const plan = resolved === "book" ? "check" : resolved === "trial" ? "basic" : resolved;
+  // 無料診断はトップページ下のフォームで受け付ける（ログイン中の店舗からの申し込みだけ、このページを使う）
+  if (plan === "check" && typeof sp.store !== "string") redirect("/ai#apply");
   const kind = LEAD_PLANS[plan].kind;
   const monthly = plan === "basic" || plan === "production";
   const copy = monthly ? {
@@ -40,7 +42,6 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
     ],
     after: ["2営業日以内に、ご希望のプランの進め方とお見積もりをメールでお送りします", "対象ページ・作業範囲・支払条件に合意してから正式なご依頼となります", "銀行振込による前払いです。入金確認後、合意した日程で始めます"],
   } : COPY.CHECK;
-  const kpis = reportKpis(sampleReport());
 
   // ログイン中なら、登録済みのサービスとアカウントの情報を入れておく
   const session = await auth();
@@ -54,91 +55,63 @@ export default async function ApplyPage({ searchParams }: PageProps<"/ai/apply">
   const storeQ = typeof sp.store === "string" ? `&store=${sp.store}` : "";
 
   return (
-    <div className="mx-auto max-w-5xl pt-4">
-      {/* 申し込みの種類の切り替え（?plan=basic など） */}
-      <nav aria-label="申し込みの種類" className="flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 text-sm">
-        {[
-          ["check", "無料で診断", `/ai/apply${storeQ ? `?${storeQ.slice(1)}` : ""}`],
-          ["basic", "基本プラン", `/ai/apply?plan=basic${storeQ}`],
-          ["production", "制作プラン", `/ai/apply?plan=production${storeQ}`],
-        ].map(([k, label, href]) => (
-          <Link
-            key={k}
-            href={href}
-            aria-current={plan === k ? "page" : undefined}
-            className={`rounded-md px-3 py-1.5 font-semibold ${plan === k ? "bg-white text-slate-900 shadow-[0_1px_2px_rgba(17,24,39,0.08)] ring-1 ring-slate-200" : "text-slate-600 hover:text-slate-900"}`}
-          >
-            {label}
-          </Link>
-        ))}
-      </nav>
-
-      <div className="mt-6 grid gap-x-12 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
-        <div className="min-w-0">
-          <h1 className="text-[1.875rem] font-bold leading-tight text-slate-900 sm:text-[2.25rem]">{copy.title}</h1>
-          <p className="mt-3 text-lg text-slate-600">{copy.lead}</p>
-          <dl className="mt-6 divide-y divide-slate-200 border-y border-slate-200">
-            {copy.facts.map(([k, v]) => (
-              <div key={k} className="grid grid-cols-[6rem_1fr] gap-4 py-3">
-                <dt className="text-sm font-semibold text-slate-600">{k}</dt>
-                <dd className="text-slate-900">{v}</dd>
-              </div>
+    <div className="-mb-8 -mt-8">
+      {/* トップ・料金と同じ作り：青の帯で始め、左に内容、右にフォーム */}
+      <section className="ml-[calc(50%-50vw)] w-screen bg-brand text-white">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+          <nav aria-label="申し込みの種類" className="flex flex-wrap gap-2 text-sm">
+            {[
+              ["basic", "基本プラン", `/ai/apply?plan=basic${storeQ}`],
+              ["production", "制作プラン", `/ai/apply?plan=production${storeQ}`],
+            ].map(([k, label, href]) => (
+              <Link key={k} href={href} aria-current={plan === k ? "page" : undefined} className={`rounded-md px-4 py-2 font-bold transition ${plan === k ? "bg-white text-brand" : "border border-white/50 text-white hover:bg-white/10"}`}>
+                {label}
+              </Link>
             ))}
-          </dl>
+          </nav>
+          <h1 className="mt-6 text-[2rem] font-black leading-tight sm:text-[2.75rem]">{copy.title}</h1>
+          <p className="palt mt-4 max-w-2xl text-lg leading-relaxed text-blue-50">{copy.lead}</p>
         </div>
+      </section>
 
-        {/* フォーム：スマホでは見出しのすぐ後、PCでは右の列 */}
-        <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-5 sm:p-6 lg:row-span-2 lg:self-start">
-          <LeadForm key={plan} kind={kind} defaults={defaults} plan={plan} submitLabel={monthly ? `${LEAD_PLANS[plan].label}を相談する` : undefined} />
-        </div>
-
-        <div className="min-w-0 space-y-8">
-          <section>
-            <h2 className="text-lg font-semibold text-slate-900">送信したあと</h2>
-            <ol className="mt-3 space-y-0">
-              {copy.after.map((t, i) => (
-                <li key={t} className="relative grid grid-cols-[2rem_1fr] gap-2 pb-4 last:pb-0">
-                  <span className="relative z-10 grid h-7 w-7 place-items-center rounded-full border border-slate-300 bg-white font-num text-sm font-semibold text-slate-700">{i + 1}</span>
-                  {i < copy.after.length - 1 && <span className="absolute left-[0.85rem] top-7 h-[calc(100%-1.75rem)] w-px bg-slate-200" aria-hidden />}
-                  <span className="pt-0.5 text-slate-800">{t}</span>
-                </li>
-              ))}
-            </ol>
-          </section>
-
-          <section className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-            <h2 className="text-sm font-semibold text-slate-900">届く結果の例（デモ）</h2>
-            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
-              {kpis.slice(0, 4).map((k) => (
-                <div key={k.label}>
-                  <dt className="text-xs font-medium text-slate-600">{k.label}</dt>
-                  <dd className="font-num text-xl font-semibold text-slate-900">
-                    {k.value}
-                    <span className="text-sm text-slate-500">{k.unit}</span>
-                  </dd>
+      <Section>
+        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,27rem)]">
+          <div className="min-w-0 space-y-10 lg:order-1">
+            <dl className="divide-y divide-slate-200 rounded-md bg-[#F1F6FE] px-6 sm:px-8">
+              {copy.facts.map(([k, v]) => (
+                <div key={k} className="grid gap-1 py-5 sm:grid-cols-[6rem_1fr] sm:gap-4">
+                  <dt className="text-sm font-bold text-brand">{k}</dt>
+                  <dd className="text-slate-900">{v}</dd>
                 </div>
               ))}
             </dl>
-            <Link href="/ai/sample" className="mt-3 inline-block text-sm font-semibold text-brand hover:underline">
-              サンプルレポートを見る →
-            </Link>
-          </section>
 
-          <section className="space-y-2 text-sm text-slate-700">
-            <h2 className="text-base font-semibold text-slate-900">情報の取り扱い</h2>
-            <p>いただいた情報は、診断とご連絡にだけ使います。サイトのURLは、公開されているページの読み取りとAIの回答の判定にだけ使い、結果を公開したり、ほかの会社に渡したりすることはありません。</p>
-            <p>
-              <Link href="/ai/method#privacy" className="font-semibold text-brand hover:underline">
-                情報の取り扱い
-              </Link>
-              ・
-              <Link href="/ai/method#measure" className="font-semibold text-brand hover:underline">
-                計測のしかたと限界
-              </Link>
-            </p>
-          </section>
+            <section>
+              <h2 className="text-2xl font-bold text-slate-900">送信したあと</h2>
+              <ol className="mt-5 grid gap-3">
+                {copy.after.map((t) => (
+                  <li key={t} className="rounded-md border border-slate-200 bg-white p-5 text-slate-800">{t}</li>
+                ))}
+              </ol>
+            </section>
+
+            <section className="space-y-2 text-sm text-slate-600">
+              <h2 className="text-base font-bold text-slate-900">情報の取り扱い</h2>
+              <p>いただいた情報は、診断とご連絡にだけ使います。サイトのURLは、公開されているページの読み取りとAIの回答の判定にだけ使い、結果を公開したり、ほかの会社に渡したりすることはありません。</p>
+              <p>
+                <Link href="/ai/method#privacy" className="font-bold text-brand hover:underline">情報の取り扱い</Link>
+                ・
+                <Link href="/ai/method#measure" className="font-bold text-brand hover:underline">計測のしかたと限界</Link>
+              </p>
+            </section>
+          </div>
+
+          {/* フォーム：スマホでは先頭、PCでは右の列 */}
+          <div className="order-first min-w-0 rounded-md bg-white p-6 shadow-[0_16px_40px_rgba(30,60,120,0.12)] ring-1 ring-slate-200 sm:p-8 lg:order-2 lg:sticky lg:top-24 lg:self-start">
+            <LeadForm key={plan} kind={kind} defaults={defaults} plan={plan} submitLabel={monthly ? `${LEAD_PLANS[plan].label}を相談する` : undefined} />
+          </div>
         </div>
-      </div>
+      </Section>
     </div>
   );
 }

@@ -43,7 +43,7 @@ export function CtaBand({ title }: { title?: string }) {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-14">
         {title && <p className="palt mb-7 text-center text-2xl font-bold text-white sm:text-3xl">{title}</p>}
         <div className="grid gap-4 md:grid-cols-2">
-          <Link href="/ai/apply" className={card}>
+          <Link href="/ai#apply" className={card}>
             <span><span className="palt block text-xl font-bold text-brand sm:text-2xl">無料で診断する</span><span className="mt-1 block text-sm text-slate-600">入力は1分。3営業日以内に結果をお届け</span></span>
             <ArrowBox />
           </Link>
@@ -89,7 +89,7 @@ export function Num({ children, className = "" }: { children: ReactNode; classNa
 export function Cta({ light }: { light?: boolean }) {
   return (
     <div className="mt-12 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-      <Link href="/ai/apply" className={`inline-flex min-h-13 w-full items-center justify-center rounded-md px-8 font-bold transition sm:w-auto ${light ? "bg-white text-brand hover:bg-blue-50" : "bg-brand text-white hover:bg-brand-dark"}`}>
+      <Link href="/ai#apply" className={`inline-flex min-h-13 w-full items-center justify-center rounded-md px-8 font-bold transition sm:w-auto ${light ? "bg-white text-brand hover:bg-blue-50" : "bg-brand text-white hover:bg-brand-dark"}`}>
         無料で診断する
       </Link>
     </div>
