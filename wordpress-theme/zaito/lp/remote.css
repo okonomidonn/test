@@ -866,3 +866,32 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 .basic input[type=text]:disabled{background:var(--z-surface)}
 .basic .ns{display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;font-weight:500;font-size:13px;color:var(--z-text-3);cursor:pointer}
 .basic .ns input{width:16px;height:16px;accent-color:var(--z-blue)}
+
+/* 企業の方へ（lp/companies.php）：課題・録画の一次面接・料金・よくある質問のカテゴリ */
+.co-lead{margin:-8px 0 20px;max-width:760px;font-size:15px;line-height:1.8;color:var(--z-text-2)}
+.co-pain{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px}
+.co-pain li{display:flex;flex-direction:column;gap:6px;padding:18px 0;border-top:1px solid var(--z-border)}
+.co-pain b{font-size:16px}
+.co-pain span{font-size:14px;line-height:1.8;color:var(--z-text-2)}
+.co-calc{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:20px 32px;flex-wrap:wrap;padding:24px;border:1px solid var(--z-border);border-radius:12px}
+.cc-num{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 420px}
+.cc-num>span{font-size:13px;font-weight:700;color:var(--z-text-3)}
+.cc-num b{font-family:'Outfit',var(--z-font-jp,sans-serif);font-size:clamp(24px,3.2vw,32px);font-weight:800;color:var(--z-navy)}
+.cc-num b i{font-style:normal;color:var(--z-blue);margin:0 4px}
+.cc-num small{font-size:12px;line-height:1.7;color:var(--z-text-3)}
+.co-price{margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.co-price>div{padding:22px 20px;border:1px solid var(--z-border);border-radius:12px;display:flex;flex-direction:column;gap:8px}
+.co-price dt{font-size:13px;font-weight:700;color:var(--z-text-3)}
+.co-price dd{margin:0;display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.7;color:var(--z-text-2)}
+.co-price dd b{font-family:'Outfit',var(--z-font-jp,sans-serif);font-size:26px;font-weight:800;color:var(--z-navy)}
+.co-note{margin:14px 0 0;font-size:13px;color:var(--z-text-3);line-height:1.7}
+.faq-cat{margin:28px 0 0;font-size:14px;font-weight:800;color:var(--z-blue)}
+.faq-cat:first-of-type{margin-top:0}
+@media (max-width:860px){
+ .co-pain{grid-template-columns:minmax(0,1fr)}
+ .co-price{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+@media (max-width:520px){
+ .co-price{grid-template-columns:minmax(0,1fr)}
+ .co-calc .btn{flex:1 1 100%}
+}
