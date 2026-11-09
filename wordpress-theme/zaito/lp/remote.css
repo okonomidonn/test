@@ -822,3 +822,15 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 .jfaq h3::before{content:'Q.';margin-right:6px;color:var(--z-blue)}
 .jfaq h3+p{margin:6px 0 0;font-size:15px;line-height:1.8;color:var(--z-text-2)}
 .jfaq .jfaq-note{margin:20px 0 0;font-size:13px;color:var(--z-text-3)}
+
+/* スマホの絞り込み（職種・条件）：折り返さず1行にして、横にすべらせて選ぶ。右端を薄くして続きがあることを見せる */
+@media (max-width:640px){
+ .filters,.refine .qchips{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;scroll-padding-inline:20px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+ .filters::-webkit-scrollbar,.refine .qchips::-webkit-scrollbar{display:none}
+ .filters{gap:8px;padding-top:2px;padding-bottom:12px}
+ .filters button,.refine .qchips button{flex:none}
+ .filters button{height:40px;border-radius:999px;padding:0 14px 0 6px}
+ .filters button .ms{border-radius:999px}
+ .refine{margin:0;padding:0 0 18px}
+ .refine .qchips{gap:6px;padding-top:2px;padding-bottom:2px}
+}
