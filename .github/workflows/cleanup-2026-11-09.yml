@@ -1,0 +1,81 @@
+name: Cleanup (2026-11-09, one-off)
+
+# 運営者の了承（2026-11-09）を得て、一度だけ行う片付け。
+# 1. データベースのバックアップを public_html の外に取る（本人だけが読める）
+# 2. WP Reset を無効にし、使っていないプラグインのファイルを消す（wp plugin delete はアンインストール処理を動かさないので、データは消さない）
+# 3. 管理者以外のWordPressユーザー（旧ワーカー・テスト企業）を消す。求人や記事を持つユーザーは消さずに件数だけ出す
+# 4. 本番で作ってしまった動作確認用の登録（@example.invalid）を消す
+# ログにはメールアドレスを出さない（IDと件数だけ）。
+on:
+  push:
+    branches:
+      - claude/zaito-job-site-uqgb9o
+    paths:
+      - ".github/workflows/cleanup-2026-11-09.yml"
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Cleanup
+        run: |
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} 'bash -s' <<'EOF'
+          set -u
+          cd ~/zaito-work.com/public_html || exit 1
+
+          echo "== 1. バックアップ"
+          umask 077
+          mkdir -p ~/zaito-work.com/backup
+          B=~/zaito-work.com/backup/db-2026-11-09-before-cleanup.sql
+          wp db export "$B" --quiet && gzip -f "$B" && ls -la --time-style=long-iso "$B.gz" | awk '{print $5, $6, $7, $8}' || { echo "バックアップに失敗したので中止"; exit 1; }
+
+          echo "== 2. プラグイン"
+          wp plugin deactivate wp-reset 2>&1
+          # 2026-11-09 のサーバー点検で「無効」だったものと、WP Reset。
+          for p in wp-reset akismet cloudsecure-wp-security hello latepoint spectra-blocks astra-sites sureforms surerank \
+                   xserver-typesquare-webfonts ultimate-member vk-all-in-one-expansion-unit vk-block-patterns vk-blocks \
+                   vk-fullsite-installer wp-job-manager; do
+            if [ "$(wp plugin get "$p" --field=status 2>/dev/null)" = "active" ]; then
+              echo "有効なので残した: $p"
+            else
+              wp plugin delete "$p" 2>&1
+            fi
+          done
+          echo "-- 残ったプラグイン"
+          wp plugin list --fields=name,status 2>&1
+
+          echo "== 3. 管理者以外のユーザー"
+          # 2026-11-09 のサーバー点検で見えた、管理者以外のユーザー（ワーカー 2,3,4,5,8,9・企業 6,7,10）。
+          for id in 2 3 4 5 6 7 8 9 10; do
+            role=$(wp user get "$id" --field=roles 2>/dev/null)
+            case "$role" in zaito_seeker|zaito_company) ;; *) echo "対象外の役割なので残した: ID $id ($role)"; continue;; esac
+            posts=$(wp post list --author="$id" --post_type=any --post_status=any --format=count)
+            apps=$(wp post list --post_type=zaito_application --post_status=any --meta_key=company_id --meta_value="$id" --format=count)
+            if [ "$posts" = "0" ] && [ "$apps" = "0" ]; then
+              wp user delete "$id" --yes >/dev/null 2>&1 && echo "削除: ID $id ($role)"
+            else
+              echo "残した: ID $id ($role) 投稿 $posts 件・応募 $apps 件"
+              wp post list --author="$id" --post_type=any --post_status=any --fields=ID,post_type,post_status --format=csv 2>&1 | head -10
+            fi
+          done
+
+          echo "== 4. 動作確認用の登録（@example.invalid）"
+          ids=$(wp post list --post_type=zaito_interest --post_status=any --meta_key=email --meta_compare=LIKE --meta_value=@example.invalid --field=ID)
+          echo "見つかった数: $(echo "$ids" | grep -c .)"
+          for id in $ids; do
+            email=$(wp post meta get "$id" email)
+            php wp-content/themes/zaito/cron/delete-member.php --email="$email" --do 2>&1 | grep -v '@' | tail -3
+            echo "削除: 登録ID $id"
+          done
+          EOF
