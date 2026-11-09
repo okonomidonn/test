@@ -793,7 +793,7 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 
 /* 地方の大学生向け（2026-11）：ヒーローの小見出しと「地方の大学生こそ、完全在宅」 */
 .hero .eb-jp{margin:0;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--z-blue)}
-.hero .eb-jp::before{content:"";width:18px;height:2px;background:var(--z-blue)}
+.hero .eb-jp::before,.hero .eb-jp::after{content:"";flex:none;width:18px;height:2px;background:var(--z-blue)}
 .local{margin:72px 0 0}
 .local h2{margin:0 0 16px;font-size:20px;font-weight:700}
 .local ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
