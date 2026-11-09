@@ -24,7 +24,7 @@ function zaito_sales_preview_menu() {
         'edit.php?post_type=job_listing',
         '営業管理',
         '営業管理',
-        'edit_posts',
+        'manage_options',
         'zaito-sales-previews',
         'zaito_render_sales_preview_page'
     );
@@ -59,7 +59,7 @@ function zaito_save_sales_rows() {
 }
 
 function zaito_render_sales_preview_page() {
-    if ( ! current_user_can( 'edit_posts' ) ) {
+    if ( ! current_user_can( 'manage_options' ) ) {
         wp_die( 'この画面を表示する権限がありません。' );
     }
 

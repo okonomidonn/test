@@ -73,7 +73,7 @@ function zaito_handle_social_start() {
     }
     if ( 'line' === $p && zaito_line_login_is_configured() ) {
         $state = wp_generate_password( 32, false );
-        set_transient( 'zaito_line_state_' . $state, array( 'to' => $to ), 10 * MINUTE_IN_SECONDS );
+        set_transient( 'zaito_line_state_' . $state, array( 'to' => $to, 'bound' => zaito_oauth_bind( $state ) ), 10 * MINUTE_IN_SECONDS );
         wp_redirect( add_query_arg( array(
             'response_type' => 'code',
             'client_id'     => ZAITO_LINE_CHANNEL_ID,
@@ -143,7 +143,7 @@ function zaito_line_callback() {
     $state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
     $data  = $state ? get_transient( 'zaito_line_state_' . $state ) : false;
     $code  = isset( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
-    if ( $data && $code && zaito_line_login_is_configured() ) {
+    if ( $data && $code && zaito_oauth_same_browser( $state, $data ) && zaito_line_login_is_configured() ) {
         delete_transient( 'zaito_line_state_' . $state );
         $res  = wp_remote_post( 'https://api.line.me/oauth2/v2.1/token', array( 'body' => array(
             'grant_type'    => 'authorization_code',

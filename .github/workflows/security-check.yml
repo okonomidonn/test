@@ -60,6 +60,15 @@ jobs:
           wp user list --fields=ID,roles,user_registered --format=table 2>&1
           echo "== 管理者の数"
           wp user list --role=administrator --format=count 2>&1
+          echo "== 企業・ワーカーの権限（read だけになっていれば正しい）"
+          wp cap list zaito_company 2>&1; wp cap list zaito_seeker 2>&1
+          echo "== 企業・ワーカーが書いた記事・固定ページ（本来は0件）"
+          for r in zaito_company zaito_seeker; do
+            ids=$(wp user list --role=$r --field=ID 2>/dev/null | tr '\n' ',' | sed 's/,$//')
+            [ -n "$ids" ] && wp post list --post_type=post,page --author="$ids" --post_status=any --format=count 2>&1 || echo 0
+          done
+          echo "== readme.html（消えていれば No such file）"
+          ls -la readme.html 2>&1
           echo "== 不審な cron / オプション"
           wp option get siteurl 2>&1; wp option get home 2>&1
           wp option get users_can_register 2>&1; wp option get default_role 2>&1

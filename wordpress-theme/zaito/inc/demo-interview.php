@@ -24,6 +24,8 @@ function zaito_demo_interview() {
     header( 'X-Robots-Tag: noindex, nofollow' );
     // カメラとマイクは、このページ（同じサイト）の中でだけ使う。
     header( 'Permissions-Policy: camera=(self), microphone=(self)' );
+    header( 'X-Frame-Options: SAMEORIGIN' );
+    header( 'X-Content-Type-Options: nosniff' );
     readfile( $file );
     exit;
 }

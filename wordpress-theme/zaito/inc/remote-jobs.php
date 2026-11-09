@@ -2393,40 +2393,49 @@ function zaito_handle_remote_profile() {
         wp_send_json_error( array( 'message' => '送信回数が多すぎます。しばらくしてからお試しください' ), 400 );
     }
     $opts = zaito_remote_profile_options();
+    // zaito_member は、すでにある登録のメールアドレスを入れただけでも付く。本人確認（zaito_my）が済んでいない
+    // ブラウザは、まだ空の項目だけを埋められる（他人のアドレスを入れて、その人の名前や希望を書き換えられないように）。
+    $owner = function_exists( 'zaito_my_id' ) && zaito_my_id() === $member;
+    $put   = function ( $key, $value ) use ( $member, $owner ) {
+        $cur = get_post_meta( $member, $key, true );
+        if ( $owner || '' === $cur || array() === $cur || false === $cur ) {
+            update_post_meta( $member, $key, $value );
+        }
+    };
 
     $role = isset( $_POST['role'] ) ? sanitize_text_field( wp_unslash( $_POST['role'] ) ) : '';
     if ( in_array( $role, $opts['role'], true ) ) {
-        update_post_meta( $member, 'role', $role );
+        $put( 'role', $role );
     }
     $grade = isset( $_POST['grade'] ) ? sanitize_text_field( wp_unslash( $_POST['grade'] ) ) : '';
     if ( in_array( $grade, $opts['grade'], true ) ) {
-        update_post_meta( $member, 'grade', $grade );
+        $put( 'grade', $grade );
     }
     $school = isset( $_POST['school'] ) ? sanitize_text_field( wp_unslash( $_POST['school'] ) ) : '';
     if ( '' !== $school ) {
-        update_post_meta( $member, 'school', mb_substr( $school, 0, 80 ) );
+        $put( 'school', mb_substr( $school, 0, 80 ) );
     }
     // 登録直後の質問では、姓と名を分けて聞く。名前は「姓 名」の形で1つにまとめて持つ（応募フォームや管理画面はこれを使う）。
     $last  = isset( $_POST['name_last'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name_last'] ) ) ), 0, 20 ) : '';
     $first = isset( $_POST['name_first'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name_first'] ) ) ), 0, 20 ) : '';
     $name  = isset( $_POST['name'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['name'] ) ) ) : trim( $last . ' ' . $first );
     if ( '' !== $name ) {
-        update_post_meta( $member, 'name', mb_substr( $name, 0, 40 ) );
+        $put( 'name', mb_substr( $name, 0, 40 ) );
     }
     if ( '' !== $last && '' !== $first ) {
-        update_post_meta( $member, 'last_name', $last );
-        update_post_meta( $member, 'first_name', $first );
+        $put( 'last_name', $last );
+        $put( 'first_name', $first );
     }
     foreach ( array( 'days', 'min_pay' ) as $key ) {
         $val = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';
         if ( in_array( $val, $opts[ $key ], true ) ) {
-            update_post_meta( $member, $key, $val );
+            $put( $key, $val );
         }
     }
     // 何で知ったかは最初の答えを残す（あとから選び直しても上書きしない）。
     $heard = isset( $_POST['heard'] ) ? sanitize_text_field( wp_unslash( $_POST['heard'] ) ) : '';
     if ( in_array( $heard, $opts['heard'], true ) && '' === (string) get_post_meta( $member, 'heard_from', true ) ) {
-        update_post_meta( $member, 'heard_from', $heard );
+        $put( 'heard_from', $heard );
     }
     $picked = isset( $_POST['interests'] ) && is_array( $_POST['interests'] )
         ? array_values( array_intersect( array_map( 'sanitize_text_field', wp_unslash( $_POST['interests'] ) ), $opts['interests'] ) )
@@ -2435,7 +2444,7 @@ function zaito_handle_remote_profile() {
         // 先行登録（トップページ）で答えた「興味のある仕事」があれば残して足す。
         $current = get_post_meta( $member, 'interests', true );
         $current = is_array( $current ) ? $current : array();
-        update_post_meta( $member, 'interests', array_slice( array_values( array_unique( array_merge( $current, $picked ) ) ), 0, 20 ) );
+        $put( 'interests', array_slice( array_values( array_unique( array_merge( $current, $picked ) ) ), 0, 20 ) );
     }
     wp_send_json_success( array() );
 }
@@ -2449,7 +2458,7 @@ function zaito_remote_admin_menu() {
         'edit.php?post_type=job_listing',
         'まとめ求人',
         'まとめ求人',
-        'edit_posts',
+        'manage_options',
         'zaito-remote-jobs',
         'zaito_render_remote_admin_page'
     );
@@ -2457,7 +2466,7 @@ function zaito_remote_admin_menu() {
 add_action( 'admin_menu', 'zaito_remote_admin_menu' );
 
 function zaito_render_remote_admin_page() {
-    if ( ! current_user_can( 'edit_posts' ) ) {
+    if ( ! current_user_can( 'manage_options' ) ) {
         wp_die( 'この画面を表示する権限がありません。' );
     }
     $stats = get_option( 'zaito_remote_stats', array() );

@@ -62,6 +62,13 @@ jobs:
             wordpress-theme/zaito/ \
             ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:zaito-work.com/public_html/wp-content/themes/zaito/
 
+      # WordPressのバージョンが外からわかる readme.html を消す（本体の更新で戻るので、反映のたびに消す）。
+      - name: Remove WordPress readme
+        continue-on-error: true
+        run: |
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            "rm -f zaito-work.com/public_html/readme.html"
+
       # 反映したページを IndexNow で Bing などに知らせる（ChatGPT の検索は Bing の結果を土台にしているため）。
       # キーは公開してよい値で、テーマの inc/indexnow.php にある。失敗しても反映そのものは成功のままにする。
       - name: Notify search engines via IndexNow

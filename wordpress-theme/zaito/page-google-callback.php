@@ -17,7 +17,7 @@ if ( ! zaito_google_login_is_configured() ) {
     $state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
     $state_data = $state ? get_transient( 'zaito_google_state_' . $state ) : false;
 
-    if ( ! $code || ! $state_data ) {
+    if ( ! $code || ! $state_data || ! zaito_oauth_same_browser( $state, $state_data ) ) {
         $zaito_google_error = 'リクエストが無効です。もう一度お試しください。';
     } else {
         delete_transient( 'zaito_google_state_' . $state );

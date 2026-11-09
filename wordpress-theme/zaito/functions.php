@@ -113,18 +113,66 @@ add_action( 'login_init', 'zaito_redirect_wp_login_to_custom_page' );
  * カスタムロールの登録
  */
 function zaito_register_roles() {
-    add_role( 'zaito_seeker', 'ワーカー', array(
-        'read' => true,
-        'edit_posts' => true,
-        'delete_posts' => true,
-    ) );
-    add_role( 'zaito_company', '企業', array(
-        'read' => true,
-        'publish_posts' => true,
-        'edit_posts' => true,
-    ) );
+    // 企業・ワーカーの画面はすべてサイト側（/company/ など）にあり、WordPressの投稿の権限は使わない。
+    // 投稿の権限があると、管理画面から記事を公開したり、ほかの会社への応募の一覧を見たりできてしまうため、読むだけにする。
+    add_role( 'zaito_seeker', 'ワーカー', array( 'read' => true ) );
+    add_role( 'zaito_company', '企業', array( 'read' => true ) );
+    // add_role はすでにある役割を変えないので、前に付けた権限をここで外す（1回だけ）。
+    if ( '2026-11-09' !== get_option( 'zaito_roles_version' ) ) {
+        foreach ( array( 'zaito_seeker', 'zaito_company' ) as $r ) {
+            $role = get_role( $r );
+            if ( $role ) {
+                foreach ( array( 'edit_posts', 'publish_posts', 'delete_posts', 'upload_files' ) as $cap ) {
+                    $role->remove_cap( $cap );
+                }
+            }
+        }
+        update_option( 'zaito_roles_version', '2026-11-09' );
+    }
 }
 add_action( 'init', 'zaito_register_roles' );
+
+/**
+ * WordPressの管理画面（/wp-admin/）は運営（管理者）だけが開ける。企業・ワーカーはサイト側の画面へ戻す。
+ * フォームの送り先（admin-post.php）と admin-ajax.php は、サイト側の画面から使うのでそのまま通す。
+ */
+function zaito_block_admin_for_members() {
+    if ( wp_doing_ajax() || current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    $script = isset( $_SERVER['SCRIPT_NAME'] ) ? basename( (string) $_SERVER['SCRIPT_NAME'] ) : '';
+    if ( 'admin-post.php' === $script ) {
+        return;
+    }
+    $user = wp_get_current_user();
+    wp_safe_redirect( in_array( 'zaito_company', (array) $user->roles, true ) ? home_url( '/company/' ) : home_url( '/' ) );
+    exit;
+}
+add_action( 'admin_init', 'zaito_block_admin_for_members', 0 );
+
+/**
+ * 安全のためのヘッダー。ほかのサイトの中に埋め込ませない（クリックをだます攻撃を防ぐ）、
+ * ファイルの種類を勝手に読み替えさせない、移動先へURLの全体を渡さない、次からはHTTPSだけで開かせる。
+ * カメラ・マイクの許可（Permissions-Policy）は、録画面接の試作ページ（inc/demo-interview.php）が自分で出す。
+ */
+function zaito_security_headers() {
+    if ( headers_sent() ) {
+        return;
+    }
+    header( 'X-Frame-Options: SAMEORIGIN' );
+    header( 'X-Content-Type-Options: nosniff' );
+    header( 'Referrer-Policy: strict-origin-when-cross-origin' );
+    if ( is_ssl() ) {
+        header( 'Strict-Transport-Security: max-age=31536000' );
+    }
+}
+add_action( 'send_headers', 'zaito_security_headers' );
+
+/** 管理者以外には、ページ上部の管理バーを出さない。 */
+function zaito_hide_admin_bar( $show ) {
+    return current_user_can( 'manage_options' ) ? $show : false;
+}
+add_filter( 'show_admin_bar', 'zaito_hide_admin_bar' );
 
 /**
  * カスタム投稿タイプの登録
@@ -596,11 +644,40 @@ function zaito_google_login_is_configured() {
  * Google OAuth2 の認可画面へのURLを組み立てる。
  * $role はコールバック側で新規ユーザー作成時に使うロール。
  */
+/**
+ * Google・LINEのログインを始めたブラウザに、stateを Cookie で持たせる（戻ってきたとき同じブラウザか確かめる）。
+ * 他人が自分のログインを途中まで進めたURLを開かせて、そのブラウザを他人の登録でログインさせる攻撃を防ぐ。
+ * ページの表示が始まったあと（Cookieを付けられないとき）は false を返し、確かめを省く。
+ */
+function zaito_oauth_bind( $state ) {
+    if ( headers_sent() ) {
+        return false;
+    }
+    setcookie( 'zaito_oauth', $state, array(
+        'expires'  => time() + 10 * MINUTE_IN_SECONDS,
+        'path'     => '/',
+        'secure'   => is_ssl(),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ) );
+    return true;
+}
+
+/** 戻ってきたブラウザが、ログインを始めたブラウザか。 */
+function zaito_oauth_same_browser( $state, $data ) {
+    if ( empty( $data['bound'] ) ) {
+        return true;
+    }
+    $cookie = isset( $_COOKIE['zaito_oauth'] ) ? (string) wp_unslash( $_COOKIE['zaito_oauth'] ) : '';
+    return '' !== $cookie && hash_equals( $cookie, (string) $state );
+}
+
 function zaito_google_login_url( $redirect_to, $role = 'zaito_seeker' ) {
     $state = wp_generate_password( 32, false );
     set_transient( 'zaito_google_state_' . $state, array(
         'redirect_to' => $redirect_to,
         'role'        => $role,
+        'bound'       => zaito_oauth_bind( $state ),
     ), 10 * MINUTE_IN_SECONDS );
 
     $params = array(
@@ -667,6 +744,10 @@ add_action( 'admin_post_zaito_resend_verification', 'zaito_handle_resend_verific
  * トラブルを避けるため、WordPress標準のフォーム処理エンドポイントを使う）
  */
 function zaito_handle_register_worker() {
+    // 旧ワーカー登録（WordPressのユーザーを作る）は使っていない。学生の登録はメールアドレスの登録（zaito_interest）だけにし、
+    // フォームのページ（/register/）がなくなったあとも、ここへ直接送ってアカウントを作れないようにする。
+    wp_safe_redirect( home_url( '/' ) );
+    exit;
     check_admin_referer( 'zaito_register_worker' );
 
     $errors = array();
@@ -1287,7 +1368,7 @@ add_action( 'admin_post_zaito_seed_demo_jobs', 'zaito_seed_demo_jobs' );
  * 作成(既存があれば重複作成しない)し、パーマリンク一覧を表示する。
  */
 function zaito_seed_preview_jobs() {
-    if ( ! current_user_can( 'edit_posts' ) ) {
+    if ( ! current_user_can( 'manage_options' ) ) {
         wp_die( 'この操作には投稿権限が必要です。' );
     }
     wp_die( implode( '<br>', array_map( 'esc_html', zaito_upsert_preview_jobs() ) ) );
@@ -1828,7 +1909,7 @@ function zaito_upsert_preview_jobs() {
 define( 'ZAITO_PREVIEW_JOBS_VERSION', '2026-09-28a' );
 
 function zaito_maybe_upsert_preview_jobs() {
-    if ( wp_doing_ajax() || ! current_user_can( 'edit_posts' ) ) {
+    if ( wp_doing_ajax() || ! current_user_can( 'manage_options' ) ) {
         return;
     }
     if ( get_option( 'zaito_preview_jobs_version' ) === ZAITO_PREVIEW_JOBS_VERSION ) {
@@ -1851,7 +1932,7 @@ add_action( 'admin_init', 'zaito_maybe_upsert_preview_jobs' );
  * 一度実行すれば十分な一回限りの修正アクション。
  */
 function zaito_fix_author_display_name() {
-    if ( ! current_user_can( 'edit_posts' ) ) {
+    if ( ! current_user_can( 'manage_options' ) ) {
         wp_die( 'この操作には投稿権限が必要です。' );
     }
 

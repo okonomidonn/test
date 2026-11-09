@@ -174,9 +174,10 @@ if ( ! $zaito_is_co ) {
   var err = document.getElementById('zerr');
   var lastId = 0;
 
-  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
   // URLだけはリンクにする（面接のZoomなど）。中身はエスケープしてから置き換える。
-  function linkify(s) { return esc(s).replace(/https?:\/\/[^\s<]+/g, function (u) { return '<a href="' + u + '" target="_blank" rel="noopener noreferrer nofollow">' + u + '</a>'; }); }
+  // esc で引用符も文字に変えてから、URLだけをリンクにする（URLに " を入れて属性を壊せないように）。
+  function linkify(s) { return esc(s).replace(/https?:\/\/[^\s<"'&]+(?:&amp;[^\s<"'&]+)*/g, function (u) { return '<a href="' + u + '" target="_blank" rel="noopener noreferrer nofollow">' + u + '</a>'; }); }
   function render(list) {
     var newest = list.length ? list[list.length - 1].id : 0;
     if (newest === lastId) return;

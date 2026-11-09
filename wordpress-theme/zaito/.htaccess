@@ -1,0 +1,8 @@
+# テーマのPHPファイルは、WordPressが中で読み込むだけ。URLで直接開かれても何も返さない
+# （直接開くとエラーとサーバー内の場所が出てしまうため）。CSS・JS・画像などはそのまま配る。
+<FilesMatch "\.(php|phtml|md|lock)$">
+  Require all denied
+</FilesMatch>
+<Files "composer.json">
+  Require all denied
+</Files>
