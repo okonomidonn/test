@@ -278,38 +278,7 @@ if ( ! $zaito_cond ) :
         <?php endif; ?>
         <a class="alert-link" href="#signup"><span class="ms" aria-hidden="true">notifications</span>新しい在宅求人をメールで受け取る</a>
       </div>
-      <?php if ( ! $zaito_cond ) : ?>
-        <?php // 読み込み中の形を最初から出しておき、おすすめが届いたときに下の一覧がずれないようにする（JSが動かないときは隠す）。 ?>
-        <noscript><style>#zreco{display:none}</style></noscript>
-        <section class="reco is-loading" id="zreco" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" aria-labelledby="zreco-t">
-          <div class="reco-hd">
-            <h2 id="zreco-t"><span class="ms" aria-hidden="true">auto_awesome</span>今日のおすすめ</h2>
-            <span class="reco-n" aria-live="polite"></span>
-          </div>
-          <p class="reco-sub">あなたに合う求人を選んでいます…</p>
-          <div class="reco-deck">
-            <div class="sw-stack"><div class="reco-skel" aria-hidden="true"><span></span><span></span><span></span></div></div>
-            <div class="reco-end" hidden></div>
-            <div class="reco-gate" hidden role="dialog" aria-labelledby="zrecogt">
-              <span class="ms reco-gate-i" aria-hidden="true">mark_email_unread</span>
-              <p class="reco-gate-t" id="zrecogt">今日の5件を見終わりました</p>
-              <p>無料登録すると、次の5件と、あなたの希望に合うおすすめが毎日見られます。保存した求人は、登録後もそのまま残ります。</p>
-              <form novalidate>
-                <label class="sr" for="zrecoemail">メールアドレス</label>
-                <input type="email" id="zrecoemail" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
-                <button type="submit" class="btn btn-p">無料で登録する（メールだけ）</button>
-              </form>
-              <p class="err" role="alert"></p>
-              <button type="button" class="reco-gate-x">登録せずに一覧を見る</button>
-            </div>
-          </div>
-          <div class="sw-act">
-            <button type="button" class="sw-b sw-no" aria-label="スキップ"><span class="ms" aria-hidden="true">close</span></button>
-            <a class="sw-more" href="#">詳しく見る</a>
-            <button type="button" class="sw-b sw-yes" aria-label="気になる"><span class="ms" aria-hidden="true">favorite</span></button>
-          </div>
-        </section>
-      <?php endif; ?>
+      <?php // 「今日のおすすめ」（lp/reco.js）は 2026-11 にトップから外した。登録・応募が増えた数字が出ず、ChatGPTから来た人の登録が減っていたため。求人メールの点数づけ（inc/reco.php）は今も使っている。 ?>
     </div>
 
     <?php if ( ! $zaito_cond && count( $zaito_groups ) > 1 ) : ?>
@@ -480,7 +449,6 @@ if ( ! $zaito_cond ) :
 <link rel="stylesheet" href="<?php echo esc_url( zaito_lp_asset( 'u022.css' ) ); ?>">
 <script src="<?php echo esc_url( zaito_lp_asset( 'u022.js' ) ); ?>"></script>
 <?php if ( ! $zaito_cond ) : ?><script src="<?php echo esc_url( zaito_lp_asset( 'u073.js' ) ); ?>"></script><?php endif; ?>
-<?php if ( ! $zaito_cond ) : ?><script src="<?php echo esc_url( zaito_lp_asset( 'reco.js' ) ); ?>"></script><?php endif; ?>
 <div class="sbar" id="zbar" hidden>
   <p><b>新着の在宅求人をメールで</b>登録無料・メールアドレスだけ</p>
   <a class="btn btn-p" href="#signup" id="zbargo">登録する</a>
