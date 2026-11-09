@@ -258,7 +258,6 @@ if ( ! $zaito_cond ) :
 <div class="u073" data-items="<?php echo esc_attr( $zaito_news_json ); ?>" data-ver="<?php echo esc_attr( substr( md5( $zaito_news_json ), 0, 10 ) ); ?>"><div>
   <div class="u073-bar" role="region" aria-label="お知らせ" aria-roledescription="切り替わるお知らせ">
     <div class="u073-in">
-      <span class="u073-tag">お知らせ</span>
       <div class="u073-msgs" aria-live="polite"></div>
       <span class="u073-segs" aria-hidden="true"></span>
       <button class="u073-b u073-nx" type="button" aria-label="次のお知らせ"><svg viewBox="0 0 14 14"><path d="M5 3l4 4-4 4"/></svg></button>

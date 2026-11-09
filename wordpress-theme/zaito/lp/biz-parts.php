@@ -50,13 +50,12 @@ if ( ! function_exists( 'zaito_biz_head' ) ) {
 
     /**
      * 企業向けのログイン・登録・パスワード再設定の画面の上部。学生向けのメニューは出さず、
-     * ロゴと「採用担当者様向け」と、ログイン⇔新規登録の切り替えだけにする。$mode は 'login' か 'register'。
+     * ロゴと、ログイン⇔新規登録の切り替えだけにする。$mode は 'login' か 'register'。
      */
     function zaito_biz_auth_header( $mode = 'login' ) {
         ?>
 <header class="biz-hd"><div class="wrap">
   <a class="logo" href="<?php echo esc_url( home_url( '/for-companies/' ) ); ?>" aria-label="zaito 企業の方へ">za<span>i</span>to</a>
-  <span class="for">採用担当者様向け</span>
   <div class="who">
     <?php if ( 'register' === $mode ) : ?>
       <span class="nm">アカウントをお持ちの方</span><a class="btn btn-g" style="height:38px;color:var(--z-navy)" href="<?php echo esc_url( home_url( '/company-login/' ) ); ?>">ログイン</a>

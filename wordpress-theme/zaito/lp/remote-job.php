@@ -74,17 +74,11 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 
   <div class="dg">
     <div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
-        <span class="cat"><?php echo esc_html( $zaito_j['category'] ); ?></span>
-        <?php if ( $zaito_closed ) : ?>
-          <span class="warn">募集終了</span>
-        <?php else : ?>
-          <span class="ok"><span class="ms" aria-hidden="true">verified</span>完全在宅を確認</span>
-          <?php if ( $zaito_direct ) : ?><span class="cat"><span class="ms" aria-hidden="true" style="font-size:16px;vertical-align:-3px">forum</span> zaitoで応募</span><?php endif; ?>
-        <?php endif; ?>
-      </div>
+      <?php if ( $zaito_closed ) : ?>
+        <div style="margin-top:8px"><span class="warn">募集終了</span></div>
+      <?php endif; ?>
       <h1 class="t"><?php echo esc_html( $zaito_j['title'] ); ?></h1>
-      <div class="coline"><span class="av" aria-hidden="true"><?php echo esc_html( $zaito_initial ); ?></span><?php echo esc_html( $zaito_j['company'] ); ?></div>
+      <div class="coline"><?php echo esc_html( $zaito_j['company'] ); ?></div>
       <p class="lead"><?php echo esc_html( $zaito_j['summary'] ); ?></p>
 
       <dl class="facts">
