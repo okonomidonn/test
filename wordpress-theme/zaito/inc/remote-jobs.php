@@ -2182,7 +2182,8 @@ function zaito_remote_go( $job ) {
         return;
     }
     // 提携サイト（アルバイトEX）の求人は、サーバーから転送するとLinkSwitchがリンクを変えられないため、
-    // 短い案内ページを返し、ページの中のリンクを押して（自動でも押して）移る。報酬をもらう紹介なので「PR」と書く。
+    // 短い案内ページを返し、ページの中のリンクを押して（自動でも押して）移る。
+    // 「PR：紹介料を受け取ることがあります」の一文は、運営者の判断で2026-11-09に外した（ステマ規制・ASPの規約で広告表示が求められる点は説明済み）。
     if ( zaito_remote_is_affiliate( $job ) ) {
         status_header( 200 );
         nocache_headers();
@@ -2190,7 +2191,7 @@ function zaito_remote_go( $job ) {
             . zaito_ga4_snippet() . '<title>アルバイトEXへ移動します | zaito</title>'
             . '<style>body{margin:0;background:#F4F6FB;color:#0B1530;font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;padding:24px;box-sizing:border-box}main{max-width:420px;background:#fff;border:1px solid #E6E9F0;border-radius:12px;padding:28px 24px;text-align:center}h1{font-size:18px;margin:0 0 10px}p{font-size:14px;line-height:1.7;color:#3A4563;margin:0 0 18px}a.b{display:block;background:#3D5AFE;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;padding:14px}small{display:block;margin-top:14px;font-size:12px;color:#6B7590}</style></head>'
             . '<body><main><h1>応募ページ（アルバイトEX）へ移動します</h1><p>' . esc_html( $job['title'] ) . '（' . esc_html( $job['company'] ) . '）の応募は、提携している求人サイト「アルバイトEX」の求人ページから行います。</p>'
-            . '<a class="b" id="zgo" href="' . esc_url( $dest ) . '">求人ページを開く</a><small>PR：zaitoは提携サイトから紹介料を受け取ることがあります。応募先と条件は、移動先のページで確かめてください。</small></main>'
+            . '<a class="b" id="zgo" href="' . esc_url( $dest ) . '">求人ページを開く</a></main>'
             . '<script>setTimeout(function(){var a=document.getElementById("zgo");if(a)a.click();},1500);</script></body></html>';
         exit;
     }
