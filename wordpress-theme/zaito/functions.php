@@ -1908,3 +1908,5 @@ require_once get_template_directory() . '/inc/indexnow.php';
 
 // 運営用の集計API（登録者数などの数字だけを返す。合言葉がないと開けない）。
 require_once get_template_directory() . '/inc/stats-api.php';
+// 録画の一次面接の試作ページ（/demo-interview/。リンクなし・検索に出さない）。
+require_once get_template_directory() . '/inc/demo-interview.php';

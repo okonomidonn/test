@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>録画の一次面接（試作） | zaito</title>
+<style>
+/* 試作ページ：zaitoの紺と青。スマホで学生の流れ、同じ端末で企業の画面を見る */
+:root{
+  --navy:#0B1530;--blue:#3D5AFE;--blue-l:#EEF1FF;--bg:#F4F6FB;--card:#fff;--line:#E3E7EF;--text2:#3A4563;--text3:#6B7590;
+  --red:#E5484D;--green:#1A7F55;--green-l:#EEF9F3;--amber:#9A5B00;--amber-l:#FFF4E5;
+  --font:"Hiragino Sans","Noto Sans JP",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--navy);font-family:var(--font);-webkit-text-size-adjust:100%}
+body{padding:env(safe-area-inset-top,0) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+[hidden]{display:none!important}
+.top{max-width:560px;margin:0 auto;padding:14px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-weight:900;font-size:20px;letter-spacing:-.02em}
+.logo i{font-style:normal;color:var(--blue)}
+.demo-tag{font-size:12px;font-weight:700;color:var(--amber);background:var(--amber-l);padding:4px 10px;border-radius:999px}
+.tabs{max-width:560px;margin:0 auto 14px;display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#E6EAF3;padding:4px;border-radius:12px}
+.tabs button{height:40px;border:0;border-radius:9px;background:none;font:inherit;font-size:14px;font-weight:700;color:var(--text2);cursor:pointer}
+.tabs button[aria-selected=true]{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(11,21,48,.12)}
+main{max-width:560px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card+.card{margin-top:12px}
+h1{font-size:21px;line-height:1.45;margin:0 0 6px;text-wrap:balance}
+h2{font-size:17px;margin:0 0 10px}
+p{margin:0 0 10px;font-size:15px;line-height:1.75;color:var(--text2)}
+small,.note{font-size:13px;color:var(--text3);line-height:1.6}
+.co{font-size:13px;color:var(--text3);margin-bottom:8px}
+.flow{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.flow li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.6;color:var(--text2)}
+.flow b{flex:none;width:22px;height:22px;border-radius:999px;background:var(--blue-l);color:var(--blue);font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:54px;border:0;border-radius:14px;background:var(--blue);color:#fff;font:inherit;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.sub{background:#fff;color:var(--navy);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.rec{background:var(--red)}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.check{display:flex;gap:10px;align-items:flex-start;margin:14px 0;font-size:14px;line-height:1.6;color:var(--text2);cursor:pointer}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--blue);flex:none}
+.stage{position:relative;border-radius:16px;overflow:hidden;background:#0B1530;aspect-ratio:3/4;max-height:62vh;width:100%;margin:0 auto 12px}
+.stage video{width:100%;height:100%;object-fit:cover;display:block;transform:scaleX(-1)}
+.stage video.play{transform:none;object-fit:contain;background:#000}
+.q-over{position:absolute;left:0;right:0;top:0;padding:16px 16px 28px;background:linear-gradient(180deg,rgba(11,21,48,.86),rgba(11,21,48,0));color:#fff}
+.q-over .qn{font-size:12px;font-weight:700;opacity:.8;margin-bottom:4px}
+.q-over .qt{font-size:18px;font-weight:800;line-height:1.5;text-wrap:balance}
+.timer{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(11,21,48,.72);color:#fff;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.timer .dot{width:10px;height:10px;border-radius:999px;background:var(--red);animation:blink 1s infinite}
+.timer.think .dot{background:#FFB547;animation:none}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.timer .dot{animation:none}}
+.meter{height:6px;border-radius:999px;background:#E6EAF3;overflow:hidden;margin:6px 0 14px}
+.meter i{display:block;height:100%;width:0;background:var(--green);transition:width .1s}
+.steps{display:flex;gap:6px;margin-bottom:12px}
+.steps i{flex:1;height:5px;border-radius:999px;background:#E1E6F0}
+.steps i.on{background:var(--blue)}
+.done-ic{width:56px;height:56px;border-radius:999px;background:var(--green-l);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:10px}
+.err{color:var(--red);font-size:14px;line-height:1.6}
+/* 企業の画面 */
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 4px}
+.kpi div{background:var(--bg);border-radius:12px;padding:12px}
+.kpi b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:12px;color:var(--text3)}
+.kpi .good b{color:var(--green)}
+label.f{display:block;font-size:13px;font-weight:700;color:var(--text2);margin:10px 0 6px}
+input[type=number],textarea,input[type=text]{width:100%;font:inherit;font-size:16px;padding:12px 14px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1.5px var(--line);background:#fff;color:var(--navy)}
+textarea{min-height:64px;resize:vertical;line-height:1.6}
+.qedit{display:grid;gap:8px}
+.app{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px}
+.app-hd{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+.pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--blue-l);color:var(--blue);white-space:nowrap}
+.pill.ok{background:var(--green-l);color:var(--green)}
+.pill.no{background:#F1F2F5;color:var(--text3)}
+.ans{margin-top:10px}
+.ans .qt{font-size:14px;font-weight:700;margin-bottom:6px}
+.ans video{width:100%;border-radius:10px;background:#000;max-height:360px}
+.speed{display:flex;gap:6px;margin:8px 0}
+.speed button{height:32px;padding:0 12px;border-radius:999px;border:0;box-shadow:inset 0 0 0 1.5px var(--line);background:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.speed button[aria-pressed=true]{background:var(--navy);color:#fff;box-shadow:none}
+.slots{display:grid;gap:6px;margin:10px 0}
+.slots label{display:flex;gap:10px;align-items:center;font-size:14px;padding:10px 12px;border-radius:10px;box-shadow:inset 0 0 0 1.5px var(--line);cursor:pointer}
+.slots input{accent-color:var(--blue);width:18px;height:18px}
+.msg{background:var(--bg);border-radius:12px;padding:14px;font-size:14px;line-height:1.75;color:var(--text2);white-space:pre-wrap}
+.empty{text-align:center;padding:24px 8px;color:var(--text3);font-size:14px;line-height:1.7}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+</style>
+</head>
+<body>
+<header class="top"><div class="logo">za<i>i</i>to</div><span class="demo-tag">試作・動画は送信されません</span></header>
+<div class="tabs" role="tablist">
+  <button type="button" role="tab" id="tabS" aria-selected="true">学生の画面</button>
+  <button type="button" role="tab" id="tabC" aria-selected="false">企業の画面</button>
+</div>
+
+<main>
+<!-- ===== 学生の画面 ===== -->
+<section id="student">
+
+  <!-- 1. はじめる前 -->
+  <div id="s-intro">
+    <div class="card">
+      <div class="co">株式会社サンプル（試作用の架空の会社）</div>
+      <h1>完全在宅のカスタマーサポート（週2日・1日3時間から）</h1>
+      <p>この求人は、応募するときに録画の一次面接があります。</p>
+      <ol class="flow">
+        <li><b>1</b><span>録画の一次面接：質問<span class="qcount">3</span>問に、1問60秒以内で答えます（約5分）。いまここで終わります。</span></li>
+        <li><b>2</b><span>会社が回答を見て、会いたい人にだけ連絡します。オンラインで15分ほど話します。</span></li>
+        <li><b>3</b><span>結果は1週間以内にメールで届きます。</span></li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>答え方</h2>
+      <p>質問は、録画を始める直前に画面に出て、読み上げられます。考える時間が20秒あり、答える時間は60秒です。撮り直しは1問につき1回までです。最初に、記録されない練習の質問が1問あります。</p>
+      <label class="check"><input type="checkbox" id="agree">動画は応募先の会社だけが見られ、90日たつと消えることを確認しました。</label>
+      <button type="button" class="btn" id="startBtn" disabled>カメラを準備する</button>
+      <p class="note" style="margin-top:10px">試作なので、動画はこの端末の中にだけ保存され、どこにも送られません。</p>
+    </div>
+  </div>
+
+  <!-- 2. カメラの確認 -->
+  <div id="s-check" hidden>
+    <div class="card">
+      <h2>カメラとマイクの確認</h2>
+      <div class="stage"><video id="cam" playsinline muted autoplay></video></div>
+      <small>声の大きさ</small>
+      <div class="meter"><i id="lvl"></i></div>
+      <p class="note">顔が明るく映る場所で、声を出すと緑のバーが動けば準備できています。</p>
+      <button type="button" class="btn" id="toPractice">練習の質問へ進む</button>
+    </div>
+  </div>
+
+  <!-- 3. 質問（練習と本番） -->
+  <div id="s-q" hidden>
+    <div class="steps" id="steps"></div>
+    <div class="stage" id="qStage">
+      <video id="qCam" playsinline muted autoplay></video>
+      <video id="qPlay" class="play" playsinline controls hidden></video>
+      <div class="q-over"><div class="qn" id="qNum"></div><div class="qt" id="qText"></div></div>
+      <div class="timer" id="timer" hidden><span class="dot"></span><span id="tText"></span></div>
+    </div>
+    <div id="qThink" hidden>
+      <button type="button" class="btn rec" id="recNow">録画を始める</button>
+      <p class="note" style="margin-top:8px;text-align:center">20秒たつと自動で録画が始まります</p>
+    </div>
+    <div id="qRec" hidden><button type="button" class="btn" id="stopRec">答え終わった</button></div>
+    <div id="qReview" hidden>
+      <div class="row"><button type="button" class="btn sub" id="retake">撮り直す</button><button type="button" class="btn" id="nextQ">次へ</button></div>
+      <p class="note" id="retakeNote" style="margin-top:8px;text-align:center"></p>
+    </div>
+    <p class="err" id="qErr"></p>
+  </div>
+
+  <!-- 4. 完了 -->
+  <div id="s-done" hidden>
+    <div class="card">
+      <div class="done-ic" aria-hidden="true">✓</div>
+      <h1>一次面接が終わりました</h1>
+      <p>株式会社サンプルが回答を見て、1週間以内にメールで連絡します。オンラインで話したいときは、候補の日時から選ぶだけで日程が決まります。</p>
+      <p class="note">試作なので、上の「企業の画面」で、会社からどう見えるかを確かめられます。</p>
+      <button type="button" class="btn" id="goCompany">企業の画面で見る</button>
+      <button type="button" class="btn sub" id="again" style="margin-top:10px">最初からやり直す</button>
+    </div>
+  </div>
+
+  <div class="card" id="s-nocam" hidden>
+    <h2>カメラを使えませんでした</h2>
+    <p id="nocamWhy"></p>
+    <p class="note">iPhoneはSafari、Androidはchromeで開き、カメラとマイクを「許可」にしてください。アプリの中のブラウザ（LINEなど）では使えないことがあります。</p>
+    <button type="button" class="btn sub" id="retryCam">もう一度試す</button>
+  </div>
+</section>
+
+<!-- ===== 企業の画面 ===== -->
+<section id="company" hidden>
+  <div class="card">
+    <h2>応募者の回答</h2>
+    <p class="note">実際には、この求人に応募した人が全員ここに並びます。試作では、この端末で録画した回答だけが出ます。zaitoは点数を付けたり、合否をすすめたりしません。</p>
+    <div id="apps"></div>
+  </div>
+
+  <div class="card">
+    <h2>質問の設定</h2>
+    <p class="note">求人ごとに3〜5問。家族・出身地・宗教など、採用で聞いてはいけないことは入れないでください。</p>
+    <div class="qedit" id="qedit"></div>
+    <div class="row" style="margin-top:10px"><button type="button" class="btn sub" id="addQ">質問を足す</button><button type="button" class="btn" id="saveQ">保存する</button></div>
+    <p class="note" id="saveNote"></p>
+  </div>
+
+  <div class="card">
+    <h2>一次面接にかかる時間</h2>
+    <p class="note">1つの求人に何人応募が来るかを入れると、いまのやり方と比べた時間が出ます。前提：いまは日程の調整1人10分、面接30分＋記録5分、2割は当日来ない。録画は1人3分で見て、5人とだけ15分話す。</p>
+    <label class="f" for="nApp">応募の数（人）</label>
+    <input type="number" id="nApp" value="20" min="1" max="500" inputmode="numeric">
+    <div class="kpi">
+      <div><b id="kNow">-</b><span>いまのやり方</span></div>
+      <div class="good"><b id="kNew">-</b><span>録画のあと5人と話す</span></div>
+      <div class="good"><b id="kCut">-</b><span>減る時間</span></div>
+      <div class="good"><b id="kYen">-</b><span>浮く人件費（時給2,500円）</span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var DEFAULT_Q = [
+    '自己紹介と、この仕事に応募した理由を教えてください。',
+    'これまでのアルバイトや学校の活動で、人の役に立てたと思う経験を1つ教えてください。',
+    '週に何日、どの時間帯なら働けますか。授業やほかの予定との両立についても教えてください。'
+  ];
+  var PRACTICE = '練習：好きな食べ物と、その理由を教えてください（この回答は記録されません）。';
+  var THINK = 20, ANSWER = 60;
+  function $(id) { return document.getElementById(id); }
+  function loadQ() { try { var a = JSON.parse(localStorage.getItem('zi_q') || 'null'); if (Array.isArray(a) && a.length) return a; } catch (e) {} return DEFAULT_Q.slice(); }
+  var questions = loadQ();
+  document.querySelectorAll('.qcount').forEach(function (e) { e.textContent = questions.length; });
+
+  /* ---- 保存（この端末の IndexedDB。どこにも送らない） ---- */
+  var dbp = null;
+  function db() {
+    if (dbp) return dbp;
+    dbp = new Promise(function (res, rej) {
+      try {
+        var r = indexedDB.open('zaito-interview-demo', 1);
+        r.onupgradeneeded = function () { r.result.createObjectStore('ans'); };
+        r.onsuccess = function () { res(r.result); };
+        r.onerror = function () { rej(r.error); };
+      } catch (e) { rej(e); }
+    });
+    return dbp;
+  }
+  function put(key, val) { return db().then(function (d) { return new Promise(function (res, rej) { var t = d.transaction('ans', 'readwrite'); t.objectStore('ans').put(val, key); t.oncomplete = res; t.onerror = function () { rej(t.error); }; }); }); }
+  function getAll() { return db().then(function (d) { return new Promise(function (res) { var out = {}; var t = d.transaction('ans', 'readonly'); var c = t.objectStore('ans').openCursor(); c.onsuccess = function () { var x = c.result; if (x) { out[x.key] = x.value; x.continue(); } else res(out); }; c.onerror = function () { res(out); }; }); }).catch(function () { return {}; }); }
+  function clearAll() { return db().then(function (d) { return new Promise(function (res) { var t = d.transaction('ans', 'readwrite'); t.objectStore('ans').clear(); t.oncomplete = res; t.onerror = res; }); }).catch(function () {}); }
+
+  /* ---- 画面の切り替え ---- */
+  function tab(which) {
+    $('tabS').setAttribute('aria-selected', which === 's'); $('tabC').setAttribute('aria-selected', which === 'c');
+    $('student').hidden = which !== 's'; $('company').hidden = which !== 'c';
+    if (which === 'c') renderCompany();
+    window.scrollTo(0, 0);
+  }
+  $('tabS').onclick = function () { tab('s'); };
+  $('tabC').onclick = function () { tab('c'); };
+  function show(id) { ['s-intro', 's-check', 's-q', 's-done', 's-nocam'].forEach(function (x) { $(x).hidden = x !== id; }); window.scrollTo(0, 0); }
+
+  /* ---- カメラ ---- */
+  var stream = null, ac = null, raf = 0;
+  $('agree').onchange = function () { $('startBtn').disabled = !this.checked; };
+  function startCam() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+      $('nocamWhy').textContent = 'このブラウザは、ページの中での録画に対応していません。';
+      show('s-nocam'); return;
+    }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: true })
+      .then(function (s) {
+        stream = s; $('cam').srcObject = s; $('qCam').srcObject = s;
+        show('s-check'); meter();
+      })
+      .catch(function (e) {
+        $('nocamWhy').textContent = e && e.name === 'NotAllowedError' ? 'カメラとマイクの使用が許可されていません。' : 'カメラかマイクが見つからないか、ほかのアプリが使っています。';
+        show('s-nocam');
+      });
+  }
+  function meter() {
+    try {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      var an = ac.createAnalyser(); an.fftSize = 256; ac.createMediaStreamSource(stream).connect(an);
+      var buf = new Uint8Array(an.frequencyBinCount);
+      (function loop() { an.getByteTimeDomainData(buf); var m = 0; for (var i = 0; i < buf.length; i++) m = Math.max(m, Math.abs(buf[i] - 128)); $('lvl').style.width = Math.min(100, m * 1.6) + '%'; raf = requestAnimationFrame(loop); })();
+    } catch (e) {}
+  }
+  $('startBtn').onclick = startCam;
+  $('retryCam').onclick = startCam;
+
+  /* ---- 質問の流れ ---- */
+  var idx = -1;          // -1 は練習
+  var retakes = 0, recorder = null, chunks = [], tick = 0, left = 0, lastBlob = null;
+  var mime = (function () {
+    var c = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp8,opus', 'video/webm'];
+    for (var i = 0; i < c.length; i++) { try { if (MediaRecorder.isTypeSupported(c[i])) return c[i]; } catch (e) {} }
+    return '';
+  })();
+  function stepsBar() {
+    var h = '';
+    for (var i = 0; i < questions.length; i++) h += '<i class="' + (i <= idx ? 'on' : '') + '"></i>';
+    $('steps').innerHTML = h;
+    $('steps').hidden = idx < 0;
+  }
+  function speak(t) {
+    try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'ja-JP'; u.rate = 1.05; speechSynthesis.speak(u); } catch (e) {}
+  }
+  function setTimer(mode, sec) {
+    $('timer').hidden = false; $('timer').className = 'timer' + (mode === 'think' ? ' think' : '');
+    $('tText').textContent = (mode === 'think' ? '考える時間 ' : '録画中 ') + sec + '秒';
+  }
+  function openQ() {
+    clearInterval(tick); retakes = 0; lastBlob = null;
+    var practice = idx < 0;
+    $('qNum').textContent = practice ? '練習の質問' : '質問 ' + (idx + 1) + ' / ' + questions.length;
+    $('qText').textContent = practice ? PRACTICE : questions[idx];
+    stepsBar(); show('s-q'); think();
+    speak(practice ? PRACTICE.replace(/（.*?）/, '') : questions[idx]);
+  }
+  function think() {
+    $('qErr').textContent = '';
+    $('qPlay').hidden = true; $('qPlay').removeAttribute('src'); $('qCam').hidden = false;
+    $('qThink').hidden = false; $('qRec').hidden = true; $('qReview').hidden = true;
+    left = THINK; setTimer('think', left);
+    clearInterval(tick);
+    tick = setInterval(function () { left--; setTimer('think', left); if (left <= 0) startRec(); }, 1000);
+  }
+  function startRec() {
+    clearInterval(tick); try { speechSynthesis.cancel(); } catch (e) {}
+    chunks = [];
+    try { recorder = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 800000 } : undefined); }
+    catch (e) { $('qErr').textContent = 'この端末では録画を始められませんでした。'; return; }
+    recorder.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = review;
+    recorder.start(1000);
+    $('qThink').hidden = true; $('qRec').hidden = false;
+    left = ANSWER; setTimer('rec', left);
+    tick = setInterval(function () { left--; setTimer('rec', left); if (left <= 0) stopRec(); }, 1000);
+  }
+  function stopRec() { clearInterval(tick); if (recorder && recorder.state !== 'inactive') recorder.stop(); }
+  function review() {
+    $('timer').hidden = true; $('qRec').hidden = true;
+    lastBlob = new Blob(chunks, { type: (recorder && recorder.mimeType) || mime || 'video/webm' });
+    var v = $('qPlay'); v.src = URL.createObjectURL(lastBlob); v.hidden = false; $('qCam').hidden = true;
+    $('qReview').hidden = false;
+    var can = retakes < 1;
+    $('retake').disabled = !can;
+    $('retakeNote').textContent = can ? '撮り直しはあと1回できます（' + (ANSWER - left) + '秒の回答）' : '撮り直しは使いました';
+    $('nextQ').textContent = idx < 0 ? '本番の質問へ進む' : (idx === questions.length - 1 ? '回答を送る' : '次の質問へ');
+  }
+  $('recNow').onclick = startRec;
+  $('stopRec').onclick = stopRec;
+  $('retake').onclick = function () { retakes++; think(); };
+  $('toPractice').onclick = function () { idx = -1; openQ(); };
+  $('nextQ').onclick = function () {
+    var go = function () {
+      if (idx === questions.length - 1) {
+        put('meta', { at: Date.now(), questions: questions.slice(), status: '未確認' }).then(function () { show('s-done'); });
+        return;
+      }
+      idx++; openQ();
+    };
+    if (idx >= 0 && lastBlob) put('q' + idx, lastBlob).then(go).catch(function () { $('qErr').textContent = 'この端末に保存できませんでした（プライベートモードでは保存できないことがあります）。'; });
+    else go();
+  };
+  $('goCompany').onclick = function () { tab('c'); };
+  $('again').onclick = function () { clearAll().then(function () { idx = -1; $('agree').checked = false; $('startBtn').disabled = true; show('s-intro'); }); };
+
+  /* ---- 企業の画面 ---- */
+  function fmt(t) { var d = new Date(t); return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + d.getHours() + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function renderCompany() {
+    renderQEdit(); calc();
+    getAll().then(function (all) {
+      var box = $('apps');
+      if (!all.meta) { box.innerHTML = '<div class="empty">まだ回答がありません。<br>「学生の画面」で一次面接を録画すると、ここに出ます。</div>'; return; }
+      var m = all.meta, h = '<div class="app"><div class="app-hd"><div><b>応募者A（この端末で録画）</b><div class="note">' + fmt(m.at) + ' に回答</div></div><span class="pill" id="st">' + esc(m.status) + '</span></div>';
+      h += '<div class="speed" role="group" aria-label="再生の速さ"><button type="button" data-r="1" aria-pressed="false">1倍</button><button type="button" data-r="1.5" aria-pressed="true">1.5倍</button><button type="button" data-r="2" aria-pressed="false">2倍</button></div>';
+      m.questions.forEach(function (q, i) { h += '<div class="ans"><div class="qt">Q' + (i + 1) + '. ' + esc(q) + '</div>' + (all['q' + i] ? '<video playsinline controls preload="metadata" data-i="' + i + '"></video>' : '<div class="note">回答なし</div>') + '</div>'; });
+      h += '<div class="row" style="margin-top:14px"><button type="button" class="btn sub" id="ng">見送る</button><button type="button" class="btn" id="ok">二次面接に進める</button></div><div id="next2"></div></div>';
+      box.innerHTML = h;
+      box.querySelectorAll('video[data-i]').forEach(function (v) { v.src = URL.createObjectURL(all['q' + v.getAttribute('data-i')]); v.playbackRate = 1.5; v.addEventListener('loadedmetadata', function () { v.playbackRate = rate; }); });
+      var rate = 1.5;
+      box.querySelectorAll('.speed button').forEach(function (b) { b.onclick = function () { rate = +b.getAttribute('data-r'); box.querySelectorAll('.speed button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); box.querySelectorAll('video').forEach(function (v) { v.playbackRate = rate; }); }; });
+      $('ng').onclick = function () { setStatus(m, '見送り', 'no'); $('next2').innerHTML = '<p class="note" style="margin-top:10px">応募者には、見送りのお知らせが自動で届きます（試作では送りません）。</p>'; };
+      $('ok').onclick = function () { setStatus(m, '二次面接へ', 'ok'); slots(); };
+      if (m.status === '二次面接へ') $('st').className = 'pill ok'; else if (m.status === '見送り') $('st').className = 'pill no';
+    });
+  }
+  function setStatus(m, s, cls) { m.status = s; put('meta', m); var p = $('st'); p.textContent = s; p.className = 'pill ' + cls; }
+  function slots() {
+    var d = new Date(), opts = [];
+    for (var k = 1; opts.length < 6; k++) { var x = new Date(d.getTime() + k * 86400000); if (x.getDay() === 0 || x.getDay() === 6) continue; opts.push((x.getMonth() + 1) + '月' + x.getDate() + '日（' + '日月火水木金土'[x.getDay()] + '）' + (opts.length % 2 ? '18:00〜18:15' : '12:00〜12:15')); }
+    var h = '<h2 style="margin-top:16px">オンラインで話す候補を3つ選ぶ</h2><div class="slots">';
+    opts.forEach(function (o, i) { h += '<label><input type="checkbox" value="' + o + '"' + (i < 3 ? ' checked' : '') + '>' + o + '</label>'; });
+    h += '</div><button type="button" class="btn" id="sendSlots">候補を送る</button><div id="sent"></div>';
+    $('next2').innerHTML = h;
+    $('sendSlots').onclick = function () {
+      var picked = Array.prototype.filter.call(document.querySelectorAll('.slots input'), function (i) { return i.checked; }).map(function (i) { return i.value; });
+      if (!picked.length) { $('sent').innerHTML = '<p class="err">候補を1つ以上選んでください。</p>'; return; }
+      $('sent').innerHTML = '<p class="note" style="margin-top:12px">応募者には、こう届きます（試作では送りません）：</p><div class="msg">株式会社サンプルから、オンラインで15分ほど話したいと連絡がありました。\n次の中から都合のよい日時を1つ選んでください。選ぶと日程が決まり、会議のURLが届きます。\n\n' + picked.map(function (p) { return '・' + p; }).join('\n') + '</div>';
+    };
+  }
+  function renderQEdit() {
+    var h = '';
+    questions.forEach(function (q, i) { h += '<label class="f" for="qe' + i + '">質問' + (i + 1) + '</label><textarea id="qe' + i + '" maxlength="120">' + esc(q) + '</textarea>'; });
+    $('qedit').innerHTML = h; $('addQ').disabled = questions.length >= 5;
+  }
+  $('addQ').onclick = function () { readQ(); if (questions.length < 5) questions.push(''); renderQEdit(); };
+  function readQ() { questions = Array.prototype.map.call(document.querySelectorAll('#qedit textarea'), function (t) { return t.value.trim(); }); }
+  $('saveQ').onclick = function () {
+    readQ(); questions = questions.filter(Boolean); if (questions.length < 1) questions = DEFAULT_Q.slice();
+    try { localStorage.setItem('zi_q', JSON.stringify(questions)); } catch (e) {}
+    renderQEdit(); document.querySelectorAll('.qcount').forEach(function (e) { e.textContent = questions.length; });
+    $('saveNote').textContent = '保存しました。次に「学生の画面」で答えるときから、この質問になります。';
+  };
+  function calc() {
+    var n = Math.max(1, Math.min(500, +$('nApp').value || 1));
+    var now = n * 10 + Math.round(n * 0.8) * 35;                 // 調整10分＋来た人だけ35分
+    var meet = Math.min(5, n);
+    var nw = 15 + n * 3 + meet * 20;                              // 質問の登録15分＋1人3分＋5人と20分
+    function h(m) { return (Math.round(m / 6) / 10) + '時間'; }
+    $('kNow').textContent = h(now); $('kNew').textContent = h(nw);
+    $('kCut').textContent = '約' + Math.max(0, Math.round((1 - nw / now) * 100)) + '%減';
+    $('kYen').textContent = '約' + Math.max(0, Math.round((now - nw) / 60 * 2500 / 1000)).toLocaleString() + '千円';
+  }
+  $('nApp').oninput = calc;
+})();
+</script>
+</body>
+</html>
