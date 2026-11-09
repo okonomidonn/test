@@ -20,6 +20,11 @@ export const metadata: Metadata = {
     images: [{ url: "/ai/img/og.png", width: 1200, height: 630, alt: "求人は、AIで探す時代へ。AIススメル" }],
   },
   twitter: { card: "summary_large_image", images: ["/ai/img/og.png"] },
+  // Google Search Console と Bing Webmaster Tools の所有権確認用（確認後も消さない）
+  verification: {
+    google: "AnL_I3iDM2wigyvmdpcU53FdIvhV1TuMuu56e3CG4kM",
+    other: { "msvalidate.01": "1A3B910C196EC3359CEC5C3CF391AB46" },
+  },
 };
 
 export default async function AiLayout({ children }: LayoutProps<"/ai">) {
