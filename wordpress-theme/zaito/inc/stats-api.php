@@ -67,6 +67,45 @@ function zaito_stats_meta_breakdown( $key, $limit = 15 ) {
     return $out;
 }
 
+/**
+ * 「何で知ったか」の答えごとに、登録したときの流入元（utm_source・参照元のドメイン・登録した場所）と立場を数える。
+ * 人数だけを返し、メールアドレスや参照元のURLそのもの（パスやクエリ）は返さない。
+ */
+function zaito_stats_heard_cross() {
+    $ids = get_posts( array(
+        'post_type'      => 'zaito_interest',
+        'post_status'    => 'any',
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+        'meta_query'     => array( array( 'key' => 'heard_from', 'compare' => 'EXISTS' ) ),
+    ) );
+    $out = array();
+    foreach ( $ids as $id ) {
+        $heard = (string) get_post_meta( $id, 'heard_from', true );
+        if ( '' === $heard ) {
+            continue;
+        }
+        $ref  = (string) get_post_meta( $id, 'referrer', true );
+        $host = $ref ? (string) wp_parse_url( $ref, PHP_URL_HOST ) : '';
+        $keys = array(
+            'utm_source' => (string) get_post_meta( $id, 'utm_source', true ),
+            'referrer'   => $host,
+            'source'     => (string) get_post_meta( $id, 'source', true ),
+            'role'       => (string) get_post_meta( $id, 'role', true ),
+            'month'      => get_the_date( 'Y-m', $id ),
+        );
+        if ( ! isset( $out[ $heard ] ) ) {
+            $out[ $heard ] = array( 'n' => 0 );
+        }
+        $out[ $heard ]['n']++;
+        foreach ( $keys as $k => $v ) {
+            $v = '' === $v ? '（なし）' : $v;
+            $out[ $heard ][ $k ][ $v ] = ( $out[ $heard ][ $k ][ $v ] ?? 0 ) + 1;
+        }
+    }
+    return $out;
+}
+
 function zaito_stats_data( $days ) {
     global $wpdb;
     $days = min( 180, max( 1, (int) $days ) );
@@ -134,6 +173,7 @@ function zaito_stats_data( $days ) {
             'by_utm_source'  => zaito_stats_meta_breakdown( 'utm_source' ),
             'by_utm_campaign' => zaito_stats_meta_breakdown( 'utm_campaign' ),
             'by_heard_from'  => zaito_stats_meta_breakdown( 'heard_from' ),
+            'heard_cross'    => zaito_stats_heard_cross(),
             'recent_by_ad'   => zaito_stats_recent_by_ad( $since ),
             'new_by_day'     => $by_day,
         ),
