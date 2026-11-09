@@ -45,6 +45,16 @@ $zaito_ld = array(
         ),
     ),
 );
+// よくある質問（inc/remote-jobs.php の faq）。AIや検索エンジンにも読み取れるよう、FAQPage でも出す。
+$zaito_faq = ( ! $zaito_closed && ! empty( $zaito_j['faq'] ) && is_array( $zaito_j['faq'] ) ) ? $zaito_j['faq'] : array();
+if ( $zaito_faq ) {
+    $zaito_ld[] = array(
+        '@type'      => 'FAQPage',
+        'mainEntity' => array_map( function ( $qa ) {
+            return array( '@type' => 'Question', 'name' => $qa[0], 'acceptedAnswer' => array( '@type' => 'Answer', 'text' => $qa[1] ) );
+        }, $zaito_faq ),
+    );
+}
 $zaito_posting = zaito_remote_job_posting( $zaito_j );
 if ( $zaito_posting ) {
     $zaito_ld[] = $zaito_posting;
@@ -84,6 +94,28 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
       </dl>
       <?php if ( ! empty( $zaito_j['caution'] ) ) : ?>
         <p class="caution"><span class="ms" aria-hidden="true">info</span><span><?php echo esc_html( $zaito_j['caution'] ); ?></span></p>
+      <?php endif; ?>
+
+      <?php if ( ! empty( $zaito_j['points'] ) && ! $zaito_closed ) : ?>
+      <section class="blk">
+        <h2>この仕事のポイント</h2>
+        <ul class="jpoints">
+          <?php foreach ( $zaito_j['points'] as $zaito_pt ) : ?>
+            <li><?php echo esc_html( $zaito_pt ); ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </section>
+      <?php endif; ?>
+
+      <?php if ( $zaito_faq ) : ?>
+      <section class="blk jfaq">
+        <h2>よくある質問</h2>
+        <?php foreach ( $zaito_faq as $zaito_qa ) : ?>
+          <h3><?php echo esc_html( $zaito_qa[0] ); ?></h3>
+          <p><?php echo esc_html( $zaito_qa[1] ); ?></p>
+        <?php endforeach; ?>
+        <p class="jfaq-note">募集ページ（<?php echo esc_html( date_i18n( 'Y年n月j日', strtotime( $zaito_j['checked'] ) ) ); ?>に確認）をもとに、zaito運営がまとめました。最新の条件は募集ページで確認してください。</p>
+      </section>
       <?php endif; ?>
 
       <?php if ( $zaito_direct ) : ?>

@@ -802,3 +802,12 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 .others>.cards{margin:0;padding:0 20px 20px}
 .card .tags .lvl{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:#FFF4E5;color:#9A5B00;font-size:12px;font-weight:700}
 @media (prefers-reduced-motion:reduce){.others>summary .ms{transition:none}}
+
+/* 求人ページ：この仕事のポイント・よくある質問（inc/remote-jobs.php の points・faq） */
+.jpoints{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.jpoints li{position:relative;padding-left:22px;font-size:15px;line-height:1.8;color:var(--z-text-2)}
+.jpoints li::before{content:'';position:absolute;left:4px;top:.75em;width:8px;height:8px;border-radius:2px;background:var(--z-blue)}
+.jfaq h3{margin:22px 0 0;font-size:15.5px;font-weight:800;line-height:1.6;color:var(--z-navy)}
+.jfaq h3::before{content:'Q.';margin-right:6px;color:var(--z-blue)}
+.jfaq h3+p{margin:6px 0 0;font-size:15px;line-height:1.8;color:var(--z-text-2)}
+.jfaq .jfaq-note{margin:20px 0 0;font-size:13px;color:var(--z-text-3)}
