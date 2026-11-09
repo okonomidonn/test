@@ -43,7 +43,7 @@ zaito_biz_head( '応募者' );
 <body>
 <?php zaito_biz_header( 'applicants' ); ?>
 <main class="wrap bz">
-  <div class="biz-title"><div><h1>応募者</h1><p>名前を押すと、応募の内容とメッセージが開きます。</p></div></div>
+  <div class="biz-title"><div><h1>応募者</h1></div></div>
 
   <nav class="seg" aria-label="応募者の絞り込み">
     <?php foreach ( $zaito_views as $zaito_k => $zaito_vw ) : ?>

@@ -413,7 +413,7 @@ if ( ! $zaito_cond ) :
     <div class="sb-copy">
       <span class="ms" aria-hidden="true">mark_email_unread</span>
       <h2 id="signup-title">新しい在宅求人を、<br>メールで受け取る</h2>
-      <p>求人は随時追加しています。登録すると、やってみたい仕事・働ける日数・希望の時給に合う新しい求人だけをメールでお知らせします。登録は無料です。配信をやめたいときは、メールの停止リンクか返信ですぐに止められます。</p>
+      <p>希望に合う新しい求人だけを、メールでお知らせします。登録は無料です。</p>
     </div>
     <div class="sb-form">
       <form id="ztop" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
@@ -433,7 +433,7 @@ if ( ! $zaito_cond ) :
       </form>
       <form class="profile" id="zprofile" data-steps method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
         <b>登録できました</b>
-        <p>あなたの希望に合う新着だけをメールで送るために教えてください（お名前以外は任意）。答えた内容に合わない求人は送りません。</p>
+        <p>希望に合う求人だけを送るために教えてください。</p>
         <input type="hidden" name="action" value="zaito_remote_profile">
         <?php zaito_remote_profile_fields( true ); ?>
         <button type="submit" class="btn btn-p btn-lg">保存する</button>

@@ -119,9 +119,9 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
     <div class="fcard">
       <h2>企業へのメッセージ</h2>
       <p>このメッセージが、企業とのやりとりの最初のメッセージになります。</p>
-      <div class="fld"><label for="zmsg">自己紹介・応募の理由<span class="req">必須</span></label><textarea id="zmsg" name="message" rows="7" maxlength="2000" required placeholder="例：〇〇大学2年の山田です。授業の合間に週2日ほど働けます。文章を書くのが好きで、ゼミのレポートでは…"><?php echo esc_textarea( $zaito_v['message'] ); ?></textarea><p class="hint">働ける曜日・時間、興味を持った理由、得意なことなどを書くと、返事がもらいやすくなります。</p></div>
+      <div class="fld"><label for="zmsg">自己紹介・応募の理由<span class="req">必須</span></label><textarea id="zmsg" name="message" rows="7" maxlength="2000" required placeholder="例：〇〇大学2年の山田です。授業の合間に週2日ほど働けます。文章を書くのが好きで、ゼミのレポートでは…"><?php echo esc_textarea( $zaito_v['message'] ); ?></textarea></div>
       <?php if ( $zaito_j['question'] ) : ?>
-        <div class="fld"><label for="zans"><?php echo esc_html( $zaito_j['question'] ); ?><span class="req">必須</span></label><textarea id="zans" name="answer" rows="3" maxlength="1000" required><?php echo esc_textarea( $zaito_v['answer'] ); ?></textarea><p class="hint">企業からの質問です。</p></div>
+        <div class="fld"><label for="zans"><?php echo esc_html( $zaito_j['question'] ); ?><span class="req">必須</span></label><textarea id="zans" name="answer" rows="3" maxlength="1000" required><?php echo esc_textarea( $zaito_v['answer'] ); ?></textarea></div>
       <?php endif; ?>
     </div>
 

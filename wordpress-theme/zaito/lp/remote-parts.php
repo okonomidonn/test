@@ -194,7 +194,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
         // $with_name: 登録はメールアドレスだけなので、登録直後の質問では最初に姓と名を聞く（必須。マイページは別の欄で聞く）。
         if ( $with_name ) :
             ?>
-    <div class="pq" data-step="name" data-required="1" data-hint="求人に応募するとき、企業に伝わる名前です">
+    <div class="pq" data-step="name" data-required="1">
       <fieldset><legend>お名前</legend>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <input type="text" id="zpname" name="name_last" maxlength="20" autocomplete="family-name" aria-label="姓" placeholder="姓（例：山田）">
@@ -203,7 +203,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
       </fieldset>
     </div>
     <?php // 広告の効果を確かめるための質問。押すだけで答えられ、名前のすぐあとに置いて答えてもらいやすくする。 ?>
-    <div class="pq" data-step="heard" data-hint="サービスをよくするために使います">
+    <div class="pq" data-step="heard">
     <fieldset><legend>zaitoを何で知りましたか</legend><div class="chips">
       <?php foreach ( $opts['heard'] as $o ) : ?>
         <label><input type="radio" name="heard" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
@@ -213,7 +213,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
             <?php
         endif;
         ?>
-    <div class="pq" data-step="role" data-hint="あなたが応募できる求人だけをお送りします">
+    <div class="pq" data-step="role">
     <fieldset><legend>現在の職業</legend><div class="chips">
       <?php foreach ( $opts['role'] as $o ) : ?>
         <label><input type="radio" name="role" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>
@@ -238,7 +238,7 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
       <?php endforeach; ?>
     </div></fieldset>
     </div>
-    <div class="pq" data-step="days" data-hint="働ける日数に合う求人だけをお送りします">
+    <div class="pq" data-step="days">
     <fieldset><legend>週に働けそうな日数</legend><div class="chips">
       <?php foreach ( $opts['days'] as $o ) : ?>
         <label><input type="radio" name="days" value="<?php echo esc_attr( $o ); ?>"><span><?php echo esc_html( $o ); ?></span></label>

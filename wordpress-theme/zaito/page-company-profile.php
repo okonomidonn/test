@@ -10,7 +10,7 @@ zaito_biz_head( '会社情報' );
 <body>
 <?php zaito_biz_header( 'profile' ); ?>
 <main class="wrap bz">
-  <div class="biz-title"><div><h1>会社情報</h1><p>会社名は求人に表示されます。電話番号は運営からの連絡にだけ使います。</p></div></div>
+  <div class="biz-title"><div><h1>会社情報</h1></div></div>
   <?php zaito_biz_errors(); ?>
   <?php if ( isset( $_GET['saved'] ) ) : ?>
     <div class="note n-ok"><span class="ms" aria-hidden="true">check_circle</span><div><b>保存しました</b></div></div>
@@ -28,7 +28,7 @@ zaito_biz_head( '会社情報' );
     </div>
     <div class="fcard">
       <h2>応募直後の自動メッセージ</h2>
-      <p>応募があったとき、応募者に自動で送るメッセージです。求人ごとに別の文面も設定できます。空欄なら送りません。</p>
+      <p>空欄なら送りません。</p>
       <div class="fld"><textarea name="auto_reply_message" rows="4" aria-label="応募直後の自動メッセージ" placeholder="例：ご応募ありがとうございます。2営業日以内に、面談の日程についてご連絡します。"><?php echo esc_textarea( get_user_meta( $zaito_user->ID, 'auto_reply_message', true ) ); ?></textarea></div>
     </div>
     <div class="form-acts"><button type="submit" class="btn btn-p btn-lg">保存する</button></div>

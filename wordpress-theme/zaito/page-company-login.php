@@ -19,7 +19,6 @@ zaito_biz_head( '企業ログイン' );
 <div class="biz-auth">
 <main class="auth">
     <h1>ログイン</h1>
-    <p class="lead">zaitoの採用管理画面にログインします。</p>
 
     <?php if ( isset( $_GET['reset'] ) ) : ?>
       <div class="note n-ok" role="status"><span class="ms" aria-hidden="true">check_circle</span><div><b>パスワードを変更しました</b><p>新しいパスワードでログインしてください。</p></div></div>
@@ -44,7 +43,7 @@ zaito_biz_head( '企業ログイン' );
     <a class="forgot" href="<?php echo esc_url( home_url( '/forgot-password/' ) ); ?>">パスワードをお忘れの方</a>
 
     <div class="first">
-      <p><b style="color:var(--z-navy)">はじめてご利用の企業様</b><br>初期費用・掲載料・オプション料金は一切いただきません。<br>お支払いは、内定を出したときの成果報酬のみです。</p>
+      <p><b style="color:var(--z-navy)">はじめてご利用の企業様</b><br>登録も掲載も無料で始められます。</p>
       <a class="btn btn-g btn-lg" href="<?php echo esc_url( home_url( '/company-register/' ) ); ?>">企業アカウントを作成する</a>
     </div>
 </main>

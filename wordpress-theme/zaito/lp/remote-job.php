@@ -172,7 +172,6 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 
           <form class="signup<?php echo $zaito_error ? ' on' : ''; ?>" id="zsignup" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" novalidate>
             <b><?php echo $zaito_direct ? '無料登録して応募する' : '無料登録して応募ページへ'; ?></b>
-            <p>登録は1分で終わります。次回からはすぐに<?php echo $zaito_direct ? '応募できます' : '応募ページへ進めます'; ?>。</p>
             <input type="hidden" name="action" value="zaito_remote_register">
             <input type="hidden" name="job" value="<?php echo esc_attr( $zaito_j['slug'] ); ?>">
             <input type="hidden" name="utm_source" value="">
@@ -191,7 +190,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 
           <form class="profile" id="zprofile" data-steps method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" hidden>
             <b>登録できました</b>
-            <p>確認メールを送りました。あとでメールのリンクを押すと、新着のお知らせが届くようになります。希望に合う新着だけを送るために教えてください（お名前以外は任意）。</p>
+            <p>希望に合う求人だけを送るために教えてください。</p>
             <input type="hidden" name="action" value="zaito_remote_profile">
             <?php zaito_remote_profile_fields( true ); ?>
             <button type="submit" class="btn btn-p btn-lg">保存して応募ページへ進む</button>
