@@ -16,31 +16,29 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
   <a class="back" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="ms" aria-hidden="true">arrow_back</span>求人一覧へ</a>
   <div class="my-done" id="zmy-done" role="status" hidden>
     <span class="ms" aria-hidden="true">check_circle</span>
-    <div><b>登録が完了しました</b><p>あなたに合う完全在宅の新着求人を、メールでお届けします。</p>
-    <a class="btn btn-p" href="<?php echo esc_url( home_url( '/' ) ); ?>">今日のおすすめを見る</a></div>
+    <div><b>登録が完了しました</b>
+    <a class="btn btn-p" href="<?php echo esc_url( home_url( '/' ) ); ?>">求人を見る</a></div>
   </div>
   <h1>マイページ</h1>
   <p class="lead" id="zmy-who">読み込んでいます…</p>
   <div class="my-verify" id="zmy-verify" role="status" hidden>
-    <p><b>メールアドレスの確認がまだです</b>登録したときに届いた確認メールのリンクを押すと、新着求人のお知らせが届くようになります。</p>
+    <p><b>メールアドレスの確認がまだです</b>確認メールのリンクを押してください。</p>
     <button type="button" class="btn btn-g" id="zmy-verify-send">確認メールを送り直す</button>
     <span class="my-ok" id="zmy-verify-sent" hidden>送りました。メールのリンクを押してください。</span>
   </div>
 
   <div class="my-verify" id="zmy-basic" role="status" hidden>
-    <p><b>お名前と学校名を教えてください</b>求人に応募するときに使います。下の「新着メールの希望条件」から入力できます。</p>
+    <p><b>お名前と学校名を入力してください</b></p>
     <a class="btn btn-g" href="#zmy-pref-t">入力する</a>
   </div>
 
   <section class="my-sec" id="zmy-apps-sec" hidden aria-labelledby="zmy-apps-t">
     <h2 id="zmy-apps-t">応募した求人</h2>
-    <p>zaitoで応募した求人です。押すと、企業とのメッセージが開きます。</p>
     <ul class="my-favs" id="zmy-apps"></ul>
   </section>
 
   <section class="my-sec" aria-labelledby="zmy-fav-t">
     <h2 id="zmy-fav-t">保存した求人</h2>
-    <p>求人の <span class="ms" aria-hidden="true" style="font-size:16px;vertical-align:-3px">bookmark</span> を押すと、ここに保存されます。</p>
     <ul class="my-favs" id="zmy-favs"></ul>
     <p class="my-empty" id="zmy-empty" hidden>保存した求人はまだありません。<a href="<?php echo esc_url( home_url( '/' ) ); ?>">求人を探す</a></p>
   </section>
@@ -59,20 +57,19 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
       </form>
       <div class="u064-pane u064-done" id="zmy-sent" aria-hidden="true" aria-live="polite">
         <h3>メールを確認してください</h3>
-        <p>登録されているアドレスなら、<b class="u064-to"></b> にログイン用のリンクを送りました。リンクは24時間有効です。届かないときは迷惑メールのフォルダも見てください。</p>
+        <p><b class="u064-to"></b> にログイン用のリンクを送りました。届かないときは迷惑メールのフォルダも見てください。</p>
         <a class="u064-b u064-mail" href="#" target="_blank" rel="noopener" tabindex="-1" hidden>メールを開く</a>
         <button class="u064-b ghost u064-re" type="button" tabindex="-1" aria-disabled="true"><svg class="u064-ring" viewBox="0 0 20 20" aria-hidden="true"><circle class="t" cx="10" cy="10" r="8"/><circle class="p" cx="10" cy="10" r="8" pathLength="100"/></svg><span>もう一度送る · 60秒</span></button>
         <button class="u064-link" type="button" tabindex="-1">別のメールアドレスで送る</button>
       </div>
     </div>
     <div style="max-width:340px;margin:16px auto 0"><?php zaito_social_buttons( '/mypage/', 'ログイン' ); ?></div>
-    <p class="my-note">ログインすると、希望条件の変更や、別のスマホ・パソコンで保存した求人の確認ができます。まだ登録していない方は、<a href="<?php echo esc_url( home_url( '/#signup' ) ); ?>">トップページから無料で登録</a>できます。</p>
+    <p class="my-note">まだ登録していない方は、<a href="<?php echo esc_url( home_url( '/#signup' ) ); ?>">無料で登録</a>できます。</p>
     <script src="<?php echo esc_url( zaito_lp_asset( 'u064.js' ) ); ?>"></script>
   </section>
 
   <section class="my-sec" id="zmy-member" hidden aria-labelledby="zmy-pref-t">
     <h2 id="zmy-pref-t">新着メールの希望条件</h2>
-    <p>ここで選んだ条件に合う新しい求人だけを、メールでお知らせします。</p>
     <form class="profile" id="zmy-prefs" style="margin-top:0;padding-top:0;border-top:0">
       <div class="pq"><label class="lb" for="zmy-name">お名前</label>
         <input type="text" id="zmy-name" name="name" maxlength="40" autocomplete="name" placeholder="例：山田 花子" style="width:100%;box-sizing:border-box;height:48px;padding:0 14px;border-radius:10px;border:0;box-shadow:inset 0 0 0 1.5px var(--z-border-input);font:inherit;font-size:16px"></div>
@@ -192,7 +189,7 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
       try { localStorage.setItem('zaito_favs_merged', '1'); } catch (e) {}
       F.save(d.favorites.map(function (j) { return j.slug; }));
       F.paint();
-      who.textContent = d.email + ' でログインしています。';
+      who.textContent = d.email;
       if (/[?&]verified=1/.test(location.search)) {
         document.getElementById('zmy-done').hidden = false;
         if (typeof window.gtag === 'function') window.gtag('event', 'email_verified', {});
@@ -213,7 +210,7 @@ $zaito_ajax = admin_url( 'admin-ajax.php' );
       document.getElementById('zmy-mail').checked = !d.unsubscribed;
       member.hidden = false;
     } else {
-      who.textContent = 'このブラウザで保存した求人を表示しています。';
+      who.textContent = '';
       if (/[?&]login=expired/.test(location.search)) {
         document.getElementById('zmy-guest-text').textContent = 'リンクの期限が切れているか、正しくありません。もう一度送ってください。';
       }
