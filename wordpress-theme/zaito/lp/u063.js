@@ -223,6 +223,8 @@
       }, 0);
     });
     next.addEventListener('click', advance);
+    // ページ側で質問を出したり隠したりしたとき（登録フォームで名前を聞いた場合など）に、表示をそろえ直す。
+    form.addEventListener('u063:refresh', function () { show(cur); });
     if ('ResizeObserver' in window) {
       var ro = new ResizeObserver(fit);
       all.forEach(function (q) { ro.observe(q); });

@@ -2255,6 +2255,18 @@ function zaito_remote_record_click( $slug, $member ) {
  * まとめ求人の詳細ページの登録フォーム。先行登録と同じ zaito_interest に登録し
  * （登録済みなら同じレコードを使う）、このブラウザを登録済みにする。
  */
+/**
+ * 登録フォームで、メールアドレスと一緒に名前（姓・名）と学校名も必須にするか。
+ * 2026-11 の検証（必須にすると登録の数がどれだけ変わるか）。false にすると、メールアドレスだけの登録に戻る。
+ * すでに登録しているアドレスでログインし直すときは、必須にしない。
+ */
+if ( ! defined( 'ZAITO_SIGNUP_BASIC' ) ) {
+    define( 'ZAITO_SIGNUP_BASIC', true );
+}
+function zaito_signup_basic() {
+    return (bool) ZAITO_SIGNUP_BASIC;
+}
+
 function zaito_handle_remote_register() {
     $slug = isset( $_POST['job'] ) ? sanitize_key( wp_unslash( $_POST['job'] ) ) : '';
     $job  = $slug ? zaito_remote_job( $slug ) : null;
@@ -2280,10 +2292,33 @@ function zaito_handle_remote_register() {
     if ( ! $email || ! is_email( $email ) ) {
         $fail( '正しいメールアドレスを入力してください' );
     }
-    // 登録はメールアドレスだけでできる。名前・学校名は、登録直後の質問（zaito_handle_remote_profile）か応募のときに聞く。
+    // ZAITO_SIGNUP_BASIC のあいだは、名前（姓・名）と学校名も必須（学生でない人は「学生ではありません」で学校名なし）。
+    // そうでないときは、名前・学校名は登録直後の質問（zaito_handle_remote_profile）か応募のときに聞く。
+    $last        = isset( $_POST['name_last'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name_last'] ) ) ), 0, 20 ) : '';
+    $first       = isset( $_POST['name_first'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name_first'] ) ) ), 0, 20 ) : '';
     $name        = isset( $_POST['name'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['name'] ) ) ), 0, 40 ) : '';
+    if ( '' === $name && '' !== $last && '' !== $first ) {
+        $name = $last . ' ' . $first;
+    }
     $school      = isset( $_POST['school'] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST['school'] ) ) ), 0, 80 ) : '';
     $not_student = ! empty( $_POST['not_student'] );
+    if ( zaito_signup_basic() ) {
+        $known = get_posts( array(
+            'post_type'      => 'zaito_interest',
+            'post_status'    => 'any',
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+            'meta_query'     => array( array( 'key' => 'email', 'value' => $email ) ),
+        ) );
+        if ( ! $known ) {
+            if ( '' === $last || '' === $first ) {
+                $fail( 'お名前（姓と名）を入力してください' );
+            }
+            if ( ! $not_student && '' === $school ) {
+                $fail( '学校名を入力してください（学生でない方はチェックを入れてください）' );
+            }
+        }
+    }
     // 大学のWi-Fiやスマホ回線では大勢が同じIPを使うため、ふつうの登録が止まらないよう多めに許す。
     if ( zaito_lp_rate_limited( 'remote', 30 ) ) {
         $fail( '送信回数が多すぎます。しばらくしてからお試しください' );
@@ -2304,6 +2339,14 @@ function zaito_handle_remote_register() {
     }
     if ( $not_student && $created ) {
         update_post_meta( $interest_id, 'not_student', '1' );
+    }
+    if ( $created && '' !== $last && '' !== $first ) {
+        update_post_meta( $interest_id, 'last_name', $last );
+        update_post_meta( $interest_id, 'first_name', $first );
+    }
+    // 検証のため、名前・学校名が必須だったときの登録に印を付ける（集計で、必須の前後を分けて数える）。
+    if ( $created && zaito_signup_basic() ) {
+        update_post_meta( $interest_id, 'signup_basic', '1' );
     }
     if ( $created ) {
         zaito_lp_send_waitlist_thanks( $email, 'remote', $interest_id );

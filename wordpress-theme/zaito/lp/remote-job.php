@@ -181,6 +181,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
             <input type="hidden" name="referrer" value="">
             <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
             <?php if ( zaito_social_buttons( wp_make_link_relative( $zaito_go ), '続ける' ) ) : ?><div class="or-line">または</div><?php endif; ?>
+            <?php zaito_remote_basic_fields( 'zj' ); ?>
             <label for="zemail">メールアドレス</label>
             <input type="email" id="zemail" name="email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
             <button type="submit" class="btn btn-p btn-lg"><?php echo $zaito_direct ? '登録して応募フォームへ' : '登録して応募ページへ進む'; ?></button>
@@ -225,6 +226,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
 <script>
 (function () {
   var slug = <?php echo wp_json_encode( $zaito_j['slug'] ); ?>;
+  <?php echo zaito_remote_basic_check_js(); // 固定のJSのみ ?>
   var form = document.getElementById('zsignup');
   var err = document.getElementById('zerr');
   var profile = document.getElementById('zprofile');
@@ -291,6 +293,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         track('sign_up', { method: 'remote' });
         form.hidden = true;
         profile.hidden = false;
+        zbasicCarry(form, profile);
         profile.dataset.go = res.data.go;
         if (sheet && sheet.open) { sheet.scrollTop = 0; } else { profile.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       })

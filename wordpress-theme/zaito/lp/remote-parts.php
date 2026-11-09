@@ -256,6 +256,37 @@ if ( ! function_exists( 'zaito_remote_profile_fields' ) ) {
     }
 }
 
+if ( ! function_exists( 'zaito_remote_basic_fields' ) ) {
+    /**
+     * 登録フォームで、メールアドレスと一緒に聞く名前（姓・名）と学校名（inc/remote-jobs.php の ZAITO_SIGNUP_BASIC のあいだだけ出す）。
+     * 学生でない人は「学生ではありません」にチェックすると、学校名なしで登録できる。$p は id の頭につける文字。
+     */
+    function zaito_remote_basic_fields( $p ) {
+        if ( ! function_exists( 'zaito_signup_basic' ) || ! zaito_signup_basic() ) {
+            return;
+        }
+        ?>
+        <div class="basic">
+          <div><span class="bl" id="<?php echo esc_attr( $p ); ?>nl">お名前</span>
+            <div class="bn"><input type="text" name="name_last" maxlength="20" autocomplete="family-name" aria-labelledby="<?php echo esc_attr( $p ); ?>nl" aria-label="姓" placeholder="姓（例：山田）"><input type="text" name="name_first" maxlength="20" autocomplete="given-name" aria-label="名" placeholder="名（例：花子）"></div></div>
+          <div><label class="bl" for="<?php echo esc_attr( $p ); ?>school">学校名</label><input type="text" id="<?php echo esc_attr( $p ); ?>school" name="school" maxlength="80" autocomplete="organization" placeholder="例：〇〇大学" data-schools="<?php echo esc_url( zaito_lp_asset( 'schools.json' ) ); ?>">
+            <label class="ns"><input type="checkbox" name="not_student" value="1">学生ではありません</label></div>
+        </div>
+        <script src="<?php echo esc_url( zaito_lp_asset( 'school-suggest.js' ) ); ?>" defer></script>
+        <?php
+    }
+
+    /**
+     * 登録フォームのJS用。zbasic(form) は、名前・学校名が足りなければ文を返す（欄がないときは空）。
+     * zbasicCarry(form, profile) は、登録直後の質問に名前と学校名を写し、名前の質問を出さないようにする。
+     */
+    function zaito_remote_basic_check_js() {
+        return "function zbasic(f){var l=f.elements.name_last,r=f.elements.name_first,s=f.elements.school,ns=f.elements.not_student;if(!l)return '';if(!l.value.trim()||!r.value.trim())return 'お名前（姓と名）を入力してください';if(!ns.checked&&!s.value.trim())return '学校名を入力してください（学生でない方はチェックを入れてください）';return '';}"
+            . "function zbasicCarry(f,p){if(!f.elements.name_last||!p)return;var q=p.querySelector('.pq[data-step=name]');['name_last','name_first'].forEach(function(k){var a=p.querySelector('input[name='+k+']');if(a)a.value=f.elements[k].value.trim();});var ps=p.querySelector('.stu input[name=school]');if(ps&&!ps.value)ps.value=f.elements.school.value.trim();if(q&&f.elements.name_last.value.trim()){q.hidden=true;p.dispatchEvent(new Event('u063:refresh'));}}"
+            . "document.querySelectorAll('.basic .ns input').forEach(function(c){c.addEventListener('change',function(){var s=c.closest('.basic').querySelector('input[name=school]');s.disabled=c.checked;if(c.checked)s.value='';});});";
+    }
+}
+
 if ( ! function_exists( 'zaito_remote_head' ) ) {
     function zaito_remote_head( $title, $description, $canonical, $json_ld = null, $robots = '' ) {
         ?>

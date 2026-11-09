@@ -422,6 +422,7 @@ if ( ! $zaito_cond ) :
         <input type="hidden" name="utm_source" value=""><input type="hidden" name="utm_medium" value=""><input type="hidden" name="utm_campaign" value=""><input type="hidden" name="referrer" value="">
         <div class="hp" aria-hidden="true"><label>Webサイト<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
         <?php if ( zaito_social_buttons( '/?signup=done', '登録' ) ) : ?><div class="or-line">または</div><?php endif; ?>
+        <?php zaito_remote_basic_fields( 'ztop' ); ?>
         <label for="ztopemail">メールアドレス</label>
         <div class="sb-row">
           <input type="email" id="ztopemail" name="email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com">
@@ -679,6 +680,7 @@ if ( ! $zaito_cond ) :
     });
   });
   var isEmail = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); };
+  <?php echo zaito_remote_basic_check_js(); // 固定のJSのみ ?>
   // 下の登録欄・求人3件目のあとの登録欄のどちらからでも、同じフォーム(#ztop)で送る。
   function register(btn, err, method, after) {
     btn.disabled = true;
@@ -691,17 +693,29 @@ if ( ! $zaito_cond ) :
         if (!res.data.created) { showDone('登録済みです', 'このメールアドレスはすでに登録されています。新しい在宅求人が入ったらお知らせします。'); after(false); return; }
         track('sign_up', { method: method });
         top.hidden = true; profile.hidden = false;
+        zbasicCarry(top, profile);
         after(true);
       })
       .catch(function (x) {
         btn.disabled = false;
-        err.textContent = x.message || '登録できませんでした。時間をおいてもう一度お試しください';
+        var msg = x.message || '登録できませんでした。時間をおいてもう一度お試しください';
+        // 一覧の途中の小さな登録欄（メールアドレスだけ）から、まだ登録のない人が送ったときは、名前と学校名をページ下の登録欄で入れてもらう。
+        if (err !== terr && /^(お名前|学校名)/.test(msg) && top.elements.name_last) {
+          err.textContent = '';
+          terr.textContent = 'お名前と学校名を入れて、登録を続けてください';
+          document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+          setTimeout(function () { top.elements.name_last.focus({ preventScroll: true }); }, 500);
+          track('signup_inline_continue', {});
+          return;
+        }
+        err.textContent = msg;
       });
   }
   top.addEventListener('submit', function (e) {
     e.preventDefault();
     terr.textContent = '';
     if (!isEmail(top.elements.email.value.trim())) { terr.textContent = '正しいメールアドレスを入力してください'; return; }
+    // 名前・学校名が空でも送る（すでに登録のある人はメールアドレスだけで入れる。まだの人はサーバーが理由を返す）。
     register(top.querySelector('button[type=submit]'), terr, 'top', function () {});
   });
   if (mini) {
