@@ -282,7 +282,7 @@ if ( ! $zaito_cond ) :
         <?php else : ?>
         <p class="eb-jp">地方の大学生のための、完全在宅バイト</p>
         <h1><em>完全在宅</em>の仕事だけを、<br>集めました。</h1>
-        <p><b>地元にいながら、東京などの会社の仕事を。</b>研修も会議も出社なし。「在宅OK」で探すと出社ありの求人が混ざるため、zaitoは運営が1件ずつ確かめて載せています。<a href="<?php echo esc_url( home_url( '/kijun/' ) ); ?>">確認していること</a></p>
+        <p>研修も会議も出社なし。運営が1件ずつ確かめた求人だけを載せています。</p>
         <form class="ksearch" role="search" onsubmit="return false">
           <label class="sr" for="zq">キーワードで探す</label>
           <input type="search" id="zq" placeholder="キーワードで探す　例：SNS運用" autocomplete="off" enterkeyhint="search">

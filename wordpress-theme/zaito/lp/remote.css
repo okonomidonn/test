@@ -850,3 +850,9 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
  html.fs-lock,html.fs-lock body{overflow:hidden}
 }
 @media (max-width:640px) and (prefers-reduced-motion:reduce){.fsheet,.fsheet.open{transition:none}}
+
+/* スマホのトップ：一覧までの導線を短くする。メール登録は一覧の3件目のあとと画面下の帯にあるので、見出しの下のリンクは出さない。「zaitoの使い方」も出さない */
+@media (max-width:640px){
+ .hero .alert-link{display:none}
+ .how{display:none}
+}
