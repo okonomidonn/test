@@ -66,24 +66,15 @@ html,body{overflow-x:clip}
 .card a{height:100%;display:flex;flex-direction:column;border:1px solid var(--z-border);border-radius:12px;overflow:hidden;color:var(--z-navy);background:#fff;transition:border-color .2s}
 .card a:hover{border-color:#B4BDD0}
 .card{position:relative}
-.band{height:64px;padding:0 20px;display:flex;align-items:center;gap:10px;background:linear-gradient(120deg,var(--tone-bg),var(--tone-bg2));color:var(--tone)}
-.band .ms{font-size:26px}
-.band .bcat{font-size:13px;font-weight:700}
-.band .pickb{margin-right:44px;padding:3px 9px;border-radius:999px;background:#3D5AFE;color:#fff;font-size:11px;font-weight:800;white-space:nowrap}
 .card .body{flex:1;display:flex;flex-direction:column;gap:10px;padding:18px 20px 20px}
 .card h2{margin:0;font-size:17px;font-weight:700;line-height:1.55}
 .card .co{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--z-text-3)}
-.card .co .av{width:22px;height:22px;border-radius:6px;background:var(--z-navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none}
 .card .pay{margin-top:4px;display:flex;align-items:baseline;gap:2px;min-height:34px;flex-wrap:wrap}
 .card .pay .u{font-size:13px;color:var(--z-text-3);font-weight:700}
 .card .pay b{font-family:'Outfit',sans-serif;font-size:26px;line-height:1.1;margin:0 2px;letter-spacing:-.01em}
 .card .pay .tx{font-size:15px;font-weight:700;line-height:1.5}
-.card .pay .none{font-size:14px;color:var(--z-text-4)}
-.card .hrs{margin:0;display:flex;gap:6px;font-size:13px;color:var(--z-text-3);line-height:1.6}
-.card .hrs .ms{font-size:16px;margin-top:2px;color:var(--z-text-4)}
-.card .hrs span:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .pay .none{margin:0;padding:0;border-radius:0;background:none;text-align:left;font-size:14px;color:var(--z-text-4)}
 .card .tags{margin-top:auto;padding-top:12px;border-top:1px solid var(--z-line);display:flex;flex-wrap:wrap;gap:6px}
-.card .tg{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;background:var(--z-chip);color:var(--z-text-2);font-size:12px;font-weight:500;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card.closed a{opacity:.55}
 .sub{margin:56px 0 0;font-size:18px}
 
@@ -318,7 +309,6 @@ h1.t{margin:14px 0 10px;font-size:clamp(24px,3vw,34px);font-weight:900;line-heig
 #ztop .legal{margin:10px 0 0;font-size:12px;color:var(--z-text-4)}
 #ztop .err{margin:8px 0 0;font-size:14px;color:#C8313B;font-weight:700}
 /* 求人3件目のあとの登録欄 */
-.card .kt{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;color:#3D5AFE;background:#EEF1FF}
 /* 掲載基準などの読み物ページ */
 .doc{max-width:760px;padding-top:clamp(32px,6vw,64px);padding-bottom:clamp(56px,8vw,96px)}
 .doc .back{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700}
@@ -777,29 +767,18 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 /* 見出しの頭に青い小さな四角 */
 .sub,.conds h2,.how h2,.cond-faq h2,.count-bar .count{display:flex;align-items:center;gap:8px}
 .sub::before,.conds h2::before,.how h2::before,.cond-faq h2::before,.count-bar .count::before{content:'';flex:none;width:10px;height:10px;border-radius:2px;background:var(--z-blue)}
-/* 求人カード：色の帯をやめ、会社名→青い下線つきタイトル→条件の行→ボタン */
-.card a{border-radius:10px}
-.band{height:auto;padding:12px 64px 0 16px;background:none;color:var(--z-text-3);gap:6px}
-.band .ms{font-size:18px;color:var(--tone)}
-.band .bcat{font-size:12px;font-weight:700}
-.band .pickb{margin-right:0}
-.card .body{gap:8px;padding:8px 16px 16px}
-.card .co{order:-1;font-size:12px}
-.card .co .av{display:none}
-.card h2{font-size:16px;color:var(--z-blue);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;text-decoration-color:rgba(61,90,254,.4)}
-.card a:hover h2{text-decoration-color:var(--z-blue)}
-.card .pay{margin-top:0;min-height:0}
-.card .pay b{font-size:22px}
-.card .tags{padding-top:10px;gap:5px}
-.card .tags .ok,.card .kt,.card .tg{height:24px;padding:0 8px;border-radius:4px;background:#fff;font-size:11.5px}
-.card .tags .ok{box-shadow:inset 0 0 0 1px #1A7F55}
-.card .tags .ok .ms{font-size:14px}
-.card .kt{box-shadow:inset 0 0 0 1px var(--z-blue)}
-.card .tg{box-shadow:inset 0 0 0 1px var(--z-border-input);color:var(--z-text-2)}
-.card .go{margin:6px 0 0 52px;height:40px;border-radius:999px;background:var(--z-blue);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.card a:hover .go{background:var(--z-blue-hover)}
-.card.closed .go{display:none}
-.card .fav{top:auto;bottom:16px;left:16px;right:auto;width:40px;height:40px;background:#fff;box-shadow:inset 0 0 0 1px var(--z-border-input)}
+/* 求人カード（2026-11 軽くした形）：求人名→会社名→報酬→条件の一行だけ。カード全体がリンク、保存は右上 */
+.card a{border-radius:12px}
+.card .body{gap:6px;padding:16px 56px 16px 16px}
+.card h2{font-size:16.5px;font-weight:800;line-height:1.5;color:var(--z-navy);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card a:hover h2{color:var(--z-blue)}
+.card .co{font-size:12.5px;color:var(--z-text-3)}
+.card .pay{margin-top:4px;min-height:0}
+.card .pay b{font-size:24px}
+.card .cond{margin:2px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13px;line-height:1.6;color:var(--z-text-2)}
+.card .cond .nb{color:#1A7F55;font-weight:700}
+.card .tags{margin-top:6px;padding-top:0;border-top:0}
+.card .fav{top:12px;right:10px;bottom:auto;left:auto;width:38px;height:38px;background:transparent;box-shadow:none}
 
 /* 地方の大学生向け（2026-11）：ヒーローの小見出しと「地方の大学生こそ、完全在宅」 */
 .hero .eb-jp{margin:0;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--z-blue)}

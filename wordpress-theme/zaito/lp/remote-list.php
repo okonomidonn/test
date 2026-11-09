@@ -178,14 +178,19 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_canon, $zaito_ld );
 $zaito_card = function ( $j ) {
     $g       = zaito_remote_group( $j['category'] );
     $pay     = zaito_remote_pay_parts( $j['pay'] );
-    $initial = mb_substr( preg_replace( '/^(株式会社|合同会社|有限会社|学校法人)|(株式会社|合同会社|有限会社)$/u', '', $j['company'] ), 0, 1 );
+    // カードに出す条件の一行：「未経験OK」と、勤務時間の最初の部分だけ（細かい条件は求人ページに出す）。
+    $newbie  = ! empty( $j['_pick'] ) || (bool) preg_match( '/未経験|経験不問|経験は不問|経験は問わない/u', (string) $j['target'] );
+    $hrs     = trim( preg_replace( '/のうち.*$/u', '', preg_split( '/[（(、]/u', (string) $j['hours'] )[0] ) );
+    if ( mb_strlen( $hrs ) > 24 ) {
+        $hrs = mb_substr( $hrs, 0, 23 ) . '…';
+    }
+    $lvl     = empty( $j['closed'] ) && ! zaito_remote_student_ok( $j );
     ?>
     <li class="card t-<?php echo esc_attr( $g[2] ); ?><?php echo ! empty( $j['closed'] ) ? ' closed' : ''; ?>" data-group="<?php echo esc_attr( $g[0] ); ?>" data-slug="<?php echo esc_attr( $j['slug'] ); ?>"<?php echo zaito_remote_card_attrs( $j ); // 数値と0/1だけ ?>>
       <a href="<?php echo esc_url( zaito_remote_url( $j['slug'] ) ); ?>">
-        <div class="band"><span class="ms" aria-hidden="true"><?php echo esc_html( $g[1] ); ?></span><span class="bcat"><?php echo esc_html( $j['category'] ); ?></span><?php if ( ! empty( $j['_pick'] ) ) : ?><span class="pickb">未経験OK・高時給</span><?php endif; ?></div>
         <div class="body">
           <h2><?php echo esc_html( $j['title'] ); ?></h2>
-          <span class="co"><span class="av" aria-hidden="true"><?php echo esc_html( $initial ); ?></span><?php echo esc_html( $j['company'] ); ?></span>
+          <span class="co"><?php echo esc_html( $j['company'] ); ?></span>
           <div class="pay">
             <?php if ( $pay ) : ?>
               <span class="u"><?php echo esc_html( $pay[0] ); ?></span><b><?php echo esc_html( $pay[1] ); ?></b><span class="u"><?php echo esc_html( $pay[2] ); ?></span>
@@ -195,24 +200,14 @@ $zaito_card = function ( $j ) {
               <span class="none">報酬は募集ページで確認</span>
             <?php endif; ?>
           </div>
-          <?php if ( $j['hours'] ) : ?>
-            <p class="hrs"><span class="ms" aria-hidden="true">schedule</span><span><?php echo esc_html( $j['hours'] ); ?></span></p>
+          <?php if ( $newbie || '' !== $hrs ) : ?>
+            <p class="cond"><?php if ( $newbie ) : ?><span class="nb">未経験OK</span><?php endif; ?><?php if ( '' !== $hrs ) : ?><span><?php echo esc_html( $hrs ); ?></span><?php endif; ?></p>
           <?php endif; ?>
-          <div class="tags">
-            <?php if ( ! empty( $j['closed'] ) ) : ?>
-              <span class="warn">募集終了</span>
-            <?php else : ?>
-              <span class="ok"><span class="ms" aria-hidden="true">verified</span>完全在宅</span>
-              <?php if ( ! zaito_remote_student_ok( $j ) ) : ?>
-                <span class="lvl"><?php echo preg_match( '/週5日|週4〜5日|週4日以上|フルタイム|週30時間以上|実働8時間/u', (string) $j['hours'] ) ? 'フルタイム' : '経験者・社会人向け'; ?></span>
-              <?php endif; ?>
-            <?php endif; ?>
-            <?php if ( ! empty( $j['contract'] ) ) : ?>
-              <span class="kt"><?php echo esc_html( $j['contract'] ); ?></span>
-            <?php endif; ?>
-            <span class="tg"><?php echo esc_html( $j['target'] ); ?></span>
-          </div>
-          <span class="go">詳細を見る</span>
+          <?php if ( ! empty( $j['closed'] ) ) : ?>
+            <p class="tags"><span class="warn">募集終了</span></p>
+          <?php elseif ( $lvl ) : ?>
+            <p class="tags"><span class="lvl"><?php echo preg_match( '/週5日|週4〜5日|週4日以上|フルタイム|週30時間以上|実働8時間/u', (string) $j['hours'] ) ? 'フルタイム' : '経験者・社会人向け'; ?></span></p>
+          <?php endif; ?>
         </div>
       </a>
       <?php if ( empty( $j['closed'] ) ) : ?>
