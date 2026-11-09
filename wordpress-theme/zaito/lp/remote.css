@@ -823,14 +823,30 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 .jfaq h3+p{margin:6px 0 0;font-size:15px;line-height:1.8;color:var(--z-text-2)}
 .jfaq .jfaq-note{margin:20px 0 0;font-size:13px;color:var(--z-text-3)}
 
-/* スマホの絞り込み（職種・条件）：折り返さず1行にして、横にすべらせて選ぶ。右端を薄くして続きがあることを見せる */
+/* スマホの絞り込み：職種と条件は「職種・条件で絞り込む」ボタンから下に開く画面（#zfsheet）に入れる。パソコンではそのまま並べる */
+.fopen,.fs-bd,.fs-hd,.fs-ft,.fs-lb{display:none}
 @media (max-width:640px){
- .filters,.refine .qchips{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;scroll-padding-inline:20px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
- .filters::-webkit-scrollbar,.refine .qchips::-webkit-scrollbar{display:none}
- .filters{gap:8px;padding-top:2px;padding-bottom:12px}
- .filters button,.refine .qchips button{flex:none}
- .filters button{height:40px;border-radius:999px;padding:0 14px 0 6px}
- .filters button .ms{border-radius:999px}
- .refine{margin:0;padding:0 0 18px}
- .refine .qchips{gap:6px;padding-top:2px;padding-bottom:2px}
+ .fopen{display:flex;align-items:center;gap:8px;width:100%;height:52px;margin:0 0 20px;padding:0 16px;border:0;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--z-border-input);color:var(--z-navy);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+ .fopen .ms{font-size:22px;color:var(--z-blue)}
+ .fopen .fo-r{margin-left:auto;color:var(--z-text-3)}
+ .fbadge{min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--z-blue);color:#fff;font-family:'Outfit',sans-serif;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+ .fbadge[hidden]{display:none}
+ .fs-bd{display:block;position:fixed;inset:0;z-index:300;background:rgba(11,21,48,.45)}
+ .fs-bd[hidden]{display:none}
+ .fsheet{position:fixed;left:0;right:0;bottom:0;z-index:301;max-height:86dvh;display:flex;flex-direction:column;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -12px 40px -12px rgba(11,21,48,.35);transform:translateY(105%);visibility:hidden;transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s}
+ .fsheet.open{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+ .fs-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 12px 6px 20px;flex:none}
+ .fs-hd b{font-size:17px}
+ .fs-x{width:44px;height:44px;border:0;border-radius:999px;background:none;color:var(--z-navy);display:flex;align-items:center;justify-content:center;cursor:pointer}
+ .fsheet>.filters,.fsheet>.refine{flex:none;padding-left:20px;padding-right:20px}
+ .fsheet .fs-lb,.fsheet .refine .rl{display:block;margin:12px 20px 10px;font-size:13px;font-weight:700;color:var(--z-text-3)}
+ .fsheet .refine .rl{margin:0 0 10px}
+ .fsheet>.filters{padding-bottom:8px;gap:8px}
+ .fsheet>.refine{margin:8px 0 0;padding-bottom:12px}
+ .fsheet{overflow-y:auto;overscroll-behavior:contain}
+ .fs-ft{display:flex;gap:10px;position:sticky;bottom:0;margin-top:auto;padding:12px 20px calc(12px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--z-line)}
+ .fs-clear{flex:none;height:50px;padding:0 18px;border:0;border-radius:12px;background:var(--z-chip);color:var(--z-navy);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+ .fs-go{flex:1;height:50px;font-size:16px}
+ html.fs-lock,html.fs-lock body{overflow:hidden}
 }
+@media (max-width:640px) and (prefers-reduced-motion:reduce){.fsheet,.fsheet.open{transition:none}}

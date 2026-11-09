@@ -294,7 +294,13 @@ if ( ! $zaito_cond ) :
       <?php // 「今日のおすすめ」（lp/reco.js）は 2026-11 にトップから外した。登録・応募が増えた数字が出ず、ChatGPTから来た人の登録が減っていたため。求人メールの点数づけ（inc/reco.php）は今も使っている。 ?>
     </div>
 
+    <?php // スマホでは、職種と条件を「絞り込む」ボタンから下に開く画面（#zfsheet）の中に出す。パソコンではそのまま並べる。 ?>
+    <button type="button" class="fopen" id="zfopen" aria-controls="zfsheet" aria-expanded="false"><span class="ms" aria-hidden="true">tune</span>職種・条件で絞り込む<b class="fbadge" id="zfbadge" hidden></b><span class="ms fo-r" aria-hidden="true">expand_more</span></button>
+    <div class="fs-bd" id="zfbd" hidden></div>
+    <div class="fsheet" id="zfsheet" aria-label="職種・条件で絞り込む">
+      <div class="fs-hd"><b>絞り込み</b><button type="button" class="fs-x" id="zfx" aria-label="閉じる"><span class="ms" aria-hidden="true">close</span></button></div>
     <?php if ( ! $zaito_cond && count( $zaito_groups ) > 1 ) : ?>
+      <p class="fs-lb">職種</p>
       <div class="filters" role="group" aria-label="職種で絞り込む">
         <button type="button" data-filter="" aria-pressed="true"><span class="ms" aria-hidden="true">apps</span>すべて<small><?php echo esc_html( count( $zaito_open ) ); ?></small></button>
         <?php foreach ( $zaito_groups as $zaito_name => $zaito_g ) : ?>
@@ -313,6 +319,11 @@ if ( ! $zaito_cond ) :
         <button type="button" data-k="pay" data-v="1500" aria-pressed="false">時給1,500円〜<small></small></button>
         <button type="button" data-k="pay" data-v="2000" aria-pressed="false">時給2,000円〜<small></small></button>
         <button type="button" class="qfav" data-k="fav" data-v="1" aria-pressed="false"><span class="ms" aria-hidden="true">bookmark</span>保存した求人<small></small></button>
+      </div>
+    </div>
+      <div class="fs-ft">
+        <button type="button" class="fs-clear" id="zfclear">クリア</button>
+        <button type="button" class="btn btn-p fs-go" id="zfgo"><span id="zfn"><?php echo esc_html( count( $zaito_open ) ); ?></span>件を見る</button>
       </div>
     </div>
   </div>
@@ -543,6 +554,10 @@ if ( ! $zaito_cond ) :
     });
     var active = st.g || st.who || st.pay || st.days || st.newbie || st.fav || st.q;
     clearBtn.hidden = !active;
+    // スマホの絞り込み画面：選んでいる数と、件数を出す。
+    var fn = document.getElementById('zfn'), fb = document.getElementById('zfbadge');
+    if (fn) fn.textContent = n;
+    if (fb) { var k = ['g', 'who', 'pay', 'days', 'newbie', 'fav'].filter(function (x) { return st[x]; }).length; fb.textContent = k; fb.hidden = !k; }
     if (push !== false && window.history.replaceState) {
       var q = new URLSearchParams(location.search);
       ['g', 'who', 'pay', 'days', 'newbie', 'fav'].forEach(function (k) { if (st[k]) q.set(k, st[k]); else q.delete(k); });
@@ -571,6 +586,32 @@ if ( ! $zaito_cond ) :
     qIn.form.addEventListener('submit', function () { st.q = qIn.value.trim().toLowerCase().replace(/\s+/g, ' '); apply(); if (st.q) { track('job_search', { q: st.q.slice(0, 40) }); document.querySelector('.count-bar').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
   }
   clearBtn.addEventListener('click', reset);
+  (function sheet() {
+    var sh = document.getElementById('zfsheet'), op = document.getElementById('zfopen'), bd = document.getElementById('zfbd');
+    if (!sh || !op) return;
+    function open() {
+      sh.classList.add('open'); bd.hidden = false; op.setAttribute('aria-expanded', 'true');
+      sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true');
+      document.documentElement.classList.add('fs-lock');
+      document.getElementById('zfx').focus({ preventScroll: true });
+      track('filter_sheet_open', {});
+    }
+    function close(toList) {
+      if (!sh.classList.contains('open')) return;
+      sh.classList.remove('open'); bd.hidden = true; op.setAttribute('aria-expanded', 'false');
+      sh.removeAttribute('role'); sh.removeAttribute('aria-modal');
+      document.documentElement.classList.remove('fs-lock');
+      if (toList) document.querySelector('.count-bar').scrollIntoView({ block: 'start' }); else op.focus({ preventScroll: true });
+    }
+    op.addEventListener('click', open);
+    bd.addEventListener('click', function () { close(false); });
+    document.getElementById('zfx').addEventListener('click', function () { close(false); });
+    document.getElementById('zfgo').addEventListener('click', function () { close(true); });
+    document.getElementById('zfclear').addEventListener('click', reset);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(false); });
+    // 画面の幅が広がったら（パソコン表示になったら）閉じる。
+    window.matchMedia('(min-width:641px)').addEventListener('change', function (m) { if (m.matches) close(false); });
+  })();
   document.getElementById('znone-reset').addEventListener('click', reset);
   // ♡を押したら、保存した求人の件数・絞り込みを更新する。
   document.addEventListener('click', function (e) {
