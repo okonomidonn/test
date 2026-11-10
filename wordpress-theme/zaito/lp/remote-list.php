@@ -100,7 +100,8 @@ if ( $zaito_cond ) {
     $zaito_desc  = mb_substr( $zaito_cond['body'][0], 0, 110 ) . '（' . count( $zaito_jobs ) . '件・運営が在宅の条件を確認済み）';
     $zaito_canon = zaito_remote_condition_url( $zaito_list_cond );
 } else {
-    $zaito_title = '大学生専門の在宅バイト・長期インターン求人｜完全在宅だけのzaito';
+    // 「zaito」「ザイト」で検索した人に、このサイトだとすぐ分かるよう、名前を先頭に置く。
+    $zaito_title = 'zaito（ザイト）｜大学生専門の完全在宅バイト・長期インターン求人';
     $zaito_desc  = 'zaitoは、大学生専門の完全在宅バイト・長期インターン求人サイトです。研修や会議も含めて出社のない求人だけを載せているので、地方に住んでいても、東京などの会社の仕事に家から応募できます。未経験OK・週1〜2日OKの求人も。事務、カスタマーサポート、SNS運用、ライター、エンジニアなど。';
     $zaito_canon = zaito_remote_url();
 }
@@ -153,6 +154,8 @@ if ( ! $zaito_cond ) {
             'image'         => get_template_directory_uri() . '/lp/ogp-student.png',
             'description'   => ZAITO_TAGLINE . '。研修や会議も含めて出社のない、完全在宅の求人だけを掲載しています。',
             'email'         => 'info@zaito-work.com',
+            // 公式のSNS。検索エンジンが「zaito」という名前と、このサイト・アカウントを同じものとして結びつける手がかりになる。
+            'sameAs'        => array( 'https://www.instagram.com/zaito_work/', 'https://x.com/zaito_work' ),
         ),
         array(
             '@type'       => 'WebSite',
