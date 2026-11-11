@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>録画の一次面接（試作） | zaito</title>
+<title>動画で答える応募（試作） | zaito</title>
 <style>
 /* 試作ページ：zaitoの紺と青。スマホで学生の流れ、同じ端末で企業の画面を見る */
 :root{
@@ -105,9 +105,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
     <div class="card">
       <div class="co">株式会社サンプル（試作用の架空の会社）</div>
       <h1>完全在宅のカスタマーサポート（週2日・1日3時間から）</h1>
-      <p>この求人は、応募するときに録画の一次面接があります。</p>
+      <p>この求人は、応募するときに、会社からの質問へ動画で答えます。</p>
       <ol class="flow">
-        <li><b>1</b><span>録画の一次面接：質問<span class="qcount">3</span>問に、1問60秒以内で答えます（約5分）。いまここで終わります。</span></li>
+        <li><b>1</b><span>質問<span class="qcount">3</span>問に、1問60秒以内で動画で答えます（約5分）。いまここで終わります。</span></li>
         <li><b>2</b><span>会社が回答を見て、会いたい人にだけ連絡します。オンラインで15分ほど話します。</span></li>
         <li><b>3</b><span>結果は1週間以内にメールで届きます。</span></li>
       </ol>
@@ -158,7 +158,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
   <div id="s-done" hidden>
     <div class="card">
       <div class="done-ic" aria-hidden="true">✓</div>
-      <h1>一次面接が終わりました</h1>
+      <h1>回答を送りました</h1>
       <p>株式会社サンプルが回答を見て、1週間以内にメールで連絡します。オンラインで話したいときは、候補の日時から選ぶだけで日程が決まります。</p>
       <p class="note">試作なので、上の「企業の画面」で、会社からどう見えるかを確かめられます。</p>
       <button type="button" class="btn" id="goCompany">企業の画面で見る</button>
@@ -191,7 +191,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
   </div>
 
   <div class="card">
-    <h2>一次面接にかかる時間</h2>
+    <h2>面接にかかる時間</h2>
     <p class="note">1つの求人に何人応募が来るかを入れると、いまのやり方と比べた時間が出ます。前提：いまは日程の調整1人10分、面接30分＋記録5分、2割は当日来ない。録画は1人3分で見て、5人とだけ15分話す。</p>
     <label class="f" for="nApp">応募の数（人）</label>
     <input type="number" id="nApp" value="20" min="1" max="500" inputmode="numeric">
@@ -363,7 +363,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
     renderQEdit(); calc();
     getAll().then(function (all) {
       var box = $('apps');
-      if (!all.meta) { box.innerHTML = '<div class="empty">まだ回答がありません。<br>「学生の画面」で一次面接を録画すると、ここに出ます。</div>'; return; }
+      if (!all.meta) { box.innerHTML = '<div class="empty">まだ回答がありません。<br>「学生の画面」で回答を録画すると、ここに出ます。</div>'; return; }
       var m = all.meta, h = '<div class="app"><div class="app-hd"><div><b>応募者A（この端末で録画）</b><div class="note">' + fmt(m.at) + ' に回答</div></div><span class="pill" id="st">' + esc(m.status) + '</span></div>';
       h += '<div class="speed" role="group" aria-label="再生の速さ"><button type="button" data-r="1" aria-pressed="false">1倍</button><button type="button" data-r="1.5" aria-pressed="true">1.5倍</button><button type="button" data-r="2" aria-pressed="false">2倍</button></div>';
       m.questions.forEach(function (q, i) { h += '<div class="ans"><div class="qt">Q' + (i + 1) + '. ' + esc(q) + '</div>' + (all['q' + i] ? '<video playsinline controls preload="metadata" data-i="' + i + '"></video>' : '<div class="note">回答なし</div>') + '</div>'; });
