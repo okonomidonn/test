@@ -45,7 +45,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
         <p>zaitoは、出社なしの仕事だけを集めた大学生専門の求人サイトです。応募した学生が質問に録画で答えるので、面接は回答を見て、会いたい人を選ぶだけです。</p>
         <div class="cta-row">
           <a class="btn btn-p btn-lg" href="#contact">無料で相談する<span class="ms" aria-hidden="true">arrow_forward</span></a>
-          <a class="btn btn-g btn-lg" href="<?php echo esc_url( home_url( '/demo-interview/' ) ); ?>" target="_blank" rel="noopener">面接の画面を試す</a>
+          <a class="btn btn-g btn-lg" href="#interview">面接の画面を見る</a>
         </div>
         <p style="margin-top:12px;font-size:14px">アカウントをお持ちの方は <a href="<?php echo esc_url( home_url( '/company-login/' ) ); ?>">企業ログイン</a></p>
       </div>
@@ -61,6 +61,16 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
       <li><b>回答を見て選ぶ</b><span>空いた時間に回答を見て、会いたい学生を選びます。</span></li>
       <li><b>選んだ学生と話す</b><span>選んだ学生とだけ、オンラインで話せます。日程は学生が候補から選びます。</span></li>
     </ol>
+    <div class="iv-figs">
+      <figure>
+        <img src="<?php echo esc_url( zaito_lp_asset( 'iv-student.webp' ) ); ?>" width="1600" height="867" loading="lazy" decoding="async" alt="学生のスマホ画面のイメージ。はじめる前の説明、質問が出て考える時間、録画中、回答を送って完了の4つの画面。">
+        <figcaption>学生のスマホ画面（イメージ）</figcaption>
+      </figure>
+      <figure>
+        <img src="<?php echo esc_url( zaito_lp_asset( 'iv-company.webp' ) ); ?>" width="1400" height="912" loading="lazy" decoding="async" alt="企業の画面のイメージ。応募した学生の一覧、回答の動画と質問、再生の速さの切り替え、面接の日程を送るボタン。">
+        <figcaption>企業の画面（イメージ）</figcaption>
+      </figure>
+    </div>
   </section>
 
   <section class="co-sec" aria-labelledby="flow-title">

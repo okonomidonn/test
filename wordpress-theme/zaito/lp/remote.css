@@ -870,3 +870,8 @@ html.reco-lock,html.reco-lock body{overflow:hidden}
 /* 企業の方へ：3つの手順 */
 .flow4.flow3{grid-template-columns:repeat(3,1fr)}
 @media (max-width:860px){.flow4.flow3{grid-template-columns:minmax(0,1fr)}}
+/* 企業向けページ：動画で答える応募の画面のイメージ図 */
+.iv-figs{display:grid;gap:20px;margin-top:24px}
+.iv-figs figure{margin:0}
+.iv-figs img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--z-line,#E3E7EF)}
+.iv-figs figcaption{margin-top:8px;font-size:13px;color:var(--z-text-3)}

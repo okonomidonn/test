@@ -57,7 +57,8 @@ $zaito_job_url = $zaito_job && 'publish' === $zaito_job->post_status ? home_url(
 $zaito_vs      = zaito_video_status( $zaito_app );
 $zaito_vq      = zaito_video_questions( $zaito_app );
 $zaito_vfiles  = zaito_video_files( $zaito_app );
-$zaito_can_wd  = 'student' === $zaito_viewer && in_array( $zaito_st, array( 'new', 'talking', 'interview' ), true );
+// 応募の取り消しは、動画で答える応募と一緒に公開する（本番では zaito_video_enabled() になるまで出さない）。
+$zaito_can_wd  = zaito_video_enabled() && 'student' === $zaito_viewer && in_array( $zaito_st, array( 'new', 'talking', 'interview' ), true );
 
 zaito_biz_head( $zaito_is_co ? $zaito_name . 'さんとのメッセージ' : 'メッセージ' );
 ?>

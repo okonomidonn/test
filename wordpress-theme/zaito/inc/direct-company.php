@@ -287,11 +287,15 @@ function zaito_handle_direct_save_job() {
         '_job_tags'               => $tags,
         '_job_screening_question' => $question,
         '_job_auto_reply_message' => $auto,
-        '_job_video_questions'    => $video_q,
         '_job_confirm_remote'     => $c_remote ? '1' : '',
         '_job_confirm_fee'        => $c_fee ? '1' : '',
     ) as $k => $val ) {
         update_post_meta( $job_id, $k, $val );
+    }
+
+    // 動画で答える質問は、この機能を使うときだけ保存する（使わないときに、保存済みの質問を消さないため）。
+    if ( zaito_video_enabled() ) {
+        update_post_meta( $job_id, '_job_video_questions', $video_q );
     }
 
     if ( $errors ) {
