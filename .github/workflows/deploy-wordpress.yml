@@ -1,12 +1,14 @@
-name: Deploy WordPress Theme to XServer
+name: Deploy WordPress Theme to XServer (本番)
 
+# 本番（https://zaito-work.com/）に出す。push では動かない。
+# push するとまず試験環境（deploy-staging.yml）に出るので、運営者が試験環境で確かめてから、
+# GitHub の Actions でこのワークフローを「Run workflow」で動かす（2026-11-12 運営者の了承）。
 on:
-  push:
-    branches:
-      - claude/zaito-job-site-uqgb9o
-    paths:
-      - "wordpress-theme/**"
   workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
 
 jobs:
   deploy:

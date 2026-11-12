@@ -1991,3 +1991,5 @@ require_once get_template_directory() . '/inc/indexnow.php';
 require_once get_template_directory() . '/inc/stats-api.php';
 // 録画の一次面接の試作ページ（/demo-interview/。リンクなし・検索に出さない）。
 require_once get_template_directory() . '/inc/demo-interview.php';
+// 試験環境（staging.zaito-work.com）だけの設定。本番では何もしない。
+require_once get_template_directory() . '/inc/staging.php';

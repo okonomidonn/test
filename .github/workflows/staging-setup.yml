@@ -1,0 +1,162 @@
+name: Staging setup (試験環境を作る・本番のデータで作り直す)
+
+# 試験環境（https://staging.zaito-work.com/）を作る。もう一度動かすと、本番の今のデータで作り直す。
+# - サブドメインとデータベース（zaito_stg）はエックスサーバーの管理画面側で作ってある（2026-11-12）。
+# - データベースは本番と同じユーザーで読み書きする（本番の wp-config.php から接続情報を写す。ログには出さない）。
+# - 本番のデータをコピーしたあと、学生・企業・問い合わせの名前・メールアドレス・電話番号・メッセージなどを架空のものに置き換える。
+# - 試験環境ではメールは info@ にだけ届き、予約の処理（wp-cron）は動かない（テーマの inc/staging.php）。
+# 本番のファイルとデータベースは読むだけで、書き換えない。
+on:
+  push:
+    branches:
+      - claude/zaito-job-site-uqgb9o
+    paths:
+      - ".github/workflows/staging-setup.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # テーマは本番からではなく、このリポジトリから出す（入口の制限が入ったテーマを、データより先に置くため）。
+      - name: Deploy theme from the repository
+        run: |
+          cd wordpress-theme/zaito
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+          printf 'Require all denied\n' > vendor/.htaccess
+          cd ../..
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            "mkdir -p zaito-work.com/public_html/staging.zaito-work.com/wp-content/themes/zaito"
+          rsync -az --delete -e "ssh -p ${{ secrets.XSERVER_PORT }}" wordpress-theme/zaito/ \
+            ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:zaito-work.com/public_html/staging.zaito-work.com/wp-content/themes/zaito/
+
+      - name: Build staging site
+        run: |
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} 'bash -s' <<'EOF'
+          set -eu
+          P=~/zaito-work.com/public_html
+          S=$P/staging.zaito-work.com
+          URL=https://staging.zaito-work.com
+          [ -d "$S" ] || { echo "試験環境のフォルダがないので中止"; exit 1; }
+
+          PROD_DB=$(wp config get DB_NAME --path="$P")
+          [ "$PROD_DB" = "zaito_wp1" ] || { echo "本番のデータベース名が想定と違うので中止"; exit 1; }
+
+          echo "== 1. WordPress本体（本番と同じ版）"
+          VER=$(wp core version --path="$P")
+          if [ ! -f "$S/wp-load.php" ]; then
+            rm -f "$S/index.html"
+            wp core download --path="$S" --version="$VER" --locale=ja --skip-content --quiet
+          fi
+          echo "版: $VER"
+
+          echo "== 2. wp-config.php（接続先は zaito_stg。ログには出さない）"
+          if [ ! -f "$S/wp-config.php" ]; then
+            umask 077
+            wp config create --path="$S" --dbname=zaito_stg \
+              --dbuser="$(wp config get DB_USER --path="$P")" \
+              --dbpass="$(wp config get DB_PASSWORD --path="$P")" \
+              --dbhost="$(wp config get DB_HOST --path="$P")" \
+              --dbprefix="$(wp config get table_prefix --path="$P")" \
+              --locale=ja --skip-check --quiet
+            wp config set ZAITO_STAGING true --raw --path="$S" --quiet
+            wp config set WP_ENVIRONMENT_TYPE staging --path="$S" --quiet
+            wp config set DISABLE_WP_CRON true --raw --path="$S" --quiet
+            wp config set WP_HOME "$URL" --path="$S" --quiet
+            wp config set WP_SITEURL "$URL" --path="$S" --quiet
+            umask 022
+          fi
+          [ "$(wp config get DB_NAME --path="$S")" = "zaito_stg" ] || { echo "試験環境の接続先が zaito_stg ではないので中止"; exit 1; }
+
+          echo "== 3. .htaccess（パーマリンク。staging 以外のホスト名で来たら試験環境のトップへ）"
+          cat > "$S/.htaccess" <<'HT'
+          <IfModule mod_rewrite.c>
+          RewriteEngine On
+          RewriteCond %{HTTP_HOST} !^staging\.zaito-work\.com$ [NC]
+          RewriteRule ^ https://staging.zaito-work.com/ [R=301,L]
+          </IfModule>
+          # BEGIN WordPress
+          <IfModule mod_rewrite.c>
+          RewriteEngine On
+          RewriteBase /
+          RewriteRule ^index\.php$ - [L]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /index.php [L]
+          </IfModule>
+          # END WordPress
+          HT
+
+          echo "== 4. プラグイン・画像・言語ファイルを本番からコピー"
+          mkdir -p "$S/wp-content/plugins" "$S/wp-content/uploads" "$S/wp-content/languages"
+          rsync -a --delete "$P/wp-content/plugins/" "$S/wp-content/plugins/"
+          rsync -a --delete "$P/wp-content/uploads/" "$S/wp-content/uploads/"
+          [ -d "$P/wp-content/languages" ] && rsync -a --delete "$P/wp-content/languages/" "$S/wp-content/languages/"
+          [ -d "$P/wp-content/mu-plugins" ] && rsync -a --delete "$P/wp-content/mu-plugins/" "$S/wp-content/mu-plugins/"
+
+          echo "== 5. 本番のデータベースをコピー"
+          wp db export --path="$P" - | wp db import --path="$S" - >/dev/null
+          wp search-replace 'https://zaito-work.com' "$URL" --path="$S" --all-tables-with-prefix --skip-columns=guid --quiet
+          wp search-replace 'http://zaito-work.com' "$URL" --path="$S" --all-tables-with-prefix --skip-columns=guid --quiet
+          wp option update blog_public 0 --path="$S" --quiet
+
+          echo "== 6. 個人情報を架空のものに置き換える"
+          X=$(wp config get table_prefix --path="$S")
+          T="'zaito_interest','zaito_application','zaito_message','zaito_company_lead'"
+          wp db query --path="$S" "
+          UPDATE ${X}postmeta pm JOIN ${X}posts p ON p.ID = pm.post_id
+          SET pm.meta_value = CASE
+            WHEN pm.meta_key = 'email' THEN CONCAT('stg+', pm.post_id, '@example.invalid')
+            WHEN pm.meta_key IN ('name','first_name','last_name','applicant_name','sender_name') THEN CONCAT('テスト', pm.post_id)
+            WHEN pm.meta_key IN ('school','applicant_school') THEN 'テスト大学'
+            WHEN pm.meta_key IN ('tel','line_user_id','memo','referrer','lp_token','screening_answer','message','last_message_text','fee_note') THEN ''
+            WHEN pm.meta_value LIKE '%@%' AND pm.meta_value NOT LIKE 'a:%' THEN CONCAT('stg+', pm.post_id, '-', pm.meta_id, '@example.invalid')
+            ELSE pm.meta_value END
+          WHERE p.post_type IN ($T);
+          UPDATE ${X}posts SET post_title = CONCAT(post_type, '-', ID), post_name = CONCAT(post_type, '-', ID), post_excerpt = ''
+          WHERE post_type IN ($T);
+          UPDATE ${X}posts SET post_content = '（試験環境のため本文を消しました）'
+          WHERE post_type IN ('zaito_interest','zaito_application','zaito_message','zaito_company_lead');
+          UPDATE ${X}users SET user_email = CONCAT('stg+u', ID, '@example.invalid'), user_login = CONCAT('user', ID),
+            user_nicename = CONCAT('user', ID), display_name = CONCAT('テストユーザー', ID), user_url = ''
+          WHERE ID NOT IN (SELECT user_id FROM ${X}usermeta WHERE meta_key = '${X}capabilities' AND meta_value LIKE '%administrator%');
+          UPDATE ${X}usermeta SET meta_value = CONCAT('テスト', user_id)
+          WHERE meta_key IN ('first_name','last_name','nickname')
+            AND user_id NOT IN (SELECT user_id FROM (SELECT user_id FROM ${X}usermeta WHERE meta_key = '${X}capabilities' AND meta_value LIKE '%administrator%') a);
+          DELETE FROM ${X}usermeta WHERE meta_key = 'session_tokens';
+          DELETE FROM ${X}options WHERE option_name LIKE '\_transient\_%' OR option_name LIKE '\_site\_transient\_%';
+          "
+
+          echo "== 7. 確かめる"
+          echo "本物らしいメールアドレスが残っている数（登録・応募・メッセージ・問い合わせ・ユーザー）:"
+          wp db query --path="$S" --skip-column-names "
+          SELECT COUNT(*) FROM ${X}postmeta pm JOIN ${X}posts p ON p.ID = pm.post_id
+          WHERE p.post_type IN ($T) AND pm.meta_value LIKE '%@%' AND pm.meta_value NOT LIKE '%@example.invalid%';
+          SELECT COUNT(*) FROM ${X}users WHERE user_email NOT LIKE '%@example.invalid'
+            AND ID NOT IN (SELECT user_id FROM ${X}usermeta WHERE meta_key = '${X}capabilities' AND meta_value LIKE '%administrator%');
+          "
+          echo "件数:"
+          for t in zaito_interest zaito_application zaito_message zaito_company_lead job_listing; do
+            echo "  $t: $(wp post list --path="$S" --post_type=$t --post_status=any --format=count)"
+          done
+          echo "トップページ（合鍵なしなら 403 が正しい）: $(curl -s -o /dev/null -w '%{http_code}' "$URL/")"
+          echo "ログイン画面（合鍵なしなら 403 が正しい）: $(curl -s -o /dev/null -w '%{http_code}' "$URL/wp-login.php")"
+          EOF

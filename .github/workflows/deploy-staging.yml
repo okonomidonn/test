@@ -1,0 +1,49 @@
+name: Deploy WordPress Theme to staging (試験環境)
+
+# push すると、まず試験環境（https://staging.zaito-work.com/）にテーマを出す。本番には出さない。
+# 本番に出すときは deploy-wordpress.yml を GitHub の Actions から手で動かす。
+on:
+  push:
+    branches:
+      - claude/zaito-job-site-uqgb9o
+    paths:
+      - "wordpress-theme/**"
+  workflow_dispatch:
+
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Install PHP libraries (Anthropic SDK)
+        run: |
+          cd wordpress-theme/zaito
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+          printf 'Require all denied\n' > vendor/.htaccess
+
+      - name: Deploy theme via rsync
+        run: |
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            "mkdir -p zaito-work.com/public_html/staging.zaito-work.com/wp-content/themes/zaito"
+          rsync -az --delete \
+            -e "ssh -p ${{ secrets.XSERVER_PORT }}" \
+            wordpress-theme/zaito/ \
+            ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:zaito-work.com/public_html/staging.zaito-work.com/wp-content/themes/zaito/
+          echo "試験環境に出しました: https://staging.zaito-work.com/ （入り方：本番に管理者でログインして https://zaito-work.com/?zaito_staging を開く）"
