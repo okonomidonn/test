@@ -1,6 +1,6 @@
 <?php
 /**
- * サーバーのCronから毎日動かす：まとめ求人の募集終了チェック（inc/job-check.php）。
+ * サーバーのCronから毎日動かす：まとめ求人の募集終了チェック（inc/job-check.php）と、90日たった面接動画の削除。
  * ブラウザからは動かさない（コマンドラインのときだけ動く）。
  * Cronのコマンド: /usr/bin/php8.3 zaito-work.com/public_html/wp-content/themes/zaito/cron/check-closed.php
  */
@@ -16,3 +16,7 @@ require dirname( __DIR__, 4 ) . '/wp-load.php';
 set_time_limit( 0 );
 $r = zaito_job_check_run();
 echo 'checked ' . $r['checked'] . ', closed ' . count( $r['new_closed'] ) . ', notes ' . count( $r['notes'] ) . "\n";
+// 動画で答える応募：応募から90日たった動画を消す（inc/video-interview.php）。件数だけ出す。
+if ( function_exists( 'zaito_video_purge' ) ) {
+    echo 'video purged ' . zaito_video_purge() . "\n";
+}

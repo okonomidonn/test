@@ -202,6 +202,7 @@ function zaito_direct_job_array( $p ) {
         'owner'    => $owner,
         'content'  => $p->post_content,
         'question' => (string) get_post_meta( $p->ID, '_job_screening_question', true ),
+        'video_q'  => zaito_video_job_questions( $p->ID ),
         'tags'     => is_array( $tags ) ? array_values( $tags ) : array(),
     );
 }
@@ -247,6 +248,8 @@ function zaito_direct_applications( $by, $id = 0, $status = '' ) {
     $mq = array( array( 'key' => 'interest_id', 'compare' => 'EXISTS' ) );
     if ( 'company' === $by ) {
         $mq[] = array( 'key' => 'company_id', 'value' => (int) $id );
+        // 動画の回答がまだの応募は、企業には見せない（inc/video-interview.php）。
+        $mq[] = array( 'key' => 'company_hidden', 'compare' => 'NOT EXISTS' );
     } elseif ( 'interest' === $by ) {
         $mq[] = array( 'key' => 'interest_id', 'value' => (int) $id );
     }
@@ -379,21 +382,32 @@ function zaito_handle_direct_apply() {
     // 応募の内容を、やりとりの最初のメッセージとして残す。
     $first = $message . ( $job['question'] ? "\n\n【" . $job['question'] . "】\n" . $answer : '' );
     zaito_direct_add_message( $app_id, 'student', $me, $first, false );
-
-    // 企業が決めた「応募直後の自動メッセージ」。
-    $auto = trim( (string) get_post_meta( $job_id, '_job_auto_reply_message', true ) );
-    if ( '' === $auto ) {
-        $auto = trim( (string) get_user_meta( $job['owner'], 'auto_reply_message', true ) );
-    }
-    if ( '' !== $auto ) {
-        zaito_direct_add_message( $app_id, 'company', (int) $job['owner'], $auto, false );
-    }
-
-    zaito_direct_notify_company_new_application( $app_id );
     do_action( 'zaito_direct_applied', $app_id );
+
+    // 動画で答える求人は、録画の画面へ。企業に知らせるのは、回答を送ったとき（inc/video-interview.php）。
+    if ( zaito_video_start( $app_id, $job_id ) ) {
+        wp_safe_redirect( zaito_video_interview_url( $app_id ) );
+        exit;
+    }
+    zaito_direct_complete_application( $app_id );
 
     wp_safe_redirect( add_query_arg( 'applied', '1', zaito_direct_chat_url( $app_id ) ) );
     exit;
+}
+
+/** 応募がそろったとき（動画のない求人は応募した直後、動画で答える求人は回答を送ったとき）。自動メッセージを足し、企業に知らせる。 */
+function zaito_direct_complete_application( $app_id ) {
+    $job_id = (int) get_post_meta( $app_id, 'job_id', true );
+    $owner  = (int) get_post_meta( $app_id, 'company_id', true );
+    // 企業が決めた「応募直後の自動メッセージ」。
+    $auto = trim( (string) get_post_meta( $job_id, '_job_auto_reply_message', true ) );
+    if ( '' === $auto ) {
+        $auto = trim( (string) get_user_meta( $owner, 'auto_reply_message', true ) );
+    }
+    if ( '' !== $auto ) {
+        zaito_direct_add_message( $app_id, 'company', $owner, $auto, false );
+    }
+    zaito_direct_notify_company_new_application( $app_id );
 }
 add_action( 'admin_post_zaito_direct_apply', 'zaito_handle_direct_apply' );
 add_action( 'admin_post_nopriv_zaito_direct_apply', 'zaito_handle_direct_apply' );
@@ -413,7 +427,7 @@ function zaito_direct_viewer_role( $app_id ) {
     }
     if ( is_user_logged_in() ) {
         $uid = get_current_user_id();
-        if ( $uid === (int) get_post_meta( $app_id, 'company_id', true ) ) {
+        if ( $uid === (int) get_post_meta( $app_id, 'company_id', true ) && ! get_post_meta( $app_id, 'company_hidden', true ) ) {
             return 'company';
         }
         if ( current_user_can( 'manage_options' ) ) {
@@ -651,13 +665,15 @@ function zaito_direct_my_apps( $interest_id ) {
     $labels = zaito_direct_app_statuses();
     foreach ( zaito_direct_applications( 'interest', $interest_id ) as $a ) {
         $job = get_post( (int) get_post_meta( $a->ID, 'job_id', true ) );
+        $pending = 'pending' === zaito_video_status( $a->ID ) && 'declined' !== zaito_direct_app_status( $a->ID );
         $out[] = array(
             'title'   => $job ? $job->post_title : '（削除された求人）',
             'company' => zaito_company_name( (int) get_post_meta( $a->ID, 'company_id', true ) ),
-            'status'  => $labels[ zaito_direct_app_status( $a->ID ) ],
-            'unread'  => (bool) get_post_meta( $a->ID, 'unread_student', true ),
+            // 動画の回答がまだなら、それを伝えて録画の画面へ。
+            'status'  => $pending ? '動画の回答がまだです' : $labels[ zaito_direct_app_status( $a->ID ) ],
+            'unread'  => $pending || (bool) get_post_meta( $a->ID, 'unread_student', true ),
             'date'    => get_the_date( 'n月j日', $a ),
-            'url'     => zaito_direct_chat_url( $a->ID ),
+            'url'     => $pending ? zaito_video_interview_url( $a->ID ) : zaito_direct_chat_url( $a->ID ),
         );
     }
     return $out;
@@ -665,5 +681,6 @@ function zaito_direct_my_apps( $interest_id ) {
 
 /* ---------- 運営の管理画面 ---------- */
 
+require_once __DIR__ . '/video-interview.php';
 require_once __DIR__ . '/direct-admin.php';
 require_once __DIR__ . '/direct-company.php';

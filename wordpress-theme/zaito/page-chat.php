@@ -53,6 +53,11 @@ if ( $zaito_can ) {
     delete_post_meta( $zaito_app, 'unread_' . $zaito_viewer );
 }
 $zaito_job_url = $zaito_job && 'publish' === $zaito_job->post_status ? home_url( '/remote/' . zaito_direct_slug( $zaito_job->ID ) . '/' ) : '';
+// 動画で答える応募（inc/video-interview.php）。
+$zaito_vs      = zaito_video_status( $zaito_app );
+$zaito_vq      = zaito_video_questions( $zaito_app );
+$zaito_vfiles  = zaito_video_files( $zaito_app );
+$zaito_can_wd  = 'student' === $zaito_viewer && in_array( $zaito_st, array( 'new', 'talking', 'interview' ), true );
 
 zaito_biz_head( $zaito_is_co ? $zaito_name . 'さんとのメッセージ' : 'メッセージ' );
 ?>
@@ -68,6 +73,40 @@ if ( $zaito_is_co ) {
   <div>
     <?php if ( isset( $_GET['applied'] ) && 'student' === $zaito_viewer ) : ?>
       <div class="note n-ok"><span class="ms" aria-hidden="true">check_circle</span><div><b>応募しました</b><p>企業から返信があると、メールでお知らせします。このページはマイページの「応募した求人」からいつでも開けます。</p></div></div>
+    <?php endif; ?>
+    <?php if ( isset( $_GET['withdrawn'] ) && 'student' === $zaito_viewer ) : ?>
+      <div class="note n-info"><span class="ms" aria-hidden="true">undo</span><div><b>応募を取り消しました</b><p>動画の回答があった場合は、すでに消しました。</p></div></div>
+    <?php endif; ?>
+    <?php if ( 'student' === $zaito_viewer && 'pending' === $zaito_vs && 'declined' !== $zaito_st ) : ?>
+      <div class="note n-warn"><span class="ms" aria-hidden="true">videocam</span><div><b>動画の回答がまだです</b><p>質問<?php echo count( $zaito_vq ); ?>問に動画で答えると、応募が<?php echo esc_html( zaito_company_name( $zaito_company ) ); ?>に届きます。</p>
+        <a class="btn btn-p" href="<?php echo esc_url( zaito_video_interview_url( $zaito_app ) ); ?>" style="margin-top:4px">動画で質問に答える</a></div></div>
+    <?php endif; ?>
+    <?php if ( in_array( $zaito_viewer, array( 'company', 'admin' ), true ) && '' !== $zaito_vs ) : ?>
+      <section class="side-card" aria-labelledby="zvid-t" style="margin-bottom:12px">
+        <h3 id="zvid-t">動画の回答</h3>
+        <?php if ( 'done' === $zaito_vs ) : ?>
+          <p style="margin:0 0 8px">応募から90日（<?php echo esc_html( zaito_video_expire_label( $zaito_app ) ); ?>）で自動で消えます。zaitoは点数を付けたり、合否をすすめたりしません。</p>
+          <div class="zvid-speed" role="group" aria-label="再生の速さ" style="display:flex;gap:6px;margin:0 0 8px">
+            <?php foreach ( array( '1', '1.5', '2' ) as $zaito_r ) : ?>
+              <button type="button" class="btn btn-g" data-r="<?php echo esc_attr( $zaito_r ); ?>" aria-pressed="<?php echo '1' === $zaito_r ? 'true' : 'false'; ?>" style="min-height:32px;padding:0 12px"><?php echo esc_html( $zaito_r ); ?>倍</button>
+            <?php endforeach; ?>
+          </div>
+          <?php foreach ( $zaito_vq as $zaito_i => $zaito_q ) : ?>
+            <div style="margin-top:12px">
+              <p style="margin:0 0 6px;font-weight:700">Q<?php echo (int) ( $zaito_i + 1 ); ?>. <?php echo esc_html( $zaito_q ); ?></p>
+              <?php if ( ! empty( $zaito_vfiles[ $zaito_i ]['file'] ) ) : ?>
+                <video class="zvid" src="<?php echo esc_url( zaito_video_play_url( $zaito_app, $zaito_i ) ); ?>" controls playsinline preload="metadata" controlslist="nodownload" disablepictureinpicture oncontextmenu="return false" style="width:100%;max-height:360px;border-radius:10px;background:#000"></video>
+              <?php else : ?>
+                <p style="margin:0;color:var(--z-text-3)">回答がありません</p>
+              <?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        <?php elseif ( 'pending' === $zaito_vs ) : ?>
+          <p style="margin:0">応募者が回答の途中です（運営だけに見えています）。</p>
+        <?php else : ?>
+          <p style="margin:0"><?php echo 'withdrawn' === get_post_meta( $zaito_app, 'video_deleted_reason', true ) ? '応募が取り消されたため、動画は消しました。' : '保存期間（応募から90日）を過ぎたため、動画は消しました。'; ?></p>
+        <?php endif; ?>
+      </section>
     <?php endif; ?>
     <?php if ( 'admin' === $zaito_viewer ) : ?>
       <div class="note n-info"><span class="ms" aria-hidden="true">visibility_off</span><div><b>運営として閲覧しています</b><p>運営は読むだけで、送ることはできません。</p></div></div>
@@ -145,6 +184,18 @@ if ( $zaito_is_co ) {
         </dl>
         <?php if ( $zaito_job_url ) : ?><a class="btn btn-g" href="<?php echo esc_url( $zaito_job_url ); ?>">求人の詳細を見る</a><?php endif; ?>
       </div>
+      <?php if ( $zaito_can_wd ) : ?>
+        <div class="side-card">
+          <h3>応募の取り消し</h3>
+          <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('応募を取り消しますか？動画の回答があれば、すぐに消えます。元には戻せません。')">
+            <input type="hidden" name="action" value="zaito_direct_withdraw">
+            <input type="hidden" name="c" value="<?php echo (int) $zaito_app; ?>">
+            <?php wp_nonce_field( 'zaito_direct_withdraw_' . $zaito_app ); ?>
+            <button type="submit" class="btn btn-g">応募を取り消す</button>
+          </form>
+          <p style="margin-top:10px">取り消すと、動画の回答はその場で消えます。</p>
+        </div>
+      <?php endif; ?>
       <div class="side-card">
         <h3>安心して進めるために</h3>
         <ul>
@@ -229,6 +280,16 @@ if ( ! $zaito_is_co ) {
       }).catch(function () { btn.disabled = false; err.textContent = '送れませんでした。通信を確認してください'; });
     });
   }
+  // 動画の再生の速さ（すべての回答にまとめてかける）。
+  var rate = 1;
+  document.querySelectorAll('.zvid-speed button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      rate = +b.getAttribute('data-r');
+      document.querySelectorAll('.zvid-speed button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      document.querySelectorAll('video.zvid').forEach(function (v) { v.playbackRate = rate; });
+    });
+  });
+  document.querySelectorAll('video.zvid').forEach(function (v) { v.addEventListener('play', function () { v.playbackRate = rate; }); });
   var st = document.getElementById('zstatus');
   if (st) {
     st.addEventListener('submit', function (e) {

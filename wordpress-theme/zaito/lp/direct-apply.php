@@ -125,7 +125,14 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
       <?php endif; ?>
     </div>
 
-    <button type="submit" class="btn btn-p btn-lg">応募する</button>
+    <?php if ( ! empty( $zaito_j['video_q'] ) ) : ?>
+      <div class="fcard">
+        <h2>応募のあとに、動画で質問に答えます</h2>
+        <p>「応募に進む」を押すと、<?php echo esc_html( $zaito_j['company'] ); ?>からの質問<?php echo count( $zaito_j['video_q'] ); ?>問に、この画面の続きで動画で答えます（1問60秒まで・全部で約<?php echo (int) max( 3, ceil( count( $zaito_j['video_q'] ) * 1.5 ) + 1 ); ?>分）。質問は、録画の直前に1問ずつ出ます。</p>
+        <p>カメラとマイクを使います。iPhoneはSafari、AndroidはChromeで開いてください。動画は応募先の企業とzaitoの運営だけが見られ、応募から90日で自動で消えます。動画を送り終えるまで、応募は企業に届きません。</p>
+      </div>
+    <?php endif; ?>
+    <button type="submit" class="btn btn-p btn-lg"><?php echo empty( $zaito_j['video_q'] ) ? '応募する' : '応募に進む（このあと動画で答えます）'; ?></button>
     <p class="legal">応募すると、<a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>と<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a>に同意し、上の内容を<?php echo esc_html( $zaito_j['company'] ); ?>に伝えることに同意したものとみなします。</p>
   </form>
   <script>

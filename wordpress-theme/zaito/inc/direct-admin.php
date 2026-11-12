@@ -208,6 +208,9 @@ function zaito_direct_admin_tab_jobs() {
         foreach ( $fields as $k => $label ) {
             echo '<tr><th style="width:140px">' . esc_html( $label ) . '</th><td>' . esc_html( get_post_meta( $p->ID, $k, true ) ) . '</td></tr>';
         }
+        // 動画で答える質問。採用で聞いてはいけないこと（家族・出身地・宗教など）が入っていないかを、審査で見る。
+        $vq = zaito_video_job_questions( $p->ID );
+        echo '<tr><th>動画で答える質問</th><td>' . ( $vq ? '<ol style="margin:0 0 0 18px">' . implode( '', array_map( function ( $q ) { return '<li>' . esc_html( $q ) . '</li>'; }, $vq ) ) . '</ol><span style="color:#646970">家族・出身地・宗教・支持政党など、採用で聞いてはいけないことがないか確かめる</span>' : 'なし' ) . '</td></tr>';
         echo '<tr><th>出社なしの確認</th><td>' . ( get_post_meta( $p->ID, '_job_confirm_remote', true ) ? '企業が確認済み' : '<b style="color:#d63638">未確認</b>' ) . '</td></tr>';
         echo '<tr><th>仕事内容</th><td>' . nl2br( esc_html( $p->post_content ) ) . '</td></tr>';
         echo '</tbody></table>';

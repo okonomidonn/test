@@ -136,7 +136,7 @@ function zaito_direct_job_form_values( $job_id = 0 ) {
     $v = array(
         'title' => '', 'category' => '', 'summary' => '', 'content' => '', 'contract' => '',
         'pay_type' => '時給', 'pay_min' => '', 'pay_max' => '', 'hours' => '', 'target' => '',
-        'tags' => array(), 'question' => '', 'auto_reply' => '', 'confirm_remote' => false, 'confirm_fee' => false,
+        'tags' => array(), 'question' => '', 'video_q' => array(), 'auto_reply' => '', 'confirm_remote' => false, 'confirm_fee' => false,
     );
     if ( $job_id ) {
         $p = get_post( $job_id );
@@ -154,6 +154,7 @@ function zaito_direct_job_form_values( $job_id = 0 ) {
         $v['tags']           = is_array( $tags ) ? $tags : array();
         $v['question']       = (string) get_post_meta( $job_id, '_job_screening_question', true );
         $v['auto_reply']     = (string) get_post_meta( $job_id, '_job_auto_reply_message', true );
+        $v['video_q']        = zaito_video_job_questions( $job_id );
         $v['confirm_remote'] = (bool) get_post_meta( $job_id, '_job_confirm_remote', true );
         $v['confirm_fee']    = (bool) get_post_meta( $job_id, '_job_confirm_fee', true );
     }
@@ -192,6 +193,15 @@ function zaito_handle_direct_save_job() {
     $target   = zaito_direct_post_text( 'target', 160 );
     $question = zaito_direct_post_text( 'question', 200 );
     $auto     = zaito_direct_post_textarea( 'auto_reply', 1000 );
+    $video_q  = array();
+    if ( isset( $_POST['video_q'] ) && is_array( $_POST['video_q'] ) ) {
+        foreach ( array_slice( wp_unslash( $_POST['video_q'] ), 0, zaito_video_max_questions() ) as $zaito_q ) {
+            $zaito_q = mb_substr( trim( sanitize_text_field( (string) $zaito_q ) ), 0, 120 );
+            if ( '' !== $zaito_q ) {
+                $video_q[] = $zaito_q;
+            }
+        }
+    }
     $tags     = isset( $_POST['tags'] ) && is_array( $_POST['tags'] ) ? array_values( array_intersect( array_map( 'sanitize_key', wp_unslash( $_POST['tags'] ) ), array_keys( zaito_direct_tag_options() ) ) ) : array();
     $c_remote = ! empty( $_POST['confirm_remote'] );
     $c_fee    = ! empty( $_POST['confirm_fee'] );
@@ -277,6 +287,7 @@ function zaito_handle_direct_save_job() {
         '_job_tags'               => $tags,
         '_job_screening_question' => $question,
         '_job_auto_reply_message' => $auto,
+        '_job_video_questions'    => $video_q,
         '_job_confirm_remote'     => $c_remote ? '1' : '',
         '_job_confirm_fee'        => $c_fee ? '1' : '',
     ) as $k => $val ) {

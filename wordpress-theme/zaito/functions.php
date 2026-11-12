@@ -255,6 +255,7 @@ function zaito_virtual_route_map() {
         'jobs'             => 'page-jobs.php',
         'apply'            => 'page-apply.php',
         'chat'             => 'page-chat.php',
+        'interview'        => 'page-interview.php',
         'interest'         => 'page-interest.php',
         'company-profile'  => 'page-company-profile.php',
     );
@@ -328,7 +329,7 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '19';
+    $version = '20'; // 20: /interview/（動画で答える応募）
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );

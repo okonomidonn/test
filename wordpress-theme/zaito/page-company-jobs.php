@@ -31,7 +31,7 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
       <?php foreach ( $zaito_jobs as $zaito_p ) : ?>
         <?php
         $zaito_s    = zaito_direct_job_state( $zaito_p );
-        $zaito_apps = count( get_posts( array( 'post_type' => 'zaito_application', 'post_status' => 'any', 'posts_per_page' => 500, 'fields' => 'ids', 'meta_query' => array( array( 'key' => 'job_id', 'value' => $zaito_p->ID ) ) ) ) );
+        $zaito_apps = count( get_posts( array( 'post_type' => 'zaito_application', 'post_status' => 'any', 'posts_per_page' => 500, 'fields' => 'ids', 'meta_query' => array( array( 'key' => 'job_id', 'value' => $zaito_p->ID ), array( 'key' => 'company_hidden', 'compare' => 'NOT EXISTS' ) ) ) ) );
         $zaito_note = 'returned' === $zaito_s[0] ? (string) get_post_meta( $zaito_p->ID, '_zaito_review_note', true ) : '';
         ?>
         <li>
@@ -124,6 +124,12 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
     <div class="fcard">
       <h2>応募の受け付け</h2>
       <div class="fld"><label for="zquestion">応募者への質問<span class="opt">任意</span></label><input type="text" id="zquestion" name="question" maxlength="200" value="<?php echo esc_attr( $zaito_v['question'] ); ?>" placeholder="例：週に何時間くらい働けそうですか？"></div>
+      <fieldset class="fld"><legend>動画で答える質問<span class="opt">任意・5問まで</span></legend>
+        <p class="hint" style="margin-top:0">入れると、応募した人がzaitoの応募画面で、この質問に動画で答えます（1問60秒まで・考える時間20秒・撮り直し1回）。回答はこの画面の「応募者」で見られ、応募から90日で自動で消えます。家族・出身地・宗教・支持政党など、採用で聞いてはいけないことは入れないでください。</p>
+        <?php for ( $zaito_qi = 0; $zaito_qi < zaito_video_max_questions(); $zaito_qi++ ) : ?>
+          <input type="text" name="video_q[]" maxlength="120" aria-label="動画で答える質問<?php echo (int) ( $zaito_qi + 1 ); ?>" value="<?php echo esc_attr( isset( $zaito_v['video_q'][ $zaito_qi ] ) ? $zaito_v['video_q'][ $zaito_qi ] : '' ); ?>" placeholder="<?php echo esc_attr( 0 === $zaito_qi ? '例：自己紹介と、この仕事に応募した理由を教えてください。' : ( 1 === $zaito_qi ? '例：週に何日、どの時間帯なら働けますか。' : '質問' . ( $zaito_qi + 1 ) ) ); ?>" style="margin-top:6px">
+        <?php endfor; ?>
+      </fieldset>
       <div class="fld"><label for="zauto">応募直後の自動メッセージ<span class="opt">任意</span></label><textarea id="zauto" name="auto_reply" rows="4" placeholder="例：ご応募ありがとうございます。2営業日以内に、面談の日程についてご連絡します。"><?php echo esc_textarea( $zaito_v['auto_reply'] ); ?></textarea><p class="hint">空欄なら、「会社情報」の文面を送ります。</p></div>
     </div>
 
