@@ -59,7 +59,7 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
     <ol class="flow4 flow3">
       <li><b>学生が録画で答える</b><span>応募するときに、御社の質問にその場で答えます。</span></li>
       <li><b>回答を見て選ぶ</b><span>空いた時間に回答を見て、会いたい学生を選びます。</span></li>
-      <li><b>選んだ学生と話す</b><span>選んだ学生とだけ、オンラインで話せます。日程は学生が候補から選びます。</span></li>
+      <li><b>選んだ学生と話す</b><span>選んだ学生とだけ、オンラインで話せます。</span></li>
     </ol>
     <div class="iv-figs">
       <figure>
