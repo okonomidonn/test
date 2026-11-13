@@ -128,10 +128,29 @@ function zaito_staging_mail( $args ) {
 add_filter( 'wp_mail', 'zaito_staging_mail', PHP_INT_MAX );
 
 /** 4. 「試験環境」の印。押すと試験用の操作パネル（/?zaito_stg_panel）を開く。 */
-function zaito_staging_badge() {
-	echo '<a href="' . esc_url( home_url( '/?zaito_stg_panel=1' ) ) . '" style="position:fixed;left:8px;bottom:8px;z-index:99999;background:#c62828;color:#fff;font:bold 12px/1 sans-serif;padding:8px 12px;border-radius:4px;text-decoration:none">試験環境（操作パネル）</a>';
+function zaito_staging_badge_html() {
+	return '<a href="' . esc_url( home_url( '/?zaito_stg_panel=1' ) ) . '" style="position:fixed;left:8px;bottom:8px;z-index:99999;background:#c62828;color:#fff;font:bold 12px/1 sans-serif;padding:8px 12px;border-radius:4px;text-decoration:none">試験環境（操作パネル）</a>';
 }
-add_action( 'wp_footer', 'zaito_staging_badge' );
+function zaito_staging_badge() {
+	echo zaito_staging_badge_html(); // phpcs:ignore WordPress.Security.EscapeOutput -- 中でエスケープ済み
+}
+// zaitoのページの多くは独自のフッターで wp_footer を通らないので、ページの最後（</body> の前）に差し込む。
+add_action(
+	'template_redirect',
+	function () {
+		ob_start(
+			function ( $html ) {
+				$pos = strripos( $html, '</body>' );
+				if ( false === $pos ) {
+					return $html;
+				}
+				// ここ（出力の後始末の中）では ob_start が使えないので、文字列で足す。
+				return substr( $html, 0, $pos ) . zaito_staging_badge_html() . substr( $html, $pos );
+			}
+		);
+	},
+	-200
+);
 add_action( 'admin_footer', 'zaito_staging_badge' );
 add_action( 'login_footer', 'zaito_staging_badge' );
 
