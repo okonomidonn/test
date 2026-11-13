@@ -252,6 +252,64 @@ function zaito_staging_seed() {
 	return $ids;
 }
 
+/**
+ * 録画せずに、メッセージの画面をすぐ見られるサンプルの応募を作る（テスト用の学生 → テスト用の求人）。
+ * 動画は、テーマの demo/sample-answer.mp4（テスト用の映像）を質問の数だけ置く。メールは送らない。
+ */
+function zaito_staging_sample_application() {
+	$ids = zaito_staging_seed(); // 前の応募は消して、作り直す。
+	$app = (int) wp_insert_post( array(
+		'post_type'   => 'zaito_application',
+		'post_title'  => 'テスト 学生 → テスト株式会社（試験用）「【試験用】オンライン塾講師」（サンプル）',
+		'post_status' => 'publish',
+	) );
+	if ( ! $app ) {
+		return 0;
+	}
+	$qs  = zaito_video_job_questions( $ids['job'] );
+	$now = current_time( 'mysql' );
+	foreach ( array(
+		'interest_id'        => $ids['student'],
+		'job_id'             => $ids['job'],
+		'company_id'         => $ids['company'],
+		'status'             => 'new',
+		'status_at'          => $now,
+		'applicant_name'     => 'テスト 学生',
+		'applicant_role'     => '大学生',
+		'applicant_grade'    => '2年',
+		'applicant_school'   => 'テスト大学',
+		'message'            => 'テスト大学2年のテスト学生です。授業のあと、平日の夜に週2日ほど働けます。（サンプルの応募）',
+		'screening_question' => '',
+		'screening_answer'   => '',
+		'video_status'       => 'done',
+		'video_questions'    => $qs,
+		'video_done_at'      => $now,
+	) as $k => $v ) {
+		update_post_meta( $app, $k, $v );
+	}
+	// 回答の動画（テスト用の映像）を、質問の数だけ置く。
+	$src   = get_template_directory() . '/demo/sample-answer.mp4';
+	$dir   = zaito_video_app_dir( $app, true );
+	$files = array();
+	foreach ( array_keys( $qs ) as $i ) {
+		if ( $dir && is_readable( $src ) && copy( $src, $dir . '/q' . $i . '.mp4' ) ) {
+			@chmod( $dir . '/q' . $i . '.mp4', 0600 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+			$files[ $i ] = array( 'file' => 'q' . $i . '.mp4', 'mime' => 'video/mp4', 'size' => filesize( $src ), 'at' => time(), 'tries' => 1 );
+		}
+	}
+	update_post_meta( $app, 'video_files', $files );
+
+	// やりとり（メールは送らない）。
+	zaito_direct_add_message( $app, 'student', $ids['student'], 'テスト大学2年のテスト学生です。授業のあと、平日の夜に週2日ほど働けます。（サンプルの応募）', false );
+	zaito_direct_add_message( $app, 'student', $ids['student'], '動画で質問に答えました（' . count( $qs ) . '問）。', false );
+	zaito_direct_add_message( $app, 'company', $ids['company'], (string) get_post_meta( $ids['job'], '_job_auto_reply_message', true ), false );
+	zaito_direct_add_message( $app, 'company', $ids['company'], "テスト 学生さん、動画の回答を拝見しました。ありがとうございます。\n15分ほどオンラインでお話ししたいのですが、次の日時でご都合はいかがでしょうか。\n・11月18日（水）19:00〜\n・11月19日（木）20:00〜\nZoomのURLは、日程が決まりましたらこちらでお送りします。", false );
+	zaito_direct_add_message( $app, 'student', $ids['student'], 'ご連絡ありがとうございます。11月18日（水）19:00からでお願いします。', false );
+	update_post_meta( $app, 'status', 'talking' );
+	update_post_meta( $app, 'first_reply_at', $now );
+	return $app;
+}
+
 /** 操作パネルの処理と画面。 */
 function zaito_staging_panel() {
 	if ( ! isset( $_GET['zaito_stg_panel'] ) && ! isset( $_GET['zaito_stg_do'] ) ) {
@@ -266,6 +324,13 @@ function zaito_staging_panel() {
 			exit;
 		}
 		$ids = zaito_staging_demo_ids();
+		if ( 'sample' === $do ) {
+			$app = zaito_staging_sample_application();
+			wp_safe_redirect( home_url( '/?zaito_stg_panel=1&sample=' . (int) $app ) );
+			exit;
+		}
+		// 切り替えのあとに開くやりとり（サンプルの応募など）。
+		$open = isset( $_GET['c'] ) ? (int) $_GET['c'] : 0;
 		if ( 'seed' === $do ) {
 			zaito_staging_seed();
 			wp_safe_redirect( home_url( '/?zaito_stg_panel=1&seeded=1' ) );
@@ -275,13 +340,13 @@ function zaito_staging_panel() {
 			wp_clear_auth_cookie();
 			wp_set_current_user( $ids['company'] );
 			wp_set_auth_cookie( $ids['company'], false, true );
-			wp_safe_redirect( home_url( '/company-applicants/' ) );
+			wp_safe_redirect( $open ? zaito_direct_chat_url( $open ) : home_url( '/company-applicants/' ) );
 			exit;
 		}
 		if ( 'student' === $do && $ids['student'] ) {
 			// 企業や管理者のログインを外してから、学生の本人確認のリンク（10分有効）で、テスト用の求人の応募フォームへ。
 			wp_clear_auth_cookie();
-			$next = $ids['job'] ? '/remote/' . zaito_direct_slug( $ids['job'] ) . '/apply/' : '';
+			$next = $open ? '/chat/?c=' . $open : ( $ids['job'] ? '/remote/' . zaito_direct_slug( $ids['job'] ) . '/apply/' : '' );
 			$url  = zaito_my_login_url( $ids['student'], 10 * MINUTE_IN_SECONDS );
 			wp_redirect( $next ? add_query_arg( 'next', rawurlencode( $next ), $url ) : $url );
 			exit;
@@ -300,8 +365,12 @@ function zaito_staging_panel() {
 	if ( $me ) {
 		$who[] = '学生（' . get_post_meta( $me, 'name', true ) . '）';
 	}
-	$btn = function ( $do, $label, $primary = false ) {
-		return '<a class="b' . ( $primary ? ' p' : '' ) . '" href="' . esc_url( add_query_arg( array( 'zaito_stg_do' => $do, 't' => zaito_staging_token( $do ) ), home_url( '/' ) ) ) . '">' . esc_html( $label ) . '</a>';
+	$btn = function ( $do, $label, $primary = false, $c = 0 ) {
+		$args = array( 'zaito_stg_do' => $do, 't' => zaito_staging_token( $do ) );
+		if ( $c ) {
+			$args['c'] = (int) $c;
+		}
+		return '<a class="b' . ( $primary ? ' p' : '' ) . '" href="' . esc_url( add_query_arg( $args, home_url( '/' ) ) ) . '">' . esc_html( $label ) . '</a>';
 	};
 	$app = $ids['student'] ? zaito_direct_applications( 'interest', $ids['student'] ) : array();
 	header( 'Content-Type: text/html; charset=UTF-8' );
@@ -319,6 +388,9 @@ ol{padding-left:20px;margin:0}li{margin-bottom:8px}
 </style></head><body><main>
 <h1>試験環境の操作パネル</h1>
 <p class="n">ここは試験環境（staging.zaito-work.com）だけの画面です。本番には出ません。メールは宛先にかかわらず info@zaito-work.com に届き、件名に本来の宛先が入ります。</p>
+<?php if ( ! empty( $_GET['sample'] ) ) : ?><div class="ok">メッセージつきのサンプルの応募を作りました（動画3本・やりとり5通）。下のボタンから、企業と学生それぞれの画面で開けます。<br>
+<?php echo $btn( 'company', '企業として、このやりとりを開く', true, (int) $_GET['sample'] ); // エスケープ済み ?>
+<?php echo $btn( 'student', '学生として、このやりとりを開く', false, (int) $_GET['sample'] ); // エスケープ済み ?></div><?php endif; ?>
 <?php if ( isset( $_GET['seeded'] ) ) : ?><div class="ok">テスト用の企業・学生・求人を用意しました。テスト用の学生の応募は消したので、最初から試せます。</div><?php endif; ?>
 
 <div class="c"><h2>いまの立場</h2><p style="margin:0"><?php echo esc_html( $who ? implode( '・', $who ) : 'ログインしていません' ); ?></p></div>
@@ -328,8 +400,11 @@ ol{padding-left:20px;margin:0}li{margin-bottom:8px}
 <p style="margin:0 0 8px">企業：テスト株式会社（試験用）／学生：テスト 学生（テスト大学）／求人：<a href="<?php echo esc_url( home_url( '/remote/' . zaito_direct_slug( $ids['job'] ) . '/' ) ); ?>">【試験用】オンライン塾講師</a>（動画で答える質問3問）</p>
 <p class="n" style="margin:0 0 8px">テスト用の学生の応募：<?php echo count( $app ); ?>件<?php echo $app ? '（' . esc_html( zaito_direct_app_statuses()[ zaito_direct_app_status( $app[0]->ID ) ] ) . '・動画 ' . esc_html( array( '' => 'なし', 'pending' => '回答の途中', 'done' => '回答済み', 'deleted' => '消した' )[ zaito_video_status( $app[0]->ID ) ] ) . '）' : ''; ?></p>
 <?php echo $btn( 'seed', '作り直す（テスト用の学生の応募を消す）' ); // エスケープ済み ?>
+<?php echo $btn( 'sample', 'メッセージつきのサンプルの応募を作る（録画なし）', true ); // エスケープ済み ?>
+<p class="n" style="margin:8px 0 0">サンプルの応募は、録画せずにメッセージの画面をすぐ見るためのものです。動画はテスト用の映像で、メールは送りません。作るたびに、テスト用の学生の前の応募は消えます。</p>
 <?php else : ?>
 <?php echo $btn( 'seed', 'テスト用の企業・学生・求人を作る', true ); // エスケープ済み ?>
+<?php echo $btn( 'sample', 'メッセージつきのサンプルの応募を作る（録画なし）' ); // エスケープ済み ?>
 <?php endif; ?>
 </div>
 
