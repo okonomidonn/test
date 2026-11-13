@@ -339,6 +339,7 @@ if ( ! $zaito_cond ) :
       <option value="">おすすめ順</option>
       <option value="pay">時給が高い順</option>
       <option value="new">新着順</option>
+      <option value="saves">保存数が多い順</option>
     </select></label>
   </div>
   <ul class="cards" id="zcards">
@@ -520,6 +521,7 @@ if ( ! $zaito_cond ) :
       var x = a.dataset, y = b.dataset;
       if (by === 'pay' && +y.pay !== +x.pay) return +y.pay - +x.pay;
       if (by === 'new' && +y.listed !== +x.listed) return +y.listed - +x.listed;
+      if (by === 'saves' && +y.saves !== +x.saves) return +y.saves - +x.saves;
       return x.i - y.i;
     });
     sorted.forEach(function (c) { list.appendChild(c); });
@@ -631,7 +633,7 @@ if ( ! $zaito_cond ) :
       var v = +q.get(k);
       if (document.querySelector('.qchips [data-k="' + k + '"][data-v="' + v + '"]')) st[k] = v;
     });
-    if (q.get('sort') === 'pay' || q.get('sort') === 'new') { sortSel.value = q.get('sort'); sortCards(); }
+    if (['pay', 'new', 'saves'].indexOf(q.get('sort')) >= 0) { sortSel.value = q.get('sort'); sortCards(); }
     apply(false);
   })();
   // 新着求人のメール登録（トップページ）
