@@ -1,6 +1,6 @@
 <?php
 /**
- * 録画の一次面接の試作ページ（/demo-interview/）。サイトのどこからもリンクせず、検索にも出さない。
+ * 動画で答える応募の試作ページ（/demo-interview/）。試験環境でだけ開ける（本番では出さない）。検索にも出さない。
  * 中身は demo/interview.html（ブラウザだけで動き、録画した動画はその端末の中にだけ保存する。サーバーには何も送らない）。
  * 営業で企業に見せるときと、運営が動きを確かめるときに使う。
  */
@@ -10,6 +10,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function zaito_demo_interview() {
+    // 本番では出さない（2026-11-13 運営者の指示。本番の企業向けページには画面のイメージ図だけを載せる）。試験環境でだけ開ける。
+    if ( ! defined( 'ZAITO_STAGING' ) || ! ZAITO_STAGING ) {
+        return;
+    }
     $path = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ), PHP_URL_PATH ) : '';
     if ( '/demo-interview/' !== $path && '/demo-interview' !== $path ) {
         return;
