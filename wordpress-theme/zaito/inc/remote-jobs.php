@@ -2267,7 +2267,18 @@ function zaito_remote_member_id() {
 function zaito_remote_go( $job ) {
     nocache_headers();
     $member = zaito_remote_member_id();
+    // マイページにログインしている（メールのリンクで本人確認済みの）ブラウザなら、登録済みとして扱い、目印のCookieも置き直す。
+    if ( ! $member && function_exists( 'zaito_my_id' ) && zaito_my_id() ) {
+        $member = zaito_my_id();
+        zaito_remote_set_member_cookie( $member );
+    }
     if ( ! $member ) {
+        // 目印のCookie（zaito_m）だけが残っていると、ページのJSが「登録済み」と思って登録フォームを出さず、
+        // ここで求人ページに戻されるのをくり返してしまう（登録が消されたブラウザなど）。目印も消して、登録フォームを出させる。
+        if ( ! empty( $_COOKIE['zaito_m'] ) ) {
+            setcookie( 'zaito_m', '', array( 'expires' => time() - 3600, 'path' => '/', 'secure' => is_ssl(), 'httponly' => false, 'samesite' => 'Lax' ) );
+            setcookie( 'zaito_member', '', array( 'expires' => time() - 3600, 'path' => '/', 'secure' => is_ssl(), 'httponly' => true, 'samesite' => 'Lax' ) );
+        }
         wp_safe_redirect( zaito_remote_url( $job['slug'] ) . '#apply', 302 );
         return;
     }
