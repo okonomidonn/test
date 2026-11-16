@@ -1,0 +1,81 @@
+name: Send sales mail from info@ (営業メールを info@ から送る)
+
+# 運営者が「送って」と言ったときだけ、手で動かす（push では動かない）。
+# sales/mail/ の JSON（[{company, to, subject, body}]）を、本番のサーバーから info@zaito-work.com を差出人にして送る。
+# - 本文の「〇〇」は、送るときの入力 name に置き換える（リポジトリに運営者の名前を残さないため）。
+# - 控えとして、同じメールを info@zaito-work.com にも BCC で送る。
+# - confirm に「send」と入れないと送らない（中身の確認だけ）。
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "sales/mail/ の中のファイル名（例 2026-11-16_3社.json）"
+        required: true
+      name:
+        description: "本文の〇〇に入れる名前"
+        required: true
+      confirm:
+        description: "送るなら send と入れる（それ以外は確認だけ）"
+        required: true
+        default: "dry-run"
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build the mail file
+        env:
+          ZFILE: ${{ inputs.file }}
+          ZNAME: ${{ inputs.name }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys
+          f = os.environ['ZFILE']
+          if not re.fullmatch(r'[0-9A-Za-z_\-　-鿿]+\.json', f):
+              sys.exit('ファイル名が正しくありません')
+          mails = json.load(open('sales/mail/' + f, encoding='utf-8'))
+          name = os.environ['ZNAME'].strip()
+          if not name or len(name) > 30:
+              sys.exit('名前が正しくありません')
+          out = []
+          for m in mails:
+              body = m['body'].replace('〇〇', name)
+              if '〇〇' in body or not re.fullmatch(r'[^@\s]+@[^@\s]+\.[A-Za-z]{2,}', m['to']):
+                  sys.exit('中身に問題があります: ' + m.get('company', ''))
+              out.append({'company': m.get('company', ''), 'to': m['to'], 'subject': m['subject'], 'body': body})
+              print('準備できた:', m.get('company', ''), m['to'], m['subject'])
+          json.dump(out, open('/tmp/mails.json', 'w', encoding='utf-8'), ensure_ascii=False)
+          PY
+
+      - name: Set up SSH
+        if: ${{ inputs.confirm == 'send' }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Send from the production server
+        if: ${{ inputs.confirm == 'send' }}
+        run: |
+          # メールの中身は標準入力で渡し、サーバーにはファイルを残さない。
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            'cd ~/zaito-work.com/public_html && wp eval '"'"'
+              $mails = json_decode( stream_get_contents( STDIN ), true );
+              foreach ( (array) $mails as $m ) {
+                  $ok = wp_mail( $m["to"], $m["subject"], $m["body"], array(
+                      "From: zaito <info@zaito-work.com>",
+                      "Reply-To: info@zaito-work.com",
+                      "Bcc: info@zaito-work.com",
+                      "Content-Type: text/plain; charset=UTF-8",
+                  ) );
+                  echo ( $ok ? "送信した: " : "送れなかった: " ) . $m["company"] . " " . $m["to"] . "\n";
+              }
+            '"'"'' < /tmp/mails.json
