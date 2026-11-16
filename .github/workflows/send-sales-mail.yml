@@ -6,6 +6,12 @@ name: Send sales mail from info@ (営業メールを info@ から送る)
 # - 控えとして、同じメールを info@zaito-work.com にも BCC で送る。
 # - confirm に「send」と入れないと送らない（中身の確認だけ）。
 on:
+  # push では送らない（GitHubにこのワークフローを登録するためだけ。下の if で何もしない）。
+  push:
+    branches:
+      - claude/zaito-job-site-uqgb9o
+    paths:
+      - ".github/workflows/send-sales-mail.yml"
   workflow_dispatch:
     inputs:
       file:
@@ -21,6 +27,7 @@ on:
 
 jobs:
   send:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
