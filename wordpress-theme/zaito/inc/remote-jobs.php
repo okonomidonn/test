@@ -159,6 +159,7 @@ function zaito_remote_jobs() {
             'listed'   => '2026-11-11',
             'checked'  => '2026-11-11',
         ),
+        /* 2026-11-17 運営者の依頼で一時的に外す（GWCに直接掲載のお願いを送ったため）。戻すときはこのコメントを外す。
         array(
             'slug'     => 'gwc-remote-teleapo',
             'company'  => '株式会社GWC',
@@ -174,6 +175,7 @@ function zaito_remote_jobs() {
             'listed'   => '2026-11-04',
             'checked'  => '2026-11-04',
         ),
+        */
         array(
             'slug'     => 'enjinn-remote-teleapo',
             'company'  => '株式会社ENJINN',
