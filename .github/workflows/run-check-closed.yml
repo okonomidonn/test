@@ -1,0 +1,37 @@
+name: Run job-closed check now (募集終了チェックを今すぐ動かす)
+
+# 毎朝のCronと同じ募集終了チェック（cron/check-closed.php）を、手で1回動かして、出力とエラーを見る。
+# Cronが動かなかった日の確認と、やり直しのために使う。中身は毎朝のCronと同じ。
+on:
+  # push では動かさない（GitHubにこのワークフローを登録するためだけ。下の if で何もしない）。
+  push:
+    branches:
+      - claude/zaito-job-site-uqgb9o
+    paths:
+      - ".github/workflows/run-check-closed.yml"
+  workflow_dispatch:
+
+jobs:
+  run:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Run the same command as the daily Cron
+        run: |
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} 'bash -s' <<'EOF'
+          cd ~ || exit 1
+          echo "== start $(date '+%F %T')"
+          /usr/bin/php8.3 zaito-work.com/public_html/wp-content/themes/zaito/cron/check-closed.php 2>&1 | tail -40
+          echo "== exit ${PIPESTATUS[0]}  end $(date '+%F %T')"
+          EOF
