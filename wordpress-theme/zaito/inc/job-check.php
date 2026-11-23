@@ -123,16 +123,21 @@ function zaito_job_check_run() {
     }
     update_option( ZAITO_JOB_CHECK_OPTION, $closed, false );
     update_option( 'zaito_job_check_last', array( 'at' => wp_date( 'c' ), 'checked' => $n, 'new_closed' => count( $new ), 'notes' => count( $notes ) ), false );
-    if ( $new || $notes ) {
-        $body = "zaitoの募集終了チェック（" . wp_date( 'Y-m-d' ) . "）\n確かめた求人：{$n}件\n\n";
-        if ( $new ) {
-            $body .= "■募集終了にした求人（一覧から自動で外しました）\n" . implode( "\n", $new ) . "\n\n";
-        }
-        if ( $notes ) {
-            $body .= "■確かめてほしい求人（閉じていません）\n" . implode( "\n", $notes ) . "\n\n";
-        }
-        $body .= "コードの inc/remote-jobs.php にも 'closed' => true を付けておくと、記録がそろいます。";
-        wp_mail( 'info@zaito-work.com', '【zaito】募集終了チェック：' . count( $new ) . '件を募集終了にしました', $body );
+    // 毎朝、動いたことが分かるように、変わりがない日もメールを送る（件名で「変わりなし」と分かる）。
+    $body = "zaitoの募集終了チェック（" . wp_date( 'Y-m-d' ) . "）\n確かめた求人：{$n}件\n\n";
+    if ( $new ) {
+        $body .= "■募集終了にした求人（一覧から自動で外しました）\n" . implode( "\n", $new ) . "\n\n";
     }
+    if ( $notes ) {
+        $body .= "■確かめてほしい求人（閉じていません）\n" . implode( "\n", $notes ) . "\n\n";
+    }
+    if ( $new || $notes ) {
+        $body .= "コードの inc/remote-jobs.php にも 'closed' => true を付けておくと、記録がそろいます。";
+        $subject = '【zaito】募集終了チェック：' . count( $new ) . '件を募集終了にしました';
+    } else {
+        $body .= "募集が終わった求人も、確かめてほしい求人もありませんでした。";
+        $subject = '【zaito】募集終了チェック：変わりなし（' . $n . '件を確認）';
+    }
+    wp_mail( 'info@zaito-work.com', $subject, $body );
     return array( 'checked' => $n, 'new_closed' => $new, 'notes' => $notes );
 }
