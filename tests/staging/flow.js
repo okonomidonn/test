@@ -270,7 +270,11 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await pf.locator('[name=birth_m]').selectOption('4');
     await pf.locator('[name=birth_d]').selectOption('1');
     await pf.locator('[name=pref]').selectOption('北海道');
-    await pf.locator('[name=tel]').fill('090-0000-0000');
+    // 電話番号は3つの欄。最初の欄に続けて打つと、自動で次の欄に移ることも確かめる。
+    await pf.locator('[name=tel1]').click();
+    await sp.keyboard.type('09000000000');
+    const telParts = await pf.locator('.tel3 input').evaluateAll(els => els.map(e => e.value).join('-'));
+    if (telParts !== '090-0000-0000') throw new Error('電話番号の欄が自動で次に移らない: ' + telParts);
     // メッセージは任意。録画面接ありの流れでだけ書き、なしの流れでは空のまま応募できることを確かめる。
     if (VIDEO) await pf.locator('[name=message]').fill('はじめまして。試験用の応募です。スポーツが好きなので応募しました。');
     if (await pf.locator('[name=answer]').count()) await pf.locator('[name=answer]').fill('週に12時間くらいです。');

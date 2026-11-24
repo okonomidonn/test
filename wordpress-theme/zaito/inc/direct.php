@@ -321,6 +321,20 @@ function zaito_direct_format_tel( $t ) {
     return $t;
 }
 
+/**
+ * 電話番号を、応募フォームの3つの欄に分ける。ハイフンがあればそこで分け、なければ桁数から分ける。
+ */
+function zaito_direct_split_tel( $t ) {
+    $t = (string) $t;
+    if ( false !== strpos( $t, '-' ) ) {
+        return array_pad( array_slice( explode( '-', $t ), 0, 3 ), 3, '' );
+    }
+    if ( preg_match( '/^(0[5789]0|0[36])(\d{4})(\d{4})$/', $t, $m ) || preg_match( '/^(\d{3})(\d{3})(\d{4})$/', $t, $m ) ) {
+        return array( $m[1], $m[2], $m[3] );
+    }
+    return array( $t, '', '' );
+}
+
 /** 生年月日（Y-m-d）から、今日の時点の年齢。正しくなければ -1。 */
 function zaito_direct_age( $birth ) {
     if ( ! preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', (string) $birth, $m ) || ! checkdate( (int) $m[2], (int) $m[3], (int) $m[1] ) ) {
@@ -430,7 +444,8 @@ function zaito_handle_direct_apply() {
     $birth_d = (int) $field( 'birth_d' );
     $birth   = ( $birth_y && $birth_m && $birth_d ) ? sprintf( '%04d-%02d-%02d', $birth_y, $birth_m, $birth_d ) : '';
     $pref    = $field( 'pref' );
-    $tel_in  = $field( 'tel', 20 );
+    // 電話番号は3つの欄（tel1-tel2-tel3）で受け取る。
+    $tel_in  = trim( implode( '-', array( $field( 'tel1', 8 ), $field( 'tel2', 8 ), $field( 'tel3', 8 ) ) ), '-' );
     $tel     = zaito_direct_normalize_tel( $tel_in );
 
     $errors = array();

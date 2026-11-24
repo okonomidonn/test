@@ -219,3 +219,6 @@ fieldset.fld{border:0;padding:0}
 @media (max-width:560px){.biz-hd .for{display:none}.biz-hd .who .btn{height:36px!important;padding:0 12px;font-size:13px;white-space:nowrap}}
 .fld .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fld .ymd{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
+.fld .tel3{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:center;max-width:360px}
+.fld .tel3 input{text-align:center;padding:0 8px}
+.fld .tel3 span{color:var(--z-text-4)}

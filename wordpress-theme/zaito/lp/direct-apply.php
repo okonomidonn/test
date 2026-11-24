@@ -151,7 +151,12 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
           <option value="<?php echo esc_attr( $zaito_o ); ?>"<?php selected( $zaito_v['pref'], $zaito_o ); ?>><?php echo esc_html( $zaito_o ); ?></option>
         <?php endforeach; ?>
       </select></div>
-      <div class="fld"><label for="ztel">電話番号<span class="req">必須</span></label><input type="tel" id="ztel" name="tel" maxlength="20" autocomplete="tel" inputmode="tel" value="<?php echo esc_attr( zaito_direct_format_tel( $zaito_v['tel'] ) ); ?>" required placeholder="例：090-1234-5678"><p class="hint">数字だけ入れると、ハイフンは自動で入ります。</p></div>
+      <?php $zaito_tel = zaito_direct_split_tel( $zaito_v['tel'] ); ?>
+      <fieldset class="fld"><legend>電話番号<span class="req">必須</span></legend><div class="tel3">
+        <input type="text" id="ztel" name="tel1" inputmode="numeric" autocomplete="tel-area-code" aria-label="電話番号の最初の部分" value="<?php echo esc_attr( $zaito_tel[0] ); ?>" required placeholder="090"><span aria-hidden="true">-</span>
+        <input type="text" name="tel2" inputmode="numeric" autocomplete="tel-local-prefix" aria-label="電話番号のまん中の部分" value="<?php echo esc_attr( $zaito_tel[1] ); ?>" required placeholder="1234"><span aria-hidden="true">-</span>
+        <input type="text" name="tel3" inputmode="numeric" autocomplete="tel-local-suffix" aria-label="電話番号の最後の部分" value="<?php echo esc_attr( $zaito_tel[2] ); ?>" required placeholder="5678">
+      </div></fieldset>
       <fieldset class="fld"><legend>現在の状況<span class="req">必須</span></legend><div class="picks">
         <?php foreach ( zaito_direct_roles() as $zaito_o ) : ?>
           <label><input type="radio" name="role" value="<?php echo esc_attr( $zaito_o ); ?>"<?php checked( $zaito_v['role'], $zaito_o ); ?> required><span><?php echo esc_html( $zaito_o ); ?></span></label>
@@ -196,20 +201,37 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
     var cur = f.querySelector('input[name=role]:checked');
     sync(cur ? cur.value : '大学生');
     f.addEventListener('change', function (e) { if (e.target.name === 'role') { sync(e.target.value); } });
-    // 電話番号：数字だけ入れれば、ハイフンを自動で入れる（携帯は3-4-4、03・06は2-4-4。ほかの固定電話は数字のまま）。
-    var tel = document.getElementById('ztel');
-    function fmtTel(v) {
-      var d = v.replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/^\+81/, '0').replace(/\D/g, '').slice(0, 11);
-      var a = /^0[5789]0/.test(d) ? 3 : (/^0[36]/.test(d) ? 2 : 0);
-      if (!a) { return d; }
-      return [d.slice(0, a), d.slice(a, a + 4), d.slice(a + 4, a + 8)].filter(Boolean).join('-');
+    // 電話番号：3つの欄に分けて入れる。決まった桁数を入れたら、次の欄へ自動で移る。
+    // 1つ目は、携帯（070/080/090/050）なら3桁、東京・大阪（03/06）なら2桁で次へ。ほかの固定電話は市外局番の長さがちがうので、自分で次の欄へ移る。
+    var tp = [].slice.call(f.querySelectorAll('.tel3 input'));
+    function digits(v) { return v.replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/^\+81/, '0').replace(/\D/g, ''); }
+    function firstLen(d) { return /^0[5789]0/.test(d) ? 3 : (/^0[36]/.test(d) ? 2 : 0); }
+    function spread(d) {
+      // 全部の番号をまとめて貼り付けた・自動入力されたときは、3つに分けて入れる。
+      d = d.slice(0, 11);
+      var a = firstLen(d) || (d.length === 10 ? 3 : 4), b = 4;
+      if (!firstLen(d) && d.length === 10) { b = 3; }
+      tp[0].value = d.slice(0, a); tp[1].value = d.slice(a, a + b); tp[2].value = d.slice(a + b);
+      tp[tp[2].value ? 2 : (tp[1].value ? 1 : 0)].focus();
     }
-    tel.addEventListener('input', function (e) {
-      // 途中を直しているときは、カーソルが飛ばないように触らない（欄を離れたときにそろえる）。
-      if (tel.selectionStart !== tel.value.length || (e.inputType && e.inputType.indexOf('delete') === 0) || /^\+/.test(tel.value)) { return; }
-      tel.value = fmtTel(tel.value);
+    tp.forEach(function (el, i) {
+      el.addEventListener('input', function (e) {
+        var d = digits(el.value);
+        // 桁数の上限は maxlength ではなくここで決める（maxlength だと、まとめて貼り付けた番号が途中で切れるため）。
+        if (d.length > (i === 0 ? 5 : 4)) {
+          if (i === 0 || d.length >= 10) { spread(d); return; }
+          d = d.slice(0, 4);
+        }
+        if (el.value !== d) { el.value = d; }
+        if (e.inputType && e.inputType.indexOf('delete') === 0) { return; }
+        var full = i === 0 ? firstLen(d) : (i === 1 ? 4 : 0);
+        if (full && d.length >= full && tp[i + 1]) { tp[i + 1].focus(); tp[i + 1].select(); }
+      });
+      el.addEventListener('keydown', function (e) {
+        // 空の欄でBackSpaceを押したら、前の欄に戻る。
+        if (e.key === 'Backspace' && el.value === '' && i > 0) { e.preventDefault(); tp[i - 1].focus(); tp[i - 1].value = tp[i - 1].value.slice(0, -1); }
+      });
     });
-    tel.addEventListener('blur', function () { tel.value = fmtTel(tel.value); });
     f.addEventListener('submit', function () { f.querySelector('button[type=submit]').disabled = true; });
   })();
   </script>
