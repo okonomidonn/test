@@ -134,6 +134,26 @@ function zaito_staging_mail( $args ) {
 	return $args;
 }
 add_filter( 'wp_mail', 'zaito_staging_mail', PHP_INT_MAX );
+// 送ったメールの記録（件名・本来の宛先・時刻、最新200件）。届かなかったときに、送っていないのか届いていないのかを見分けるため。
+add_action(
+	'wp_mail_succeeded',
+	function ( $mail ) {
+		zaito_staging_mail_log( 'sent', is_array( $mail['to'] ) ? implode( ',', $mail['to'] ) : (string) $mail['to'], (string) $mail['subject'] );
+	}
+);
+add_action(
+	'wp_mail_failed',
+	function ( $err ) {
+		$d = $err->get_error_data();
+		zaito_staging_mail_log( 'FAILED: ' . $err->get_error_message(), isset( $d['to'] ) ? implode( ',', (array) $d['to'] ) : '', isset( $d['subject'] ) ? (string) $d['subject'] : '' );
+	}
+);
+function zaito_staging_mail_log( $result, $to, $subject ) {
+	$log   = (array) get_option( 'zaito_stg_mail_log', array() );
+	$log[] = array( current_time( 'mysql' ), $result, $to, $subject );
+	update_option( 'zaito_stg_mail_log', array_slice( $log, -200 ), false );
+}
+
 // 差出人の指定がないメール（WordPressの既定は wordpress@staging.zaito-work.com）も、本番と同じドメインから送る。
 add_filter(
 	'wp_mail_from',
