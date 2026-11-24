@@ -576,15 +576,19 @@ function zaito_send_verification_email( $user_id ) {
         home_url( '/verify-email/' )
     );
 
-    $subject = '【zaito】メールアドレスの確認をお願いします';
-    $message = $user->first_name . " 様\n\n"
-        . "zaitoにご登録いただきありがとうございます。\n"
-        . "以下のリンクをクリックしてメールアドレスの確認を完了してください。\n\n"
-        . $verify_url . "\n\n"
-        . "このリンクの有効期限は48時間です。\n"
-        . "心当たりがない場合はこのメールを破棄してください。";
-
-    wp_mail( $user->user_email, $subject, $message );
+    // ほかの通知と同じく、差出人を「zaito <info@…>」にしてボタン付きで送る（差出人を書かないと「WordPress <wordpress@…>」になるため）。
+    $host = preg_replace( '/^www\./', '', (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+    zaito_mail_button(
+        $user->user_email,
+        '【zaito】メールアドレスの確認をお願いします',
+        'メールアドレスの確認',
+        $user->first_name . ' 様' . "\n\n" . 'zaitoにご登録いただきありがとうございます。下のボタンを押して、メールアドレスの確認を完了してください。',
+        'メールアドレスを確認する',
+        $verify_url,
+        'このリンクの有効期限は48時間です。',
+        '心当たりがない場合は、このメールを破棄してください。',
+        'zaito <info@' . $host . '>'
+    );
 }
 
 /**
