@@ -37,7 +37,7 @@ function zaito_video_max_questions() {
 }
 /** 考える時間と答える時間（秒）。 */
 function zaito_video_think_seconds() {
-	return 20;
+	return 10;
 }
 function zaito_video_answer_seconds() {
 	return 60;

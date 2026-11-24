@@ -65,13 +65,22 @@ zaito_biz_head( '動画で質問に答える' );
 .iv-q{position:absolute;left:0;right:0;top:0;padding:16px 16px 28px;background:linear-gradient(180deg,rgba(11,21,48,.86),rgba(11,21,48,0));color:#fff}
 .iv-q .qn{font-size:12px;font-weight:700;opacity:.8;margin-bottom:4px}
 .iv-q .qt{font-size:18px;font-weight:800;line-height:1.5}
+.iv-say{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:4px 10px 4px 8px;border:0;border-radius:999px;background:rgba(255,255,255,.18);color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.iv-say .ms{font-size:16px}
 .iv-timer{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(11,21,48,.72);color:#fff;font-size:15px;font-weight:700;white-space:nowrap}
 .iv-timer .dot{width:10px;height:10px;border-radius:999px;background:#E5484D;animation:ivblink 1s infinite}
 .iv-timer.think .dot{background:#FFB547;animation:none}
 @keyframes ivblink{50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){.iv-timer .dot{animation:none}}
-.iv-meter{height:6px;border-radius:999px;background:#E6EAF3;overflow:hidden;margin:6px 0 14px}
-.iv-meter i{display:block;height:100%;width:0;background:#1A7F55;transition:width .1s}
+.iv-meter{height:10px;border-radius:999px;background:#E6EAF3;overflow:hidden;margin:6px 0 6px}
+.iv-meter i{display:block;height:100%;width:0;background:#1A7F55;transition:width .08s}
+.iv-lvl-t{font-size:13px;font-weight:700;color:var(--z-text-3,#6B7590);margin:0 0 14px}
+.iv-lvl-t.ok{color:#1A7F55}
+/* 質問の画面の右下に出す、マイクの音の大きさ（5本のバー） */
+.iv-mic{position:absolute;right:12px;bottom:16px;display:flex;align-items:flex-end;gap:3px;height:36px;padding:6px 8px;border-radius:10px;background:rgba(11,21,48,.72)}
+.iv-mic i{width:4px;border-radius:2px;background:rgba(255,255,255,.3)}
+.iv-mic i:nth-child(1){height:20%}.iv-mic i:nth-child(2){height:40%}.iv-mic i:nth-child(3){height:60%}.iv-mic i:nth-child(4){height:80%}.iv-mic i:nth-child(5){height:100%}
+.iv-mic i.on{background:#3DDC84}
 .iv-steps{display:flex;gap:6px;margin-bottom:12px}
 .iv-steps i{flex:1;height:5px;border-radius:999px;background:#E1E6F0}
 .iv-steps i.on{background:#3D5AFE}
@@ -95,7 +104,7 @@ zaito_biz_head( '動画で質問に答える' );
     </div>
     <div class="iv-card">
       <h2>答え方</h2>
-      <p>質問は、録画の直前に1問ずつ画面に出て、読み上げられます。考える時間が<?php echo (int) zaito_video_think_seconds(); ?>秒あり、答える時間は<?php echo (int) zaito_video_answer_seconds(); ?>秒です。撮り直しは1問につき1回までです。最初に、記録されない練習の質問が1問あります。</p>
+      <p>質問は、録画の直前に1問ずつ画面に出ます。考える時間が<?php echo (int) zaito_video_think_seconds(); ?>秒あり、答える時間は<?php echo (int) zaito_video_answer_seconds(); ?>秒です。撮り直しは1問につき1回までです。最初に、記録されない練習の質問が1問あります。</p>
       <p class="iv-note">静かで、顔が明るく映る場所で答えてください。通信の量は1問あたり5〜8MBほどです。</p>
       <label class="iv-check"><input type="checkbox" id="agree">動画は<?php echo esc_html( $zaito_company ); ?>とzaitoの運営だけが見られ、応募から90日（<?php echo esc_html( zaito_video_expire_label( $zaito_app ) ); ?>）で自動で消えることを確認しました。</label>
       <button type="button" class="iv-btn" id="startBtn" disabled>カメラを準備する</button>
@@ -108,8 +117,9 @@ zaito_biz_head( '動画で質問に答える' );
     <div class="iv-card">
       <h2>カメラとマイクの確認</h2>
       <div class="iv-stage"><video id="cam" playsinline muted autoplay></video></div>
-      <span class="iv-note">声の大きさ</span>
+      <span class="iv-note">マイクの音の大きさ</span>
       <div class="iv-meter"><i id="lvl"></i></div>
+      <p class="iv-lvl-t" id="lvlText" aria-live="polite">声を出してみてください</p>
       <p class="iv-note">顔が明るく映っていて、声を出すと緑のバーが動けば準備できています。</p>
       <button type="button" class="iv-btn" id="toFirst">練習の質問へ進む</button>
     </div>
@@ -121,8 +131,9 @@ zaito_biz_head( '動画で質問に答える' );
     <div class="iv-stage">
       <video id="qCam" playsinline muted autoplay></video>
       <video id="qPlay" class="play" playsinline controls hidden></video>
-      <div class="iv-q"><div class="qn" id="qNum"></div><div class="qt" id="qText"></div></div>
+      <div class="iv-q"><div class="qn" id="qNum"></div><div class="qt" id="qText"></div><button type="button" class="iv-say" id="say" hidden><span class="ms" aria-hidden="true">volume_up</span>読み上げる</button></div>
       <div class="iv-timer" id="timer" hidden><span class="dot"></span><span id="tText"></span></div>
+      <div class="iv-mic" id="qMic" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     </div>
     <div id="qThink" hidden>
       <button type="button" class="iv-btn rec" id="recNow">録画を始める</button>
@@ -198,12 +209,26 @@ zaito_biz_head( '動画で質問に答える' );
         show('s-nocam');
       });
   }
+  // マイクの音の大きさ。カメラの確認の画面のバーと、質問の画面の右下の5本のバーの両方に出す。
+  var level = 0, heard = false, recPeak = 0;
   function meter() {
     try {
       var ac = new (window.AudioContext || window.webkitAudioContext)();
-      var an = ac.createAnalyser(); an.fftSize = 256; ac.createMediaStreamSource(stream).connect(an);
-      var buf = new Uint8Array(an.frequencyBinCount);
-      (function loop() { an.getByteTimeDomainData(buf); var m = 0; for (var i = 0; i < buf.length; i++) m = Math.max(m, Math.abs(buf[i] - 128)); $('lvl').style.width = Math.min(100, m * 1.6) + '%'; raf = requestAnimationFrame(loop); })();
+      if (ac.state === 'suspended' && ac.resume) ac.resume(); // iPhoneでは止まった状態で始まることがある
+      var an = ac.createAnalyser(); an.fftSize = 512; ac.createMediaStreamSource(stream).connect(an);
+      var buf = new Uint8Array(an.fftSize);
+      var bars = [].slice.call(document.querySelectorAll('#qMic i'));
+      (function loop() {
+        an.getByteTimeDomainData(buf);
+        var sum = 0; for (var i = 0; i < buf.length; i++) { var d = (buf[i] - 128) / 128; sum += d * d; }
+        var now = Math.min(1, Math.sqrt(sum / buf.length) * 6);   // ふつうの話し声で半分から上くらい
+        level = Math.max(now, level * 0.9);                        // 下がるときはゆっくり
+        $('lvl').style.width = Math.round(level * 100) + '%';
+        bars.forEach(function (b, k) { b.className = level > (k + 0.5) / 6 ? 'on' : ''; });
+        if (level > 0.15 && !heard) { heard = true; $('lvlText').textContent = '声が届いています'; $('lvlText').className = 'iv-lvl-t ok'; }
+        if (recorder && recorder.state === 'recording') recPeak = Math.max(recPeak, now);
+        raf = requestAnimationFrame(loop);
+      })();
     } catch (e) {}
   }
   function stopCam() { cancelAnimationFrame(raf); if (stream) stream.getTracks().forEach(function (t) { t.stop(); }); }
@@ -225,7 +250,21 @@ zaito_biz_head( '動画で質問に答える' );
     for (var i = 0; i < CFG.total; i++) h += '<i class="' + (!practice && i <= idx ? 'on' : '') + '"></i>';
     $('steps').innerHTML = h; $('steps').hidden = practice;
   }
-  function speak(t) { try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'ja-JP'; u.rate = 1.05; speechSynthesis.speak(u); } catch (e) {} }
+  // 質問の読み上げ。端末に入っている声は機械っぽいものが多いので、自動では読まず、ボタンを押したときだけ読む。
+  // 声は、端末にある日本語の声のうち、自然に聞こえるものから選ぶ（Edgeの「Natural」、Chromeの「Google」、iPhoneの拡張・高音質の声など）。
+  var canSpeak = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+  function pickVoice() {
+    var vs = speechSynthesis.getVoices().filter(function (v) { return /^ja/i.test(v.lang); });
+    var pref = [/Natural|Online/i, /Google/i, /Premium|Enhanced|Siri|高音質|拡張/i, /Kyoko|O-ren|Otoya|Hattori/i];
+    for (var i = 0; i < pref.length; i++) { for (var k = 0; k < vs.length; k++) { if (pref[i].test(vs[k].name)) return vs[k]; } }
+    return vs[0] || null;
+  }
+  function speak(t) {
+    if (!canSpeak) return;
+    try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'ja-JP'; u.rate = 1; var v = pickVoice(); if (v) u.voice = v; speechSynthesis.speak(u); } catch (e) {}
+  }
+  if (canSpeak) { try { speechSynthesis.getVoices(); } catch (e) {} }
+  $('say').onclick = function () { speak(practice ? PRACTICE.replace(/（.*?）/, '') : question); };
   function setTimer(mode, sec) {
     $('timer').hidden = false; $('timer').className = 'iv-timer' + (mode === 'think' ? ' think' : '');
     $('tText').textContent = (mode === 'think' ? '考える時間 ' : '録画中 ') + sec + '秒';
@@ -243,19 +282,20 @@ zaito_biz_head( '動画で質問に答える' );
   function begin() {
     $('qNum').textContent = practice ? '練習の質問' : '質問 ' + (idx + 1) + ' / ' + CFG.total;
     $('qText').textContent = question;
-    speak(practice ? PRACTICE.replace(/（.*?）/, '') : question);
     think();
   }
   function think() {
     err(''); busy = !practice;
     $('qPlay').hidden = true; $('qPlay').removeAttribute('src'); $('qCam').hidden = false;
     $('qThink').hidden = false; $('qRec').hidden = true; $('qReview').hidden = true;
+    $('say').hidden = !canSpeak;
     left = CFG.think; setTimer('think', left);
     clearInterval(tick);
     tick = setInterval(function () { left--; setTimer('think', left); if (left <= 0) startRec(); }, 1000);
   }
   function startRec() {
     clearInterval(tick); try { speechSynthesis.cancel(); } catch (e) {}
+    $('say').hidden = true; // 録画中は読み上げない（声が録画に入るため）
     chunks = [];
     try { recorder = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 800000 } : undefined); }
     catch (e) { err('この端末では録画を始められませんでした。'); return; }
@@ -263,8 +303,13 @@ zaito_biz_head( '動画で質問に答える' );
     recorder.onstop = review;
     recorder.start(1000);
     $('qThink').hidden = true; $('qRec').hidden = false;
-    left = CFG.answer; setTimer('rec', left);
-    tick = setInterval(function () { left--; setTimer('rec', left); if (left <= 0) stopRec(); }, 1000);
+    left = CFG.answer; setTimer('rec', left); recPeak = 0;
+    tick = setInterval(function () {
+      left--; setTimer('rec', left);
+      // 録画を始めて5秒たっても音がほとんど入っていなければ、知らせる（録画は止めない）。
+      if (CFG.answer - left === 5 && recPeak < 0.05) err('マイクの音が入っていないようです。マイクが切れていないか、ほかのアプリが使っていないか確かめてください。');
+      if (left <= 0) stopRec();
+    }, 1000);
   }
   function stopRec() { clearInterval(tick); if (recorder && recorder.state !== 'inactive') recorder.stop(); }
   function review() {
