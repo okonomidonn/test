@@ -263,7 +263,8 @@ zaito_biz_head( '動画で質問に答える' );
     return import(MP + '/vision_bundle.mjs').then(function (v) {
       return v.FilesetResolver.forVisionTasks(MP + '/wasm').then(function (fs) {
         function opt(d) { return { baseOptions: { modelAssetPath: CFG.segModel, delegate: d }, runningMode: 'VIDEO', outputCategoryMask: false, outputConfidenceMasks: true }; }
-        return v.ImageSegmenter.createFromOptions(fs, opt('GPU')).catch(function () { return v.ImageSegmenter.createFromOptions(fs, opt('CPU')); });
+        // 切り抜きの結果を毎回読み出すので、GPUよりCPUのほうが速い（試したところ1コマ70ms→17ms）。CPUで動かなければGPU。
+        return v.ImageSegmenter.createFromOptions(fs, opt('CPU')).catch(function () { return v.ImageSegmenter.createFromOptions(fs, opt('GPU')); });
       });
     }).then(function (s) { blur.seg = s; return s; });
   }
