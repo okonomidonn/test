@@ -145,10 +145,10 @@ if ( $zaito_is_co ) {
         <h3>応募者</h3>
         <dl>
           <dt>名前</dt><dd><?php echo esc_html( $zaito_name ); ?></dd>
-          <dt>所属</dt><dd><?php echo esc_html( zaito_direct_applicant_line( $zaito_app ) ); ?></dd>
           <?php foreach ( zaito_direct_applicant_details( $zaito_app ) as $zaito_k => $zaito_d ) : ?>
             <dt><?php echo esc_html( $zaito_k ); ?></dt><dd><?php echo '電話番号' === $zaito_k ? '<a href="tel:' . esc_attr( $zaito_d ) . '">' . esc_html( $zaito_d ) . '</a>' : esc_html( $zaito_d ); ?></dd>
           <?php endforeach; ?>
+          <dt>所属</dt><dd><?php echo esc_html( zaito_direct_applicant_line( $zaito_app ) ); ?></dd>
           <dt>応募日</dt><dd><?php echo esc_html( get_the_date( 'Y年n月j日 H:i', $zaito_app ) ); ?></dd>
           <dt>求人</dt><dd><?php echo esc_html( $zaito_job ? $zaito_job->post_title : '' ); ?></dd>
         </dl>
