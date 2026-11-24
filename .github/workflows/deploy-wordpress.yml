@@ -44,17 +44,25 @@ jobs:
           # ライブラリのファイルをURLで直接開けないようにする。
           printf 'Require all denied\n' > vendor/.htaccess
 
-      - name: Write API key outside public_html (only when the secret is set)
+      - name: Write API keys outside public_html (only when a secret is set)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
         run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
-            echo "ANTHROPIC_API_KEY is not set. Recommendations use the rule-based fallback."
+          if [ -z "$ANTHROPIC_API_KEY" ] && [ -z "$GOOGLE_TTS_API_KEY" ]; then
+            echo "No API key secrets are set. Recommendations use the rule-based fallback, and questions are read with the device voice."
             exit 0
           fi
+          [ -n "$ANTHROPIC_API_KEY" ] || echo "ANTHROPIC_API_KEY is not set. Recommendations use the rule-based fallback."
+          [ -n "$GOOGLE_TTS_API_KEY" ] || echo "GOOGLE_TTS_API_KEY is not set. Interview questions are read with the device voice."
           # キーはコマンドの引数に出さず、標準入力で渡す。ファイルは本人だけが読めるようにする。
-          printf "<?php\ndefine( 'ZAITO_ANTHROPIC_API_KEY', '%s' );\n" "$ANTHROPIC_API_KEY" | \
-            ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+          # 録画面接の読み上げ（inc/tts.php）は、試験環境もこのファイルを読む。
+          {
+            printf "<?php\n"
+            [ -n "$ANTHROPIC_API_KEY" ] && printf "define( 'ZAITO_ANTHROPIC_API_KEY', '%s' );\n" "$ANTHROPIC_API_KEY"
+            [ -n "$GOOGLE_TTS_API_KEY" ] && printf "define( 'ZAITO_GOOGLE_TTS_API_KEY', '%s' );\n" "$GOOGLE_TTS_API_KEY"
+            true
+          } | ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
             'umask 077; cat > zaito-work.com/zaito-secrets.php'
 
       - name: Deploy theme via rsync

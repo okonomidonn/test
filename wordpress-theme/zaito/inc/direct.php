@@ -856,5 +856,6 @@ function zaito_direct_my_apps( $interest_id ) {
 /* ---------- 運営の管理画面 ---------- */
 
 require_once __DIR__ . '/video-interview.php';
+require_once __DIR__ . '/tts.php';
 require_once __DIR__ . '/direct-admin.php';
 require_once __DIR__ . '/direct-company.php';

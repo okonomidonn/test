@@ -184,7 +184,8 @@ function zaito_handle_video_question() {
 		$opened[ $i ] = time();
 		update_post_meta( $app_id, 'video_opened', $opened );
 	}
-	wp_send_json_success( array( 'question' => $qs[ $i ] ) );
+	// 読み上げの音声（inc/tts.php）。作れなければ空で、画面は端末の声で読む。
+	wp_send_json_success( array( 'question' => $qs[ $i ], 'audio' => function_exists( 'zaito_tts_url' ) ? zaito_tts_url( $qs[ $i ] ) : '' ) );
 }
 add_action( 'wp_ajax_zaito_video_question', 'zaito_handle_video_question' );
 add_action( 'wp_ajax_nopriv_zaito_video_question', 'zaito_handle_video_question' );

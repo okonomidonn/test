@@ -2,7 +2,7 @@
 /**
  * 動画で答える応募の録画画面（/interview/?c={応募ID}）。応募した学生だけが開ける。
  * 仕組みは inc/video-interview.php。画面の流れは demo/interview.html（試作）と同じ：
- * 確認 → カメラの確認 → 練習の質問（記録しない）→ 質問ごとに「考える20秒 → 答える60秒 → 見直し（撮り直し1回）→ 送る」→ 完了。
+ * 確認 → カメラの確認 → 練習の質問（記録しない）→ 質問ごとに「考える10秒 → 答える60秒 → 見直し（撮り直し1回）→ 送る」→ 完了。
  * 質問はサーバーから1問ずつ受け取る（前の質問に答え終わるまで、次の質問は見えない）。
  */
 require_once get_template_directory() . '/lp/biz-parts.php';
@@ -31,6 +31,10 @@ $zaito_cfg      = array(
 	'answer'   => zaito_video_answer_seconds(),
 	'maxBytes' => zaito_video_max_bytes(),
 	'chat'     => zaito_direct_chat_url( $zaito_app ),
+	// 練習の質問と、その読み上げの音声（inc/tts.php。作れなければ空で、端末の声で読む）。
+	'practice'      => zaito_tts_practice()['text'],
+	'practiceSpeak' => zaito_tts_practice()['speak'],
+	'practiceAudio' => $zaito_answered ? '' : zaito_tts_url( zaito_tts_practice()['speak'] ),
 );
 
 zaito_biz_head( '動画で質問に答える' );
@@ -174,7 +178,7 @@ zaito_biz_head( '動画で質問に答える' );
 (function () {
   'use strict';
   var CFG = <?php echo wp_json_encode( $zaito_cfg ); ?>;
-  var PRACTICE = '練習：好きな食べ物と、その理由を教えてください（この回答は記録されません）。';
+  var PRACTICE = CFG.practice;
   function $(id) { return document.getElementById(id); }
   function show(id) { ['s-intro', 's-check', 's-q', 's-done', 's-nocam'].forEach(function (x) { $(x).hidden = x !== id; }); window.scrollTo(0, 0); }
   function post(action, extra, onProgress) {
@@ -232,7 +236,7 @@ zaito_biz_head( '動画で質問に答える' );
     } catch (e) {}
   }
   function stopCam() { cancelAnimationFrame(raf); if (stream) stream.getTracks().forEach(function (t) { t.stop(); }); }
-  $('startBtn').onclick = startCam;
+  $('startBtn').onclick = function () { unlockAudio(); startCam(); };
   $('retryCam').onclick = startCam;
 
   /* ---- 質問の流れ ---- */
@@ -264,7 +268,25 @@ zaito_biz_head( '動画で質問に答える' );
     try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'ja-JP'; u.rate = 1; var v = pickVoice(); if (v) u.voice = v; speechSynthesis.speak(u); } catch (e) {}
   }
   if (canSpeak) { try { speechSynthesis.getVoices(); } catch (e) {} }
-  $('say').onclick = function () { speak(practice ? PRACTICE.replace(/（.*?）/, '') : question); };
+  // 読み上げの音声（Googleの声で作ったMP3）があればそれを流し、なければ端末の声で読む。
+  // iPhoneは、ボタンを押したときに一度鳴らした音声の部品でないと、あとから自動で鳴らせないため、最初のボタンで準備しておく。
+  var player = new Audio(), audioUrl = '';
+  player.preload = 'auto';
+  var SILENT = 'data:audio/wav;base64,UklGRsQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  function unlockAudio() { try { player.src = SILENT; var p = player.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+  function sayNow() {
+    var text = practice ? CFG.practiceSpeak : question;
+    if (audioUrl) {
+      try { if (canSpeak) speechSynthesis.cancel(); } catch (e) {}
+      player.src = audioUrl; player.currentTime = 0;
+      var p = player.play();
+      if (p && p.catch) p.catch(function () { speak(text); });
+      return;
+    }
+    speak(text);
+  }
+  function stopSay() { try { player.pause(); } catch (e) {} try { if (canSpeak) speechSynthesis.cancel(); } catch (e) {} }
+  $('say').onclick = sayNow;
   function setTimer(mode, sec) {
     $('timer').hidden = false; $('timer').className = 'iv-timer' + (mode === 'think' ? ' think' : '');
     $('tText').textContent = (mode === 'think' ? '考える時間 ' : '録画中 ') + sec + '秒';
@@ -274,28 +296,28 @@ zaito_biz_head( '動画で質問に答える' );
     clearInterval(tick); retakes = 0; lastBlob = null; err(''); $('resend').hidden = true; $('qSend').hidden = true;
     $('qReview').hidden = true; $('qThink').hidden = true; $('qRec').hidden = true; $('timer').hidden = true;
     stepsBar(); show('s-q');
-    if (practice) { question = PRACTICE; begin(); return; }
+    if (practice) { question = PRACTICE; audioUrl = CFG.practiceAudio || ''; begin(); return; }
     $('qNum').textContent = '質問 ' + (idx + 1) + ' / ' + CFG.total; $('qText').textContent = '質問を読み込んでいます…';
-    post('zaito_video_question', { i: idx }).then(function (d) { question = d.question; begin(); })
+    post('zaito_video_question', { i: idx }).then(function (d) { question = d.question; audioUrl = d.audio || ''; begin(); })
       .catch(function (m) { $('qText').textContent = ''; err(m); $('resend').hidden = false; $('resend').onclick = openQ; });
   }
   function begin() {
     $('qNum').textContent = practice ? '練習の質問' : '質問 ' + (idx + 1) + ' / ' + CFG.total;
     $('qText').textContent = question;
-    speak(practice ? PRACTICE.replace(/（.*?）/, '') : question);
+    sayNow();
     think();
   }
   function think() {
     err(''); busy = !practice;
     $('qPlay').hidden = true; $('qPlay').removeAttribute('src'); $('qCam').hidden = false;
     $('qThink').hidden = false; $('qRec').hidden = true; $('qReview').hidden = true;
-    $('say').hidden = !canSpeak;
+    $('say').hidden = !(canSpeak || audioUrl);
     left = CFG.think; setTimer('think', left);
     clearInterval(tick);
     tick = setInterval(function () { left--; setTimer('think', left); if (left <= 0) startRec(); }, 1000);
   }
   function startRec() {
-    clearInterval(tick); try { speechSynthesis.cancel(); } catch (e) {}
+    clearInterval(tick); stopSay();
     $('say').hidden = true; // 録画中は読み上げない（声が録画に入るため）
     chunks = [];
     try { recorder = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 800000 } : undefined); }
@@ -326,7 +348,7 @@ zaito_biz_head( '動画で質問に答える' );
   $('recNow').onclick = startRec;
   $('stopRec').onclick = stopRec;
   $('retake').onclick = function () { retakes++; think(); };
-  $('toFirst').onclick = openQ;
+  $('toFirst').onclick = function () { unlockAudio(); openQ(); };
   function send() {
     if (lastBlob.size > CFG.maxBytes) { err('動画が大きすぎます。撮り直してください。'); return; }
     err(''); $('resend').hidden = true; $('qReview').hidden = true; $('qSend').hidden = false; $('sendBar').style.width = '0';
