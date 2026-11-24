@@ -123,9 +123,25 @@ function zaito_staging_mail( $args ) {
 			}
 		)
 	);
+	// 差出人の staging.zaito-work.com を本番と同じ zaito-work.com にする。試験環境のアドレス（存在しない）から送ると、
+	// 受け取る側で迷惑メール扱いや受け取り拒否になり、届き方を本番と同じように確かめられないため。
+	$args['headers'] = array_map(
+		function ( $h ) {
+			return preg_match( '/^\s*(from|reply-to)\s*:/i', (string) $h ) ? str_ireplace( '@staging.zaito-work.com', '@zaito-work.com', (string) $h ) : $h;
+		},
+		$args['headers']
+	);
 	return $args;
 }
 add_filter( 'wp_mail', 'zaito_staging_mail', PHP_INT_MAX );
+// 差出人の指定がないメール（WordPressの既定は wordpress@staging.zaito-work.com）も、本番と同じドメインから送る。
+add_filter(
+	'wp_mail_from',
+	function ( $from ) {
+		return str_ireplace( '@staging.zaito-work.com', '@zaito-work.com', (string) $from );
+	},
+	PHP_INT_MAX
+);
 
 /** 4. 「試験環境」の印。押すと試験用の操作パネル（/?zaito_stg_panel）を開く。 */
 function zaito_staging_badge_html() {
