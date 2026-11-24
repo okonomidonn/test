@@ -122,14 +122,14 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
         <input type="text" name="name_first" maxlength="20" autocomplete="given-name" aria-label="名" value="<?php echo esc_attr( $zaito_v['name_first'] ); ?>" required placeholder="名（例：花子）">
       </div></fieldset>
       <fieldset class="fld"><legend>ふりがな<span class="req">必須</span></legend><div class="pair">
-        <input type="text" name="kana_last" maxlength="30" aria-label="せい" value="<?php echo esc_attr( $zaito_v['kana_last'] ); ?>" required placeholder="せい（例：やまだ）">
-        <input type="text" name="kana_first" maxlength="30" aria-label="めい" value="<?php echo esc_attr( $zaito_v['kana_first'] ); ?>" required placeholder="めい（例：はなこ）">
+        <input type="text" name="kana_last" maxlength="30" aria-label="せい" value="<?php echo esc_attr( $zaito_v['kana_last'] ); ?>" required placeholder="せい（やまだ）">
+        <input type="text" name="kana_first" maxlength="30" aria-label="めい" value="<?php echo esc_attr( $zaito_v['kana_first'] ); ?>" required placeholder="めい（はなこ）">
       </div></fieldset>
       <fieldset class="fld"><legend>生年月日<span class="req">必須</span></legend><div class="ymd">
         <select name="birth_y" aria-label="生まれた年" autocomplete="bday-year" required>
           <option value="">年</option>
           <?php for ( $zaito_y = (int) current_time( 'Y' ) - 15; $zaito_y >= (int) current_time( 'Y' ) - 80; $zaito_y-- ) : ?>
-            <option value="<?php echo (int) $zaito_y; ?>"<?php selected( $zaito_v['birth_y'], (string) $zaito_y ); ?>><?php echo esc_html( $zaito_y . '年（' . zaito_direct_wareki( $zaito_y ) . '）' ); ?></option>
+            <option value="<?php echo (int) $zaito_y; ?>"<?php selected( $zaito_v['birth_y'], (string) $zaito_y ); ?>><?php echo (int) $zaito_y; ?>年</option>
           <?php endfor; ?>
         </select>
         <select name="birth_m" aria-label="生まれた月" autocomplete="bday-month" required>
