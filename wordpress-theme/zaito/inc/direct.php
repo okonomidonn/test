@@ -454,9 +454,6 @@ function zaito_handle_direct_apply() {
     if ( '学生ではない' !== $role && '' === $school ) {
         $errors[] = '学校名を入力してください';
     }
-    if ( '' === trim( $message ) ) {
-        $errors[] = '自己紹介・志望動機を入力してください';
-    }
     if ( $job['question'] && '' === trim( $answer ) ) {
         $errors[] = '企業からの質問に答えてください';
     }
@@ -520,7 +517,9 @@ function zaito_handle_direct_apply() {
     delete_transient( 'zaito_apply_draft_' . $me );
 
     // 応募の内容を、やりとりの最初のメッセージとして残す。
-    $first = $message . ( $job['question'] ? "\n\n【" . $job['question'] . "】\n" . $answer : '' );
+    // メッセージは任意。空のときは「応募しました。」だけを残す。
+    $first = trim( $message ) ? $message : '応募しました。';
+    $first .= $job['question'] ? "\n\n【" . $job['question'] . "】\n" . $answer : '';
     zaito_direct_add_message( $app_id, 'student', $me, $first, false );
     do_action( 'zaito_direct_applied', $app_id );
 

@@ -271,7 +271,8 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await pf.locator('[name=birth_d]').selectOption('1');
     await pf.locator('[name=pref]').selectOption('北海道');
     await pf.locator('[name=tel]').fill('090-0000-0000');
-    await pf.locator('[name=message]').fill('はじめまして。試験用の応募です。スポーツが好きなので応募しました。');
+    // メッセージは任意。録画面接ありの流れでだけ書き、なしの流れでは空のまま応募できることを確かめる。
+    if (VIDEO) await pf.locator('[name=message]').fill('はじめまして。試験用の応募です。スポーツが好きなので応募しました。');
     if (await pf.locator('[name=answer]').count()) await pf.locator('[name=answer]').fill('週に12時間くらいです。');
     await submit(sp, pf);
     await shot(sp, '09_after_apply');
@@ -319,7 +320,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await go(cp, `/chat/?c=${appId}`);
     await shot(cp, '11_company_chat');
     const body = await cp.locator('body').innerText();
-    body.includes('スポーツが好き') ? ok('9b 企業のメッセージ画面', '応募の内容が見えている') : ng('9b 企業のメッセージ画面', '応募の内容が見えない');
+    body.includes(VIDEO ? 'スポーツが好き' : '応募しました。') ? ok('9b 企業のメッセージ画面', '応募の内容が見えている') : ng('9b 企業のメッセージ画面', '応募の内容が見えない');
     body.includes('09000000000') && body.includes('北海道') && /\d+歳/.test(body) && body.includes('しけん たろう') ? ok('9b2 応募者の連絡先', 'ふりがな・電話番号・都道府県・年齢が企業に見えている') : ng('9b2 応募者の連絡先', 'ふりがな・電話番号・都道府県・年齢のどれかが企業に見えない');
     if (VIDEO) {
       // 企業のブラウザで、1問目の動画を実際に読み込めるか（動画のファイルが返ってくるか）。

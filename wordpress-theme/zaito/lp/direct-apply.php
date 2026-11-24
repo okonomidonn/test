@@ -170,8 +170,8 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
 
     <div class="fcard">
       <h2>企業へのメッセージ</h2>
-      <p>応募と一緒に企業へ送られる、最初のメッセージです。自己紹介と、この仕事に応募した理由を書いてください。</p>
-      <div class="fld"><label for="zmsg">自己紹介・志望動機<span class="req">必須</span></label><textarea id="zmsg" name="message" rows="7" maxlength="2000" required placeholder="例：〇〇大学2年の山田です。授業のない平日の午後に、週3日ほど働けます。人と話すのが好きで、サークルでは…"><?php echo esc_textarea( $zaito_v['message'] ); ?></textarea></div>
+      <p>伝えたいことがあれば書いてください。空欄のままでも応募できます。</p>
+      <div class="fld"><label for="zmsg">メッセージ<span class="opt">任意</span></label><textarea id="zmsg" name="message" rows="4" maxlength="2000" placeholder="例：授業のない平日の午後に、週3日ほど働けます。"><?php echo esc_textarea( $zaito_v['message'] ); ?></textarea></div>
       <?php if ( $zaito_j['question'] ) : ?>
         <div class="fld"><label for="zans"><?php echo esc_html( $zaito_j['question'] ); ?><span class="req">必須</span></label><textarea id="zans" name="answer" rows="3" maxlength="1000" required><?php echo esc_textarea( $zaito_v['answer'] ); ?></textarea></div>
       <?php endif; ?>
