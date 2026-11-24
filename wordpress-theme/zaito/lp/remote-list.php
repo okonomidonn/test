@@ -71,6 +71,16 @@ if ( ! $zaito_cond ) {
     }
     ksort( $zaito_front );
     $zaito_open = array_merge( array_values( $zaito_front ), $zaito_rest );
+
+    // 運営がトップの一番上に固定した直接掲載の求人（固定の期間中だけ）を、おすすめの3件よりさらに前に置く。
+    if ( function_exists( 'zaito_direct_is_pinned' ) ) {
+        $zaito_pinned = array_values( array_filter( $zaito_open, 'zaito_direct_is_pinned' ) );
+        if ( $zaito_pinned ) {
+            $zaito_open = array_merge( $zaito_pinned, array_values( array_filter( $zaito_open, function ( $j ) {
+                return ! zaito_direct_is_pinned( $j );
+            } ) ) );
+        }
+    }
 }
 
 // 分類ごとの件数（絞り込みボタンに表示）。

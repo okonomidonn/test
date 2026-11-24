@@ -231,6 +231,21 @@ function zaito_direct_admin_tab_jobs() {
             echo '<input type="text" name="note" placeholder="差し戻し・非公開の理由（企業に送ります）" style="width:340px"> <button class="button" name="to" value="return">' . ( 'publish' === $p->post_status ? '非公開にして差し戻す' : '差し戻す' ) . '</button>';
             echo '</form>';
         }
+        // トップページの一番上に固定する（公開中の求人だけ）。最後の日を空にして保存すると、固定をやめる。
+        if ( 'publish' === $p->post_status && ! get_post_meta( $p->ID, '_zaito_closed', true ) ) {
+            $until = (string) get_post_meta( $p->ID, '_zaito_top_until', true );
+            $live  = $until && $until >= current_time( 'Y-m-d' );
+            echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:8px">';
+            wp_nonce_field( 'zaito_direct_admin_job_' . $p->ID );
+            echo '<input type="hidden" name="action" value="zaito_direct_admin_job"><input type="hidden" name="job_id" value="' . (int) $p->ID . '">';
+            echo 'トップページの一番上に固定：<input type="date" name="top_until" value="' . esc_attr( $until ? $until : gmdate( 'Y-m-d', current_time( 'timestamp' ) + 30 * DAY_IN_SECONDS ) ) . '"> まで ';
+            echo '<button class="button" name="to" value="pin">' . ( $live ? '固定の期間を変える' : '固定する' ) . '</button>';
+            if ( $until ) {
+                echo ' <button class="button-link" name="to" value="unpin">固定をやめる</button>';
+            }
+            echo ' <span style="color:#646970">' . esc_html( $live ? '固定中（' . $until . 'まで）' : ( $until ? '固定は' . $until . 'で終わりました' : '固定していません' ) ) . '</span>';
+            echo '</form>';
+        }
         echo '</div>';
     }
 }
@@ -253,6 +268,13 @@ function zaito_handle_direct_admin_job() {
             $live = 'approved' === zaito_company_status( $owner->ID );
             zaito_mail_button( $owner->user_email, '【zaito】求人を公開しました', '求人を公開しました', '「' . $title . '」の審査が終わり、' . ( $live ? 'zaitoに公開しました。' : '求人の確認が終わりました。企業アカウントの審査が終わると公開されます。' ), '公開中の求人を見る', home_url( '/company-jobs/' ), '', '応募があると、メールでお知らせします。', zaito_direct_from() );
         }
+    } elseif ( 'pin' === $to ) {
+        $until = isset( $_POST['top_until'] ) ? sanitize_text_field( wp_unslash( $_POST['top_until'] ) ) : '';
+        if ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', $until ) && $until >= current_time( 'Y-m-d' ) ) {
+            update_post_meta( $job_id, '_zaito_top_until', $until );
+        }
+    } elseif ( 'unpin' === $to ) {
+        delete_post_meta( $job_id, '_zaito_top_until' );
     } elseif ( 'return' === $to ) {
         wp_update_post( array( 'ID' => $job_id, 'post_status' => 'draft' ) );
         update_post_meta( $job_id, '_zaito_review', 'returned' );

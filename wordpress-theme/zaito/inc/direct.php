@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /* ---------- 選択肢 ---------- */
 
 function zaito_direct_categories() {
-    return array( '事務・アシスタント', 'カスタマーサポート', 'マーケティング', 'SNS運用', 'ライティング', 'デザイン', '動画制作', 'エンジニア', '教育・学習サポート', '経営企画・事業開発', 'その他' );
+    return array( '事務・アシスタント', 'カスタマーサポート', 'テレアポ・営業', 'マーケティング', 'SNS運用', 'ライティング', 'デザイン', '動画制作', 'エンジニア', '教育・学習サポート', '経営企画・事業開発', 'その他' );
 }
 
 function zaito_direct_contracts() {
@@ -204,7 +204,14 @@ function zaito_direct_job_array( $p ) {
         'question' => (string) get_post_meta( $p->ID, '_job_screening_question', true ),
         'video_q'  => zaito_video_job_questions( $p->ID ),
         'tags'     => is_array( $tags ) ? array_values( $tags ) : array(),
+        // 運営が決めた「トップページの一番上に固定する最後の日」（Y-m-d）。空なら固定しない。
+        'top_until' => (string) get_post_meta( $p->ID, '_zaito_top_until', true ),
     );
+}
+
+/** トップページの一番上に固定する求人か（固定の最後の日が今日以降）。 */
+function zaito_direct_is_pinned( $job ) {
+    return ! empty( $job['top_until'] ) && $job['top_until'] >= current_time( 'Y-m-d' );
 }
 
 /** 直接掲載の求人を一覧の先頭に足す（inc/remote-jobs.php の zaito_remote_jobs フィルター）。 */
