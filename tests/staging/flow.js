@@ -212,16 +212,20 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await rf.locator('[name=school]').fill('テスト大学');
     await rf.locator('[name=email]').fill(stEmail);
     await shot(sp, '07_student_signup', false);
+    const t0 = Date.now();
     await rf.locator('button').filter({ hasText: '登録して' }).click();
     await sp.locator('#zprofile').waitFor({ state: 'visible', timeout: 20000 });
+    console.log(`   登録ボタンから質問の画面まで ${((Date.now() - t0) / 1000).toFixed(1)}秒`);
+    const t1 = Date.now();
     for (let k = 0; k < 8; k++) {
       const save = sp.locator('#zprofile button', { hasText: '保存して応募ページへ進む' });
       if (await save.isVisible()) { await Promise.all([sp.waitForLoadState('domcontentloaded'), save.click()]); await sp.waitForTimeout(1500); break; }
       const opt = sp.locator('#zprofile label:visible').first();
-      if (await opt.count()) await opt.click().catch(() => {});
-      await sp.locator('#zprofile button', { hasText: '次へ' }).filter({ visible: true }).first().click();
+      if (await opt.count()) await opt.click({ timeout: 3000 }).catch(() => {});
+      await sp.locator('#zprofile button', { hasText: '次へ' }).filter({ visible: true }).first().click({ timeout: 10000 });
       await sp.waitForTimeout(600);
     }
+    console.log(`   5問の質問に答えて応募ページまで ${((Date.now() - t1) / 1000).toFixed(1)}秒`);
     await shot(sp, '07b_student_after_sheet');
     const stId = Number(php(`$p = get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'fields' => 'ids', 'posts_per_page' => 1, 'meta_query' => array( array( 'key' => 'email', 'value' => '${stEmail}' ) ) ) ); echo $p ? $p[0] : 0;`));
     if (!stId) throw new Error('学生の登録ができなかった: ' + sp.url() + ' ' + await errorsOn(sp));
