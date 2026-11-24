@@ -259,11 +259,16 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await shot(sp, '08_apply_form');
     const pf = sp.locator('form:has([name=message])').first();
     if (!(await pf.count())) throw new Error('応募フォームが出ない: ' + sp.url());
-    await pf.locator('[name=name]').fill('試験 太郎');
+    await pf.locator('[name=name_last]').fill('試験');
+    await pf.locator('[name=name_first]').fill('太郎');
+    await pf.locator('[name=kana_last]').fill('シケン'); // カタカナでも、ひらがなにそろえて受け付ける
+    await pf.locator('[name=kana_first]').fill('たろう');
     await pf.locator('label').filter({ hasText: /^\s*大学生\s*$/ }).first().click();
     await pf.locator('label').filter({ hasText: /^\s*2年\s*$/ }).first().click().catch(() => {});
     await pf.locator('[name=school]').fill('テスト大学');
-    await pf.locator('[name=birthdate]').fill('2006-04-01');
+    await pf.locator('[name=birth_y]').selectOption('2006');
+    await pf.locator('[name=birth_m]').selectOption('4');
+    await pf.locator('[name=birth_d]').selectOption('1');
     await pf.locator('[name=pref]').selectOption('北海道');
     await pf.locator('[name=tel]').fill('090-0000-0000');
     await pf.locator('[name=message]').fill('はじめまして。試験用の応募です。スポーツが好きなので応募しました。');
@@ -315,7 +320,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await shot(cp, '11_company_chat');
     const body = await cp.locator('body').innerText();
     body.includes('スポーツが好き') ? ok('9b 企業のメッセージ画面', '応募の内容が見えている') : ng('9b 企業のメッセージ画面', '応募の内容が見えない');
-    body.includes('09000000000') && body.includes('北海道') && /\d+歳/.test(body) ? ok('9b2 応募者の連絡先', '電話番号・都道府県・年齢が企業に見えている') : ng('9b2 応募者の連絡先', '電話番号・都道府県・年齢のどれかが企業に見えない');
+    body.includes('09000000000') && body.includes('北海道') && /\d+歳/.test(body) && body.includes('しけん たろう') ? ok('9b2 応募者の連絡先', 'ふりがな・電話番号・都道府県・年齢が企業に見えている') : ng('9b2 応募者の連絡先', 'ふりがな・電話番号・都道府県・年齢のどれかが企業に見えない');
     if (VIDEO) {
       // 企業のブラウザで、1問目の動画を実際に読み込めるか（動画のファイルが返ってくるか）。
       const purl = php(`echo zaito_video_play_url( ${appId}, 0 );`);

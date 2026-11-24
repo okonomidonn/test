@@ -324,8 +324,41 @@ function zaito_direct_age( $birth ) {
 }
 
 /** 企業に見せる応募者の連絡先・年齢・住まい（応募時に入力したもの）。古い応募にはない。 */
+/**
+ * 応募フォームの「現在の状況」。zaitoは大学生などの学生向けなので、学校の種類で聞く。
+ */
+function zaito_direct_roles() {
+    return array( '大学生', '大学院生', '短大生', '専門学校生', '高専生', '学生ではない' );
+}
+
+/**
+ * 西暦の年に和暦を添える（生年月日の選択肢用）。例：2006 → 平成18年
+ */
+function zaito_direct_wareki( $y ) {
+    $y = (int) $y;
+    if ( $y >= 2019 ) {
+        return '令和' . ( 2019 === $y ? '元' : $y - 2018 ) . '年';
+    }
+    if ( $y >= 1989 ) {
+        return '平成' . ( 1989 === $y ? '元' : $y - 1988 ) . '年';
+    }
+    return '昭和' . ( $y - 1925 ) . '年';
+}
+
+/**
+ * ふりがなをひらがなにそろえる（カタカナ・半角カナも受け付ける）。ひらがな以外が残れば空を返す。
+ */
+function zaito_direct_kana( $s ) {
+    $s = preg_replace( '/[\s　]+/u', '', mb_convert_kana( (string) $s, 'HVcs' ) );
+    return preg_match( '/^[ぁ-ゖー]+$/u', $s ) ? $s : '';
+}
+
 function zaito_direct_applicant_details( $app_id ) {
-    $out   = array();
+    $out  = array();
+    $kana = (string) get_post_meta( $app_id, 'applicant_kana', true );
+    if ( $kana ) {
+        $out['ふりがな'] = $kana;
+    }
     $birth = (string) get_post_meta( $app_id, 'applicant_birthdate', true );
     if ( $birth && zaito_direct_age( $birth ) >= 0 ) {
         $out['年齢'] = zaito_direct_age( $birth ) . '歳（' . (int) substr( $birth, 0, 4 ) . '年' . (int) substr( $birth, 5, 2 ) . '月' . (int) substr( $birth, 8, 2 ) . '日生まれ）';
@@ -379,57 +412,85 @@ function zaito_handle_direct_apply() {
     }
 
     $opts    = zaito_remote_profile_options();
-    $name    = isset( $_POST['name'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_POST['name'] ) ), 0, 40 ) : '';
-    $role    = isset( $_POST['role'] ) ? sanitize_text_field( wp_unslash( $_POST['role'] ) ) : '';
-    $grade   = isset( $_POST['grade'] ) ? sanitize_text_field( wp_unslash( $_POST['grade'] ) ) : '';
-    $school  = isset( $_POST['school'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_POST['school'] ) ), 0, 80 ) : '';
+    $field   = function ( $k, $len = 80 ) {
+        return isset( $_POST[ $k ] ) ? mb_substr( trim( sanitize_text_field( wp_unslash( $_POST[ $k ] ) ) ), 0, $len ) : '';
+    };
+    $name_last  = $field( 'name_last', 20 );
+    $name_first = $field( 'name_first', 20 );
+    $kana_l_in  = $field( 'kana_last', 30 );
+    $kana_f_in  = $field( 'kana_first', 30 );
+    $kana_last  = zaito_direct_kana( $kana_l_in );
+    $kana_first = zaito_direct_kana( $kana_f_in );
+    $name    = trim( $name_last . ' ' . $name_first );
+    $kana    = trim( $kana_last . ' ' . $kana_first );
+    $role    = $field( 'role' );
+    $grade   = $field( 'grade' );
+    $school  = $field( 'school', 80 );
     $message = isset( $_POST['message'] ) ? mb_substr( sanitize_textarea_field( wp_unslash( $_POST['message'] ) ), 0, 2000 ) : '';
     $answer  = isset( $_POST['answer'] ) ? mb_substr( sanitize_textarea_field( wp_unslash( $_POST['answer'] ) ), 0, 1000 ) : '';
-    $birth   = isset( $_POST['birthdate'] ) ? sanitize_text_field( wp_unslash( $_POST['birthdate'] ) ) : '';
-    $pref    = isset( $_POST['pref'] ) ? sanitize_text_field( wp_unslash( $_POST['pref'] ) ) : '';
-    $tel_in  = isset( $_POST['tel'] ) ? sanitize_text_field( wp_unslash( $_POST['tel'] ) ) : '';
+    $birth_y = (int) $field( 'birth_y' );
+    $birth_m = (int) $field( 'birth_m' );
+    $birth_d = (int) $field( 'birth_d' );
+    $birth   = ( $birth_y && $birth_m && $birth_d ) ? sprintf( '%04d-%02d-%02d', $birth_y, $birth_m, $birth_d ) : '';
+    $pref    = $field( 'pref' );
+    $tel_in  = $field( 'tel', 20 );
     $tel     = zaito_direct_normalize_tel( $tel_in );
 
     $errors = array();
-    if ( '' === $name ) {
-        $errors[] = 'お名前を入力してください';
+    if ( '' === $name_last || '' === $name_first ) {
+        $errors[] = '氏名を、姓と名に分けて入力してください';
     }
-    if ( ! in_array( $role, $opts['role'], true ) ) {
-        $errors[] = '現在の職業を選んでください';
+    if ( '' === $kana_last || '' === $kana_first ) {
+        $errors[] = 'ふりがなを、ひらがなで入力してください';
     }
-    if ( ! in_array( $grade, $opts['grade'], true ) ) {
+    if ( ! in_array( $role, zaito_direct_roles(), true ) ) {
+        $errors[] = '現在の状況を選んでください';
+    }
+    if ( '学生ではない' === $role || ! in_array( $grade, $opts['grade'], true ) ) {
         $grade = '';
     }
-    $age = zaito_direct_age( $birth );
-    if ( $age < 0 ) {
-        $errors[] = '生年月日を入力してください';
-    } elseif ( $age < 15 || $age > 100 ) {
+    $age = '' === $birth ? -1 : zaito_direct_age( $birth );
+    if ( '' === $birth ) {
+        $errors[] = '生年月日を選んでください';
+    } elseif ( $age < 0 || ! checkdate( $birth_m, $birth_d, $birth_y ) || $age < 15 || $age > 100 ) {
         $errors[] = '生年月日を確かめてください';
     }
     if ( ! in_array( $pref, zaito_direct_prefectures(), true ) ) {
-        $errors[] = '住んでいる都道府県を選んでください';
+        $errors[] = 'お住まいの都道府県を選んでください';
     }
     if ( '' === $tel ) {
         $errors[] = '電話番号を正しく入力してください（例：090-1234-5678）';
     }
-    // 学生（大学生・大学院生・専門学校・短大生・高校生）は、学校名も必須。
-    if ( preg_match( '/生$/u', $role ) && '' === $school ) {
+    if ( '学生ではない' === $role ) {
+        $school = '';
+    }
+    // 学生は、学校名も必須。
+    if ( '学生ではない' !== $role && '' === $school ) {
         $errors[] = '学校名を入力してください';
     }
     if ( '' === trim( $message ) ) {
-        $errors[] = '自己紹介・応募の理由を入力してください';
+        $errors[] = '自己紹介・志望動機を入力してください';
     }
     if ( $job['question'] && '' === trim( $answer ) ) {
         $errors[] = '企業からの質問に答えてください';
     }
     if ( $errors ) {
-        $tel = $tel_in;
-        set_transient( 'zaito_apply_draft_' . $me, compact( 'name', 'role', 'grade', 'school', 'message', 'answer', 'birth', 'pref', 'tel' ), 10 * MINUTE_IN_SECONDS );
+        $tel        = $tel_in;
+        $kana_last  = $kana_l_in;
+        $kana_first = $kana_f_in;
+        $birth_y    = $birth_y ? (string) $birth_y : '';
+        $birth_m    = $birth_m ? (string) $birth_m : '';
+        $birth_d    = $birth_d ? (string) $birth_d : '';
+        set_transient( 'zaito_apply_draft_' . $me, compact( 'name_last', 'name_first', 'kana_last', 'kana_first', 'role', 'grade', 'school', 'message', 'answer', 'birth_y', 'birth_m', 'birth_d', 'pref', 'tel' ), 10 * MINUTE_IN_SECONDS );
         zaito_store_form_errors_and_redirect( $errors, $back );
     }
 
     // 次の応募で入力を省けるよう、登録にも残す。
     update_post_meta( $me, 'name', $name );
+    update_post_meta( $me, 'name_last', $name_last );
+    update_post_meta( $me, 'name_first', $name_first );
+    update_post_meta( $me, 'kana_last', $kana_last );
+    update_post_meta( $me, 'kana_first', $kana_first );
     update_post_meta( $me, 'role', $role );
     if ( $grade ) {
         update_post_meta( $me, 'grade', $grade );
@@ -457,6 +518,7 @@ function zaito_handle_direct_apply() {
         'status'             => 'new',
         'status_at'          => $now,
         'applicant_name'     => $name,
+        'applicant_kana'     => $kana,
         'applicant_role'     => $role,
         'applicant_grade'    => $grade,
         'applicant_school'   => $school,

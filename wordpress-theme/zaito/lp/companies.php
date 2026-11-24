@@ -12,15 +12,19 @@ $zaito_jobs  = array_filter( zaito_remote_jobs(), function ( $j ) {
     return empty( $j['closed'] );
 } );
 $zaito_url   = home_url( '/for-companies/' );
-$zaito_title = '企業の方へ｜大学生の完全在宅バイトを、面接の手間なく採用 | zaito';
-$zaito_desc  = '大学生専門の完全在宅バイト求人サイト「zaito」の企業向けページです。応募した学生が質問に録画で答えるので、面接は回答を見て会いたい人を選ぶだけ。掲載は無料で始められます。';
+// 録画面接（応募した学生が質問に動画で答える）は、本番で使えるようにしたときだけ紹介する。オフの間に載せると、実際とちがう表示になるため。
+$zaito_video = function_exists( 'zaito_video_enabled' ) && zaito_video_enabled();
+$zaito_title = $zaito_video ? '企業の方へ｜大学生の完全在宅バイトを、面接の手間なく採用 | zaito' : '企業の方へ｜大学生の完全在宅バイトを、成果報酬で採用 | zaito';
+$zaito_desc  = $zaito_video
+    ? '大学生専門の完全在宅バイト求人サイト「zaito」の企業向けページです。応募した学生が質問に録画で答えるので、面接は回答を見て会いたい人を選ぶだけ。掲載と応募の受け付けは無料で、採用した学生が働き始めたときだけ成果報酬をいただきます。'
+    : '大学生専門の完全在宅バイト求人サイト「zaito」の企業向けページです。掲載と応募の受け付けは無料で、採用した学生が働き始めたときだけ成果報酬をいただきます。';
 
 // よくある質問（少なく、ふつうに聞かれることだけ）。料金の金額はページに書かない（問い合わせのときに案内する）。
 $zaito_faqs = array(
-    array( '費用はかかりますか？', '掲載は無料で始められます。料金の詳しいことは、お問い合わせのときにご案内します。' ),
-    array( '求人原稿がなくても大丈夫ですか？', '大丈夫です。募集内容をお伺いし、zaito運営が原稿と面接の質問の案を作ります。掲載前に内容をご確認いただきます。' ),
+    array( '費用はかかりますか？', '求人の掲載と応募の受け付けは無料です。採用した学生が働き始めたときだけ、成果報酬をいただきます。金額は、お問い合わせのときにご案内します。' ),
+    array( '求人原稿がなくても大丈夫ですか？', $zaito_video ? '大丈夫です。募集内容をお伺いし、zaito運営が原稿と面接の質問の案を作ります。掲載前に内容をご確認いただきます。' : '大丈夫です。募集内容をお伺いし、zaito運営が原稿の案を作ります。掲載前に内容をご確認いただきます。' ),
     array( 'どんな求人を掲載できますか？', '面接・研修・会議も含めて、出社なしで自宅だけで働ける仕事です。アルバイト・業務委託・インターンなど、雇用形態は問いません。' ),
-    array( '面接はどのように行いますか？', '応募した学生が、御社の質問に録画で答えます。回答を見て会いたい学生を選び、その学生とだけオンラインで話していただけます。' ),
+    array( '面接はどのように行いますか？', $zaito_video ? '応募した学生が、御社の質問に録画で答えます。回答を見て会いたい学生を選び、その学生とだけオンラインで話していただけます。' : '応募した学生とは、zaitoのメッセージか電話で連絡を取り、Zoomなどを使ってオンラインで面接していただきます。' ),
     array( '掲載までどのくらいかかりますか？', '原稿の内容をご確認いただいてから、数日で掲載できます。' ),
     array( 'すでにzaitoに載っている自社の求人を直したい・消したい', '下のフォームか info@zaito-work.com までご連絡ください。すぐに対応します。' ),
 );
@@ -41,11 +45,16 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
     <div class="hero-in">
       <div class="hero-copy">
         <span class="eb">FOR COMPANIES</span>
+        <?php if ( $zaito_video ) : ?>
         <h1>大学生の在宅バイトを、<br>面接の手間なく採用。</h1>
         <p>zaitoは、出社なしの仕事だけを集めた大学生専門の求人サイトです。応募した学生が質問に録画で答えるので、面接は回答を見て、会いたい人を選ぶだけです。</p>
+        <?php else : ?>
+        <h1>大学生の在宅バイトを、<br>成果報酬で採用。</h1>
+        <p>zaitoは、出社なしの仕事だけを集めた大学生専門の求人サイトです。求人の掲載と応募の受け付けは無料で、採用した学生が働き始めたときだけ費用がかかります。</p>
+        <?php endif; ?>
         <div class="cta-row">
           <a class="btn btn-p btn-lg" href="#contact">無料で相談する<span class="ms" aria-hidden="true">arrow_forward</span></a>
-          <a class="btn btn-g btn-lg" href="#interview">面接の画面を見る</a>
+          <a class="btn btn-g btn-lg" href="#interview"><?php echo $zaito_video ? '面接の画面を見る' : '応募から採用までを見る'; ?></a>
         </div>
         <p style="margin-top:12px;font-size:14px">アカウントをお持ちの方は <a href="<?php echo esc_url( home_url( '/company-login/' ) ); ?>">企業ログイン</a></p>
       </div>
@@ -54,6 +63,16 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
 </section>
 
 <main class="wrap">
+  <?php if ( ! $zaito_video ) : ?>
+  <section class="co-sec" id="interview" aria-labelledby="iv-title">
+    <h2 id="iv-title">応募から採用まで</h2>
+    <ol class="flow4 flow3">
+      <li><b>応募が届く</b><span>応募があると、メールでお知らせします。学生の氏名・学校・連絡先と、学生からのメッセージを確認できます。</span></li>
+      <li><b>連絡して面接する</b><span>zaitoのメッセージか電話で連絡し、Zoomなどを使ってオンラインで面接します。</span></li>
+      <li><b>採用を決める</b><span>採用を決めたら、管理画面で応募の状態を「内定」にしてください。</span></li>
+    </ol>
+  </section>
+  <?php else : ?>
   <section class="co-sec" id="interview" aria-labelledby="iv-title">
     <h2 id="iv-title">面接はオンラインで、選ぶだけ</h2>
     <ol class="flow4 flow3">
@@ -72,14 +91,15 @@ zaito_remote_head( $zaito_title, $zaito_desc, $zaito_url, array(
       </figure>
     </div>
   </section>
+  <?php endif; ?>
 
   <section class="co-sec" aria-labelledby="flow-title">
     <h2 id="flow-title">掲載から採用までの流れ</h2>
     <ol class="flow4">
       <li><b>相談する</b><span>下のフォームから、募集したい仕事をお知らせください。</span></li>
-      <li><b>原稿を確認する</b><span>zaitoが求人原稿と面接の質問を作ります。内容をご確認ください。</span></li>
+      <li><b>原稿を確認する</b><span><?php echo $zaito_video ? 'zaitoが求人原稿と面接の質問を作ります。内容をご確認ください。' : 'zaitoが求人原稿を作ります。内容をご確認ください。'; ?></span></li>
       <li><b>掲載開始</b><span>求人が公開され、学生から応募が届きます。</span></li>
-      <li><b>選んで採用</b><span>録画の回答を見て、会いたい学生と話し、採用を決めます。</span></li>
+      <li><b>選んで採用</b><span><?php echo $zaito_video ? '録画の回答を見て、会いたい学生と話し、採用を決めます。' : '応募した学生とオンラインで面接し、採用を決めます。'; ?></span></li>
     </ol>
   </section>
 

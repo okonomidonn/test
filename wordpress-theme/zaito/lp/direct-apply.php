@@ -3,7 +3,7 @@
  * 直接掲載の求人の応募フォーム（/remote/d{ID}/apply/）。inc/remote-jobs.php から $zaito_remote_job をセットして読み込む。
  *
  * 応募できるのは、本人確認済みのブラウザ（マイページのCookie zaito_my）で、メールアドレスの確認も済んだ登録だけ。
- * - 本人確認済み → フォーム（名前・立場・学年・学校名・メッセージ・企業からの質問）
+ * - 本人確認済み → フォーム（氏名・ふりがな・生年月日・都道府県・電話番号・現在の状況・学年・学校名・メッセージ・企業からの質問）
  * - 登録はあるが本人確認がまだ → 登録したアドレスに、このページを開くリンクを送る
  * - 未登録 → 求人の詳細ページの登録フォームへ戻す
  * 送信は inc/direct.php の zaito_handle_direct_apply。
@@ -60,17 +60,32 @@ if ( ! $zaito_me && isset( $_POST['send_link'] ) && isset( $_POST['_wpnonce'] ) 
 
 $zaito_opts  = zaito_remote_profile_options();
 $zaito_draft = $zaito_me ? get_transient( 'zaito_apply_draft_' . $zaito_me ) : false;
-$zaito_v     = array(
-    'name'    => $zaito_me ? (string) get_post_meta( $zaito_me, 'name', true ) : '',
-    'role'    => $zaito_me ? (string) get_post_meta( $zaito_me, 'role', true ) : '',
-    'grade'   => $zaito_me ? (string) get_post_meta( $zaito_me, 'grade', true ) : '',
-    'school'  => $zaito_me ? (string) get_post_meta( $zaito_me, 'school', true ) : '',
-    'birth'   => $zaito_me ? (string) get_post_meta( $zaito_me, 'birthdate', true ) : '',
-    'pref'    => $zaito_me ? (string) get_post_meta( $zaito_me, 'pref', true ) : '',
-    'tel'     => $zaito_me ? (string) get_post_meta( $zaito_me, 'tel', true ) : '',
-    'message' => '',
-    'answer'  => '',
+$zaito_meta   = function ( $k ) use ( $zaito_me ) {
+    return $zaito_me ? (string) get_post_meta( $zaito_me, $k, true ) : '';
+};
+$zaito_birth  = $zaito_meta( 'birthdate' );
+$zaito_v      = array(
+    'name_last'  => $zaito_meta( 'name_last' ),
+    'name_first' => $zaito_meta( 'name_first' ),
+    'kana_last'  => $zaito_meta( 'kana_last' ),
+    'kana_first' => $zaito_meta( 'kana_first' ),
+    'role'       => $zaito_meta( 'role' ),
+    'grade'      => $zaito_meta( 'grade' ),
+    'school'     => $zaito_meta( 'school' ),
+    'birth_y'    => $zaito_birth ? (string) (int) substr( $zaito_birth, 0, 4 ) : '',
+    'birth_m'    => $zaito_birth ? (string) (int) substr( $zaito_birth, 5, 2 ) : '',
+    'birth_d'    => $zaito_birth ? (string) (int) substr( $zaito_birth, 8, 2 ) : '',
+    'pref'       => $zaito_meta( 'pref' ),
+    'tel'        => $zaito_meta( 'tel' ),
+    'message'    => '',
+    'answer'     => '',
 );
+// 姓と名を分けて聞く前に登録した人は、名前を最初の空白で姓と名に分けて入れておく。
+if ( '' === $zaito_v['name_last'] && '' !== $zaito_meta( 'name' ) ) {
+    $zaito_parts             = preg_split( '/[\s　]+/u', trim( $zaito_meta( 'name' ) ), 2 );
+    $zaito_v['name_last']  = $zaito_parts[0];
+    $zaito_v['name_first'] = isset( $zaito_parts[1] ) ? $zaito_parts[1] : '';
+}
 if ( is_array( $zaito_draft ) ) {
     $zaito_v = array_merge( $zaito_v, $zaito_draft );
 }
@@ -100,23 +115,49 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
     <?php wp_nonce_field( 'zaito_direct_apply_' . $zaito_j['post_id'] ); ?>
 
     <div class="fcard">
-      <h2>あなたについて</h2>
-      <p>ここに書いた内容とメッセージが、応募先の企業に伝わります。電話番号は、企業から面接などの連絡に使われます。メールアドレスは企業に伝わりません。</p>
-      <div class="fld"><label for="zname">お名前<span class="req">必須</span></label><input type="text" id="zname" name="name" maxlength="40" autocomplete="name" value="<?php echo esc_attr( $zaito_v['name'] ); ?>" required placeholder="例：山田 花子"></div>
-      <div class="fld"><label for="zbirth">生年月日<span class="req">必須</span></label><input type="date" id="zbirth" name="birthdate" autocomplete="bday" value="<?php echo esc_attr( $zaito_v['birth'] ); ?>" min="<?php echo esc_attr( (int) current_time( 'Y' ) - 100 ); ?>-01-01" max="<?php echo esc_attr( current_time( 'Y-m-d' ) ); ?>" required></div>
-      <div class="fld"><label for="zpref">住んでいる都道府県<span class="req">必須</span></label><select id="zpref" name="pref" required>
+      <h2>応募者情報</h2>
+      <p>入力した内容は、応募先の企業に送られます。電話番号は、企業が面接の日程などを連絡するときに使います。メールアドレスは企業には送られません。</p>
+      <fieldset class="fld"><legend>氏名<span class="req">必須</span></legend><div class="pair">
+        <input type="text" name="name_last" maxlength="20" autocomplete="family-name" aria-label="姓" value="<?php echo esc_attr( $zaito_v['name_last'] ); ?>" required placeholder="姓（例：山田）">
+        <input type="text" name="name_first" maxlength="20" autocomplete="given-name" aria-label="名" value="<?php echo esc_attr( $zaito_v['name_first'] ); ?>" required placeholder="名（例：花子）">
+      </div></fieldset>
+      <fieldset class="fld"><legend>ふりがな<span class="req">必須</span></legend><div class="pair">
+        <input type="text" name="kana_last" maxlength="30" aria-label="せい" value="<?php echo esc_attr( $zaito_v['kana_last'] ); ?>" required placeholder="せい（例：やまだ）">
+        <input type="text" name="kana_first" maxlength="30" aria-label="めい" value="<?php echo esc_attr( $zaito_v['kana_first'] ); ?>" required placeholder="めい（例：はなこ）">
+      </div></fieldset>
+      <fieldset class="fld"><legend>生年月日<span class="req">必須</span></legend><div class="ymd">
+        <select name="birth_y" aria-label="生まれた年" autocomplete="bday-year" required>
+          <option value="">年</option>
+          <?php for ( $zaito_y = (int) current_time( 'Y' ) - 15; $zaito_y >= (int) current_time( 'Y' ) - 80; $zaito_y-- ) : ?>
+            <option value="<?php echo (int) $zaito_y; ?>"<?php selected( $zaito_v['birth_y'], (string) $zaito_y ); ?>><?php echo esc_html( $zaito_y . '年（' . zaito_direct_wareki( $zaito_y ) . '）' ); ?></option>
+          <?php endfor; ?>
+        </select>
+        <select name="birth_m" aria-label="生まれた月" autocomplete="bday-month" required>
+          <option value="">月</option>
+          <?php for ( $zaito_m = 1; $zaito_m <= 12; $zaito_m++ ) : ?>
+            <option value="<?php echo (int) $zaito_m; ?>"<?php selected( $zaito_v['birth_m'], (string) $zaito_m ); ?>><?php echo (int) $zaito_m; ?>月</option>
+          <?php endfor; ?>
+        </select>
+        <select name="birth_d" aria-label="生まれた日" autocomplete="bday-day" required>
+          <option value="">日</option>
+          <?php for ( $zaito_d = 1; $zaito_d <= 31; $zaito_d++ ) : ?>
+            <option value="<?php echo (int) $zaito_d; ?>"<?php selected( $zaito_v['birth_d'], (string) $zaito_d ); ?>><?php echo (int) $zaito_d; ?>日</option>
+          <?php endfor; ?>
+        </select>
+      </div></fieldset>
+      <div class="fld"><label for="zpref">お住まいの都道府県<span class="req">必須</span></label><select id="zpref" name="pref" autocomplete="address-level1" required>
         <option value="">選んでください</option>
         <?php foreach ( zaito_direct_prefectures() as $zaito_o ) : ?>
           <option value="<?php echo esc_attr( $zaito_o ); ?>"<?php selected( $zaito_v['pref'], $zaito_o ); ?>><?php echo esc_html( $zaito_o ); ?></option>
         <?php endforeach; ?>
       </select></div>
-      <div class="fld"><label for="ztel">電話番号<span class="req">必須</span></label><input type="tel" id="ztel" name="tel" maxlength="20" autocomplete="tel" inputmode="tel" value="<?php echo esc_attr( $zaito_v['tel'] ); ?>" required placeholder="例：090-1234-5678"></div>
-      <fieldset class="fld"><legend>現在の職業<span class="req">必須</span></legend><div class="picks">
-        <?php foreach ( $zaito_opts['role'] as $zaito_o ) : ?>
+      <div class="fld"><label for="ztel">電話番号<span class="req">必須</span></label><input type="tel" id="ztel" name="tel" maxlength="20" autocomplete="tel" inputmode="tel" value="<?php echo esc_attr( $zaito_v['tel'] ); ?>" required placeholder="例：090-1234-5678"><p class="hint">日中につながりやすい番号を入力してください。ハイフンはなくてもかまいません。</p></div>
+      <fieldset class="fld"><legend>現在の状況<span class="req">必須</span></legend><div class="picks">
+        <?php foreach ( zaito_direct_roles() as $zaito_o ) : ?>
           <label><input type="radio" name="role" value="<?php echo esc_attr( $zaito_o ); ?>"<?php checked( $zaito_v['role'], $zaito_o ); ?> required><span><?php echo esc_html( $zaito_o ); ?></span></label>
         <?php endforeach; ?>
       </div></fieldset>
-      <div class="stu"<?php echo preg_match( '/生$/u', $zaito_v['role'] ) || '' === $zaito_v['role'] ? '' : ' hidden'; ?>>
+      <div class="stu"<?php echo '学生ではない' === $zaito_v['role'] ? ' hidden' : ''; ?>>
         <fieldset class="fld"><legend>学年<span class="opt">任意</span></legend><div class="picks">
           <?php foreach ( $zaito_opts['grade'] as $zaito_o ) : ?>
             <label><input type="radio" name="grade" value="<?php echo esc_attr( $zaito_o ); ?>"<?php checked( $zaito_v['grade'], $zaito_o ); ?>><span><?php echo esc_html( $zaito_o ); ?></span></label>
@@ -129,8 +170,8 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
 
     <div class="fcard">
       <h2>企業へのメッセージ</h2>
-      <p>このメッセージが、企業とのやりとりの最初のメッセージになります。</p>
-      <div class="fld"><label for="zmsg">自己紹介・応募の理由<span class="req">必須</span></label><textarea id="zmsg" name="message" rows="7" maxlength="2000" required placeholder="例：〇〇大学2年の山田です。授業の合間に週2日ほど働けます。文章を書くのが好きで、ゼミのレポートでは…"><?php echo esc_textarea( $zaito_v['message'] ); ?></textarea></div>
+      <p>応募と一緒に企業へ送られる、最初のメッセージです。自己紹介と、この仕事に応募した理由を書いてください。</p>
+      <div class="fld"><label for="zmsg">自己紹介・志望動機<span class="req">必須</span></label><textarea id="zmsg" name="message" rows="7" maxlength="2000" required placeholder="例：〇〇大学2年の山田です。授業のない平日の午後に、週3日ほど働けます。人と話すのが好きで、サークルでは…"><?php echo esc_textarea( $zaito_v['message'] ); ?></textarea></div>
       <?php if ( $zaito_j['question'] ) : ?>
         <div class="fld"><label for="zans"><?php echo esc_html( $zaito_j['question'] ); ?><span class="req">必須</span></label><textarea id="zans" name="answer" rows="3" maxlength="1000" required><?php echo esc_textarea( $zaito_v['answer'] ); ?></textarea></div>
       <?php endif; ?>
@@ -144,14 +185,14 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
       </div>
     <?php endif; ?>
     <button type="submit" class="btn btn-p btn-lg"><?php echo empty( $zaito_j['video_q'] ) ? '応募する' : '応募に進む（このあと動画で答えます）'; ?></button>
-    <p class="legal">応募すると、<a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>と<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a>に同意し、上の内容を<?php echo esc_html( $zaito_j['company'] ); ?>に伝えることに同意したものとみなします。</p>
+    <p class="legal">応募すると、<a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>と<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a>に同意したものとし、入力した内容が<?php echo esc_html( $zaito_j['company'] ); ?>に送られます。</p>
   </form>
   <script>
   (function () {
     var f = document.getElementById('zapply'), stu = f.querySelector('.stu');
     var school = document.getElementById('zschool');
     // 学生を選んだときだけ、学年と学校名を出す。学校名は学生なら必須。
-    function sync(v) { var on = /生$/.test(v); stu.hidden = !on; school.required = on; }
+    function sync(v) { var on = v !== '学生ではない'; stu.hidden = !on; school.required = on; }
     var cur = f.querySelector('input[name=role]:checked');
     sync(cur ? cur.value : '大学生');
     f.addEventListener('change', function (e) { if (e.target.name === 'role') { sync(e.target.value); } });

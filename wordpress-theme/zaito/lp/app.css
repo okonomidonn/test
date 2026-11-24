@@ -217,3 +217,5 @@ fieldset.fld{border:0;padding:0}
 .biz-auth-ft p{margin:10px 0 0}
 @media (max-width:560px){.biz-auth main.auth{margin:20px 12px 48px;padding:24px 20px}.biz-auth .auth-split{padding:20px 12px 48px}.biz-auth .auth-split main.auth{padding:24px 20px}}
 @media (max-width:560px){.biz-hd .for{display:none}.biz-hd .who .btn{height:36px!important;padding:0 12px;font-size:13px;white-space:nowrap}}
+.fld .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fld .ymd{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
