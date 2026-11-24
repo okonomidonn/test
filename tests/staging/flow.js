@@ -51,8 +51,8 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
   const gate = process.env.STG_KEY ? [{ name: 'zaito_stg', value: process.env.STG_KEY, domain: host, path: '/', secure, httpOnly: true }] : [];
 
   // 運営（管理者）のブラウザ。パスワードは使わず、サーバーの中で1時間だけ有効なログインを作る。
-  const adminInfo = JSON.parse(php(`
-    $u = get_users( array( 'role' => 'administrator', 'number' => 1, 'orderby' => 'ID' ) )[0];
+  const cookieCode = (uidExpr) => `
+    $u = get_userdata( ${uidExpr} );
     $exp = time() + HOUR_IN_SECONDS;
     $s = ${secure ? 'true' : 'false'};
     echo wp_json_encode( array(
@@ -60,14 +60,27 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
       'auth' => wp_generate_auth_cookie( $u->ID, $exp, $s ? 'secure_auth' : 'auth' ),
       'li_name' => LOGGED_IN_COOKIE,
       'li' => wp_generate_auth_cookie( $u->ID, $exp, 'logged_in' ),
-      'uid' => $u->ID ) );`));
-  if (process.env.GITHUB_ACTIONS) { console.log('::add-mask::' + adminInfo.auth); console.log('::add-mask::' + adminInfo.li); }
+      'uid' => $u->ID ) );`;
+  const cookiesFor = (c) => (process.env.GITHUB_ACTIONS && console.log('::add-mask::' + c.auth + '\n::add-mask::' + c.li), [
+    { name: c.auth_name, value: c.auth, domain: host, path: '/wp-admin', secure, httpOnly: true },
+    { name: c.auth_name, value: c.auth, domain: host, path: '/wp-content/plugins', secure, httpOnly: true },
+    { name: c.li_name, value: c.li, domain: host, path: '/', secure, httpOnly: true }]);
+  const adminInfo = JSON.parse(php(cookieCode(`get_users( array( 'role' => 'administrator', 'number' => 1, 'orderby' => 'ID' ) )[0]->ID`)));
   const admin = await browser.newContext(ctxOpts);
-  await admin.addCookies([...gate,
-    { name: adminInfo.auth_name, value: adminInfo.auth, domain: host, path: '/wp-admin', secure, httpOnly: true },
-    { name: adminInfo.auth_name, value: adminInfo.auth, domain: host, path: '/wp-content/plugins', secure, httpOnly: true },
-    { name: adminInfo.li_name, value: adminInfo.li, domain: host, path: '/', secure, httpOnly: true }]);
+  await admin.addCookies([...gate, ...cookiesFor(adminInfo)]);
   const ap = await admin.newPage();
+  // 運営の管理画面を開く。エックスサーバーの「国外からの管理画面へのアクセス制限」で止められたとき（GitHubのパソコンは国外）は、
+  // サーバーの中で同じ管理画面の部分を、このブラウザのログインに合わせて作り、試験環境のページの上に表示する。
+  // ボタンを押したときの送信先（admin-post.php）は国外からも届くので、押したあとの処理は本物の通り道を通る。
+  let foreignNoted = false;
+  async function adminTab(tab) {
+    await go(ap, `/wp-admin/admin.php?page=zaito-direct&tab=${tab}`);
+    if (!/アクセスが拒否/.test(await ap.title()) && !process.env.FORCE_FOREIGN) return;
+    if (!foreignNoted) { console.log('   （国外からは管理画面が開けないため、管理画面の部分をサーバーで作って表示し、ボタンを押す）'); foreignNoted = true; }
+    const html = php(`$_COOKIE[ LOGGED_IN_COOKIE ] = ${JSON.stringify(adminInfo.li)}; wp_set_current_user( ${adminInfo.uid} ); require_once ABSPATH . 'wp-admin/includes/template.php'; ob_start(); zaito_direct_admin_tab_${tab}(); echo ob_get_clean();`);
+    await go(ap, '/');
+    await ap.setContent('<!doctype html><meta charset="utf-8"><body>' + html + '</body>');
+  }
 
   const company = await browser.newContext(ctxOpts); await company.addCookies(gate);
   const cp = await company.newPage();
@@ -100,7 +113,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     ok('1 企業の登録', `登録できた（ユーザー${coId}、状態 ${php(`echo zaito_company_status(${coId});`)}）。登録後の画面 ${cp.url().replace(BASE, '')}`);
 
     // 2. 運営が企業を承認
-    await go(ap, '/wp-admin/admin.php?page=zaito-direct&tab=companies');
+    await adminTab('companies');
     await shot(ap, '02_admin_companies');
     const af = ap.locator(`form:has(input[name=user_id][value="${coId}"]):has(input[name=to][value=approved])`).first();
     await submit(ap, af);
@@ -116,6 +129,13 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await lf.locator('[name=log]').fill(coEmail);
     await lf.locator('[name=pwd]').fill(coPass);
     await submit(cp, lf);
+    if (/アクセスが拒否/.test(await cp.title())) {
+      // ログインの送信先（wp-login.php）も国外からは止められる。日本からは使える（作業環境で確認済み）。ここではサーバーでログインを作る。
+      console.log('   （国外からはログインの送信先が止められるため、サーバーで企業のログインを作る）');
+      const ck = JSON.parse(php(cookieCode(coId)));
+      await company.addCookies(cookiesFor(ck));
+      await go(cp, '/company/');
+    }
     await shot(cp, '03_company_dashboard');
     cp.url().includes('/company') ? ok('3a 企業のログイン', 'ログインできた → ' + cp.url().replace(BASE, '')) : ng('3a 企業のログイン', 'ログイン後の画面 ' + cp.url());
 
@@ -156,7 +176,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     ok('3b 企業が求人を審査に出す', `求人${jobId}、状態 ${php(`echo get_post_status(${jobId});`)}`);
 
     // 4. 運営が求人を承認
-    await go(ap, '/wp-admin/admin.php?page=zaito-direct&tab=jobs');
+    await adminTab('jobs');
     const jaf = ap.locator(`form:has(input[name=job_id][value="${jobId}"])`).first();
     await shot(ap, '05_admin_jobs');
     await Promise.all([ap.waitForLoadState('domcontentloaded'), jaf.locator('button[value=approve]').click()]);
@@ -167,7 +187,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     // 5. 学生の画面に出るか
     const slug = 'd' + jobId;
     // 運営がトップページの一番上に固定する（GWCへの特典の確認）。
-    await go(ap, '/wp-admin/admin.php?page=zaito-direct&tab=jobs');
+    await adminTab('jobs');
     const pinf = ap.locator(`form:has(input[name=job_id][value="${jobId}"]):has(input[name=top_until])`).first();
     if (await pinf.count()) {
       await Promise.all([ap.waitForLoadState('domcontentloaded'), pinf.locator('button[value=pin]').click()]);
@@ -311,7 +331,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     sbody.includes('試験用の返信') ? ok('10 学生のメッセージ画面', '企業からの返信が見えている') : ng('10 学生のメッセージ画面', '企業からの返信が見えない');
 
     // 11. 運営の成果報酬の画面
-    await go(ap, '/wp-admin/admin.php?page=zaito-direct&tab=offers');
+    await adminTab('offers');
     await shot(ap, '14_admin_fees');
     (await ap.locator(`input[name=app_id][value="${appId}"]`).count()) ? ok('11 運営の成果報酬', '内定が成果報酬の一覧に出ている') : ng('11 運営の成果報酬', '成果報酬の一覧に見つからない');
     fs.writeFileSync(`${SHOTS}/${TAG}_state.json`, JSON.stringify({ coEmail, coId, jobId, stEmail }));
