@@ -202,12 +202,11 @@ if ( $zaito_is_co ) {
         </div>
       <?php endif; ?>
       <div class="side-card">
-        <h3>安心して進めるために</h3>
+        <h3>安全に進めるために</h3>
         <ul>
-          <li>面接はZoomなどのオンラインで行われます。出社やオフィスへの訪問を求められたら、zaitoに知らせてください</li>
-          <li>企業から、応募のときに入れた電話番号に連絡が来ることがあります</li>
-          <li>LINEなど、ほかの連絡手段の交換は、内定が出るまで控えてください</li>
-          <li>困ったときは <a href="mailto:info@zaito-work.com?subject=<?php echo rawurlencode( 'メッセージについての相談（応募番号 ' . $zaito_app . '）' ); ?>">info@zaito-work.com</a> へ</li>
+          <li>企業から、応募のときに入力した電話番号に連絡が来ることがあります。</li>
+          <li>内定が出るまでは、LINEなどの連絡先の交換は控えてください。</li>
+          <li>出社や対面での面接、お金の支払いを求められたり、内定の前に身分証や口座の情報を求められたりしたら、応じずに <a href="mailto:info@zaito-work.com?subject=<?php echo rawurlencode( 'メッセージについての相談（応募番号 ' . $zaito_app . '）' ); ?>">info@zaito-work.com</a> までご連絡ください。</li>
         </ul>
       </div>
     <?php endif; ?>
