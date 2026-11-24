@@ -1,0 +1,9 @@
+[
+ {
+  "company": "（添付のテスト・自分宛て）",
+  "to": "info@zaito-work.com",
+  "subject": "【テスト】添付つきの送信の確認",
+  "body": "添付つきの送信のテストです（〇〇）。画像が2枚付いていれば成功です。\n",
+  "attachments": ["zaito_keisai_image_GWC_PC.png", "zaito_keisai_image_GWC_smartphone.png"]
+ }
+]

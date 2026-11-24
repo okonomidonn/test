@@ -52,8 +52,13 @@ jobs:
               body = m['body'].replace('〇〇', name)
               if '〇〇' in body or not re.fullmatch(r'[^@\s]+@[^@\s]+\.[A-Za-z]{2,}', m['to']):
                   sys.exit('中身に問題があります: ' + m.get('company', ''))
-              out.append({'company': m.get('company', ''), 'to': m['to'], 'subject': m['subject'], 'body': body})
-              print('準備できた:', m.get('company', ''), m['to'], m['subject'])
+              att = []
+    for a in m.get('attachments', []):
+        if not re.fullmatch(r'[0-9A-Za-z_\-]+\.(png|jpg|jpeg|pdf)', a) or not os.path.isfile('sales/mail/attachments/' + a):
+            sys.exit('添付ファイルが正しくありません: ' + a)
+        att.append(a)
+    out.append({'company': m.get('company', ''), 'to': m['to'], 'subject': m['subject'], 'body': body, 'attachments': att})
+              print('準備できた:', m.get('company', ''), m['to'], m['subject'], '添付:', len(m.get('attachments', [])))
           json.dump(out, open('/tmp/mails.json', 'w', encoding='utf-8'), ensure_ascii=False)
           PY
 
@@ -72,17 +77,30 @@ jobs:
       - name: Send from the production server
         if: ${{ inputs.confirm == 'send' }}
         run: |
-          # メールの中身は標準入力で渡し、サーバーにはファイルを残さない。
+          # メールの中身は標準入力で渡し、サーバーにはファイルを残さない。添付は一時フォルダに送って、送信後に消す。
+          ATT_DIR="mail-att-${{ github.run_id }}"
+          ATT_DIR="$ATT_DIR" python3 -c "import json,os;d=json.load(open('/tmp/mails.json'));[m.__setitem__('att_dir',os.environ['ATT_DIR']) for m in d];json.dump(d,open('/tmp/mails.json','w'),ensure_ascii=False)"
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} "mkdir -p ~/$ATT_DIR && chmod 700 ~/$ATT_DIR"
+          if ls sales/mail/attachments/* >/dev/null 2>&1; then
+            scp -P ${{ secrets.XSERVER_PORT }} sales/mail/attachments/* ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:$ATT_DIR/
+          fi
           ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
             'cd ~/zaito-work.com/public_html && wp eval '"'"'
               $mails = json_decode( stream_get_contents( STDIN ), true );
               foreach ( (array) $mails as $m ) {
+                  $files = array();
+                  foreach ( (array) ( $m["attachments"] ?? array() ) as $a ) {
+                      if ( ! preg_match( "/^mail-att-[0-9]+$/", (string) ( $m["att_dir"] ?? "" ) ) ) { echo "添付の場所が正しくない\n"; break; }
+                      $f = getenv( "HOME" ) . "/" . $m["att_dir"] . "/" . basename( $a );
+                      if ( is_file( $f ) ) { $files[] = $f; } else { echo "添付が見つからない: " . $a . "\n"; }
+                  }
                   $ok = wp_mail( $m["to"], $m["subject"], $m["body"], array(
                       "From: zaito <info@zaito-work.com>",
                       "Reply-To: info@zaito-work.com",
                       "Bcc: info@zaito-work.com",
                       "Content-Type: text/plain; charset=UTF-8",
-                  ) );
-                  echo ( $ok ? "送信した: " : "送れなかった: " ) . $m["company"] . " " . $m["to"] . "\n";
+                  ), $files );
+                  echo ( $ok ? "送信した: " : "送れなかった: " ) . $m["company"] . " " . $m["to"] . "（添付 " . count( $files ) . "）\n";
               }
             '"'"'' < /tmp/mails.json
+          ssh -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} "rm -rf ~/$ATT_DIR"
