@@ -141,7 +141,7 @@ fieldset.fld{border:0;padding:0}
 .status-form .btn{height:40px}
 
 /* ---------- メッセージ ---------- */
-.chat{max-width:1080px;display:grid;grid-template-columns:1fr 320px;gap:24px;padding-top:24px;padding-bottom:40px;align-items:start}
+.chat{max-width:1080px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;padding-top:24px;padding-bottom:40px;align-items:start}
 .chat-main{border:1px solid var(--z-border);border-radius:var(--z-r-lg);display:flex;flex-direction:column;height:calc(100dvh - 180px);min-height:480px;overflow:hidden;background:#fff}
 .chat-top{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--z-line)}
 .chat-top .who{flex:1;min-width:0}
@@ -162,6 +162,8 @@ fieldset.fld{border:0;padding:0}
 .chat-form .btn .ms{font-size:22px}
 .chat-err{margin:0;padding:0 14px 10px;font-size:13px;color:var(--z-error)}
 .chat-side{display:flex;flex-direction:column;gap:16px}
+/* 区切りのない長い英数字（URLなど）でも折り返し、スマホで画面の幅が広がらないようにする。 */
+.chat-main,.chat-side{min-width:0;overflow-wrap:anywhere}
 .side-card{border:1px solid var(--z-border);border-radius:var(--z-r-lg);padding:18px}
 .side-card h3{margin:0 0 10px;font-size:14px;font-weight:700}
 .side-card dl{margin:0;font-size:13px}
@@ -182,7 +184,7 @@ fieldset.fld{border:0;padding:0}
   .stats4{grid-template-columns:repeat(2,1fr)}
   .stats4 a:nth-child(2){border-right:0}
   .stats4 a:nth-child(-n+2){border-bottom:1px solid var(--z-line)}
-  .chat{grid-template-columns:1fr;padding-top:12px}
+  .chat{grid-template-columns:minmax(0,1fr);padding-top:12px}
   .chat-main{height:calc(100dvh - 150px)}
   .auth-split{grid-template-columns:1fr;gap:32px}
   .auth-split .pitch{order:2}

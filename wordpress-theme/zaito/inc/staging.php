@@ -432,6 +432,11 @@ function zaito_staging_panel() {
 			wp_safe_redirect( home_url( '/?zaito_stg_panel=1&seeded=1' ) );
 			exit;
 		}
+		if ( 'video_on' === $do || 'video_off' === $do ) {
+			update_option( 'zaito_video_enabled', 'video_on' === $do ? '1' : '0' );
+			wp_safe_redirect( home_url( '/?zaito_stg_panel=1' ) );
+			exit;
+		}
 		if ( 'gwc' === $do ) {
 			zaito_staging_gwc_seed();
 			wp_safe_redirect( home_url( '/?zaito_stg_panel=1&gwc=1' ) );
@@ -501,6 +506,12 @@ ol{padding-left:20px;margin:0}li{margin-bottom:8px}
 <?php echo $btn( 'company', '企業として、このやりとりを開く', true, (int) $_GET['sample'] ); // エスケープ済み ?>
 <?php echo $btn( 'student', '学生として、このやりとりを開く', false, (int) $_GET['sample'] ); // エスケープ済み ?></div><?php endif; ?>
 <?php if ( isset( $_GET['seeded'] ) ) : ?><div class="ok">テスト用の企業・学生・求人を用意しました。テスト用の学生の応募は消したので、最初から試せます。</div><?php endif; ?>
+
+<div class="c"><h2>録画面接（試験環境だけの切り替え）</h2>
+<p style="margin:0 0 8px">いまは<b><?php echo zaito_video_enabled() ? 'オン' : 'オフ（本番と同じ）'; ?></b>です。</p>
+<?php echo zaito_video_enabled() ? $btn( 'video_off', 'オフにする（本番と同じにする）', true ) : $btn( 'video_on', 'オンにする（録画面接を試す）' ); // エスケープ済み ?>
+<p class="n" style="margin:8px 0 0">下の「テスト用のデータ」の求人（オンライン塾講師）は録画面接の求人です。試すときはオンにしてください。自動テストが走ると、終わったあとオフに戻ります。</p>
+</div>
 
 <div class="c"><h2>いまの立場</h2><p style="margin:0"><?php echo esc_html( $who ? implode( '・', $who ) : 'ログインしていません' ); ?></p></div>
 

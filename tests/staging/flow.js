@@ -84,7 +84,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
 
   const company = await browser.newContext(ctxOpts); await company.addCookies(gate);
   const cp = await company.newPage();
-  const student = await browser.newContext({ ...ctxOpts, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const student = await browser.newContext({ ...ctxOpts, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   await student.addCookies(gate);
   const sp = await student.newPage();
 
@@ -333,6 +333,18 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await shot(sp, '13_student_chat');
     const sbody = await sp.locator('body').innerText();
     sbody.includes('試験用の返信') ? ok('10 学生のメッセージ画面', '企業からの返信が見えている') : ng('10 学生のメッセージ画面', '企業からの返信が見えない');
+
+    // 運営者が自分で試す用のGWCの試験用の求人があれば、学生から見た画面（トップ・詳細・応募ボタンを押したところ）も撮っておく。
+    const gwc = Number(php(`$p = get_posts( array( 'post_type' => 'job_listing', 'post_status' => 'publish', 'posts_per_page' => 1, 'fields' => 'ids', 'meta_key' => '_zaito_stg_gwc', 'meta_value' => '1' ) ); echo $p ? $p[0] : 0;`) || 0);
+    if (gwc && !VIDEO) {
+      const g = await student.newPage();
+      await go(g, `/remote/d${gwc}/`);
+      await shot(g, 'gwc_1_detail');
+      await g.locator('a,button', { hasText: 'この求人に応募する' }).filter({ visible: true }).first().click().catch(() => {});
+      await g.waitForTimeout(800);
+      await shot(g, 'gwc_2_signup', false);
+      await g.close();
+    }
 
     // 11. 運営の成果報酬の画面
     await adminTab('offers');

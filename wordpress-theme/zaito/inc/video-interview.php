@@ -23,12 +23,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 /* ---------- 決まりごと ---------- */
 
 /**
- * この機能を使うか。試験環境ではいつも使う。本番では、運営が公開を決めるまで使わない
+ * この機能を使うか。本番では、運営が公開を決めるまで使わない
  * （公開するときは `wp option update zaito_video_enabled 1`。2026-11-12 運営者の指示：本番には出さない）。
+ * 試験環境も同じ設定に従う（本番と同じ見え方で確かめるため）。試験環境では操作パネルからオン・オフを切り替えられる。
  * 使わないときは、求人のフォームに質問の欄を出さず、応募も今までどおり（動画なし）になる。
  */
 function zaito_video_enabled() {
-	return ( defined( 'ZAITO_STAGING' ) && ZAITO_STAGING ) || '1' === (string) get_option( 'zaito_video_enabled', '' );
+	return '1' === (string) get_option( 'zaito_video_enabled', '' );
 }
 
 function zaito_video_max_questions() {
