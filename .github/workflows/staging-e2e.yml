@@ -14,6 +14,7 @@ on:
     paths:
       - ".github/workflows/staging-e2e.yml"
       - "tests/staging/**"
+      - "wordpress-theme/**"
   workflow_dispatch:
     inputs:
       video:
@@ -48,6 +49,16 @@ jobs:
           echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
           ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
           echo "HELPER=ssh -o LogLevel=ERROR -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} wp --path=$S eval-file -" >> "$GITHUB_ENV"
+
+      # 同じプッシュで試験環境への反映（deploy-staging.yml）と順番が入れ替わっても、必ずこのコミットのテーマで試すよう、先に反映する。
+      - name: Deploy this commit's theme to staging
+        run: |
+          cd wordpress-theme/zaito
+          composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+          printf 'Require all denied\n' > vendor/.htaccess
+          cd ../..
+          rsync -az --delete -e "ssh -p ${{ secrets.XSERVER_PORT }}" wordpress-theme/zaito/ \
+            ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }}:$S/wp-content/themes/zaito/
 
       - name: Check this is the staging site
         run: |
