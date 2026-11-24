@@ -53,11 +53,11 @@ jobs:
               if '〇〇' in body or not re.fullmatch(r'[^@\s]+@[^@\s]+\.[A-Za-z]{2,}', m['to']):
                   sys.exit('中身に問題があります: ' + m.get('company', ''))
               att = []
-    for a in m.get('attachments', []):
-        if not re.fullmatch(r'[0-9A-Za-z_\-]+\.(png|jpg|jpeg|pdf)', a) or not os.path.isfile('sales/mail/attachments/' + a):
-            sys.exit('添付ファイルが正しくありません: ' + a)
-        att.append(a)
-    out.append({'company': m.get('company', ''), 'to': m['to'], 'subject': m['subject'], 'body': body, 'attachments': att})
+              for a in m.get('attachments', []):
+                  if not re.fullmatch(r'[0-9A-Za-z_\-]+\.(png|jpg|jpeg|pdf)', a) or not os.path.isfile('sales/mail/attachments/' + a):
+                      sys.exit('添付ファイルが正しくありません: ' + a)
+                  att.append(a)
+              out.append({'company': m.get('company', ''), 'to': m['to'], 'subject': m['subject'], 'body': body, 'attachments': att})
               print('準備できた:', m.get('company', ''), m['to'], m['subject'], '添付:', len(m.get('attachments', [])))
           json.dump(out, open('/tmp/mails.json', 'w', encoding='utf-8'), ensure_ascii=False)
           PY
