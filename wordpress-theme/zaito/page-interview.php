@@ -104,7 +104,7 @@ zaito_biz_head( '動画で質問に答える' );
     </div>
     <div class="iv-card">
       <h2>答え方</h2>
-      <p>質問は、録画の直前に1問ずつ画面に出ます。考える時間が<?php echo (int) zaito_video_think_seconds(); ?>秒あり、答える時間は<?php echo (int) zaito_video_answer_seconds(); ?>秒です。撮り直しは1問につき1回までです。最初に、記録されない練習の質問が1問あります。</p>
+      <p>質問は、録画の直前に1問ずつ画面に出て、読み上げられます。考える時間が<?php echo (int) zaito_video_think_seconds(); ?>秒あり、答える時間は<?php echo (int) zaito_video_answer_seconds(); ?>秒です。撮り直しは1問につき1回までです。最初に、記録されない練習の質問が1問あります。</p>
       <p class="iv-note">静かで、顔が明るく映る場所で答えてください。通信の量は1問あたり5〜8MBほどです。</p>
       <label class="iv-check"><input type="checkbox" id="agree">動画は<?php echo esc_html( $zaito_company ); ?>とzaitoの運営だけが見られ、応募から90日（<?php echo esc_html( zaito_video_expire_label( $zaito_app ) ); ?>）で自動で消えることを確認しました。</label>
       <button type="button" class="iv-btn" id="startBtn" disabled>カメラを準備する</button>
@@ -131,7 +131,7 @@ zaito_biz_head( '動画で質問に答える' );
     <div class="iv-stage">
       <video id="qCam" playsinline muted autoplay></video>
       <video id="qPlay" class="play" playsinline controls hidden></video>
-      <div class="iv-q"><div class="qn" id="qNum"></div><div class="qt" id="qText"></div><button type="button" class="iv-say" id="say" hidden><span class="ms" aria-hidden="true">volume_up</span>読み上げる</button></div>
+      <div class="iv-q"><div class="qn" id="qNum"></div><div class="qt" id="qText"></div><button type="button" class="iv-say" id="say" hidden><span class="ms" aria-hidden="true">volume_up</span>もう一度聞く</button></div>
       <div class="iv-timer" id="timer" hidden><span class="dot"></span><span id="tText"></span></div>
       <div class="iv-mic" id="qMic" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     </div>
@@ -250,7 +250,7 @@ zaito_biz_head( '動画で質問に答える' );
     for (var i = 0; i < CFG.total; i++) h += '<i class="' + (!practice && i <= idx ? 'on' : '') + '"></i>';
     $('steps').innerHTML = h; $('steps').hidden = practice;
   }
-  // 質問の読み上げ。端末に入っている声は機械っぽいものが多いので、自動では読まず、ボタンを押したときだけ読む。
+  // 質問の読み上げ。質問が出たときに自動で読み、ボタンでもう一度聞ける。
   // 声は、端末にある日本語の声のうち、自然に聞こえるものから選ぶ（Edgeの「Natural」、Chromeの「Google」、iPhoneの拡張・高音質の声など）。
   var canSpeak = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
   function pickVoice() {
@@ -282,6 +282,7 @@ zaito_biz_head( '動画で質問に答える' );
   function begin() {
     $('qNum').textContent = practice ? '練習の質問' : '質問 ' + (idx + 1) + ' / ' + CFG.total;
     $('qText').textContent = question;
+    speak(practice ? PRACTICE.replace(/（.*?）/, '') : question);
     think();
   }
   function think() {
