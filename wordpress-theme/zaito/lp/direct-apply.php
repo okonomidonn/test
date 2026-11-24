@@ -151,7 +151,7 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
           <option value="<?php echo esc_attr( $zaito_o ); ?>"<?php selected( $zaito_v['pref'], $zaito_o ); ?>><?php echo esc_html( $zaito_o ); ?></option>
         <?php endforeach; ?>
       </select></div>
-      <div class="fld"><label for="ztel">電話番号<span class="req">必須</span></label><input type="tel" id="ztel" name="tel" maxlength="20" autocomplete="tel" inputmode="tel" value="<?php echo esc_attr( $zaito_v['tel'] ); ?>" required placeholder="例：090-1234-5678"><p class="hint">日中につながりやすい番号を入力してください。ハイフンはなくてもかまいません。</p></div>
+      <div class="fld"><label for="ztel">電話番号<span class="req">必須</span></label><input type="tel" id="ztel" name="tel" maxlength="20" autocomplete="tel" inputmode="tel" value="<?php echo esc_attr( zaito_direct_format_tel( $zaito_v['tel'] ) ); ?>" required placeholder="例：090-1234-5678"><p class="hint">数字だけ入れると、ハイフンは自動で入ります。</p></div>
       <fieldset class="fld"><legend>現在の状況<span class="req">必須</span></legend><div class="picks">
         <?php foreach ( zaito_direct_roles() as $zaito_o ) : ?>
           <label><input type="radio" name="role" value="<?php echo esc_attr( $zaito_o ); ?>"<?php checked( $zaito_v['role'], $zaito_o ); ?> required><span><?php echo esc_html( $zaito_o ); ?></span></label>
@@ -196,6 +196,20 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
     var cur = f.querySelector('input[name=role]:checked');
     sync(cur ? cur.value : '大学生');
     f.addEventListener('change', function (e) { if (e.target.name === 'role') { sync(e.target.value); } });
+    // 電話番号：数字だけ入れれば、ハイフンを自動で入れる（携帯は3-4-4、03・06は2-4-4。ほかの固定電話は数字のまま）。
+    var tel = document.getElementById('ztel');
+    function fmtTel(v) {
+      var d = v.replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/^\+81/, '0').replace(/\D/g, '').slice(0, 11);
+      var a = /^0[5789]0/.test(d) ? 3 : (/^0[36]/.test(d) ? 2 : 0);
+      if (!a) { return d; }
+      return [d.slice(0, a), d.slice(a, a + 4), d.slice(a + 4, a + 8)].filter(Boolean).join('-');
+    }
+    tel.addEventListener('input', function (e) {
+      // 途中を直しているときは、カーソルが飛ばないように触らない（欄を離れたときにそろえる）。
+      if (tel.selectionStart !== tel.value.length || (e.inputType && e.inputType.indexOf('delete') === 0) || /^\+/.test(tel.value)) { return; }
+      tel.value = fmtTel(tel.value);
+    });
+    tel.addEventListener('blur', function () { tel.value = fmtTel(tel.value); });
     f.addEventListener('submit', function () { f.querySelector('button[type=submit]').disabled = true; });
   })();
   </script>

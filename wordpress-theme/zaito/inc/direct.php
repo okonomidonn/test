@@ -310,6 +310,17 @@ function zaito_direct_normalize_tel( $tel ) {
     return preg_match( '/^0\d{9,10}$/', $t ) ? $t : '';
 }
 
+/**
+ * 数字だけの電話番号を、ハイフン付きで見せる。携帯（070/080/090/050）は3-4-4、東京・大阪（03/06）は2-4-4。
+ * ほかの固定電話は市外局番の長さが決まらないので、数字のまま見せる。応募フォームの自動のハイフンも同じ決まり（lp/direct-apply.php）。
+ */
+function zaito_direct_format_tel( $t ) {
+    if ( preg_match( '/^(0[5789]0)(\d{4})(\d{4})$/', $t, $m ) || preg_match( '/^(0[36])(\d{4})(\d{4})$/', $t, $m ) ) {
+        return $m[1] . '-' . $m[2] . '-' . $m[3];
+    }
+    return $t;
+}
+
 /** 生年月日（Y-m-d）から、今日の時点の年齢。正しくなければ -1。 */
 function zaito_direct_age( $birth ) {
     if ( ! preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', (string) $birth, $m ) || ! checkdate( (int) $m[2], (int) $m[3], (int) $m[1] ) ) {
@@ -355,7 +366,7 @@ function zaito_direct_applicant_details( $app_id ) {
     }
     $tel = (string) get_post_meta( $app_id, 'applicant_tel', true );
     if ( $tel ) {
-        $out['電話番号'] = $tel;
+        $out['電話番号'] = zaito_direct_format_tel( $tel );
     }
     return $out;
 }
