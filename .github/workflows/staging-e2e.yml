@@ -124,6 +124,12 @@ jobs:
           echo "消したもの: ユーザー {$n['users']}、投稿 {$n['posts']}。録画面接は off に戻し、管理者のログインを消した。\n";
           PHP
 
+      # 運営者が自分で学生として応募を試せるよう、GWCの掲載案の試験用の求人を置いておく（自動テストのデータとは別。消さない）。
+      - name: Prepare the GWC demo job (運営者が試す用)
+        if: always()
+        run: |
+          echo '<?php $g = zaito_staging_gwc_seed(); echo "GWCの試験用の求人: " . home_url( "/remote/" . zaito_direct_slug( $g["job"] ) . "/" ) . "\n";' | $HELPER
+
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4

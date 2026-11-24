@@ -289,6 +289,66 @@ function zaito_staging_seed() {
 }
 
 /**
+ * GWCへの掲載案と同じ内容の試験用の求人（録画面接なし・本番と同じ応募の流れ）と、その企業を作る。トップの一番上に固定する。
+ * 学生として新しく登録して応募するところから、自分で試すためのもの。何度呼んでも同じ1件を作り直す（応募は消さない）。
+ */
+function zaito_staging_gwc_seed() {
+	$co = get_user_by( 'login', 'stg-gwc-company' );
+	$uid = $co ? (int) $co->ID : (int) wp_insert_user( array(
+		'user_login'   => 'stg-gwc-company',
+		'user_email'   => 'stg-gwc@example.invalid',
+		'user_pass'    => wp_generate_password( 32 ),
+		'display_name' => '株式会社GWC（試験用）',
+		'role'         => 'zaito_company',
+	) );
+	update_user_meta( $uid, 'company_name', '株式会社GWC（アースフレンズ東京Z）' );
+	update_user_meta( $uid, 'first_name', '試験 担当' );
+	update_user_meta( $uid, 'zaito_company_status', 'approved' );
+	update_user_meta( $uid, 'zaito_email_verified', '1' );
+
+	$q   = get_posts( array( 'post_type' => 'job_listing', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'meta_key' => '_zaito_stg_gwc', 'meta_value' => '1' ) );
+	$arr = array(
+		'post_type'    => 'job_listing',
+		'post_status'  => 'publish',
+		'post_author'  => $uid,
+		'post_title'   => 'プロバスケットボールチームのスポンサー獲得のテレアポ（完全在宅）',
+		'post_content' => "プロバスケットボールチーム「アースフレンズ東京Z」と、ハンドボールチーム「アースフレンズBM」を運営する株式会社GWCで、新しいスポンサー企業を獲得するためのテレアポを担当するお仕事です。業務はすべてオンラインで行うため、完全在宅で、全国どこからでも働けます。\n\n■仕事内容\n(1) 候補となる企業の選定・リサーチ\nインターネットなどで対象となる企業を探し、リストアップします。\n(2) 電話発信\n企業に電話をかけ、「アースフレンズ東京Z」「アースフレンズBM」のご案内をします。担当するのは商談のアポイントを取るところまでで、その後は営業スタッフが引き継ぎます。トークスクリプトがあります。\n\n■未経験OK\nPCの基本操作ができれば大丈夫です。仕事内容はきちんと教えてもらえます。テレアポや営業の経験がある方も歓迎です。\n\n■働き方\n・オンライン面接のあと、完全在宅で勤務します（出社は一切なし）。業務用のPCを貸与します。\n・週3日から、10〜17時の中で1日4時間から。土日祝は休みで、シフトは週ごとに希望を出せます。\n\n■うれしいポイント\n・年に数回、ホームゲームに無料で招待されます。\n\n■こんな方に\n・スポーツやBリーグが好きな方\n・人と話すのが好きな方（必要なのはコミュニケーション力です）",
+	);
+	if ( $q ) {
+		$arr['ID'] = $q[0];
+		wp_update_post( $arr );
+		$jid = (int) $q[0];
+	} else {
+		$jid = (int) wp_insert_post( $arr );
+	}
+	foreach ( array(
+		'_zaito_stg_gwc'          => '1',
+		'_zaito_direct'           => '1',
+		'_company_user_id'        => $uid,
+		'_company_name'           => '株式会社GWC（アースフレンズ東京Z）',
+		'_zaito_review'           => 'approved',
+		'_zaito_approved_at'      => current_time( 'mysql' ),
+		'_job_category'           => 'テレアポ・営業',
+		'_job_summary'            => 'Bリーグ「アースフレンズ東京Z」などのスポンサーを増やすテレアポ。完全在宅・PC貸与・トークスクリプトあり。',
+		'_job_employment_type'    => 'アルバイト',
+		'_job_salary_type'        => '時給',
+		'_job_salary'             => 1280,
+		'_job_hours'              => '週3日から・10〜17時の中で1日4時間から（土日祝休み）、3か月以上',
+		'_job_target_text'        => 'PCの基本操作ができる方（未経験OK。テレアポ・営業の経験があれば歓迎）',
+		'_job_tags'               => array( 'gakusei', 'mikeiken' ),
+		'_job_confirm_remote'     => '1',
+		'_job_confirm_fee'        => '1',
+		'_job_auto_reply_message' => 'ご応募ありがとうございます。内容を確認して、3日以内にこのメッセージでご連絡します。（試験用の自動メッセージ）',
+		'_zaito_top_until'        => gmdate( 'Y-m-d', current_time( 'timestamp' ) + 30 * DAY_IN_SECONDS ),
+	) as $k => $v ) {
+		update_post_meta( $jid, $k, $v );
+	}
+	delete_post_meta( $jid, '_zaito_closed' );
+	delete_post_meta( $jid, '_job_video_questions' );
+	return array( 'company' => $uid, 'job' => $jid );
+}
+
+/**
  * 録画せずに、メッセージの画面をすぐ見られるサンプルの応募を作る（テスト用の学生 → テスト用の求人）。
  * 動画は、テーマの demo/sample-answer.mp4（テスト用の映像）を質問の数だけ置く。メールは送らない。
  */
@@ -372,6 +432,19 @@ function zaito_staging_panel() {
 			wp_safe_redirect( home_url( '/?zaito_stg_panel=1&seeded=1' ) );
 			exit;
 		}
+		if ( 'gwc' === $do ) {
+			zaito_staging_gwc_seed();
+			wp_safe_redirect( home_url( '/?zaito_stg_panel=1&gwc=1' ) );
+			exit;
+		}
+		if ( 'gwc_company' === $do ) {
+			$g = zaito_staging_gwc_seed();
+			wp_clear_auth_cookie();
+			wp_set_current_user( $g['company'] );
+			wp_set_auth_cookie( $g['company'], false, true );
+			wp_safe_redirect( $open ? zaito_direct_chat_url( $open ) : home_url( '/company-applicants/' ) );
+			exit;
+		}
 		if ( 'company' === $do && $ids['company'] ) {
 			wp_clear_auth_cookie();
 			wp_set_current_user( $ids['company'] );
@@ -430,6 +503,26 @@ ol{padding-left:20px;margin:0}li{margin-bottom:8px}
 <?php if ( isset( $_GET['seeded'] ) ) : ?><div class="ok">テスト用の企業・学生・求人を用意しました。テスト用の学生の応募は消したので、最初から試せます。</div><?php endif; ?>
 
 <div class="c"><h2>いまの立場</h2><p style="margin:0"><?php echo esc_html( $who ? implode( '・', $who ) : 'ログインしていません' ); ?></p></div>
+
+<?php $zaito_gwc = get_posts( array( 'post_type' => 'job_listing', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'meta_key' => '_zaito_stg_gwc', 'meta_value' => '1' ) ); ?>
+<?php if ( isset( $_GET['gwc'] ) ) : ?><div class="ok">GWCの掲載案の試験用の求人を用意しました（トップの一番上に固定）。</div><?php endif; ?>
+<div class="c"><h2>GWCの掲載案で、学生の応募を試す（録画面接なし・本番と同じ流れ）</h2>
+<?php if ( $zaito_gwc ) : ?>
+<p style="margin:0 0 8px">求人：<a href="<?php echo esc_url( home_url( '/remote/' . zaito_direct_slug( $zaito_gwc[0] ) . '/' ) ); ?>">プロバスケットボールチームのスポンサー獲得のテレアポ（完全在宅）</a></p>
+<ol>
+<li>トップページを開くと、一番上にこの求人が出ます。求人を開いて「この求人に応募する」を押します。</li>
+<li>名前・学校名・メールアドレスを入れて登録します。メールアドレスは何でもかまいません（試験環境のメールは、すべて info@ に届きます）。</li>
+<li>5つの質問に答えます。info@ に「登録ありがとうございます（メールアドレスの確認）」が届くので、ボタンを押して確認を済ませます（応募ページで確認のリンクを送るボタンが出たときは、それを押すと「応募フォームを開くリンク」が届きます）。</li>
+<li>確認が済んだら、求人の「この求人に応募する」から応募フォームを開いて応募します。応募するとメッセージの画面に進み、info@ に企業あての「新しい応募がありました」が届きます。</li>
+<li>下の「GWC（試験用）として見る」で、企業の画面から応募を開いて返信できます。</li>
+</ol>
+<p class="n">同じブラウザで学生としてもう一度最初から試すときは、別のメールアドレスで登録してください。</p>
+<?php echo $btn( 'gwc_company', 'GWC（試験用）として見る（応募者の一覧へ）', true ); // エスケープ済み ?>
+<?php echo $btn( 'gwc', '求人を作り直す' ); // エスケープ済み ?>
+<?php else : ?>
+<?php echo $btn( 'gwc', 'GWCの掲載案の試験用の求人を作る', true ); // エスケープ済み ?>
+<?php endif; ?>
+</div>
 
 <div class="c"><h2>1. テスト用のデータ</h2>
 <?php if ( $ids['company'] && $ids['job'] && $ids['student'] ) : ?>
