@@ -324,7 +324,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await go(cp, `/chat/?c=${appId}`);
     await shot(cp, '11_company_chat');
     const body = await cp.locator('body').innerText();
-    body.includes(VIDEO ? 'スポーツが好き' : '応募しました。') ? ok('9b 企業のメッセージ画面', '応募の内容が見えている') : ng('9b 企業のメッセージ画面', '応募の内容が見えない');
+    body.includes(VIDEO ? 'スポーツが好き' : '週に12時間') && !body.includes('応募しました。') ? ok('9b 企業のメッセージ画面', '応募の内容が見えている') : ng('9b 企業のメッセージ画面', '応募の内容が見えない');
     body.includes('090-0000-0000') && body.includes('北海道') && /\d+歳/.test(body) && body.includes('しけん たろう') ? ok('9b2 応募者の連絡先', 'ふりがな・電話番号・都道府県・年齢が企業に見えている') : ng('9b2 応募者の連絡先', 'ふりがな・電話番号・都道府県・年齢のどれかが企業に見えない');
     if (VIDEO) {
       // 企業のブラウザで、1問目の動画を実際に読み込めるか（動画のファイルが返ってくるか）。

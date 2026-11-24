@@ -543,10 +543,17 @@ function zaito_handle_direct_apply() {
     delete_transient( 'zaito_apply_draft_' . $me );
 
     // 応募の内容を、やりとりの最初のメッセージとして残す。
-    // メッセージは任意。空のときは「応募しました。」だけを残す。
-    $first = trim( $message ) ? $message : '応募しました。';
-    $first .= $job['question'] ? "\n\n【" . $job['question'] . "】\n" . $answer : '';
-    zaito_direct_add_message( $app_id, 'student', $me, $first, false );
+    // 学生のメッセージ（任意）と、企業からの質問への答えを、やりとりの最初に残す。どちらもなければ何も残さない。
+    $first = trim( implode( "\n\n", array_filter( array(
+        trim( $message ),
+        $job['question'] ? '【' . $job['question'] . "】\n" . $answer : '',
+    ) ) ) );
+    if ( '' !== $first ) {
+        zaito_direct_add_message( $app_id, 'student', $me, $first, false );
+    } else {
+        // メッセージがなくても、企業の一覧で新しい応募に「未読」の印が付くようにする。
+        update_post_meta( $app_id, 'unread_company', 1 );
+    }
     do_action( 'zaito_direct_applied', $app_id );
 
     // 動画で答える求人は、録画の画面へ。企業に知らせるのは、回答を送ったとき（inc/video-interview.php）。
