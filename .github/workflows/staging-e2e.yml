@@ -81,6 +81,11 @@ jobs:
           echo '<?php update_option( "zaito_video_enabled", 1 );' | $HELPER
           cd tests/staging && VIDEO=1 SHOTS=../../shots RUN_ID=${{ github.run_id }} node flow.js
 
+      - name: Mail log (試験環境が送ったメールの記録)
+        if: always()
+        run: |
+          echo '<?php foreach ( (array) get_option( "zaito_stg_mail_log", array() ) as $m ) { if ( strtotime( $m[0] ) > current_time( "timestamp" ) - 1800 ) echo implode( " | ", $m ), "\n"; }' | $HELPER | tail -40
+
       - name: Clean up test data and sessions
         if: always()
         run: |
