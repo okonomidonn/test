@@ -198,7 +198,9 @@ if ( $zaito_is_co ) {
             <?php wp_nonce_field( 'zaito_direct_withdraw_' . $zaito_app ); ?>
             <button type="submit" class="btn btn-g">応募を取り消す</button>
           </form>
-          <p style="margin-top:10px">取り消すと、動画の回答はその場で消えます。</p>
+          <?php if ( in_array( zaito_video_status( $zaito_app ), array( 'pending', 'done' ), true ) ) : ?>
+            <p style="margin-top:10px">取り消すと、動画の回答はその場で消えます。</p>
+          <?php endif; ?>
         </div>
       <?php endif; ?>
       <div class="side-card">
