@@ -1,0 +1,124 @@
+name: Staging E2E (試験環境で直接掲載の流れを通す)
+
+# 試験環境（https://staging.zaito-work.com/）で、企業の登録 → 運営の承認 → 求人の掲載 → 学生の登録・応募
+# →（録画面接）→ 企業の返信・内定 → 運営の成果報酬 までを、ブラウザで自動で通す。台本は tests/staging/flow.js。
+# - 本番には触らない。動かすのは試験環境のサーバーの中の wp コマンドと、試験環境の画面だけ。
+# - 合鍵と管理者のログインは、サーバーの中で作ってログには出さない（::add-mask::）。終わったら管理者のログインを消す。
+# - 試験環境のメールは info@ にだけ届く（件名に本来の宛先が付く）。
+# - 終わったら、この実行で作ったテスト用の企業・求人・学生・応募を消す。
+# - 画面の写真は、実行結果の Artifacts（e2e-shots）に残す。
+on:
+  push:
+    branches:
+      - claude/zaito-job-site-uqgb9o
+    paths:
+      - ".github/workflows/staging-e2e.yml"
+      - "tests/staging/**"
+  workflow_dispatch:
+    inputs:
+      video:
+        description: "録画面接ありの流れも通す（試験環境だけ録画面接をオンにする）"
+        required: false
+        default: "yes"
+
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      S: zaito-work.com/public_html/staging.zaito-work.com
+      BASE: https://staging.zaito-work.com
+      SHOTS: shots
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+          echo "HELPER=ssh -o LogLevel=ERROR -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} wp --path=$S eval-file -" >> "$GITHUB_ENV"
+
+      - name: Check this is the staging site
+        run: |
+          out=$(echo '<?php echo ( defined( "ZAITO_STAGING" ) && ZAITO_STAGING ? "staging" : "NOT-STAGING" ) . " " . home_url();' | $HELPER)
+          echo "$out"
+          [ "$out" = "staging https://staging.zaito-work.com" ] || { echo "試験環境ではないので中止"; exit 1; }
+          key=$(echo '<?php echo zaito_staging_key();' | $HELPER)
+          echo "::add-mask::$key"
+          echo "STG_KEY=$key" >> "$GITHUB_ENV"
+          echo "テーマの版: $(echo '<?php echo wp_get_theme()->get( "Version" );' | $HELPER)"
+
+      - name: Install Playwright
+        run: |
+          cd tests/staging
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund playwright@1.48.2
+          npx playwright install --with-deps chromium
+
+      - name: Flow without video (本番と同じ設定)
+        id: plain
+        continue-on-error: true
+        run: |
+          echo '<?php update_option( "zaito_video_enabled", 0 );' | $HELPER
+          cd tests/staging && VIDEO=0 SHOTS=../../shots RUN_ID=${{ github.run_id }} node flow.js
+
+      - name: Flow with video (録画面接あり)
+        id: video
+        if: github.event_name == 'push' || inputs.video == 'yes'
+        continue-on-error: true
+        run: |
+          echo '<?php update_option( "zaito_video_enabled", 1 );' | $HELPER
+          cd tests/staging && VIDEO=1 SHOTS=../../shots RUN_ID=${{ github.run_id }} node flow.js
+
+      - name: Clean up test data and sessions
+        if: always()
+        run: |
+          $HELPER <<'PHP'
+          <?php
+          update_option( 'zaito_video_enabled', 0 );
+          $n = array( 'users' => 0, 'posts' => 0 );
+          $users = get_users( array( 'search' => 'e2e-co-*', 'search_columns' => array( 'user_email' ) ) );
+          foreach ( $users as $u ) {
+              if ( ! preg_match( '/^e2e-co-[nv]\d+@example\.invalid$/', $u->user_email ) ) continue;
+              foreach ( get_posts( array( 'post_type' => 'job_listing', 'post_status' => 'any', 'author' => $u->ID, 'posts_per_page' => -1, 'fields' => 'ids' ) ) as $j ) {
+                  foreach ( get_posts( array( 'post_type' => 'zaito_application', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => 'job_id', 'meta_value' => $j ) ) as $a ) {
+                      foreach ( get_posts( array( 'post_type' => 'zaito_message', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => 'conversation_id', 'meta_value' => $a ) ) as $m ) { wp_delete_post( $m, true ); $n['posts']++; }
+                      if ( function_exists( 'zaito_video_delete' ) ) zaito_video_delete( $a, 'e2e' );
+                      wp_delete_post( $a, true ); $n['posts']++;
+                  }
+                  wp_delete_post( $j, true ); $n['posts']++;
+              }
+              require_once ABSPATH . 'wp-admin/includes/user.php';
+              wp_delete_user( $u->ID ); $n['users']++;
+          }
+          foreach ( get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_query' => array( array( 'key' => 'email', 'value' => '^e2e-st-[nv][0-9]+@example\\.invalid$', 'compare' => 'REGEXP' ) ) ) ) as $i ) { wp_delete_post( $i, true ); $n['posts']++; }
+          $admin = get_users( array( 'role' => 'administrator', 'number' => 1, 'orderby' => 'ID' ) )[0];
+          WP_Session_Tokens::get_instance( $admin->ID )->destroy_all();
+          echo "消したもの: ユーザー {$n['users']}、投稿 {$n['posts']}。録画面接は off に戻し、管理者のログインを消した。\n";
+          PHP
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-shots
+          path: shots/
+          retention-days: 14
+
+      - name: Result
+        if: always()
+        run: |
+          echo "録画面接なし: ${{ steps.plain.outcome }}"
+          echo "録画面接あり: ${{ steps.video.outcome }}"
+          [ "${{ steps.plain.outcome }}" = "success" ] && [ "${{ steps.video.outcome }}" != "failure" ]
