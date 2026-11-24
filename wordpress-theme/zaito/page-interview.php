@@ -35,6 +35,8 @@ $zaito_cfg      = array(
 	'practice'      => zaito_tts_practice()['text'],
 	'practiceSpeak' => zaito_tts_practice()['speak'],
 	'practiceAudio' => $zaito_answered ? '' : zaito_tts_url( zaito_tts_practice()['speak'] ),
+	// 背景のぼかしで使う、人物を切り抜くモデル（Googleの MediaPipe の selfie_segmenter。lp/ に置いたもの）。
+	'segModel'      => get_template_directory_uri() . '/lp/selfie_segmenter.tflite',
 );
 
 zaito_biz_head( '動画で質問に答える' );
@@ -85,6 +87,9 @@ zaito_biz_head( '動画で質問に答える' );
 .iv-mic i{width:4px;border-radius:2px;background:rgba(255,255,255,.3)}
 .iv-mic i:nth-child(1){height:20%}.iv-mic i:nth-child(2){height:40%}.iv-mic i:nth-child(3){height:60%}.iv-mic i:nth-child(4){height:80%}.iv-mic i:nth-child(5){height:100%}
 .iv-mic i.on{background:#3DDC84}
+.iv-blur{display:flex;align-items:center;gap:10px;margin:4px 0 6px;font-size:15px;font-weight:700;cursor:pointer}
+.iv-blur input{width:20px;height:20px;accent-color:#3D5AFE;flex:none;margin:0}
+.iv-raw{position:absolute;width:2px;height:2px;opacity:0;pointer-events:none}
 .iv-steps{display:flex;gap:6px;margin-bottom:12px}
 .iv-steps i{flex:1;height:5px;border-radius:999px;background:#E1E6F0}
 .iv-steps i.on{background:#3D5AFE}
@@ -121,6 +126,9 @@ zaito_biz_head( '動画で質問に答える' );
     <div class="iv-card">
       <h2>カメラとマイクの確認</h2>
       <div class="iv-stage"><video id="cam" playsinline muted autoplay></video></div>
+      <label class="iv-blur"><input type="checkbox" id="blurBg">背景をぼかす</label>
+      <p class="iv-note" id="blurNote" aria-live="polite" style="margin:0 0 12px">部屋を映したくないときに使えます。録画にも、ぼかしたまま残ります。</p>
+      <video id="raw" class="iv-raw" playsinline muted autoplay aria-hidden="true"></video>
       <span class="iv-note">マイクの音の大きさ</span>
       <div class="iv-meter"><i id="lvl"></i></div>
       <p class="iv-lvl-t" id="lvlText" aria-live="polite">声を出してみてください</p>
@@ -207,7 +215,11 @@ zaito_biz_head( '動画で質問に答える' );
       show('s-nocam'); return;
     }
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: true })
-      .then(function (s) { stream = s; $('cam').srcObject = s; $('qCam').srcObject = s; show('s-check'); meter(); })
+      .then(function (s) {
+        stream = s; preview(); show('s-check'); meter();
+        var keep = false; try { keep = localStorage.getItem('zaito_iv_blur') === '1'; } catch (e) {}
+        if (keep) { $('blurBg').checked = true; setBlur(true); }
+      })
       .catch(function (e) {
         $('nocamWhy').textContent = e && e.name === 'NotAllowedError' ? 'カメラとマイクの使用が許可されていません。' : 'カメラかマイクが見つからないか、ほかのアプリが使っています。';
         show('s-nocam');
@@ -235,7 +247,83 @@ zaito_biz_head( '動画で質問に答える' );
       })();
     } catch (e) {}
   }
-  function stopCam() { cancelAnimationFrame(raf); if (stream) stream.getTracks().forEach(function (t) { t.stop(); }); }
+  function stopCam() { cancelAnimationFrame(raf); cancelAnimationFrame(blur.raf); if (stream) stream.getTracks().forEach(function (t) { t.stop(); }); }
+
+  /* ---- 背景のぼかし ----
+   * 学生の端末の中だけで、人と背景を分けて（MediaPipe の人物の切り抜き）、背景だけをぼかした映像を作る。映像は外に送らない。
+   * ぼかした映像（canvas）とマイクの音を合わせたものを、画面に出して録画する。
+   * 重い端末では、自動でぼかしを切る。 */
+  var MP = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+  var blur = { on: false, seg: null, stream: null, raf: 0, last: -1, frames: 0, slow: 0 };
+  function recStream() { return blur.on && blur.stream ? blur.stream : stream; }
+  function preview() { var s = recStream(); $('cam').srcObject = s; $('qCam').srcObject = s; }
+  function blurNote(t) { $('blurNote').textContent = t; }
+  function loadSeg() {
+    if (blur.seg) return Promise.resolve(blur.seg);
+    return import(MP + '/vision_bundle.mjs').then(function (v) {
+      return v.FilesetResolver.forVisionTasks(MP + '/wasm').then(function (fs) {
+        function opt(d) { return { baseOptions: { modelAssetPath: CFG.segModel, delegate: d }, runningMode: 'VIDEO', outputCategoryMask: false, outputConfidenceMasks: true }; }
+        return v.ImageSegmenter.createFromOptions(fs, opt('GPU')).catch(function () { return v.ImageSegmenter.createFromOptions(fs, opt('CPU')); });
+      });
+    }).then(function (s) { blur.seg = s; return s; });
+  }
+  function blurSetup() {
+    if (blur.canvas) return;
+    blur.canvas = document.createElement('canvas'); blur.ctx = blur.canvas.getContext('2d');
+    blur.mask = document.createElement('canvas'); blur.mctx = blur.mask.getContext('2d');
+    blur.small = document.createElement('canvas'); blur.sctx = blur.small.getContext('2d');
+  }
+  function blurLoop() {
+    var raw = $('raw'), w = raw.videoWidth, h = raw.videoHeight;
+    if (w && h && raw.readyState >= 2) {
+      if (blur.canvas.width !== w || blur.canvas.height !== h) {
+        blur.canvas.width = w; blur.canvas.height = h;
+        blur.small.width = Math.max(16, Math.round(w / 14)); blur.small.height = Math.max(12, Math.round(h / 14));
+      }
+      var t0 = performance.now(), ts = Math.max(t0, blur.last + 1); blur.last = ts;
+      try {
+        blur.seg.segmentForVideo(raw, ts, function (r) {
+          var m = r.confidenceMasks && r.confidenceMasks[0]; if (!m) return;
+          var f = m.getAsFloat32Array();
+          if (!blur.img || blur.img.width !== m.width || blur.img.height !== m.height) { blur.mask.width = m.width; blur.mask.height = m.height; blur.img = blur.mctx.createImageData(m.width, m.height); }
+          var d = blur.img.data; for (var i = 0, j = 3; i < f.length; i++, j += 4) d[j] = f[i] * 255;
+          blur.mctx.putImageData(blur.img, 0, 0);
+        });
+      } catch (e) { setBlur(false, 'この端末では背景をぼかせませんでした。'); return; }
+      var c = blur.ctx;
+      c.imageSmoothingEnabled = true;
+      c.globalCompositeOperation = 'copy'; c.drawImage(blur.mask, 0, 0, w, h);          // 人のところだけ残す型
+      c.globalCompositeOperation = 'source-in'; c.drawImage(raw, 0, 0, w, h);           // 人
+      blur.sctx.drawImage(raw, 0, 0, blur.small.width, blur.small.height);              // 小さくして広げると、ぼける
+      c.globalCompositeOperation = 'destination-over'; c.drawImage(blur.small, 0, 0, w, h); // 人の後ろに、ぼかした背景
+      c.globalCompositeOperation = 'source-over';
+      blur.frames++; if (performance.now() - t0 > 60) blur.slow++;
+      if (blur.frames === 90 && blur.slow > 45) { $('blurBg').checked = false; setBlur(false, 'この端末では背景のぼかしが重いため、切りました。'); return; }
+    }
+    blur.raf = requestAnimationFrame(blurLoop);
+  }
+  function setBlur(on, why) {
+    try { localStorage.setItem('zaito_iv_blur', on ? '1' : '0'); } catch (e) {}
+    if (!on) {
+      cancelAnimationFrame(blur.raf); blur.on = false; preview();
+      blurNote(why || '部屋を映したくないときに使えます。録画にも、ぼかしたまま残ります。');
+      return;
+    }
+    if (!stream) return;
+    $('blurBg').disabled = true; blurNote('ぼかしの準備をしています…（初回は数秒かかります）');
+    blurSetup();
+    loadSeg().then(function () {
+      var raw = $('raw'); raw.srcObject = stream; var p = raw.play(); if (p && p.catch) p.catch(function () {});
+      if (!blur.stream) blur.stream = new MediaStream(blur.canvas.captureStream(30).getVideoTracks().concat(stream.getAudioTracks()));
+      blur.frames = 0; blur.slow = 0; blur.on = true; cancelAnimationFrame(blur.raf); blurLoop();
+      setTimeout(preview, 300); // 最初の絵ができてから切り替える
+      blurNote('背景をぼかしています。録画にも、ぼかしたまま残ります。');
+    }).catch(function () {
+      $('blurBg').checked = false; blur.on = false; preview();
+      blurNote('この端末では背景をぼかせませんでした。そのまま録画できます。');
+    }).then(function () { $('blurBg').disabled = false; });
+  }
+  $('blurBg').onchange = function () { setBlur(this.checked); };
   $('startBtn').onclick = function () { unlockAudio(); startCam(); };
   $('retryCam').onclick = startCam;
 
@@ -320,7 +408,7 @@ zaito_biz_head( '動画で質問に答える' );
     clearInterval(tick); stopSay();
     $('say').hidden = true; // 録画中は読み上げない（声が録画に入るため）
     chunks = [];
-    try { recorder = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 800000 } : undefined); }
+    try { recorder = new MediaRecorder(recStream(), mime ? { mimeType: mime, videoBitsPerSecond: 800000 } : undefined); }
     catch (e) { err('この端末では録画を始められませんでした。'); return; }
     recorder.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
     recorder.onstop = review;

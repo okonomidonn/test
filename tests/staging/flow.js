@@ -292,6 +292,12 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
         await sp.locator('#agree').check();
         await sp.locator('#startBtn').click();
         await sp.locator('#toFirst').waitFor({ state: 'visible', timeout: 20000 });
+        // 背景のぼかし：オンにして、準備ができる（またはこの端末ではできないと出る）まで待つ。ぼかしたまま録画まで進める。
+        await sp.locator('#blurBg').check();
+        await sp.waitForFunction(() => /ぼかしています|ぼかせません|重いため/.test(document.getElementById('blurNote').textContent), null, { timeout: 60000 }).catch(() => {});
+        const blurState = await sp.locator('#blurNote').textContent();
+        /ぼかしています/.test(blurState) ? ok('8b 背景のぼかし', blurState.trim()) : ng('8b 背景のぼかし', 'ぼかしが使えなかった: ' + (blurState || '').trim());
+        await shot(sp, '09v_blur', false);
         await shot(sp, '09v_camera_check', false);
         await sp.locator('#toFirst').click();
         for (let q = 0; q < 8; q++) {
