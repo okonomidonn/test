@@ -57,8 +57,9 @@ $zaito_job_url = $zaito_job && 'publish' === $zaito_job->post_status ? home_url(
 $zaito_vs      = zaito_video_status( $zaito_app );
 $zaito_vq      = zaito_video_questions( $zaito_app );
 $zaito_vfiles  = zaito_video_files( $zaito_app );
-// 応募の取り消しは、動画で答える応募と一緒に公開する（本番では zaito_video_enabled() になるまで出さない）。
-$zaito_can_wd  = zaito_video_enabled() && 'student' === $zaito_viewer && in_array( $zaito_st, array( 'new', 'talking', 'interview' ), true );
+// 学生が自分で応募を取り消すボタンは出さない（運営の判断。取り消しの処理 zaito_direct_withdraw は残してある）。
+// 動画を消したいなどの相談は、注意書きの info@ で受ける。
+$zaito_can_wd  = false;
 
 zaito_biz_head( $zaito_is_co ? $zaito_name . 'さんとのメッセージ' : 'メッセージ' );
 ?>
