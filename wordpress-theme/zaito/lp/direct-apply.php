@@ -65,6 +65,9 @@ $zaito_v     = array(
     'role'    => $zaito_me ? (string) get_post_meta( $zaito_me, 'role', true ) : '',
     'grade'   => $zaito_me ? (string) get_post_meta( $zaito_me, 'grade', true ) : '',
     'school'  => $zaito_me ? (string) get_post_meta( $zaito_me, 'school', true ) : '',
+    'birth'   => $zaito_me ? (string) get_post_meta( $zaito_me, 'birthdate', true ) : '',
+    'pref'    => $zaito_me ? (string) get_post_meta( $zaito_me, 'pref', true ) : '',
+    'tel'     => $zaito_me ? (string) get_post_meta( $zaito_me, 'tel', true ) : '',
     'message' => '',
     'answer'  => '',
 );
@@ -98,8 +101,16 @@ zaito_biz_head( '応募する：' . $zaito_j['title'] );
 
     <div class="fcard">
       <h2>あなたについて</h2>
-      <p>企業に伝わるのは、ここに書いた内容とメッセージだけです。メールアドレスは企業に伝わりません。</p>
+      <p>ここに書いた内容とメッセージが、応募先の企業に伝わります。電話番号は、企業から面接などの連絡に使われます。メールアドレスは企業に伝わりません。</p>
       <div class="fld"><label for="zname">お名前<span class="req">必須</span></label><input type="text" id="zname" name="name" maxlength="40" autocomplete="name" value="<?php echo esc_attr( $zaito_v['name'] ); ?>" required placeholder="例：山田 花子"></div>
+      <div class="fld"><label for="zbirth">生年月日<span class="req">必須</span></label><input type="date" id="zbirth" name="birthdate" autocomplete="bday" value="<?php echo esc_attr( $zaito_v['birth'] ); ?>" min="<?php echo esc_attr( (int) current_time( 'Y' ) - 100 ); ?>-01-01" max="<?php echo esc_attr( current_time( 'Y-m-d' ) ); ?>" required></div>
+      <div class="fld"><label for="zpref">住んでいる都道府県<span class="req">必須</span></label><select id="zpref" name="pref" required>
+        <option value="">選んでください</option>
+        <?php foreach ( zaito_direct_prefectures() as $zaito_o ) : ?>
+          <option value="<?php echo esc_attr( $zaito_o ); ?>"<?php selected( $zaito_v['pref'], $zaito_o ); ?>><?php echo esc_html( $zaito_o ); ?></option>
+        <?php endforeach; ?>
+      </select></div>
+      <div class="fld"><label for="ztel">電話番号<span class="req">必須</span></label><input type="tel" id="ztel" name="tel" maxlength="20" autocomplete="tel" inputmode="tel" value="<?php echo esc_attr( $zaito_v['tel'] ); ?>" required placeholder="例：090-1234-5678"></div>
       <fieldset class="fld"><legend>現在の職業<span class="req">必須</span></legend><div class="picks">
         <?php foreach ( $zaito_opts['role'] as $zaito_o ) : ?>
           <label><input type="radio" name="role" value="<?php echo esc_attr( $zaito_o ); ?>"<?php checked( $zaito_v['role'], $zaito_o ); ?> required><span><?php echo esc_html( $zaito_o ); ?></span></label>

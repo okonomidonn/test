@@ -146,6 +146,9 @@ if ( $zaito_is_co ) {
         <dl>
           <dt>名前</dt><dd><?php echo esc_html( $zaito_name ); ?></dd>
           <dt>所属</dt><dd><?php echo esc_html( zaito_direct_applicant_line( $zaito_app ) ); ?></dd>
+          <?php foreach ( zaito_direct_applicant_details( $zaito_app ) as $zaito_k => $zaito_d ) : ?>
+            <dt><?php echo esc_html( $zaito_k ); ?></dt><dd><?php echo '電話番号' === $zaito_k ? '<a href="tel:' . esc_attr( $zaito_d ) . '">' . esc_html( $zaito_d ) . '</a>' : esc_html( $zaito_d ); ?></dd>
+          <?php endforeach; ?>
           <dt>応募日</dt><dd><?php echo esc_html( get_the_date( 'Y年n月j日 H:i', $zaito_app ) ); ?></dd>
           <dt>求人</dt><dd><?php echo esc_html( $zaito_job ? $zaito_job->post_title : '' ); ?></dd>
         </dl>
@@ -164,14 +167,15 @@ if ( $zaito_is_co ) {
           </select>
           <button type="submit" class="btn btn-g"<?php disabled( ! $zaito_can ); ?>>変更</button>
         </form>
-        <p style="margin-top:10px">「内定」にした時点で、成果報酬が発生します。「内定」と「不採用」は、応募者にメールでも知らせます。</p>
+        <p style="margin-top:10px">内定を出したら「内定」にしてください。成果報酬は、その学生が働き始めた時点で発生します。「内定」と「不採用」は、応募者にメールでも知らせます。</p>
       </div>
       <div class="side-card">
         <h3>やりとりのお願い</h3>
         <ul>
-          <li>日程調整と結果の連絡は、このメッセージで</li>
+          <li>応募から1営業日以内に、最初のご連絡をお願いします（電話でもこのメッセージでもかまいません）</li>
+          <li>日程調整と結果の連絡は、このメッセージに残してください。電話で伝えたときも、ここに一言残すと行き違いを防げます</li>
           <li>面接で使うZoomやGoogle MeetのURLも、ここで送れます</li>
-          <li>電話番号やLINEの交換は、内定を出したあとにしてください</li>
+          <li>内定を出したら、応募の状態を「内定」にしてください</li>
         </ul>
       </div>
     <?php else : ?>
@@ -201,7 +205,8 @@ if ( $zaito_is_co ) {
         <h3>安心して進めるために</h3>
         <ul>
           <li>面接はZoomなどのオンラインで行われます。出社やオフィスへの訪問を求められたら、zaitoに知らせてください</li>
-          <li>電話番号やLINEの交換は、内定が出るまで控えてください</li>
+          <li>企業から、応募のときに入れた電話番号に連絡が来ることがあります</li>
+          <li>LINEなど、ほかの連絡手段の交換は、内定が出るまで控えてください</li>
           <li>困ったときは <a href="mailto:info@zaito-work.com?subject=<?php echo rawurlencode( 'メッセージについての相談（応募番号 ' . $zaito_app . '）' ); ?>">info@zaito-work.com</a> へ</li>
         </ul>
       </div>

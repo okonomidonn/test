@@ -118,6 +118,20 @@ zaito_remote_head( $zaito_title, $zaito_desc, zaito_remote_url( $zaito_j['slug']
         <p style="white-space:pre-wrap"><?php echo esc_html( $zaito_j['content'] ); ?></p>
       </section>
 
+      <?php if ( ! empty( $zaito_j['conditions'] ) ) : ?>
+      <section class="blk">
+        <h2>労働条件</h2>
+        <dl class="facts" style="margin-top:12px">
+          <div><dt>募集している会社</dt><dd><?php echo esc_html( $zaito_j['company'] ); ?></dd></div>
+          <div><dt>雇用形態</dt><dd><?php echo esc_html( $zaito_j['contract'] ); ?></dd></div>
+          <div><dt>報酬</dt><dd><?php echo esc_html( $zaito_j['pay'] ); ?></dd></div>
+          <?php foreach ( $zaito_j['conditions'] as $zaito_ck => $zaito_cv ) : ?>
+            <div><dt><?php echo esc_html( $zaito_ck ); ?></dt><dd style="font-weight:400"><?php echo esc_html( $zaito_cv ); ?></dd></div>
+          <?php endforeach; ?>
+        </dl>
+      </section>
+      <?php endif; ?>
+
       <section class="blk">
         <h2>応募の流れ</h2>
         <ol class="steps">

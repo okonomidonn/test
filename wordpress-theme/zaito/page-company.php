@@ -55,7 +55,7 @@ zaito_biz_head( 'ホーム' );
     <ul class="rows">
       <li><span class="ms" aria-hidden="true" style="color:var(--z-blue)">edit_document</span><div class="main"><b>1. 求人を作成して審査に出す</b><span class="rsub">面接・初日・研修・会議も含めて出社がないかを運営が確認し、問題なければ公開します。</span></div></li>
       <li><span class="ms" aria-hidden="true" style="color:var(--z-blue)">forum</span><div class="main"><b>2. 応募者とメッセージでやりとり</b><span class="rsub">日程調整と結果の連絡は、zaitoのメッセージで行います。面接で使うZoomなどのURLも、メッセージで送れます。</span></div></li>
-      <li><span class="ms" aria-hidden="true" style="color:var(--z-blue)">task_alt</span><div class="main"><b>3. 内定を出したら、状態を「内定」に</b><span class="rsub">状態を「内定」にした時点で、成果報酬が発生します。掲載や応募の受け付けに費用はかかりません。</span></div></li>
+      <li><span class="ms" aria-hidden="true" style="color:var(--z-blue)">task_alt</span><div class="main"><b>3. 内定を出したら、状態を「内定」に</b><span class="rsub">内定を出した学生が働き始めた時点で、成果報酬が発生します。掲載や応募の受け付けに費用はかかりません。</span></div></li>
     </ul>
   </section>
 </main>

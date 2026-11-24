@@ -340,6 +340,18 @@ function zaito_staging_gwc_seed() {
 		'_job_confirm_fee'        => '1',
 		'_job_auto_reply_message' => 'ご応募ありがとうございます。内容を確認して、3日以内にこのメッセージでご連絡します。（試験用の自動メッセージ）',
 		'_zaito_top_until'        => gmdate( 'Y-m-d', current_time( 'timestamp' ) + 30 * DAY_IN_SECONDS ),
+		// 労働条件は、GWCの元の求人に書かれていない項目もあるため、試験用の仮の内容（掲載前にGWCに確認する）。
+		'_job_cond_workplace'        => '自宅（完全在宅）',
+		'_job_cond_workplace_change' => '変更なし（在宅勤務のみ）',
+		'_job_cond_duty_change'      => '（試験用の仮の内容）変更なし',
+		'_job_cond_period'           => '（試験用の仮の内容）期間の定めあり（3か月・更新あり）',
+		'_job_cond_renewal'          => '（試験用の仮の内容）勤務成績・業務量により判断',
+		'_job_cond_trial'            => '（試験用の仮の内容）なし',
+		'_job_cond_worktime'         => '10:00〜17:00の間で1日4時間から（6時間を超える日は45分の休憩）',
+		'_job_cond_overtime'         => 'なし',
+		'_job_cond_holiday'          => '土日祝（シフトは週ごとに希望を出せます）',
+		'_job_cond_insurance'        => '（試験用の仮の内容）労災保険あり。条件を満たす場合は雇用保険・社会保険に加入',
+		'_job_cond_smoking'          => '在宅勤務のため対象外',
 	) as $k => $v ) {
 		update_post_meta( $jid, $k, $v );
 	}

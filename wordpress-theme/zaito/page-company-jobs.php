@@ -122,6 +122,15 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
     </div>
 
     <div class="fcard">
+      <h2>労働条件</h2>
+      <p class="hint" style="margin-top:0">求人を出すときに示す必要がある労働条件です（職業安定法）。求人の詳細ページに表のかたちで載ります。業務委託の求人では任意です。</p>
+      <?php foreach ( zaito_direct_condition_fields() as $zaito_ck => $zaito_cf ) : ?>
+        <div class="fld"><label for="zc_<?php echo esc_attr( $zaito_ck ); ?>"><?php echo esc_html( $zaito_cf[0] ); ?><span class="req">必須</span></label><input type="text" id="zc_<?php echo esc_attr( $zaito_ck ); ?>" name="cond_<?php echo esc_attr( $zaito_ck ); ?>" maxlength="200" value="<?php echo esc_attr( $zaito_v[ 'cond_' . $zaito_ck ] ); ?>" placeholder="<?php echo esc_attr( $zaito_cf[1] ); ?>"></div>
+      <?php endforeach; ?>
+      <p class="hint">「契約更新の基準」は、契約期間に定めがあるときだけ必要です。</p>
+    </div>
+
+    <div class="fcard">
       <h2>応募の受け付け</h2>
       <div class="fld"><label for="zquestion">応募者への質問<span class="opt">任意</span></label><input type="text" id="zquestion" name="question" maxlength="200" value="<?php echo esc_attr( $zaito_v['question'] ); ?>" placeholder="例：週に何時間くらい働けそうですか？"></div>
       <?php if ( zaito_video_enabled() ) : ?>
@@ -132,13 +141,13 @@ zaito_biz_head( $zaito_form ? '求人の作成・編集' : '求人' );
         <?php endfor; ?>
       </fieldset>
       <?php endif; ?>
-      <div class="fld"><label for="zauto">応募直後の自動メッセージ<span class="opt">任意</span></label><textarea id="zauto" name="auto_reply" rows="4" placeholder="例：ご応募ありがとうございます。2営業日以内に、面談の日程についてご連絡します。"><?php echo esc_textarea( $zaito_v['auto_reply'] ); ?></textarea><p class="hint">空欄なら、「会社情報」の文面を送ります。</p></div>
+      <div class="fld"><label for="zauto">応募直後の自動メッセージ<span class="req">必須</span></label><textarea id="zauto" name="auto_reply" rows="5" maxlength="1000" placeholder="例：ご応募ありがとうございます。2営業日以内に、面談の日程についてご連絡します。"><?php echo esc_textarea( $zaito_v['auto_reply'] ); ?></textarea><p class="hint">応募した人に、御社からの最初のメッセージとしてすぐ届きます。このあとの流れ（いつ・どうやって連絡するか、面接の方法）を書いてください。最初に入っている文をそのまま使っても、書き換えてもかまいません。</p></div>
     </div>
 
     <div class="fcard">
       <h2>掲載前の確認</h2>
       <label class="check"><input type="checkbox" name="confirm_remote" value="1"<?php checked( $zaito_v['confirm_remote'] ); ?>><span><b>面接・初日・研修・会議も含めて、出社は一切ありません</b><small>居住地の制限がある場合は「応募できる人」に書いてください。出社があると分かった場合は、掲載を止めることがあります。</small></span></label>
-      <label class="check"><input type="checkbox" name="confirm_fee" value="1"<?php checked( $zaito_v['confirm_fee'] ); ?>><span><b>zaitoからの応募者に内定を出した時点で、成果報酬が発生することに同意します</b><small>掲載や応募の受け付けに費用はかかりません。金額は、求人の公開前に運営からご案内します。</small></span></label>
+      <label class="check"><input type="checkbox" name="confirm_fee" value="1"<?php checked( $zaito_v['confirm_fee'] ); ?>><span><b>zaitoからの応募者を採用し、その人が働き始めた時点で、成果報酬が発生することに同意します</b><small>掲載や応募の受け付けに費用はかかりません。金額は、求人の公開前に運営からご案内します。</small></span></label>
     </div>
 
     <div class="form-acts">

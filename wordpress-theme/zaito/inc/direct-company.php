@@ -131,6 +131,34 @@ add_action( 'admin_post_zaito_update_company_profile', 'zaito_handle_update_comp
 
 /* ---------- 求人 ---------- */
 
+/**
+ * 募集のときに企業が示す労働条件（職業安定法 第5条の3・施行規則。2024年4月からの「変更の範囲」「更新の基準」を含む）。
+ * キー => array( 見出し, 例（placeholder）, 新しい求人の初期値, 業務委託でも必須か )。
+ * 業務委託は雇用ではないので、労働条件の欄は任意にする。
+ */
+function zaito_direct_condition_fields() {
+    return array(
+        'workplace'        => array( '就業場所', '例：自宅（完全在宅）', '自宅（完全在宅）', false ),
+        'workplace_change' => array( '就業場所の変更の範囲', '例：変更なし（在宅勤務のみ）', '変更なし（在宅勤務のみ）', false ),
+        'duty_change'      => array( '業務の変更の範囲', '例：変更なし／当社の営業に関する業務全般', '', false ),
+        'period'           => array( '契約期間', '例：期間の定めあり（3か月・更新あり）／期間の定めなし', '', false ),
+        'renewal'          => array( '契約更新の基準（期間の定めがある場合）', '例：勤務成績・業務量により判断。更新の上限なし', '', false ),
+        'trial'            => array( '試用期間', '例：なし／あり（1か月・期間中の条件は同じ）', '', false ),
+        'worktime'         => array( '勤務時間・休憩', '例：10:00〜17:00の間で1日4時間から。6時間を超える日は45分の休憩', '', false ),
+        'overtime'         => array( '時間外労働', '例：なし', 'なし', false ),
+        'holiday'          => array( '休日', '例：土日祝（シフト制・週ごとに希望を出せる）', '', false ),
+        'insurance'        => array( '社会保険・労働保険', '例：労災保険あり。条件を満たす場合は雇用保険・社会保険に加入', '', false ),
+        'smoking'          => array( '受動喫煙を防ぐ取り組み', '例：在宅勤務のため対象外', '在宅勤務のため対象外', false ),
+    );
+}
+
+/** 応募の直後に、企業からの最初のメッセージとして届く文（企業が空欄のときもこれを送る）。 */
+function zaito_direct_default_auto_reply( $company_name = '' ) {
+    return 'ご応募ありがとうございます。' . ( $company_name ? $company_name . 'の採用担当です。' : '' ) . "\n"
+        . '応募の内容を確認して、2営業日以内に、お電話またはこのメッセージでご連絡します。'
+        . "\n" . '面接はオンライン（Zoomなど）で行います。日程の候補は、ご連絡の際にお送りします。';
+}
+
 /** 求人のフォームの値（保存済みの求人か、エラーで戻ったときの入力）。 */
 function zaito_direct_job_form_values( $job_id = 0 ) {
     $v = array(
@@ -138,7 +166,19 @@ function zaito_direct_job_form_values( $job_id = 0 ) {
         'pay_type' => '時給', 'pay_min' => '', 'pay_max' => '', 'hours' => '', 'target' => '',
         'tags' => array(), 'question' => '', 'video_q' => array(), 'auto_reply' => '', 'confirm_remote' => false, 'confirm_fee' => false,
     );
+    foreach ( zaito_direct_condition_fields() as $zaito_k => $zaito_f ) {
+        $v[ 'cond_' . $zaito_k ] = $job_id ? '' : $zaito_f[2];
+    }
+    if ( ! $job_id ) {
+        // 新しい求人は、会社情報の自動メッセージか、zaitoの既定の文を最初から入れておく（そのまま使っても、書き換えてもよい）。
+        $me              = get_current_user_id();
+        $company_default = $me ? trim( (string) get_user_meta( $me, 'auto_reply_message', true ) ) : '';
+        $v['auto_reply'] = '' !== $company_default ? $company_default : zaito_direct_default_auto_reply( $me ? zaito_company_name( $me ) : '' );
+    }
     if ( $job_id ) {
+        foreach ( zaito_direct_condition_fields() as $zaito_k => $zaito_f ) {
+            $v[ 'cond_' . $zaito_k ] = (string) get_post_meta( $job_id, '_job_cond_' . $zaito_k, true );
+        }
         $p = get_post( $job_id );
         $v['title']          = $p->post_title;
         $v['content']        = $p->post_content;
@@ -193,6 +233,10 @@ function zaito_handle_direct_save_job() {
     $target   = zaito_direct_post_text( 'target', 160 );
     $question = zaito_direct_post_text( 'question', 200 );
     $auto     = zaito_direct_post_textarea( 'auto_reply', 1000 );
+    $conds    = array();
+    foreach ( zaito_direct_condition_fields() as $zaito_k => $zaito_f ) {
+        $conds[ $zaito_k ] = zaito_direct_post_text( 'cond_' . $zaito_k, 200 );
+    }
     $video_q  = array();
     if ( isset( $_POST['video_q'] ) && is_array( $_POST['video_q'] ) ) {
         foreach ( array_slice( wp_unslash( $_POST['video_q'] ), 0, zaito_video_max_questions() ) as $zaito_q ) {
@@ -244,11 +288,25 @@ function zaito_handle_direct_save_job() {
         if ( '' === $target ) {
             $errors[] = '応募できる人を入力してください';
         }
+        // 雇用の求人は、募集のときに労働条件を示すことが法律で決まっているので、全部を必須にする（業務委託は任意）。
+        if ( '業務委託' !== $contract ) {
+            foreach ( zaito_direct_condition_fields() as $zaito_k => $zaito_f ) {
+                if ( 'renewal' === $zaito_k && false === mb_strpos( $conds['period'], '期間の定めあり' ) && false === mb_strpos( $conds['period'], 'か月' ) && false === mb_strpos( $conds['period'], '年' ) ) {
+                    continue; // 期間の定めがない契約では、更新の基準はいらない。
+                }
+                if ( '' === $conds[ $zaito_k ] ) {
+                    $errors[] = '労働条件の「' . $zaito_f[0] . '」を入力してください';
+                }
+            }
+        }
+        if ( '' === $auto ) {
+            $errors[] = '応募直後の自動メッセージを入力してください';
+        }
         if ( ! $c_remote ) {
             $errors[] = '面接・初日・研修・会議も含めて出社がないことを確認してください';
         }
         if ( ! $c_fee ) {
-            $errors[] = '内定時に成果報酬が発生することへの同意が必要です';
+            $errors[] = '採用した人が働き始めた時点で成果報酬が発生することへの同意が必要です';
         }
     }
 
@@ -291,6 +349,9 @@ function zaito_handle_direct_save_job() {
         '_job_confirm_fee'        => $c_fee ? '1' : '',
     ) as $k => $val ) {
         update_post_meta( $job_id, $k, $val );
+    }
+    foreach ( $conds as $k => $val ) {
+        update_post_meta( $job_id, '_job_cond_' . $k, $val );
     }
 
     // 動画で答える質問は、この機能を使うときだけ保存する（使わないときに、保存済みの質問を消さないため）。

@@ -127,7 +127,7 @@ jobs:
             WHEN pm.meta_key = 'email' THEN CONCAT('stg+', pm.post_id, '@example.invalid')
             WHEN pm.meta_key IN ('name','first_name','last_name','applicant_name','sender_name') THEN CONCAT('テスト', pm.post_id)
             WHEN pm.meta_key IN ('school','applicant_school') THEN 'テスト大学'
-            WHEN pm.meta_key IN ('tel','line_user_id','memo','referrer','lp_token','screening_answer','message','last_message_text','fee_note') THEN ''
+            WHEN pm.meta_key IN ('tel','applicant_tel','birthdate','applicant_birthdate','line_user_id','memo','referrer','lp_token','screening_answer','message','last_message_text','fee_note') THEN ''
             WHEN pm.meta_value LIKE '%@%' AND pm.meta_value NOT LIKE 'a:%' THEN CONCAT('stg+', pm.post_id, '-', pm.meta_id, '@example.invalid')
             ELSE pm.meta_value END
           WHERE p.post_type IN ($T);

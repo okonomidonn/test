@@ -164,7 +164,7 @@ function zaito_handle_direct_admin_company() {
                 '求人を作成する',
                 home_url( '/company-jobs/?new=1' ),
                 '',
-                '応募者に内定を出し、応募の状態を「内定」にした時点で、成果報酬が発生します。',
+                '応募者に内定を出したら、応募の状態を「内定」にしてください。成果報酬は、その応募者が働き始めた時点で発生します。',
                 zaito_direct_from()
             );
         }
@@ -208,6 +208,8 @@ function zaito_direct_admin_tab_jobs() {
         foreach ( $fields as $k => $label ) {
             echo '<tr><th style="width:140px">' . esc_html( $label ) . '</th><td>' . esc_html( get_post_meta( $p->ID, $k, true ) ) . '</td></tr>';
         }
+        $conds = zaito_direct_job_conditions( $p->ID );
+        echo '<tr><th>労働条件</th><td>' . ( $conds ? implode( '<br>', array_map( function ( $k, $v ) { return '<b>' . esc_html( $k ) . '</b>：' . esc_html( $v ); }, array_keys( $conds ), $conds ) ) : '<b style="color:#d63638">未入力</b>' ) . '</td></tr>';
         // 動画で答える質問。採用で聞いてはいけないこと（家族・出身地・宗教など）が入っていないかを、審査で見る。
         $vq = zaito_video_job_questions( $p->ID );
         if ( zaito_video_enabled() ) echo '<tr><th>動画で答える質問</th><td>' . ( $vq ? '<ol style="margin:0 0 0 18px">' . implode( '', array_map( function ( $q ) { return '<li>' . esc_html( $q ) . '</li>'; }, $vq ) ) . '</ol><span style="color:#646970">家族・出身地・宗教・支持政党など、採用で聞いてはいけないことがないか確かめる</span>' : 'なし' ) . '</td></tr>';

@@ -156,12 +156,18 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await jf.locator('label', { hasText: '学生OK' }).first().click();
     await jf.locator('label', { hasText: '未経験OK' }).first().click();
     await jf.locator('[name=question]').fill('週に何時間くらい働けそうですか？');
+    if (!(await jf.locator('[name=auto_reply]').inputValue()).includes('ご応募ありがとうございます')) ng('3b 自動メッセージ', '新しい求人の自動メッセージに既定の文が入っていない');
     await jf.locator('[name=auto_reply]').fill('ご応募ありがとうございます（試験用の自動メッセージ）。');
     if (VIDEO) {
       const vq = jf.locator('[name^=video_q], [name="video_questions[]"]');
       const n = await vq.count();
       if (!n) ng('3b 録画面接の質問', '求人フォームに動画の質問の欄がない');
       for (let k = 0; k < Math.min(n, 2); k++) await vq.nth(k).fill(k ? 'この仕事で活かせそうな経験を教えてください。' : '自己紹介をしてください。');
+    }
+    // 労働条件（初期値の入っていない欄だけ入れる）。
+    for (const [n, v] of [['duty_change', '変更なし'], ['period', '期間の定めあり（3か月・更新あり）'], ['renewal', '勤務成績により判断'], ['trial', 'なし'], ['worktime', '10:00〜17:00の間で1日4時間から'], ['holiday', '土日祝'], ['insurance', '労災保険あり']]) {
+      const c = jf.locator(`[name=cond_${n}]`);
+      if (await c.count() && !(await c.inputValue())) await c.fill(v);
     }
     await jf.locator('[name=confirm_remote]').check({ force: true });
     await jf.locator('[name=confirm_fee]').check({ force: true });
@@ -202,6 +208,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await go(sp, `/remote/${slug}/`);
     await shot(sp, '06_job_detail');
     (await sp.locator('h1').innerText().catch(() => '')).includes('自動テスト') ? ok('5b 求人の詳細', '詳細ページが開けた') : ng('5b 求人の詳細', '詳細ページの見出しが違う: ' + sp.url());
+    (await sp.locator('body').innerText()).includes('就業場所の変更の範囲') ? ok('5c 労働条件', '詳細ページに労働条件の表が出ている') : ng('5c 労働条件', '詳細ページに労働条件が出ていない');
 
     // 6. 学生の登録（「この求人に応募する」→ 登録 → 5問の質問 → 応募ページ）
     await sp.locator('a,button', { hasText: 'この求人に応募する' }).filter({ visible: true }).first().click();
@@ -256,6 +263,9 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await pf.locator('label').filter({ hasText: /^\s*大学生\s*$/ }).first().click();
     await pf.locator('label').filter({ hasText: /^\s*2年\s*$/ }).first().click().catch(() => {});
     await pf.locator('[name=school]').fill('テスト大学');
+    await pf.locator('[name=birthdate]').fill('2006-04-01');
+    await pf.locator('[name=pref]').selectOption('北海道');
+    await pf.locator('[name=tel]').fill('090-0000-0000');
     await pf.locator('[name=message]').fill('はじめまして。試験用の応募です。スポーツが好きなので応募しました。');
     if (await pf.locator('[name=answer]').count()) await pf.locator('[name=answer]').fill('週に12時間くらいです。');
     await submit(sp, pf);
@@ -305,6 +315,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await shot(cp, '11_company_chat');
     const body = await cp.locator('body').innerText();
     body.includes('スポーツが好き') ? ok('9b 企業のメッセージ画面', '応募の内容が見えている') : ng('9b 企業のメッセージ画面', '応募の内容が見えない');
+    body.includes('09000000000') && body.includes('北海道') && /\d+歳/.test(body) ? ok('9b2 応募者の連絡先', '電話番号・都道府県・年齢が企業に見えている') : ng('9b2 応募者の連絡先', '電話番号・都道府県・年齢のどれかが企業に見えない');
     if (VIDEO) {
       // 企業のブラウザで、1問目の動画を実際に読み込めるか（動画のファイルが返ってくるか）。
       const purl = php(`echo zaito_video_play_url( ${appId}, 0 );`);

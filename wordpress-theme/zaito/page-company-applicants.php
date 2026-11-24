@@ -62,7 +62,11 @@ zaito_biz_head( '応募者' );
         ?>
         <li>
           <div class="main"><b><a href="<?php echo esc_url( zaito_direct_chat_url( $zaito_a->ID ) ); ?>"><?php if ( $zaito_new ) : ?><span class="dot-new" aria-label="未読"></span><?php endif; ?><?php echo esc_html( get_post_meta( $zaito_a->ID, 'applicant_name', true ) ); ?></a>
-            <span style="font-weight:400;font-size:13px;color:var(--z-text-3);margin-left:6px"><?php echo esc_html( zaito_direct_applicant_line( $zaito_a->ID ) ); ?></span></b>
+            <span style="font-weight:400;font-size:13px;color:var(--z-text-3);margin-left:6px"><?php
+            $zaito_dt = zaito_direct_applicant_details( $zaito_a->ID );
+            unset( $zaito_dt['電話番号'] );
+            echo esc_html( implode( '・', array_filter( array_merge( array( zaito_direct_applicant_line( $zaito_a->ID ) ), array_map( function ( $x ) { return preg_replace( '/（.*）/u', '', $x ); }, array_values( $zaito_dt ) ) ) ) ) );
+            ?></span></b>
             <span class="rsub"><?php echo esc_html( $zaito_job ? $zaito_job->post_title : '' ); ?>　／　<?php echo esc_html( mb_strimwidth( preg_replace( '/\s+/u', ' ', $zaito_last ), 0, 80, '…' ) ); ?></span></div>
           <span class="meta">応募 <?php echo esc_html( get_the_date( 'n/j', $zaito_a ) ); ?></span>
           <?php echo zaito_biz_status_pill( $zaito_st, $zaito_lbl[ $zaito_st ] ); // エスケープ済み ?>

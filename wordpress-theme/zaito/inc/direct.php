@@ -8,7 +8,8 @@
  *   公開中の求人は zaito_remote_jobs() に混ぜ、まとめ求人と同じ一覧・詳細（/remote/d{ID}/）に出す。
  * - 学生: まとめ求人と同じメールアドレスの登録（zaito_interest）。パスワードはなく、本人確認はマイページのCookie（zaito_my）。
  * - 応募: zaito_application の投稿。応募ごとにメッセージ（zaito_message）でやりとりする。
- * - 成果報酬: 企業が応募の状態を「内定」にした時点で発生する。金額は運営の管理画面で決める（決まっていなくても記録は残る）。
+ * - 成果報酬: 企業が応募の状態を「内定」にすると記録され、その学生が働き始めた時点で発生する（月末締め・翌月末払い。
+ *   働き始めてから2週間以内の自己都合の退職は全額返金）。金額は運営の管理画面で決める（決まっていなくても記録は残る）。
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -206,7 +207,23 @@ function zaito_direct_job_array( $p ) {
         'tags'     => is_array( $tags ) ? array_values( $tags ) : array(),
         // 運営が決めた「トップページの一番上に固定する最後の日」（Y-m-d）。空なら固定しない。
         'top_until' => (string) get_post_meta( $p->ID, '_zaito_top_until', true ),
+        'conditions' => zaito_direct_job_conditions( $p->ID ),
     );
+}
+
+/** 求人の詳細ページに出す労働条件（見出し => 内容。入力のあるものだけ）。 */
+function zaito_direct_job_conditions( $job_id ) {
+    $out = array();
+    if ( ! function_exists( 'zaito_direct_condition_fields' ) ) {
+        return $out;
+    }
+    foreach ( zaito_direct_condition_fields() as $k => $f ) {
+        $v = trim( (string) get_post_meta( $job_id, '_job_cond_' . $k, true ) );
+        if ( '' !== $v ) {
+            $out[ $f[0] ] = $v;
+        }
+    }
+    return $out;
 }
 
 /** トップページの一番上に固定する求人か（固定の最後の日が今日以降）。 */
@@ -279,6 +296,51 @@ function zaito_direct_app_status( $app_id ) {
 }
 
 /** 応募者の表示名と、立場・学年・学校のひとこと。 */
+/** 都道府県（直接掲載の応募フォームの選択肢）。 */
+function zaito_direct_prefectures() {
+    return array( '北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県', '茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県', '新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県', '三重県', '滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県', '鳥取県', '島根県', '岡山県', '広島県', '山口県', '徳島県', '香川県', '愛媛県', '高知県', '福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県', '海外' );
+}
+
+/** 電話番号を数字だけにそろえる（全角・ハイフン・空白・+81 を直す）。日本の番号（0から始まる10〜11桁）でなければ ''。 */
+function zaito_direct_normalize_tel( $tel ) {
+    $t = preg_replace( '/[^0-9+]/', '', mb_convert_kana( (string) $tel, 'n' ) );
+    if ( 0 === strpos( $t, '+81' ) ) {
+        $t = '0' . substr( $t, 3 );
+    }
+    return preg_match( '/^0\d{9,10}$/', $t ) ? $t : '';
+}
+
+/** 生年月日（Y-m-d）から、今日の時点の年齢。正しくなければ -1。 */
+function zaito_direct_age( $birth ) {
+    if ( ! preg_match( '/^(\d{4})-(\d{2})-(\d{2})$/', (string) $birth, $m ) || ! checkdate( (int) $m[2], (int) $m[3], (int) $m[1] ) ) {
+        return -1;
+    }
+    $today = current_time( 'Y-m-d' );
+    $age   = (int) substr( $today, 0, 4 ) - (int) $m[1];
+    if ( substr( $today, 5 ) < $m[2] . '-' . $m[3] ) {
+        $age--;
+    }
+    return $age;
+}
+
+/** 企業に見せる応募者の連絡先・年齢・住まい（応募時に入力したもの）。古い応募にはない。 */
+function zaito_direct_applicant_details( $app_id ) {
+    $out   = array();
+    $birth = (string) get_post_meta( $app_id, 'applicant_birthdate', true );
+    if ( $birth && zaito_direct_age( $birth ) >= 0 ) {
+        $out['年齢'] = zaito_direct_age( $birth ) . '歳（' . (int) substr( $birth, 0, 4 ) . '年' . (int) substr( $birth, 5, 2 ) . '月' . (int) substr( $birth, 8, 2 ) . '日生まれ）';
+    }
+    $pref = (string) get_post_meta( $app_id, 'applicant_pref', true );
+    if ( $pref ) {
+        $out['住まい'] = $pref;
+    }
+    $tel = (string) get_post_meta( $app_id, 'applicant_tel', true );
+    if ( $tel ) {
+        $out['電話番号'] = $tel;
+    }
+    return $out;
+}
+
 function zaito_direct_applicant_line( $app_id ) {
     $parts = array_filter( array(
         get_post_meta( $app_id, 'applicant_school', true ),
@@ -323,6 +385,10 @@ function zaito_handle_direct_apply() {
     $school  = isset( $_POST['school'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_POST['school'] ) ), 0, 80 ) : '';
     $message = isset( $_POST['message'] ) ? mb_substr( sanitize_textarea_field( wp_unslash( $_POST['message'] ) ), 0, 2000 ) : '';
     $answer  = isset( $_POST['answer'] ) ? mb_substr( sanitize_textarea_field( wp_unslash( $_POST['answer'] ) ), 0, 1000 ) : '';
+    $birth   = isset( $_POST['birthdate'] ) ? sanitize_text_field( wp_unslash( $_POST['birthdate'] ) ) : '';
+    $pref    = isset( $_POST['pref'] ) ? sanitize_text_field( wp_unslash( $_POST['pref'] ) ) : '';
+    $tel_in  = isset( $_POST['tel'] ) ? sanitize_text_field( wp_unslash( $_POST['tel'] ) ) : '';
+    $tel     = zaito_direct_normalize_tel( $tel_in );
 
     $errors = array();
     if ( '' === $name ) {
@@ -333,6 +399,18 @@ function zaito_handle_direct_apply() {
     }
     if ( ! in_array( $grade, $opts['grade'], true ) ) {
         $grade = '';
+    }
+    $age = zaito_direct_age( $birth );
+    if ( $age < 0 ) {
+        $errors[] = '生年月日を入力してください';
+    } elseif ( $age < 15 || $age > 100 ) {
+        $errors[] = '生年月日を確かめてください';
+    }
+    if ( ! in_array( $pref, zaito_direct_prefectures(), true ) ) {
+        $errors[] = '住んでいる都道府県を選んでください';
+    }
+    if ( '' === $tel ) {
+        $errors[] = '電話番号を正しく入力してください（例：090-1234-5678）';
     }
     // 学生（大学生・大学院生・専門学校・短大生・高校生）は、学校名も必須。
     if ( preg_match( '/生$/u', $role ) && '' === $school ) {
@@ -345,7 +423,8 @@ function zaito_handle_direct_apply() {
         $errors[] = '企業からの質問に答えてください';
     }
     if ( $errors ) {
-        set_transient( 'zaito_apply_draft_' . $me, compact( 'name', 'role', 'grade', 'school', 'message', 'answer' ), 10 * MINUTE_IN_SECONDS );
+        $tel = $tel_in;
+        set_transient( 'zaito_apply_draft_' . $me, compact( 'name', 'role', 'grade', 'school', 'message', 'answer', 'birth', 'pref', 'tel' ), 10 * MINUTE_IN_SECONDS );
         zaito_store_form_errors_and_redirect( $errors, $back );
     }
 
@@ -358,6 +437,9 @@ function zaito_handle_direct_apply() {
     if ( $school ) {
         update_post_meta( $me, 'school', $school );
     }
+    update_post_meta( $me, 'birthdate', $birth );
+    update_post_meta( $me, 'pref', $pref );
+    update_post_meta( $me, 'tel', $tel );
 
     $app_id = wp_insert_post( array(
         'post_type'   => 'zaito_application',
@@ -378,6 +460,9 @@ function zaito_handle_direct_apply() {
         'applicant_role'     => $role,
         'applicant_grade'    => $grade,
         'applicant_school'   => $school,
+        'applicant_birthdate' => $birth,
+        'applicant_pref'     => $pref,
+        'applicant_tel'      => $tel,
         'message'            => $message,
         'screening_question' => $job['question'],
         'screening_answer'   => $answer,
@@ -411,9 +496,11 @@ function zaito_direct_complete_application( $app_id ) {
     if ( '' === $auto ) {
         $auto = trim( (string) get_user_meta( $owner, 'auto_reply_message', true ) );
     }
-    if ( '' !== $auto ) {
-        zaito_direct_add_message( $app_id, 'company', $owner, $auto, false );
+    if ( '' === $auto ) {
+        // 企業が書いていなくても、応募が届いたことと、このあとの流れが学生に伝わるように、zaitoの既定の文を送る。
+        $auto = zaito_direct_default_auto_reply( zaito_company_name( $owner ) );
     }
+    zaito_direct_add_message( $app_id, 'company', $owner, $auto, false );
     zaito_direct_notify_company_new_application( $app_id );
 }
 add_action( 'admin_post_zaito_direct_apply', 'zaito_handle_direct_apply' );
@@ -619,7 +706,7 @@ function zaito_direct_notify_company_new_application( $app_id ) {
         $app_id,
         '【zaito】新しい応募がありました',
         '新しい応募がありました',
-        '「' . ( $job ? $job->post_title : '' ) . '」に、' . get_post_meta( $app_id, 'applicant_name', true ) . 'さんから応募がありました。応募の内容を確認して、zaitoのメッセージで返信してください。',
+        '「' . ( $job ? $job->post_title : '' ) . '」に、' . get_post_meta( $app_id, 'applicant_name', true ) . 'さんから応募がありました。応募の内容と連絡先は、下のボタンから確認できます。応募から1営業日以内に、電話かzaitoのメッセージで最初のご連絡をお願いします。',
         '応募を確認する'
     );
     wp_mail( zaito_direct_ops_email(), '【zaito運営】応募がありました（' . zaito_company_name( (int) get_post_meta( $app_id, 'company_id', true ) ) . '）', admin_url( 'admin.php?page=zaito-direct&tab=apps' ) );
