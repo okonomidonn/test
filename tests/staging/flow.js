@@ -127,7 +127,7 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await jf.locator('[name=title]').fill(jobTitle);
     await jf.locator('[name=summary]').fill('試験用の求人です。応募しても実際の企業には届きません。');
     await jf.locator('[name=content]').fill('プロスポーツチームのスポンサー獲得のためのテレアポです（試験用）。\nトークスクリプトがあります。');
-    await jf.locator('label', { hasText: 'その他' }).first().click();
+    await jf.locator('label', { hasText: 'テレアポ・営業' }).first().click();
     await jf.locator('label', { hasText: 'アルバイト' }).first().click();
     await jf.locator('[name=pay_type]').selectOption({ label: '時給' }).catch(() => {});
     await jf.locator('[name=pay_min]').fill('1280');
@@ -166,9 +166,19 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
 
     // 5. 学生の画面に出るか
     const slug = 'd' + jobId;
+    // 運営がトップページの一番上に固定する（GWCへの特典の確認）。
+    await go(ap, '/wp-admin/admin.php?page=zaito-direct&tab=jobs');
+    const pinf = ap.locator(`form:has(input[name=job_id][value="${jobId}"]):has(input[name=top_until])`).first();
+    if (await pinf.count()) {
+      await Promise.all([ap.waitForLoadState('domcontentloaded'), pinf.locator('button[value=pin]').click()]);
+      await ap.waitForTimeout(1000);
+      ok('5 運営がトップに固定', '固定の最後の日 ' + php(`echo get_post_meta( ${jobId}, '_zaito_top_until', true );`));
+    } else ng('5 運営がトップに固定', '固定のフォームが見つからない');
     await go(sp, '/');
-    const onTop = await sp.locator(`a[href*="/remote/${slug}/"]`).count();
-    onTop ? ok('5a トップページ', 'トップの一覧に出ている') : ng('5a トップページ', 'トップの一覧に見つからない');
+    const hrefs = await sp.$$eval('a[href*="/remote/"]', as => as.map(a => a.getAttribute('href')).filter(h => /\/remote\/[^/]+\/$/.test(h) && !/\/remote\/(c|tag|category)\//.test(h)));
+    const pos = hrefs.findIndex(h => h.includes(`/remote/${slug}/`));
+    pos === 0 ? ok('5a トップページ', 'トップの一覧の一番上に出ている') : pos > 0 ? ng('5a トップページ', `一覧には出ているが ${pos + 1} 番目（一番上は ${hrefs[0]}）`) : ng('5a トップページ', 'トップの一覧に見つからない');
+    await shot(sp, '05b_top_page');
     await go(sp, `/remote/${slug}/`);
     await shot(sp, '06_job_detail');
     (await sp.locator('h1').innerText().catch(() => '')).includes('自動テスト') ? ok('5b 求人の詳細', '詳細ページが開けた') : ng('5b 求人の詳細', '詳細ページの見出しが違う: ' + sp.url());
@@ -307,7 +317,11 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     fs.writeFileSync(`${SHOTS}/${TAG}_state.json`, JSON.stringify({ coEmail, coId, jobId, stEmail }));
   } catch (e) {
     ng('中断', e.message.split('\n')[0]);
-    for (const [n, p] of [['company', cp], ['admin', ap], ['student', sp]]) await shot(p, 'zz_error_' + n);
+    for (const [n, p] of [['company', cp], ['admin', ap], ['student', sp]]) {
+      await shot(p, 'zz_error_' + n);
+      const t = (await p.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 300);
+      console.log(`   [${n}] ${p.url().replace(BASE, '')} 「${await p.title().catch(() => '')}」 ${t}`);
+    }
   }
   await browser.close();
   const bad = results.filter(r => r[0] === 'NG').length;
