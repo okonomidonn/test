@@ -51,3 +51,32 @@ jobs:
               echo $co, "\t", $c['jobs'], "\t", $c['go'], "\t", $c['applied'], "\t", $c['hired'], "\t", $c['direct'], "\t", implode( ',', $c['slugs'] ), "\n";
           }
           PHP
+
+      # 「応募しましたか？」のメール（inc/apply-track.php）を実際に送っているか。人数と日付だけを出す。
+      - name: Apply-check mail stats (read only)
+        run: |
+          ssh -i ~/.ssh/deploy_key -o LogLevel=ERROR -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            'wp --path=zaito-work.com/public_html eval-file -' <<'PHP'
+          <?php
+          $next = wp_next_scheduled( 'zaito_apply_check_daily' );
+          echo "次に送る処理が動く時刻: ", $next ? wp_date( 'Y-m-d H:i', $next ) : '予定なし', "\n";
+          $ids = get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => 'apply_asked' ) );
+          $by_day = array(); $people = 0; $q = array( 1 => 0, 2 => 0 );
+          foreach ( $ids as $id ) {
+              $a = get_post_meta( $id, 'apply_asked', true );
+              if ( ! is_array( $a ) || ! $a ) continue;
+              $people++;
+              $days = array();
+              foreach ( $a as $k => $d ) { $q[ (int) substr( $k, -1 ) ]++; $days[ $d ] = 1; }
+              foreach ( array_keys( $days ) as $d ) { $by_day[ $d ] = ( $by_day[ $d ] ?? 0 ) + 1; }
+          }
+          echo "メールを受け取った学生: {$people}人（聞いた件数：応募したか {$q[1]}件、選考の結果 {$q[2]}件）\n";
+          ksort( $by_day );
+          echo "日ごとの送った人数（直近20日）:\n";
+          foreach ( array_slice( $by_day, -20, null, true ) as $d => $n ) echo "  {$d}: {$n}人\n";
+          $ans = array();
+          foreach ( (array) get_option( 'zaito_apply_stats', array() ) as $slug => $rows ) foreach ( (array) $rows as $r ) { $ans[ $r['status'] ] = ( $ans[ $r['status'] ] ?? 0 ) + 1; }
+          echo "答え（件数）: "; foreach ( $ans as $s => $n ) echo "{$s}={$n} "; echo "\n";
+          $clicked = count( get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => 'remote_clicks' ) ) );
+          echo "応募ページへ進んだことがある学生: {$clicked}人\n";
+          PHP
