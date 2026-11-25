@@ -150,7 +150,7 @@ if ( ! function_exists( 'zaito_biz_head' ) ) {
 
     function zaito_biz_footer() {
         ?>
-<footer class="ft" style="margin-top:0"><div class="wrap"><div class="ft-b"><span>zaito 運営事務局　<a href="mailto:info@zaito-work.com">info@zaito-work.com</a></span><small><a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>　<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></small></div></div></footer>
+<footer class="ft" style="margin-top:0"><div class="wrap"><div class="ft-b"><span>zaito 運営事務局　<a href="mailto:info@zaito-work.com">info@zaito-work.com</a></span><small><a href="<?php echo esc_url( add_query_arg( 'role', 'company', home_url( '/contact/' ) ) ); ?>">ご意見・苦情の窓口</a>　<a href="<?php echo esc_url( home_url( '/terms/' ) ); ?>">利用規約</a>　<a href="<?php echo esc_url( home_url( '/privacy/' ) ); ?>">プライバシーポリシー</a></small></div></div></footer>
         <?php
     }
 

@@ -18,6 +18,27 @@ $zaito_closed  = ! empty( $zaito_j['closed'] );
 $zaito_direct  = ! empty( $zaito_j['direct'] ); // 企業がzaitoに直接掲載した求人（inc/direct.php）。応募はzaitoの中で受け付ける。
 $zaito_go_lb   = $zaito_direct ? 'この求人に応募する' : '応募ページへ進む';
 $zaito_go      = zaito_remote_url( $zaito_j['slug'] ) . 'go/';
+
+// 募集が終わった求人は、中身を出さない（労働局の助言：終わった求人はいつまでも載せない。2026-11-25）。
+// URLは営業のメールやマイページから開かれることがあるので、404ではなく 410（なくなった）で、終わったことだけを伝える。
+if ( $zaito_closed ) {
+    status_header( 410 );
+    nocache_headers();
+    zaito_remote_head( '募集は終了しました | zaito', 'この求人の募集は終了しました。', zaito_remote_url( $zaito_j['slug'] ), null, 'noindex, follow' );
+    ?>
+<body>
+<?php zaito_remote_header(); ?>
+<main class="wrap" style="padding-top:48px;padding-bottom:80px;max-width:640px">
+  <h1 class="t" style="margin:0 0 12px">この求人の募集は終了しました</h1>
+  <p style="margin:0 0 24px;color:var(--z-text-3)">ほかの完全在宅の求人から探してみてください。</p>
+  <a class="btn btn-p btn-lg" href="<?php echo esc_url( zaito_remote_url() ); ?>">募集中の求人を見る</a>
+</main>
+<?php zaito_remote_footer(); ?>
+</body>
+</html>
+    <?php
+    return;
+}
 $zaito_initial = mb_substr( preg_replace( '/^(株式会社|合同会社|有限会社|学校法人)|(株式会社|合同会社|有限会社)$/u', '', $zaito_j['company'] ), 0, 1 );
 $zaito_error   = isset( $_GET['signup'] ) && 'error' === $_GET['signup'];
 

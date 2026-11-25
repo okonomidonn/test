@@ -119,6 +119,7 @@ jobs:
               wp_delete_user( $u->ID ); $n['users']++;
           }
           foreach ( get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_query' => array( array( 'key' => 'email', 'value' => '^e2e-st-[nv][0-9]+@example\\.invalid$', 'compare' => 'REGEXP' ) ) ) ) as $i ) { wp_delete_post( $i, true ); $n['posts']++; }
+          foreach ( get_posts( array( 'post_type' => 'zaito_complaint', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_query' => array( array( 'key' => 'email', 'value' => '^e2e-st-[nv][0-9]+@example\\.invalid$', 'compare' => 'REGEXP' ) ) ) ) as $i ) { wp_delete_post( $i, true ); $n['posts']++; }
           $admin = get_users( array( 'role' => 'administrator', 'number' => 1, 'orderby' => 'ID' ) )[0];
           WP_Session_Tokens::get_instance( $admin->ID )->destroy_all();
           echo "消したもの: ユーザー {$n['users']}、投稿 {$n['posts']}。録画面接は off に戻し、管理者のログインを消した。\n";

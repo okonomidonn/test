@@ -378,6 +378,20 @@ if (/^https?:\/\/(www\.)?zaito-work\.com/.test(BASE)) { console.log('本番に�
     await adminTab('offers');
     await shot(ap, '14_admin_fees');
     (await ap.locator(`input[name=app_id][value="${appId}"]`).count()) ? ok('11 運営の成果報酬', '内定が成果報酬の一覧に出ている') : ng('11 運営の成果報酬', '成果報酬の一覧に見つからない');
+    // 12. ご意見・苦情の窓口（/contact/）から送れて、運営の記録に残るか。
+    if (!VIDEO) {
+      await go(sp, '/contact/');
+      await shot(sp, '15_contact');
+      const cf = sp.locator('form:has([name=body])').first();
+      await cf.locator('label').filter({ hasText: /^\s*学生・求職者\s*$/ }).first().click();
+      await cf.locator('[name=kind]').selectOption('job');
+      await cf.locator('[name=email]').fill(stEmail);
+      await cf.locator('[name=job]').fill(jobTitle);
+      await cf.locator('[name=body]').fill('試験用の相談です（自動テスト）。');
+      await submit(sp, cf);
+      const cid = Number(php(`$p = get_posts( array( 'post_type' => 'zaito_complaint', 'post_status' => 'private', 'fields' => 'ids', 'posts_per_page' => 1, 'meta_key' => 'email', 'meta_value' => ${JSON.stringify(stEmail)} ) ); echo $p ? $p[0] : 0;`));
+      (/sent=1/.test(sp.url()) && cid) ? ok('12 苦情・相談の窓口', `送れて、運営の記録に残った（${cid}）`) : ng('12 苦情・相談の窓口', '送れなかったか、記録に残らない: ' + sp.url().replace(BASE, '') + ' ' + await errorsOn(sp));
+    }
     fs.writeFileSync(`${SHOTS}/${TAG}_state.json`, JSON.stringify({ coEmail, coId, jobId, stEmail }));
   } catch (e) {
     ng('中断', e.message.split('\n')[0]);

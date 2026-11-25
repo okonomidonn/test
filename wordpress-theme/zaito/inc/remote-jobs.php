@@ -12,7 +12,7 @@
  * 企業への営業（「○人の学生が応募ページへ進みました」）に使う。
  *
  * 求人を追加・修正するときは zaito_remote_jobs() を編集する。掲載をやめるときは
- * 'closed' => true にする（URLは残し、「募集終了」と表示する）。
+ * 'closed' => true にする（一覧から消え、詳細ページは中身を出さずに「募集は終了しました」とだけ出す）。
  */
 
 /**
@@ -2345,9 +2345,12 @@ function zaito_remote_go( $job ) {
         wp_safe_redirect( zaito_remote_url( $job['slug'] ) . '#apply', 302 );
         return;
     }
-    if ( empty( $job['closed'] ) ) {
-        zaito_remote_record_click( $job['slug'], $member );
+    // 募集が終わった求人は、元の応募ページへ送らない（「募集は終了しました」のページへ戻す）。
+    if ( ! empty( $job['closed'] ) ) {
+        wp_safe_redirect( zaito_remote_url( $job['slug'] ), 302 );
+        return;
     }
+    zaito_remote_record_click( $job['slug'], $member );
     // 直接掲載の求人は、zaitoの中の応募フォームへ。それ以外の転送先は zaito_remote_jobs() に運営が書いたURLだけ（利用者の入力は使わない）。
     $dest = ! empty( $job['direct'] ) ? $job['url'] : esc_url_raw( zaito_remote_out_url( $job ) );
     // Google・LINEで登録した直後にここへ来た人は、計測のタグがあるページを通らないので、

@@ -382,12 +382,7 @@ if ( ! $zaito_cond ) :
     </details>
   <?php endif; ?>
 
-  <?php if ( $zaito_closed ) : ?>
-    <h2 class="sub">募集が終了した求人</h2>
-    <ul class="cards">
-      <?php foreach ( $zaito_closed as $zaito_j ) { $zaito_card( $zaito_j ); } ?>
-    </ul>
-  <?php endif; ?>
+  <?php // 募集が終わった求人は、一覧に出さない（労働局の助言・2026-11-25）。 ?>
 
   <?php if ( $zaito_faq ) : ?>
     <section class="cond-faq doc" aria-labelledby="cond-faq-title">
