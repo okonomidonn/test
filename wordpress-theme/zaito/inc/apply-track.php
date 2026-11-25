@@ -13,6 +13,7 @@
  * 4. 結果は管理画面「求人 > まとめ求人」に、求人ごとの「応募した」「採用された」の人数として出す。
  *
  * メールは、メールアドレスの確認が済み、配信を止めていない人にだけ送る。1回のメールで最大5件まで聞く。
+ * 2026-11-25 から、メールは止めている（ZAITO_AC_ENABLED）。
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -144,6 +145,9 @@ function zaito_ac_due( $member, $now ) {
  * 1日1回：聞く相手にメールを送る。
  */
 function zaito_ac_run() {
+    if ( ! ZAITO_AC_ENABLED ) {
+        return;
+    }
     $ids = get_posts( array(
         'post_type'      => 'zaito_interest',
         'post_status'    => 'any',
@@ -174,7 +178,22 @@ function zaito_ac_run() {
 }
 add_action( 'zaito_apply_check_daily', 'zaito_ac_run' );
 
+/**
+ * 「応募しましたか？」のメールは、2026-11-25 に止めた（運営者の判断）。
+ * 答えが返ってくるのが聞いた件数の6%ほどと少なく、直接掲載では応募がzaitoの中で数えられるため。
+ * 予定を消して、送る処理も動かさない。すでに送ったメールのリンク（/apply-check/）と、集まった答えはそのまま残す。
+ * また送るときは、ZAITO_AC_ENABLED を true にする。
+ */
+define( 'ZAITO_AC_ENABLED', false );
+
 function zaito_ac_schedule() {
+    if ( ! ZAITO_AC_ENABLED ) {
+        $t = wp_next_scheduled( 'zaito_apply_check_daily' );
+        if ( $t ) {
+            wp_unschedule_event( $t, 'zaito_apply_check_daily' );
+        }
+        return;
+    }
     if ( ! wp_next_scheduled( 'zaito_apply_check_daily' ) ) {
         // 日本時間の朝10時ごろに送る。
         $next = strtotime( 'tomorrow 01:00 UTC' );
