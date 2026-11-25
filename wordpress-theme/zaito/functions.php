@@ -329,7 +329,7 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
  * テーマの更新時に一度だけ flush_rewrite_rules() を実行する。
  */
 function zaito_maybe_flush_rewrite_rules() {
-    $version = '21'; // 21: /contact/（ご意見・苦情・相談の窓口）
+    $version = '21'; // 21: /contact/（お問い合わせ）
     if ( get_option( 'zaito_rewrite_version' ) !== $version ) {
         flush_rewrite_rules();
         update_option( 'zaito_rewrite_version', $version );
@@ -1985,7 +1985,7 @@ require_once get_template_directory() . '/inc/apply-track.php';
 
 // 直接掲載（企業の求人掲載・応募・メッセージ・運営の管理画面）。
 require_once get_template_directory() . '/inc/direct.php';
-// ご意見・苦情・相談の窓口（/contact/）。特定募集情報等提供事業者として、苦情・相談を受け付けて記録する。
+// お問い合わせ（/contact/）。特定募集情報等提供事業者として、苦情を含むお問い合わせを受け付けて記録する。
 require_once get_template_directory() . '/inc/complaints.php';
 
 // 学生のGoogle・LINEでのログインと登録。

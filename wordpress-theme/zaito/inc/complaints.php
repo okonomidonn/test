@@ -1,11 +1,12 @@
 <?php
 /**
- * ご意見・苦情・相談の窓口（/contact/）。
+ * お問い合わせの窓口（/contact/）。ご質問・ご意見・ご相談・苦情を受け付ける。
+ * 呼び名は「お問い合わせ」にしている（運営者の判断・2026-11-25）。苦情も受け付けることは、ページの説明に書く。
  *
  * 特定募集情報等提供事業者は、求職者・求人企業からの苦情・相談を受け付け、適切に対応しなければならない
  * （職業安定法・指針。2026-11-25 の労働局の電話でも、サービスの中に窓口を設けるよう言われた）。
  * - だれでも送れるフォーム。送ると運営（info@）にメールが届き、送った人には受付のメールが届く。
- * - 受けた苦情・相談は、管理画面の「苦情・相談」に残し、対応の状況と記録を書き込む（対応の記録を残すため）。
+ * - 受けたお問い合わせは、管理画面の「お問い合わせ」に残し、対応の状況と記録を書き込む（対応の記録を残すため）。
  * - 返事は info@ から運営がメールで送る。
  */
 
@@ -34,7 +35,7 @@ function zaito_complaint_statuses() {
 
 function zaito_complaint_register() {
 	register_post_type( 'zaito_complaint', array(
-		'labels'          => array( 'name' => '苦情・相談', 'singular_name' => '苦情・相談', 'edit_item' => '苦情・相談の対応' ),
+		'labels'          => array( 'name' => 'お問い合わせ', 'singular_name' => 'お問い合わせ', 'edit_item' => 'お問い合わせの対応' ),
 		'public'          => false,
 		'show_ui'         => true,
 		'show_in_menu'    => true,
@@ -154,13 +155,13 @@ function zaito_handle_complaint() {
 		$errors[] = 'あなたの立場を選んでください';
 	}
 	if ( ! isset( zaito_complaint_kinds()[ $kind ] ) ) {
-		$errors[] = 'ご相談の種類を選んでください';
+		$errors[] = 'お問い合わせの種類を選んでください';
 	}
 	if ( ! $email || ! is_email( $email ) ) {
 		$errors[] = '返事を送るメールアドレスを正しく入力してください';
 	}
 	if ( '' === $body ) {
-		$errors[] = 'ご相談の内容を入力してください';
+		$errors[] = 'お問い合わせの内容を入力してください';
 	}
 	if ( ! $errors && zaito_lp_rate_limited( 'complaint', 5 ) ) {
 		$errors[] = '送信回数が多すぎます。しばらくしてからお試しください。';
@@ -186,8 +187,8 @@ function zaito_handle_complaint() {
 	// 運営に知らせる。
 	wp_mail(
 		get_option( 'admin_email' ),
-		'【zaito】苦情・相談が届きました（' . preg_replace( '/（.*$/u', '', $kinds[ $kind ] ) . '）',
-		"窓口のフォームから苦情・相談が届きました。内容を確認して、返事と対応の記録をお願いします。\n\n"
+		'【zaito】お問い合わせが届きました（' . preg_replace( '/（.*$/u', '', $kinds[ $kind ] ) . '）',
+		"お問い合わせのフォームから連絡が届きました。内容を確認して、返事と対応の記録をお願いします。\n\n"
 		. '立場: ' . zaito_complaint_roles()[ $role ] . "\n"
 		. '種類: ' . $kinds[ $kind ] . "\n"
 		. 'お名前: ' . $name . "\n"
@@ -200,9 +201,9 @@ function zaito_handle_complaint() {
 	// 送った人に、受け付けたことを知らせる。
 	wp_mail(
 		$email,
-		'【zaito】ご相談を受け付けました',
+		'【zaito】お問い合わせを受け付けました',
 		( $name ? $name . ' 様' . "\n\n" : '' )
-		. "zaito運営です。ご意見・苦情・相談の窓口に、次の内容でご連絡をいただきました。\n"
+		. "zaito運営です。お問い合わせのフォームから、次の内容でご連絡をいただきました。\n"
 		. "内容を確認し、原則として3営業日以内に、このメールアドレスあてにご返事します。\n\n"
 		. '種類: ' . $kinds[ $kind ] . "\n"
 		. "内容:\n" . $body . "\n\n"

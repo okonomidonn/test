@@ -209,7 +209,7 @@ if ( $zaito_is_co ) {
         <ul>
           <li>企業から、応募のときに入力した電話番号に連絡が来ることがあります。</li>
           <li>内定が出るまでは、LINEなどの連絡先の交換は控えてください。</li>
-          <li>出社や対面での面接、お金の支払いを求められたり、内定の前に身分証や口座の情報を求められたりしたら、応じずに <a href="<?php echo esc_url( add_query_arg( 'role', 'student', home_url( '/contact/' ) ) ); ?>">ご意見・苦情の窓口</a> からご連絡ください。</li>
+          <li>出社や対面での面接、お金の支払いを求められたり、内定の前に身分証や口座の情報を求められたりしたら、応じずに <a href="<?php echo esc_url( add_query_arg( 'role', 'student', home_url( '/contact/' ) ) ); ?>">お問い合わせ</a> からご連絡ください。</li>
         </ul>
       </div>
     <?php endif; ?>
