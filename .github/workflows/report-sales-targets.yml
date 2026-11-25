@@ -1,0 +1,47 @@
+name: Report sales targets (まとめ求人の企業ごとの送客の人数)
+
+# 本番から、まとめ求人（他社の求人の紹介）の企業ごとに「応募ページへ進んだ学生の人数」「応募した」「採用」を読み出して、ログに出すだけ。
+# - 読むだけで、本番には何も書き込まない。
+# - 出すのは企業名・求人の数・人数だけ。学生の名前やメールアドレスなどは出さない。
+# 営業先を、学生を送った人数の多い順に選ぶために使う。
+on:
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.XSERVER_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Per-company counts (read only)
+        run: |
+          ssh -i ~/.ssh/deploy_key -o LogLevel=ERROR -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            'wp --path=zaito-work.com/public_html eval-file -' <<'PHP'
+          <?php
+          $stats   = (array) get_option( 'zaito_remote_stats', array() );
+          $applies = function_exists( 'zaito_ac_counts' ) ? zaito_ac_counts() : array();
+          $by = array();
+          foreach ( zaito_remote_jobs() as $job ) {
+              $co = $job['company'];
+              if ( ! isset( $by[ $co ] ) ) $by[ $co ] = array( 'jobs' => 0, 'go' => 0, 'applied' => 0, 'hired' => 0, 'direct' => 0, 'slugs' => array() );
+              $by[ $co ]['jobs']++;
+              $by[ $co ]['direct'] += empty( $job['direct'] ) ? 0 : 1;
+              $by[ $co ]['slugs'][] = $job['slug'];
+              $s = isset( $stats[ $job['slug'] ] ) ? $stats[ $job['slug'] ] : array( 'members' => array() );
+              $by[ $co ]['go'] += count( (array) $s['members'] );
+              $a = isset( $applies[ $job['slug'] ] ) ? $applies[ $job['slug'] ] : array( 'applied' => 0, 'hired' => 0 );
+              $by[ $co ]['applied'] += (int) $a['applied'];
+              $by[ $co ]['hired']   += (int) $a['hired'];
+          }
+          uasort( $by, function ( $x, $y ) { return ( $y['go'] - $x['go'] ) ?: ( $y['applied'] - $x['applied'] ); } );
+          echo "企業\t求人数\t進んだ学生\t応募した\t採用\t直接掲載\t求人\n";
+          foreach ( $by as $co => $c ) {
+              echo $co, "\t", $c['jobs'], "\t", $c['go'], "\t", $c['applied'], "\t", $c['hired'], "\t", $c['direct'], "\t", implode( ',', $c['slugs'] ), "\n";
+          }
+          PHP
