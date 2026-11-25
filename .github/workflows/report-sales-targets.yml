@@ -6,6 +6,12 @@ name: Report sales targets (まとめ求人の企業ごとの送客の人数)
 # 営業先を、学生を送った人数の多い順に選ぶために使う。
 on:
   workflow_dispatch:
+  # 新しいワークフローは、標準のブランチに入るまで手動で動かせないので、このファイルを変えてプッシュしたときにも動かす。
+  push:
+    branches:
+      - claude/zaito-job-site-uqgb9o
+    paths:
+      - ".github/workflows/report-sales-targets.yml"
 
 jobs:
   report:
