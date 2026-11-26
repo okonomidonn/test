@@ -98,3 +98,32 @@ jobs:
           echo "直接掲載: ", wp_json_encode( $d['direct'], JSON_UNESCAPED_UNICODE ), "\n";
           echo "メール配信: ", wp_json_encode( $d['mail_campaigns'], JSON_UNESCAPED_UNICODE ), "\n";
           PHP
+
+      # ChatGPT から来た登録者が、最初にどの求人へ進んだか（求人と職種ごとの人数だけ）。
+      - name: ChatGPT visitors - first job clicked (read only)
+        run: |
+          ssh -i ~/.ssh/deploy_key -o LogLevel=ERROR -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            'wp --path=zaito-work.com/public_html eval-file -' <<'PHP'
+          <?php
+          $jobs = array(); foreach ( zaito_remote_jobs() as $j ) $jobs[ $j['slug'] ] = $j;
+          $ids = get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids' ) );
+          $groups = array( 'chatgpt' => array(), 'other' => array() );
+          $noclick = array( 'chatgpt' => 0, 'other' => 0 );
+          foreach ( $ids as $id ) {
+              $g = false !== strpos( (string) get_post_meta( $id, 'utm_source', true ), 'chatgpt' ) ? 'chatgpt' : 'other';
+              $c = get_post_meta( $id, 'remote_clicks', true );
+              if ( ! is_array( $c ) || ! $c ) { $noclick[ $g ]++; continue; }
+              asort( $c ); $first = array_key_first( $c );
+              $groups[ $g ][ $first ] = ( $groups[ $g ][ $first ] ?? 0 ) + 1;
+          }
+          foreach ( $groups as $g => $rows ) {
+              arsort( $rows ); $cat = array();
+              echo "== {$g}（求人へ進んでいない人 {$noclick[$g]}人）\n";
+              foreach ( $rows as $slug => $n ) {
+                  $j = $jobs[ $slug ] ?? null; $c2 = $j ? ( $j['category'] ?? '' ) : '（終了・不明）';
+                  $cat[ $c2 ] = ( $cat[ $c2 ] ?? 0 ) + $n;
+                  if ( $n >= 2 ) echo "  {$n}人 {$slug} ", $j ? $j['title'] : '', "\n";
+              }
+              arsort( $cat ); echo "  職種ごと: "; foreach ( $cat as $k => $n ) echo "{$k}={$n} "; echo "\n";
+          }
+          PHP
