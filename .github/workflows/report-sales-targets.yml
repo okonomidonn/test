@@ -80,3 +80,21 @@ jobs:
           $clicked = count( get_posts( array( 'post_type' => 'zaito_interest', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => 'remote_clicks' ) ) );
           echo "応募ページへ進んだことがある学生: {$clicked}人\n";
           PHP
+
+      # マーケティングの方針を考えるための数字（人数の集計だけ。個人の情報は出さない）。
+      - name: Registration stats (read only)
+        run: |
+          ssh -i ~/.ssh/deploy_key -o LogLevel=ERROR -p ${{ secrets.XSERVER_PORT }} ${{ secrets.XSERVER_USER }}@${{ secrets.XSERVER_HOST }} \
+            'wp --path=zaito-work.com/public_html eval-file -' <<'PHP'
+          <?php
+          $d = zaito_stats_data( 60 );
+          $r = $d['registrations'];
+          unset( $r['recent_by_ad'] );
+          $by_week = array();
+          foreach ( (array) $r['new_by_day'] as $day => $n ) { $w = date( 'Y-m-d', strtotime( 'monday this week', strtotime( $day ) ) ); $by_week[ $w ] = ( $by_week[ $w ] ?? 0 ) + (int) $n; }
+          unset( $r['new_by_day'] );
+          echo "週ごとの新規登録（月曜はじまり）:\n"; foreach ( $by_week as $w => $n ) echo "  {$w}: {$n}\n";
+          echo wp_json_encode( $r, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT ), "\n";
+          echo "直接掲載: ", wp_json_encode( $d['direct'], JSON_UNESCAPED_UNICODE ), "\n";
+          echo "メール配信: ", wp_json_encode( $d['mail_campaigns'], JSON_UNESCAPED_UNICODE ), "\n";
+          PHP
